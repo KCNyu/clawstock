@@ -1,0 +1,142 @@
+{
+  "owner": "kcn",
+  "last_updated": "2026-03-11 21:34:49",
+  "portfolios": {
+    "us_stocks": {
+      "currency": "USD",
+      "holdings": [
+        {
+          "ticker": "NVDA",
+          "shares": 3,
+          "cost_basis": 187.0,
+          "current_price": 185.48,
+          "pnl_percent": -0.812834224598936
+        },
+        {
+          "ticker": "RKLB",
+          "shares": 5,
+          "cost_basis": 71.0,
+          "current_price": 69.66,
+          "pnl_percent": -1.8873239436619764
+        },
+        {
+          "ticker": "CRCL",
+          "shares": 5,
+          "cost_basis": 87.0,
+          "current_price": 122.39,
+          "pnl_percent": 40.67816091954023,
+          "note": "2026-03-11 卖出5股 @$120，实现盈利 $165"
+        },
+        {
+          "ticker": "OKLO",
+          "shares": 2,
+          "cost_basis": 62.83,
+          "current_price": 62.9,
+          "pnl_percent": 0.11141174598121961
+        },
+        {
+          "ticker": "QQQ",
+          "shares": 1,
+          "cost_basis": 622.0,
+          "current_price": 610.09,
+          "pnl_percent": -1.9147909967845607
+        }
+      ],
+      "total_cost": 2098.66,
+      "total_current_value": 2252.58,
+      "total_pnl": 153.92000000000007,
+      "total_pnl_percent": 7.334203729999146
+    },
+    "hk_stocks": {
+      "currency": "HKD",
+      "holdings": [
+        {
+          "ticker": "02208",
+          "name": "金风科技",
+          "ticker_finnhub": "2208.HK",
+          "shares": 600,
+          "cost_basis": 14.084,
+          "current_price": 14.57,
+          "current_value": 8700.0,
+          "today_change": 42.0,
+          "pnl_percent": 3.45,
+          "data_source": "腾讯财经"
+        },
+        {
+          "ticker": "03032",
+          "name": "恒生科技ETF",
+          "ticker_finnhub": "3032.HK",
+          "shares": 200,
+          "cost_basis": 5.405,
+          "current_price": 5.035,
+          "current_value": 982.4,
+          "today_change": 24.6,
+          "pnl_percent": -6.85,
+          "data_source": "腾讯财经"
+        },
+        {
+          "ticker": "07226",
+          "name": "XL二南方恒科",
+          "ticker_finnhub": "7226.HK",
+          "shares": 5200,
+          "cost_basis": 4.497269230769231,
+          "current_price": 4.158,
+          "current_value": 20560.8,
+          "today_change": 1060.8,
+          "pnl_percent": -7.54,
+          "data_source": "腾讯财经"
+        },
+        {
+          "ticker": "07709",
+          "name": "XL二南方海力士",
+          "ticker_finnhub": "7709.HK",
+          "shares": 700,
+          "cost_basis": 31.69142857142857,
+          "current_price": 28.9,
+          "current_value": 14208.0,
+          "today_change": 3132.0,
+          "pnl_percent": -9.8,
+          "data_source": "腾讯财经",
+          "trades": [
+            {
+              "date": "2026-03-11",
+              "action": "buy",
+              "shares": 100,
+              "price": 29.6,
+              "note": "补仓，摊低成本"
+            }
+          ]
+        },
+        {
+          "ticker": "07747",
+          "name": "XL二南三星",
+          "ticker_finnhub": "7747.HK",
+          "shares": 200,
+          "cost_basis": 81.85,
+          "current_price": 72.2,
+          "current_value": 12668.0,
+          "today_change": 1772.0,
+          "pnl_percent": -11.79,
+          "data_source": "腾讯财经"
+        },
+        {
+          "ticker": "03033",
+          "name": "南方恒生科技",
+          "ticker_finnhub": "3033.HK",
+          "shares": 1000,
+          "cost_basis": 5.14,
+          "current_price": 4.946,
+          "current_value": 4648.0,
+          "pnl_percent": -3.77,
+          "today_change": 124.0,
+          "data_source": "腾讯财经"
+        }
+      ],
+      "total_cost": 73651.2,
+      "total_current_value": 61767.2,
+      "total_pnl": -5554.6,
+      "total_pnl_percent": -7.54,
+      "today_total_change": 6155.4
+    }
+  }
+}

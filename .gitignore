@@ -1,0 +1,46 @@
+# API Keys - DO NOT COMMIT
+.api_keys
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv
+
+# Data cache / temp
+data_cache/
+*.cache
+*.log
+
+# Images / generated output
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.mp4
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# OpenClaw internal
+.openclaw/
+.clawhub/
+
+# Misc temp
+haizhi_02706_data.json
+monitor_state.json
+SESSION_HANDOFF.md
+streaming_notes.md
+streaming_config_guide.md
+setup_openclaw_web.sh
+fix_stock_analyzer.py
