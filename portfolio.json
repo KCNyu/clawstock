@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-03-11 21:34:49",
+  "last_updated": "2026-03-11 23:20:05",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -9,43 +9,43 @@
           "ticker": "NVDA",
           "shares": 3,
           "cost_basis": 187.0,
-          "current_price": 185.48,
-          "pnl_percent": -0.812834224598936
+          "current_price": 185.71,
+          "pnl_percent": -0.689839572192509
         },
         {
           "ticker": "RKLB",
           "shares": 5,
           "cost_basis": 71.0,
-          "current_price": 69.66,
-          "pnl_percent": -1.8873239436619764
+          "current_price": 71.23,
+          "pnl_percent": 0.3239436619718366
         },
         {
           "ticker": "CRCL",
           "shares": 5,
           "cost_basis": 87.0,
-          "current_price": 122.39,
-          "pnl_percent": 40.67816091954023,
+          "current_price": 113.96,
+          "pnl_percent": 30.98850574712643,
           "note": "2026-03-11 卖出5股 @$120，实现盈利 $165"
         },
         {
           "ticker": "OKLO",
           "shares": 2,
           "cost_basis": 62.83,
-          "current_price": 62.9,
-          "pnl_percent": 0.11141174598121961
+          "current_price": 61.85,
+          "pnl_percent": -1.5597644437370635
         },
         {
           "ticker": "QQQ",
           "shares": 1,
           "cost_basis": 622.0,
-          "current_price": 610.09,
-          "pnl_percent": -1.9147909967845607
+          "current_price": 607.44,
+          "pnl_percent": -2.3408360128617276
         }
       ],
       "total_cost": 2098.66,
-      "total_current_value": 2252.58,
-      "total_pnl": 153.92000000000007,
-      "total_pnl_percent": 7.334203729999146
+      "total_current_value": 2214.2200000000003,
+      "total_pnl": 115.5600000000004,
+      "total_pnl_percent": 5.5063707318003114
     },
     "hk_stocks": {
       "currency": "HKD",
@@ -56,9 +56,9 @@
           "ticker_finnhub": "2208.HK",
           "shares": 600,
           "cost_basis": 14.084,
-          "current_price": 14.57,
-          "current_value": 8700.0,
-          "today_change": 42.0,
+          "current_price": 15.18,
+          "current_value": 9108.0,
+          "today_change": 365.99999999999966,
           "pnl_percent": 3.45,
           "data_source": "腾讯财经"
         },
@@ -68,9 +68,9 @@
           "ticker_finnhub": "3032.HK",
           "shares": 200,
           "cost_basis": 5.405,
-          "current_price": 5.035,
-          "current_value": 982.4,
-          "today_change": 24.6,
+          "current_price": 5.02,
+          "current_value": 1003.9999999999999,
+          "today_change": -3.0000000000001137,
           "pnl_percent": -6.85,
           "data_source": "腾讯财经"
         },
@@ -80,9 +80,9 @@
           "ticker_finnhub": "7226.HK",
           "shares": 5200,
           "cost_basis": 4.497269230769231,
-          "current_price": 4.158,
-          "current_value": 20560.8,
-          "today_change": 1060.8,
+          "current_price": 4.15,
+          "current_value": 21580.000000000004,
+          "today_change": -41.60000000000004,
           "pnl_percent": -7.54,
           "data_source": "腾讯财经"
         },
@@ -92,9 +92,9 @@
           "ticker_finnhub": "7709.HK",
           "shares": 700,
           "cost_basis": 31.69142857142857,
-          "current_price": 28.9,
-          "current_value": 14208.0,
-          "today_change": 3132.0,
+          "current_price": 28.72,
+          "current_value": 20104.0,
+          "today_change": -125.9999999999998,
           "pnl_percent": -9.8,
           "data_source": "腾讯财经",
           "trades": [
@@ -114,8 +114,8 @@
           "shares": 200,
           "cost_basis": 81.85,
           "current_price": 72.2,
-          "current_value": 12668.0,
-          "today_change": 1772.0,
+          "current_value": 14440.0,
+          "today_change": 0.0,
           "pnl_percent": -11.79,
           "data_source": "腾讯财经"
         },
@@ -125,18 +125,18 @@
           "ticker_finnhub": "3033.HK",
           "shares": 1000,
           "cost_basis": 5.14,
-          "current_price": 4.946,
-          "current_value": 4648.0,
+          "current_price": 4.936,
+          "current_value": 4936.0,
           "pnl_percent": -3.77,
-          "today_change": 124.0,
+          "today_change": -9.999999999999787,
           "data_source": "腾讯财经"
         }
       ],
       "total_cost": 73651.2,
-      "total_current_value": 61767.2,
+      "total_current_value": 71172.0,
       "total_pnl": -5554.6,
       "total_pnl_percent": -7.54,
-      "today_total_change": 6155.4
+      "today_total_change": 185.39999999999992
     }
   }
 }

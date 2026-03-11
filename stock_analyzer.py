@@ -97,6 +97,44 @@ class StockAnalyzer:
             print(f"⚠️  Polygon.io failed for {ticker}: {e}")
             return None
 
+    def get_hk_quotes_eastmoney(self, codes: List[str]) -> Dict[str, Dict]:
+        """Batch fetch HK stock quotes from Eastmoney (no rate limit, CN data)"""
+        secids = ','.join([f'116.{c}' for c in codes])
+        url = "https://push2.eastmoney.com/api/qt/ulist.np/get"
+        params = {
+            'fltt': 2, 'invt': 2,
+            'fields': 'f12,f14,f2,f3,f4,f5,f15,f16,f17,f18',
+            'secids': secids,
+            'ut': 'bd1d9ddb04089700cf9c27f6f7426281',
+        }
+        headers = {'Referer': 'https://quote.eastmoney.com/'}
+        try:
+            r = requests.get(url, params=params, headers=headers, timeout=10)
+            r.raise_for_status()
+            data = r.json()
+            results = {}
+            for item in data.get('data', {}).get('diff', []):
+                code = item['f12']  # e.g. '02208'
+                current = item.get('f2')
+                prev_close = item.get('f18')
+                high = item.get('f15')
+                low = item.get('f16')
+                open_p = item.get('f17')
+                if current and current != '-':
+                    results[code] = {
+                        'c': float(current),
+                        'pc': float(prev_close) if prev_close else float(current),
+                        'h': float(high) if high else float(current),
+                        'l': float(low) if low else float(current),
+                        'o': float(open_p) if open_p else float(current),
+                        'name': item.get('f14', ''),
+                        'source': 'Eastmoney'
+                    }
+            return results
+        except Exception as e:
+            print(f"⚠️  Eastmoney batch failed: {e}")
+            return {}
+
     def get_quote_yfinance(self, symbol: str) -> Optional[Dict]:
         """Get quote from Yahoo Finance (works for both US and HK stocks)"""
         try:
@@ -363,40 +401,36 @@ class StockAnalyzer:
         print(f"US Portfolio P&L: ${total_pnl:.2f} ({us_portfolio['total_pnl_percent']:.2f}%)")
     
     def update_hk_portfolio_prices(self):
-        """Update Hong Kong stock portfolio with current prices (batch via yfinance)"""
+        """Update Hong Kong stock portfolio with current prices (Eastmoney batch)"""
         print("\nUpdating HK portfolio prices...")
         hk_portfolio = self.portfolio['portfolios']['hk_stocks']
+        codes = [h['ticker'] for h in hk_portfolio['holdings']]
 
-        # Build symbol map: code -> yfinance symbol
-        holdings_map = {}
-        for h in hk_portfolio['holdings']:
-            code = h['ticker']
-            yf_sym = f"{code.lstrip('0') or '0'}.HK"
-            holdings_map[yf_sym] = h
-
-        symbols = list(holdings_map.keys())
-        print(f"Fetching batch: {' '.join(symbols)}")
+        # Primary: Eastmoney batch (reliable, no rate limit)
+        em_data = self.get_hk_quotes_eastmoney(codes)
         
-        try:
-            tickers_obj = yf.Tickers(' '.join(symbols))
-            for sym, holding in holdings_map.items():
-                try:
-                    info = tickers_obj.tickers[sym].fast_info
-                    current = info.get('lastPrice') or info.get('regularMarketPrice')
-                    prev_close = info.get('regularMarketPreviousClose') or info.get('previousClose')
-                    if current:
-                        old_price = holding['current_price']
-                        holding['current_price'] = current
-                        holding['current_value'] = current * holding['shares']
-                        if prev_close:
-                            holding['today_change'] = (current - prev_close) * holding['shares']
-                        print(f"✓ {holding['ticker']} ({sym}): HKD {old_price:.2f} -> HKD {current:.2f}")
-                    else:
-                        print(f"✗ {holding['ticker']}: no price returned")
-                except Exception as e:
-                    print(f"✗ {holding['ticker']}: {e}")
-        except Exception as e:
-            print(f"⚠️  Batch yfinance failed: {e}")
+        for holding in hk_portfolio['holdings']:
+            code = holding['ticker']
+            quote = em_data.get(code)
+            if quote:
+                old_price = holding['current_price']
+                holding['current_price'] = quote['c']
+                holding['current_value'] = quote['c'] * holding['shares']
+                holding['today_change'] = (quote['c'] - quote['pc']) * holding['shares']
+                pct = (quote['c'] - quote['pc']) / quote['pc'] * 100 if quote['pc'] else 0
+                print(f"✓ {code} {quote['name']}: HKD {old_price:.3f} -> HKD {quote['c']:.3f} ({pct:+.2f}%)")
+            else:
+                # Fallback to yfinance
+                yf_sym = f"{code.lstrip('0') or '0'}.HK"
+                yf_quote = self.get_quote_yfinance(yf_sym)
+                if yf_quote:
+                    old_price = holding['current_price']
+                    holding['current_price'] = yf_quote['c']
+                    holding['current_value'] = yf_quote['c'] * holding['shares']
+                    holding['today_change'] = (yf_quote['c'] - yf_quote['pc']) * holding['shares']
+                    print(f"✓ {code} (yfinance): HKD {old_price:.3f} -> HKD {yf_quote['c']:.3f}")
+                else:
+                    print(f"✗ {code}: All HK APIs failed")
 
         # Update totals
         total_current = sum(h['current_value'] for h in hk_portfolio['holdings'])
