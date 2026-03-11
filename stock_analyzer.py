@@ -97,6 +97,50 @@ class StockAnalyzer:
             print(f"⚠️  Polygon.io failed for {ticker}: {e}")
             return None
 
+    # Eastmoney market prefix map for US stocks (NASDAQ=105, NYSE=106)
+    EASTMONEY_US_PREFIX = {
+        'NVDA': '105', 'RKLB': '105', 'QQQ': '105', 'AAPL': '105', 'TSLA': '105',
+        'MSFT': '105', 'AMZN': '105', 'GOOGL': '105', 'META': '105', 'NVDL': '105',
+        'CRCL': '106', 'OKLO': '106', 'HIMS': '106', 'PLTR': '106',
+    }
+
+    def get_us_quotes_eastmoney(self, tickers: List[str]) -> Dict[str, Dict]:
+        """Batch fetch US stock quotes from Eastmoney (NASDAQ=105, NYSE=106)"""
+        secids = []
+        for t in tickers:
+            prefix = self.EASTMONEY_US_PREFIX.get(t, '105')  # default NASDAQ
+            secids.append(f'{prefix}.{t}')
+        url = "https://push2.eastmoney.com/api/qt/ulist.np/get"
+        params = {
+            'fltt': 2, 'invt': 2,
+            'fields': 'f12,f14,f2,f3,f18,f15,f16,f17',
+            'secids': ','.join(secids),
+            'ut': 'bd1d9ddb04089700cf9c27f6f7426281',
+        }
+        headers = {'Referer': 'https://quote.eastmoney.com/'}
+        try:
+            r = requests.get(url, params=params, headers=headers, timeout=10)
+            r.raise_for_status()
+            results = {}
+            for item in r.json().get('data', {}).get('diff', []):
+                ticker = item['f12']
+                current = item.get('f2')
+                prev_close = item.get('f18')
+                if current and current != '-':
+                    results[ticker] = {
+                        'c': float(current),
+                        'pc': float(prev_close) if prev_close else float(current),
+                        'h': float(item.get('f15') or current),
+                        'l': float(item.get('f16') or current),
+                        'o': float(item.get('f17') or current),
+                        'name': item.get('f14', ''),
+                        'source': 'Eastmoney'
+                    }
+            return results
+        except Exception as e:
+            print(f"⚠️  Eastmoney US batch failed: {e}")
+            return {}
+
     def get_hk_quotes_eastmoney(self, codes: List[str]) -> Dict[str, Dict]:
         """Batch fetch HK stock quotes from Eastmoney (no rate limit, CN data)"""
         secids = ','.join([f'116.{c}' for c in codes])
@@ -349,48 +393,57 @@ class StockAnalyzer:
             return None
     
     def update_us_portfolio_prices(self):
-        """Update US stock portfolio with current prices (batch via yfinance)"""
+        """Update US stock portfolio: Eastmoney -> yfinance -> Finnhub -> AV -> Polygon"""
         print("Updating US portfolio prices...")
         us_portfolio = self.portfolio['portfolios']['us_stocks']
         symbols = [h['ticker'] for h in us_portfolio['holdings']]
 
-        # Try batch yfinance first
-        yf_success = {}
-        try:
-            tickers_obj = yf.Tickers(' '.join(symbols))
-            for sym in symbols:
-                try:
-                    info = tickers_obj.tickers[sym].fast_info
-                    current = info.get('lastPrice') or info.get('regularMarketPrice')
-                    if current:
-                        yf_success[sym] = current
-                        print(f"✓ {sym}: Yahoo Finance")
-                except Exception:
-                    pass
-        except Exception as e:
-            print(f"⚠️  Batch yfinance failed: {e}")
+        # 1st: Eastmoney batch (CN data, no rate limit, works from abroad)
+        em_data = self.get_us_quotes_eastmoney(symbols)
+        missing = [s for s in symbols if s not in em_data]
+
+        # 2nd: yfinance batch for missing tickers
+        yf_data = {}
+        if missing:
+            try:
+                tickers_obj = yf.Tickers(' '.join(missing))
+                for sym in missing:
+                    try:
+                        info = tickers_obj.tickers[sym].fast_info
+                        current = info.get('lastPrice') or info.get('regularMarketPrice')
+                        if current:
+                            yf_data[sym] = current
+                    except Exception:
+                        pass
+            except Exception as e:
+                print(f"⚠️  yfinance batch failed: {e}")
 
         for holding in us_portfolio['holdings']:
             ticker = holding['ticker']
             old_price = holding['current_price']
-            if ticker in yf_success:
-                new_price = yf_success[ticker]
+
+            if ticker in em_data:
+                q = em_data[ticker]
+                new_price = q['c']
+                pct = (q['c'] - q['pc']) / q['pc'] * 100 if q['pc'] else 0
+                print(f"✓ {ticker} {q['name']}: ${old_price:.2f} -> ${new_price:.2f} ({pct:+.2f}%) [Eastmoney]")
+            elif ticker in yf_data:
+                new_price = yf_data[ticker]
+                print(f"✓ {ticker}: ${old_price:.2f} -> ${new_price:.2f} [Yahoo Finance]")
             else:
-                # Per-ticker fallback chain
-                quote = self.get_quote_sina_us(ticker) or \
-                        self.get_quote_finnhub(ticker) or \
+                # Per-ticker last-resort fallback
+                quote = self.get_quote_finnhub(ticker) or \
                         self.get_quote_alpha_vantage(ticker) or \
                         self.get_quote_polygon(ticker)
                 if not quote:
                     print(f"✗ {ticker}: All APIs failed")
                     continue
                 new_price = quote['c']
+                print(f"✓ {ticker}: ${old_price:.2f} -> ${new_price:.2f} [fallback]")
 
             holding['current_price'] = new_price
             holding['pnl_percent'] = ((new_price - holding['cost_basis']) / holding['cost_basis']) * 100
-            print(f"{ticker}: ${old_price:.2f} -> ${new_price:.2f}")
 
-        # Update totals
         total_cost = sum(h['shares'] * h['cost_basis'] for h in us_portfolio['holdings'])
         total_current = sum(h['shares'] * h['current_price'] for h in us_portfolio['holdings'])
         total_pnl = total_current - total_cost

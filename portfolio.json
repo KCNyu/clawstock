@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-03-11 23:20:05",
+  "last_updated": "2026-03-11 23:22:23",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -9,43 +9,43 @@
           "ticker": "NVDA",
           "shares": 3,
           "cost_basis": 187.0,
-          "current_price": 185.71,
-          "pnl_percent": -0.689839572192509
+          "current_price": 185.585,
+          "pnl_percent": -0.7566844919786053
         },
         {
           "ticker": "RKLB",
           "shares": 5,
           "cost_basis": 71.0,
-          "current_price": 71.23,
-          "pnl_percent": 0.3239436619718366
+          "current_price": 71.1,
+          "pnl_percent": 0.1408450704225272
         },
         {
           "ticker": "CRCL",
           "shares": 5,
           "cost_basis": 87.0,
-          "current_price": 113.96,
-          "pnl_percent": 30.98850574712643,
+          "current_price": 113.77,
+          "pnl_percent": 30.770114942528732,
           "note": "2026-03-11 卖出5股 @$120，实现盈利 $165"
         },
         {
           "ticker": "OKLO",
           "shares": 2,
           "cost_basis": 62.83,
-          "current_price": 61.85,
-          "pnl_percent": -1.5597644437370635
+          "current_price": 62.29,
+          "pnl_percent": -0.8594620404265465
         },
         {
           "ticker": "QQQ",
           "shares": 1,
           "cost_basis": 622.0,
-          "current_price": 607.44,
-          "pnl_percent": -2.3408360128617276
+          "current_price": 607.54,
+          "pnl_percent": -2.3247588424437358
         }
       ],
       "total_cost": 2098.66,
-      "total_current_value": 2214.2200000000003,
-      "total_pnl": 115.5600000000004,
-      "total_pnl_percent": 5.5063707318003114
+      "total_current_value": 2213.225,
+      "total_pnl": 114.56500000000005,
+      "total_pnl_percent": 5.458959526555042
     },
     "hk_stocks": {
       "currency": "HKD",
