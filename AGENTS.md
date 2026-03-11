@@ -2,6 +2,30 @@
 
 This folder is home. Treat it that way.
 
+## Git Auto-Commit Rules
+
+The workspace is a local git repo. **After any of the following changes, always run a git commit automatically — no need to ask:**
+
+1. **portfolio.json updated** (price refresh, buy/sell, new position)
+   ```
+   git add portfolio.json && git commit -m "portfolio: <brief description of change>"
+   ```
+2. **memory/YYYY-MM-DD.md created or updated**
+   ```
+   git add memory/ && git commit -m "memory: daily notes YYYY-MM-DD"
+   ```
+3. **Any script added or modified** (*.py, *.sh, *.json watchlist)
+   ```
+   git add <file> && git commit -m "script: <what changed>"
+   ```
+4. **Workspace docs changed** (SOUL.md, AGENTS.md, TOOLS.md, USER.md, etc.)
+   ```
+   git add <file> && git commit -m "docs: <what changed>"
+   ```
+
+**Commit message style:** `<type>: <concise description>` — keep it short and Chinese is fine.
+**Never commit:** .api_keys, *.png/jpg, .openclaw/, .clawhub/ (already in .gitignore)
+
 ## First Run
 
 If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out who you are, then delete it. You won't need it again.
