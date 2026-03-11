@@ -8,6 +8,7 @@ Supports both US and Hong Kong stocks
 import json
 import os
 import requests
+import yfinance as yf
 from datetime import datetime
 from typing import Dict, List, Optional
 
@@ -95,10 +96,172 @@ class StockAnalyzer:
         except Exception as e:
             print(f"⚠️  Polygon.io failed for {ticker}: {e}")
             return None
-    
+
+    def get_quote_yfinance(self, symbol: str) -> Optional[Dict]:
+        """Get quote from Yahoo Finance (works for both US and HK stocks)"""
+        try:
+            ticker = yf.Ticker(symbol)
+            info = ticker.fast_info
+            current = info.get('lastPrice') or info.get('regularMarketPrice')
+            prev_close = info.get('regularMarketPreviousClose') or info.get('previousClose')
+            if not current:
+                return None
+            return {
+                'c': current,
+                'h': info.get('dayHigh', current),
+                'l': info.get('dayLow', current),
+                'o': info.get('open', current),
+                'pc': prev_close or current,
+                'source': 'Yahoo Finance'
+            }
+        except Exception as e:
+            print(f"⚠️  Yahoo Finance failed for {symbol}: {e}")
+            return None
+
+    def get_quote_sina_hk(self, code: str) -> Optional[Dict]:
+        """Get HK stock quote from Sina Finance (e.g. code='02208')"""
+        # Sina expects 5-digit zero-padded code
+        padded = code.lstrip('0').zfill(5)
+        symbol = f"r_hk{padded}"
+        url = f"https://hq.sinajs.cn/list={symbol}"
+        headers = {'Referer': 'https://finance.sina.com.cn'}
+        try:
+            response = requests.get(url, headers=headers, timeout=10)
+            response.raise_for_status()
+            text = response.text
+            # Format: var hq_str_r_hkXXXXX="name,price,change,pct,open,high,low,vol,...";
+            if '=""' in text or '=""' in text:
+                return None
+            import re
+            match = re.search(r'"([^"]+)"', text)
+            if not match:
+                return None
+            fields = match.group(1).split(',')
+            if len(fields) < 7 or not fields[1].strip():
+                return None
+            current = float(fields[1])
+            prev_close = current - float(fields[2]) if fields[2] else current
+            return {
+                'c': current,
+                'h': float(fields[5]) if fields[5] else current,
+                'l': float(fields[6]) if fields[6] else current,
+                'o': float(fields[4]) if fields[4] else current,
+                'pc': prev_close,
+                'source': 'Sina'
+            }
+        except Exception as e:
+            print(f"⚠️  Sina HK failed for {code}: {e}")
+            return None
+
+    def get_quote_tencent_hk(self, code: str) -> Optional[Dict]:
+        """Get HK stock quote from Tencent Finance (e.g. code='02208')"""
+        padded = code.zfill(6)
+        symbol = f"r_hk{padded}"
+        url = f"https://qt.gtimg.cn/q={symbol}"
+        try:
+            response = requests.get(url, timeout=10)
+            response.encoding = 'gbk'
+            text = response.text
+            # Format: v_r_hkXXXXXX="1~name~code~price~prev_close~change~pct~...";
+            import re
+            match = re.search(r'"([^"]+)"', text)
+            if not match:
+                return None
+            fields = match.group(1).split('~')
+            if len(fields) < 6 or not fields[3].strip():
+                return None
+            current = float(fields[3])
+            prev_close = float(fields[4]) if fields[4] else current
+            return {
+                'c': current,
+                'h': float(fields[33]) if len(fields) > 33 and fields[33] else current,
+                'l': float(fields[34]) if len(fields) > 34 and fields[34] else current,
+                'o': float(fields[5]) if fields[5] else current,
+                'pc': prev_close,
+                'source': 'Tencent'
+            }
+        except Exception as e:
+            print(f"⚠️  Tencent HK failed for {code}: {e}")
+            return None
+
+    def get_quote_sina_us(self, ticker: str) -> Optional[Dict]:
+        """Get US stock quote from Sina Finance (e.g. ticker='NVDA')"""
+        symbol = f"gb_{ticker.lower()}"
+        url = f"https://hq.sinajs.cn/list={symbol}"
+        headers = {'Referer': 'https://finance.sina.com.cn'}
+        try:
+            response = requests.get(url, headers=headers, timeout=10)
+            response.raise_for_status()
+            text = response.text
+            import re
+            match = re.search(r'"([^"]+)"', text)
+            if not match:
+                return None
+            fields = match.group(1).split(',')
+            # Sina US format: name, price, after_price, change_pct, open, high, low, ...
+            if len(fields) < 5 or not fields[1].strip():
+                return None
+            current = float(fields[1])
+            open_p = float(fields[5]) if len(fields) > 5 and fields[5] else current
+            high_p = float(fields[6]) if len(fields) > 6 and fields[6] else current
+            low_p  = float(fields[7]) if len(fields) > 7 and fields[7] else current
+            # prev close = current / (1 + pct/100)
+            try:
+                pct = float(fields[3].replace('%',''))
+                prev_close = current / (1 + pct / 100)
+            except Exception:
+                prev_close = current
+            return {
+                'c': current,
+                'h': high_p,
+                'l': low_p,
+                'o': open_p,
+                'pc': prev_close,
+                'source': 'Sina'
+            }
+        except Exception as e:
+            print(f"⚠️  Sina US failed for {ticker}: {e}")
+            return None
+
+    def get_hk_quote(self, code: str) -> Optional[Dict]:
+        """Get HK stock quote: yfinance -> Tencent -> Sina"""
+        # Yahoo Finance uses XXXXX.HK format (no leading zeros beyond 4 digits)
+        yf_symbol = f"{code.lstrip('0') or '0'}.HK"
+        quote = self.get_quote_yfinance(yf_symbol)
+        if quote:
+            print(f"✓ {code}: Yahoo Finance ({yf_symbol})")
+            return quote
+        # Fallback to Tencent
+        print(f"→ {code}: Trying Tencent Finance...")
+        quote = self.get_quote_tencent_hk(code)
+        if quote:
+            print(f"✓ {code}: Tencent Finance")
+            return quote
+        # Fallback to Sina
+        print(f"→ {code}: Trying Sina Finance...")
+        quote = self.get_quote_sina_hk(code)
+        if quote:
+            print(f"✓ {code}: Sina Finance")
+            return quote
+        print(f"✗ {code}: All HK APIs failed")
+        return None
+
     def get_quote(self, ticker: str) -> Optional[Dict]:
-        """Get quote with automatic fallback: Finnhub -> Alpha Vantage -> Polygon.io"""
-        # Try Finnhub first (primary)
+        """Get US quote with automatic fallback: yfinance -> Sina -> Finnhub -> Alpha Vantage -> Polygon.io"""
+        # Try Yahoo Finance first
+        quote = self.get_quote_yfinance(ticker)
+        if quote:
+            print(f"✓ {ticker}: Yahoo Finance")
+            return quote
+
+        # Try Sina Finance
+        quote = self.get_quote_sina_us(ticker)
+        if quote:
+            print(f"✓ {ticker}: Sina Finance")
+            return quote
+
+        # Fallback to Finnhub
+        print(f"→ {ticker}: Trying Finnhub...")
         quote = self.get_quote_finnhub(ticker)
         if quote:
             print(f"✓ {ticker}: Finnhub")
@@ -148,64 +311,98 @@ class StockAnalyzer:
             return None
     
     def update_us_portfolio_prices(self):
-        """Update US stock portfolio with current prices"""
+        """Update US stock portfolio with current prices (batch via yfinance)"""
         print("Updating US portfolio prices...")
         us_portfolio = self.portfolio['portfolios']['us_stocks']
-        
+        symbols = [h['ticker'] for h in us_portfolio['holdings']]
+
+        # Try batch yfinance first
+        yf_success = {}
+        try:
+            tickers_obj = yf.Tickers(' '.join(symbols))
+            for sym in symbols:
+                try:
+                    info = tickers_obj.tickers[sym].fast_info
+                    current = info.get('lastPrice') or info.get('regularMarketPrice')
+                    if current:
+                        yf_success[sym] = current
+                        print(f"✓ {sym}: Yahoo Finance")
+                except Exception:
+                    pass
+        except Exception as e:
+            print(f"⚠️  Batch yfinance failed: {e}")
+
         for holding in us_portfolio['holdings']:
             ticker = holding['ticker']
-            quote = self.get_quote(ticker)
-            if quote and 'c' in quote:
-                old_price = holding['current_price']
+            old_price = holding['current_price']
+            if ticker in yf_success:
+                new_price = yf_success[ticker]
+            else:
+                # Per-ticker fallback chain
+                quote = self.get_quote_sina_us(ticker) or \
+                        self.get_quote_finnhub(ticker) or \
+                        self.get_quote_alpha_vantage(ticker) or \
+                        self.get_quote_polygon(ticker)
+                if not quote:
+                    print(f"✗ {ticker}: All APIs failed")
+                    continue
                 new_price = quote['c']
-                holding['current_price'] = new_price
-                
-                # Recalculate P&L
-                cost = holding['cost_basis']
-                holding['pnl_percent'] = ((new_price - cost) / cost) * 100
-                
-                print(f"{ticker}: ${old_price:.2f} -> ${new_price:.2f}")
-        
+
+            holding['current_price'] = new_price
+            holding['pnl_percent'] = ((new_price - holding['cost_basis']) / holding['cost_basis']) * 100
+            print(f"{ticker}: ${old_price:.2f} -> ${new_price:.2f}")
+
         # Update totals
         total_cost = sum(h['shares'] * h['cost_basis'] for h in us_portfolio['holdings'])
         total_current = sum(h['shares'] * h['current_price'] for h in us_portfolio['holdings'])
         total_pnl = total_current - total_cost
-        
         us_portfolio['total_cost'] = total_cost
         us_portfolio['total_current_value'] = total_current
         us_portfolio['total_pnl'] = total_pnl
         us_portfolio['total_pnl_percent'] = (total_pnl / total_cost) * 100
-        
         print(f"US Portfolio P&L: ${total_pnl:.2f} ({us_portfolio['total_pnl_percent']:.2f}%)")
     
     def update_hk_portfolio_prices(self):
-        """Update Hong Kong stock portfolio with current prices"""
+        """Update Hong Kong stock portfolio with current prices (batch via yfinance)"""
         print("\nUpdating HK portfolio prices...")
         hk_portfolio = self.portfolio['portfolios']['hk_stocks']
+
+        # Build symbol map: code -> yfinance symbol
+        holdings_map = {}
+        for h in hk_portfolio['holdings']:
+            code = h['ticker']
+            yf_sym = f"{code.lstrip('0') or '0'}.HK"
+            holdings_map[yf_sym] = h
+
+        symbols = list(holdings_map.keys())
+        print(f"Fetching batch: {' '.join(symbols)}")
         
-        for holding in hk_portfolio['holdings']:
-            ticker = holding['ticker_finnhub']
-            quote = self.get_quote(ticker)
-            if quote and 'c' in quote:
-                old_price = holding['current_price']
-                new_price = quote['c']
-                holding['current_price'] = new_price
-                holding['current_value'] = new_price * holding['shares']
-                
-                # Calculate today's change
-                if 'pc' in quote:  # previous close
-                    prev_close = quote['pc']
-                    holding['today_change'] = (new_price - prev_close) * holding['shares']
-                
-                print(f"{holding['ticker']}: HKD {old_price:.2f} -> HKD {new_price:.2f}")
-        
+        try:
+            tickers_obj = yf.Tickers(' '.join(symbols))
+            for sym, holding in holdings_map.items():
+                try:
+                    info = tickers_obj.tickers[sym].fast_info
+                    current = info.get('lastPrice') or info.get('regularMarketPrice')
+                    prev_close = info.get('regularMarketPreviousClose') or info.get('previousClose')
+                    if current:
+                        old_price = holding['current_price']
+                        holding['current_price'] = current
+                        holding['current_value'] = current * holding['shares']
+                        if prev_close:
+                            holding['today_change'] = (current - prev_close) * holding['shares']
+                        print(f"✓ {holding['ticker']} ({sym}): HKD {old_price:.2f} -> HKD {current:.2f}")
+                    else:
+                        print(f"✗ {holding['ticker']}: no price returned")
+                except Exception as e:
+                    print(f"✗ {holding['ticker']}: {e}")
+        except Exception as e:
+            print(f"⚠️  Batch yfinance failed: {e}")
+
         # Update totals
         total_current = sum(h['current_value'] for h in hk_portfolio['holdings'])
         today_change = sum(h.get('today_change', 0) for h in hk_portfolio['holdings'])
-        
         hk_portfolio['total_current_value'] = total_current
         hk_portfolio['today_total_change'] = today_change
-        
         print(f"HK Portfolio Value: HKD {total_current:.2f} (Today: {today_change:+.2f})")
     
     def update_all_prices(self):
