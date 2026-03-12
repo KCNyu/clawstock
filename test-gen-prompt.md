@@ -24,11 +24,11 @@
 | 层 | 技术 |
 |---|---|
 | 后端服务 | Go 1.21+ |
-| 数据库 | MySQL 8.0 |
+| 数据库 | MySQL 8.0（本地安装） |
 | 前端 | React 18 + TypeScript + Vite |
 | UI 组件库 | Ant Design 5 |
 | 图表 | Recharts |
-| 容器化 | Docker + docker-compose |
+| 部署方式 | 本地直接启动（开发优先） |
 
 ---
 
@@ -132,8 +132,8 @@ testgen/
 │   └── vite.config.ts
 │
 ├── docker-compose.yml
-├── Dockerfile.backend
-├── Dockerfile.frontend
+├── scripts/
+│   └── dev.sh             # 本地快速启动脚本
 └── config.example.yaml
 ```
 
@@ -745,52 +745,167 @@ adapters:
 
 ---
 
-## docker-compose.yml
+## 本地启动（无 Docker）
 
-```yaml
-version: '3.8'
-services:
-  mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: testgen
-      MYSQL_USER: testgen
-      MYSQL_PASSWORD: testgen123
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./backend/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+### 前置依赖
 
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
-    ports:
-      - "8080:8080"
-    environment:
-      DB_HOST: mysql
-      DB_PASSWORD: testgen123
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-      GITHUB_TOKEN: ${GITHUB_TOKEN}
-    volumes:
-      - ./data:/app/data
-      - ./config.yaml:/app/config.yaml
-    depends_on:
-      - mysql
+```bash
+# 1. 安装 Go 1.21+
+go version
 
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend
-    ports:
-      - "3000:80"
-    depends_on:
-      - backend
+# 2. 安装并启动 MySQL 8.0
+# Mac
+brew install mysql
+brew services start mysql
 
-volumes:
-  mysql_data:
+# Ubuntu/Debian
+sudo apt install mysql-server
+sudo systemctl start mysql
+
+# 3. 创建数据库和用户
+mysql -u root -p
+```
+
+```sql
+CREATE DATABASE testgen CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'testgen'@'localhost' IDENTIFIED BY 'testgen123';
+GRANT ALL PRIVILEGES ON testgen.* TO 'testgen'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+```bash
+# 4. 安装 Node.js 18+
+node --version
+npm --version
+```
+
+### 启动后端
+
+```bash
+cd backend
+
+# 安装 Go 依赖
+go mod tidy
+
+# 初始化数据库表
+mysql -u testgen -ptestgen123 testgen < db/schema.sql
+
+# 配置环境变量（或写入 .env 文件）
+export DB_HOST=localhost
+export DB_PORT=3306
+export DB_NAME=testgen
+export DB_USER=testgen
+export DB_PASSWORD=testgen123
+export ANTHROPIC_API_KEY=sk-ant-xxx  # 你的 API key
+export GITHUB_TOKEN=ghp-xxx          # 可选，用于自动开 PR
+
+# 启动服务
+go run ./cmd/server
+
+# 或编译后运行（生产模式）
+go build -o testgen ./cmd/server
+./testgen
+```
+
+后端默认监听 `http://localhost:8080`
+
+### 启动前端
+
+```bash
+cd frontend
+
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
+```
+
+前端默认监听 `http://localhost:3000`
+
+### 快速启动脚本（推荐）
+
+创建 `scripts/dev.sh`：
+
+```bash
+#!/bin/bash
+set -e
+
+echo "🚀 Starting testgen development environment..."
+
+# 检查 MySQL
+if ! mysql -u testgen -ptestgen123 -e "USE testgen;" 2>/dev/null; then
+    echo "❌ MySQL database 'testgen' not found. Please run setup first."
+    exit 1
+fi
+
+# 启动后端（后台）
+cd backend
+echo "📦 Starting backend..."
+export DB_HOST=localhost DB_PASSWORD=testgen123
+export ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+go run ./cmd/server > ../logs/backend.log 2>&1 &
+BACKEND_PID=$!
+echo "✅ Backend started (PID: $BACKEND_PID)"
+
+# 等待后端启动
+sleep 3
+
+# 启动前端
+cd ../frontend
+echo "🎨 Starting frontend..."
+npm run dev &
+FRONTEND_PID=$!
+echo "✅ Frontend started (PID: $FRONTEND_PID)"
+
+echo ""
+echo "🎉 All services started!"
+echo "   Backend:  http://localhost:8080"
+echo "   Frontend: http://localhost:3000"
+echo ""
+echo "Press Ctrl+C to stop all services"
+
+# 捕获 Ctrl+C
+trap "echo ''; echo '🛑 Stopping services...'; kill $BACKEND_PID $FRONTEND_PID 2>/dev/null; exit" INT TERM
+
+# 保持脚本运行
+wait
+```
+
+使用：
+
+```bash
+chmod +x scripts/dev.sh
+./scripts/dev.sh
+```
+
+### 验证安装
+
+```bash
+# 1. 注册一个测试仓库
+curl -X POST http://localhost:8080/api/repos \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://github.com/spf13/cobra",
+    "branch": "main"
+  }'
+
+# 返回示例：{"id": "repo-123", "url": "...", ...}
+
+# 2. 触发测试生成任务
+curl -X POST http://localhost:8080/api/jobs \
+  -H "Content-Type: application/json" \
+  -d '{"repo_id": "repo-123"}'
+
+# 返回示例：{"id": "job-456", "status": "queued", ...}
+
+# 3. 查看任务进度
+curl http://localhost:8080/api/jobs/job-456
+
+# 4. 或直接打开 Dashboard
+open http://localhost:3000  # Mac
+# 或浏览器访问 http://localhost:3000
 ```
 
 ---
