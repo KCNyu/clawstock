@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-03-11 23:22:23",
+  "last_updated": "2026-03-12 16:11:00",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -56,11 +56,11 @@
           "ticker_finnhub": "2208.HK",
           "shares": 600,
           "cost_basis": 14.084,
-          "current_price": 15.18,
-          "current_value": 9108.0,
-          "today_change": 365.99999999999966,
-          "pnl_percent": 3.45,
-          "data_source": "腾讯财经"
+          "current_price": 16.26,
+          "current_value": 9756.0,
+          "today_change": 648.0,
+          "pnl_percent": 15.45,
+          "data_source": "东方财富"
         },
         {
           "ticker": "03032",
@@ -68,23 +68,23 @@
           "ticker_finnhub": "3032.HK",
           "shares": 200,
           "cost_basis": 5.405,
-          "current_price": 5.02,
-          "current_value": 1003.9999999999999,
-          "today_change": -3.0000000000001137,
-          "pnl_percent": -6.85,
-          "data_source": "腾讯财经"
+          "current_price": 5.01,
+          "current_value": 1002.0,
+          "today_change": -2.0,
+          "pnl_percent": -7.31,
+          "data_source": "东方财富"
         },
         {
           "ticker": "07226",
-          "name": "XL二南方恒科",
+          "name": "南方2x恒科",
           "ticker_finnhub": "7226.HK",
           "shares": 5200,
           "cost_basis": 4.497269230769231,
-          "current_price": 4.15,
-          "current_value": 21580.000000000004,
-          "today_change": -41.60000000000004,
-          "pnl_percent": -7.54,
-          "data_source": "腾讯财经"
+          "current_price": 4.116,
+          "current_value": 21403.2,
+          "today_change": -176.8,
+          "pnl_percent": -8.48,
+          "data_source": "东方财富"
         },
         {
           "ticker": "07709",
@@ -92,11 +92,11 @@
           "ticker_finnhub": "7709.HK",
           "shares": 700,
           "cost_basis": 31.69142857142857,
-          "current_price": 28.72,
-          "current_value": 20104.0,
-          "today_change": -125.9999999999998,
-          "pnl_percent": -9.8,
-          "data_source": "腾讯财经",
+          "current_price": 28.46,
+          "current_value": 19922.0,
+          "today_change": -182.0,
+          "pnl_percent": -10.20,
+          "data_source": "东方财富",
           "trades": [
             {
               "date": "2026-03-11",
@@ -113,11 +113,11 @@
           "ticker_finnhub": "7747.HK",
           "shares": 200,
           "cost_basis": 81.85,
-          "current_price": 72.2,
-          "current_value": 14440.0,
-          "today_change": 0.0,
-          "pnl_percent": -11.79,
-          "data_source": "腾讯财经"
+          "current_price": 72.18,
+          "current_value": 14436.0,
+          "today_change": -4.0,
+          "pnl_percent": -11.81,
+          "data_source": "东方财富"
         },
         {
           "ticker": "03033",
@@ -125,18 +125,18 @@
           "ticker_finnhub": "3033.HK",
           "shares": 1000,
           "cost_basis": 5.14,
-          "current_price": 4.936,
-          "current_value": 4936.0,
-          "pnl_percent": -3.77,
-          "today_change": -9.999999999999787,
-          "data_source": "腾讯财经"
+          "current_price": 4.93,
+          "current_value": 4930.0,
+          "today_change": -6.0,
+          "pnl_percent": -4.09,
+          "data_source": "东方财富"
         }
       ],
-      "total_cost": 73651.2,
-      "total_current_value": 71172.0,
-      "total_pnl": -5554.6,
-      "total_pnl_percent": -7.54,
-      "today_total_change": 185.39999999999992
+      "total_cost": 76611.2,
+      "total_current_value": 71449.2,
+      "total_pnl": -5162.0,
+      "total_pnl_percent": -6.74,
+      "today_total_change": 277.2
     }
   }
 }
