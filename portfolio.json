@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-03-12 16:11:00",
+  "last_updated": "2026-03-14 11:22:00",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -9,43 +9,45 @@
           "ticker": "NVDA",
           "shares": 3,
           "cost_basis": 187.0,
-          "current_price": 185.585,
-          "pnl_percent": -0.7566844919786053
+          "current_price": 180.25,
+          "pnl_percent": -3.61
         },
         {
           "ticker": "RKLB",
           "shares": 5,
           "cost_basis": 71.0,
-          "current_price": 71.1,
-          "pnl_percent": 0.1408450704225272
+          "current_price": 68.41,
+          "pnl_percent": -3.65
         },
         {
           "ticker": "CRCL",
           "shares": 5,
           "cost_basis": 87.0,
-          "current_price": 113.77,
-          "pnl_percent": 30.770114942528732,
-          "note": "2026-03-11 卖出5股 @$120，实现盈利 $165"
+          "current_price": 115.38,
+          "pnl_percent": 32.62,
+          "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；剩余5股继续持有"
         },
         {
           "ticker": "OKLO",
           "shares": 2,
           "cost_basis": 62.83,
-          "current_price": 62.29,
-          "pnl_percent": -0.8594620404265465
+          "current_price": 58.37,
+          "pnl_percent": -7.10
         },
         {
           "ticker": "QQQ",
           "shares": 1,
           "cost_basis": 622.0,
-          "current_price": 607.54,
-          "pnl_percent": -2.3247588424437358
+          "current_price": 593.72,
+          "pnl_percent": -4.55
         }
       ],
       "total_cost": 2098.66,
-      "total_current_value": 2213.225,
-      "total_pnl": 114.56500000000005,
-      "total_pnl_percent": 5.458959526555042
+      "total_current_value": 2169.56,
+      "total_pnl": 70.90,
+      "total_pnl_percent": 3.38,
+      "realized_pnl": 165.0,
+      "realized_note": "CRCL 5股 @$120 已实现盈利"
     },
     "hk_stocks": {
       "currency": "HKD",
@@ -56,11 +58,10 @@
           "ticker_finnhub": "2208.HK",
           "shares": 600,
           "cost_basis": 14.084,
-          "current_price": 16.26,
-          "current_value": 9756.0,
-          "today_change": 648.0,
-          "pnl_percent": 15.45,
-          "data_source": "东方财富"
+          "current_price": 16.70,
+          "current_value": 10020.0,
+          "pnl_percent": 18.57,
+          "data_source": "stooq"
         },
         {
           "ticker": "03032",
@@ -68,11 +69,10 @@
           "ticker_finnhub": "3032.HK",
           "shares": 200,
           "cost_basis": 5.405,
-          "current_price": 5.01,
-          "current_value": 1002.0,
-          "today_change": -2.0,
-          "pnl_percent": -7.31,
-          "data_source": "东方财富"
+          "current_price": 4.958,
+          "current_value": 991.6,
+          "pnl_percent": -8.27,
+          "data_source": "stooq"
         },
         {
           "ticker": "07226",
@@ -80,11 +80,10 @@
           "ticker_finnhub": "7226.HK",
           "shares": 5200,
           "cost_basis": 4.497269230769231,
-          "current_price": 4.116,
-          "current_value": 21403.2,
-          "today_change": -176.8,
-          "pnl_percent": -8.48,
-          "data_source": "东方财富"
+          "current_price": 4.014,
+          "current_value": 20872.8,
+          "pnl_percent": -10.74,
+          "data_source": "stooq"
         },
         {
           "ticker": "07709",
@@ -92,11 +91,10 @@
           "ticker_finnhub": "7709.HK",
           "shares": 700,
           "cost_basis": 31.69142857142857,
-          "current_price": 28.46,
-          "current_value": 19922.0,
-          "today_change": -182.0,
-          "pnl_percent": -10.20,
-          "data_source": "东方财富",
+          "current_price": 26.40,
+          "current_value": 18480.0,
+          "pnl_percent": -16.69,
+          "data_source": "stooq",
           "trades": [
             {
               "date": "2026-03-11",
@@ -113,11 +111,10 @@
           "ticker_finnhub": "7747.HK",
           "shares": 200,
           "cost_basis": 81.85,
-          "current_price": 72.18,
-          "current_value": 14436.0,
-          "today_change": -4.0,
-          "pnl_percent": -11.81,
-          "data_source": "东方财富"
+          "current_price": 68.16,
+          "current_value": 13632.0,
+          "pnl_percent": -16.73,
+          "data_source": "stooq"
         },
         {
           "ticker": "03033",
@@ -125,18 +122,16 @@
           "ticker_finnhub": "3033.HK",
           "shares": 1000,
           "cost_basis": 5.14,
-          "current_price": 4.93,
-          "current_value": 4930.0,
-          "today_change": -6.0,
-          "pnl_percent": -4.09,
-          "data_source": "东方财富"
+          "current_price": 4.870,
+          "current_value": 4870.0,
+          "pnl_percent": -5.25,
+          "data_source": "stooq"
         }
       ],
       "total_cost": 76611.2,
-      "total_current_value": 71449.2,
-      "total_pnl": -5162.0,
-      "total_pnl_percent": -6.74,
-      "today_total_change": 277.2
+      "total_current_value": 68866.4,
+      "total_pnl": -7744.8,
+      "total_pnl_percent": -10.11
     }
   }
 }
