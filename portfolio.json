@@ -66,10 +66,10 @@
           "ticker_finnhub": "2208.HK",
           "shares": 600,
           "cost_basis": 14.084,
-          "current_price": 16.70,
-          "current_value": 10020.0,
-          "pnl_percent": 18.57,
-          "data_source": "stooq"
+          "current_price": 16.40,
+          "current_value": 9840.0,
+          "pnl_percent": 16.44,
+          "data_source": "eastmoney"
         },
         {
           "ticker": "03032",
@@ -77,32 +77,32 @@
           "ticker_finnhub": "3032.HK",
           "shares": 200,
           "cost_basis": 5.405,
-          "current_price": 4.958,
-          "current_value": 991.6,
-          "pnl_percent": -8.27,
-          "data_source": "stooq"
+          "current_price": 5.080,
+          "current_value": 1016.0,
+          "pnl_percent": -6.01,
+          "data_source": "eastmoney"
         },
         {
           "ticker": "07226",
           "name": "南方2x恒科",
           "ticker_finnhub": "7226.HK",
           "shares": 5200,
-          "cost_basis": 4.497269230769231,
-          "current_price": 4.014,
-          "current_value": 20872.8,
-          "pnl_percent": -10.74,
-          "data_source": "stooq"
+          "cost_basis": 4.4973,
+          "current_price": 4.234,
+          "current_value": 22016.8,
+          "pnl_percent": -5.85,
+          "data_source": "eastmoney"
         },
         {
           "ticker": "07709",
           "name": "XL二南方海力士",
           "ticker_finnhub": "7709.HK",
           "shares": 700,
-          "cost_basis": 31.69142857142857,
-          "current_price": 26.40,
-          "current_value": 18480.0,
-          "pnl_percent": -16.69,
-          "data_source": "stooq",
+          "cost_basis": 31.6914,
+          "current_price": 29.960,
+          "current_value": 20972.0,
+          "pnl_percent": -5.46,
+          "data_source": "eastmoney",
           "trades": [
             {
               "date": "2026-03-11",
@@ -119,10 +119,10 @@
           "ticker_finnhub": "7747.HK",
           "shares": 200,
           "cost_basis": 81.85,
-          "current_price": 68.16,
-          "current_value": 13632.0,
-          "pnl_percent": -16.73,
-          "data_source": "stooq"
+          "current_price": 73.120,
+          "current_value": 14624.0,
+          "pnl_percent": -10.67,
+          "data_source": "eastmoney"
         },
         {
           "ticker": "03033",
@@ -130,16 +130,16 @@
           "ticker_finnhub": "3033.HK",
           "shares": 1000,
           "cost_basis": 5.14,
-          "current_price": 4.870,
-          "current_value": 4870.0,
-          "pnl_percent": -5.25,
-          "data_source": "stooq"
+          "current_price": 4.998,
+          "current_value": 4998.0,
+          "pnl_percent": -2.76,
+          "data_source": "eastmoney"
         }
       ],
-      "total_cost": 76611.2,
-      "total_current_value": 68866.4,
-      "total_pnl": -7744.8,
-      "total_pnl_percent": -10.11
+      "total_cost": 76611.3,
+      "total_current_value": 73466.8,
+      "total_pnl": -3144.5,
+      "total_pnl_percent": -4.10
     }
   }
 }
