@@ -40,12 +40,20 @@
           "cost_basis": 622.0,
           "current_price": 593.72,
           "pnl_percent": -4.55
+        },
+        {
+          "ticker": "TCOM",
+          "shares": 5,
+          "cost_basis": 52.74,
+          "current_price": 52.74,
+          "pnl_percent": 0.0,
+          "note": "2026-03-16 买入5股 @$52.74，中线看旅游复苏逻辑"
         }
       ],
-      "total_cost": 2098.66,
-      "total_current_value": 2169.56,
-      "total_pnl": 70.90,
-      "total_pnl_percent": 3.38,
+      "total_cost": 2362.36,
+      "total_current_value": 2432.26,
+      "total_pnl": 69.90,
+      "total_pnl_percent": 2.96,
       "realized_pnl": 165.0,
       "realized_note": "CRCL 5股 @$120 已实现盈利"
     },
