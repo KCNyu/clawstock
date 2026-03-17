@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-03-17 12:00:00",
+  "last_updated": "2026-03-17 21:45:16",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -9,51 +9,51 @@
           "ticker": "NVDA",
           "shares": 3,
           "cost_basis": 187.0,
-          "current_price": 183.22,
-          "pnl_percent": -2.02
+          "current_price": 183.66,
+          "pnl_percent": -1.79
         },
         {
           "ticker": "RKLB",
           "shares": 5,
           "cost_basis": 71.0,
-          "current_price": 71.31,
-          "pnl_percent": 0.44
+          "current_price": 73.9,
+          "pnl_percent": 4.08
         },
         {
           "ticker": "CRCL",
           "shares": 5,
           "cost_basis": 87.0,
-          "current_price": 125.83,
-          "pnl_percent": 44.63,
+          "current_price": 124.31,
+          "pnl_percent": 42.89,
           "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；剩余5股继续持有"
         },
         {
           "ticker": "OKLO",
           "shares": 2,
           "cost_basis": 62.83,
-          "current_price": 59.69,
-          "pnl_percent": -5.00
+          "current_price": 63.72,
+          "pnl_percent": 1.42
         },
         {
           "ticker": "QQQ",
           "shares": 1,
           "cost_basis": 622.0,
-          "current_price": 600.38,
-          "pnl_percent": -3.48
+          "current_price": 604.6,
+          "pnl_percent": -2.8
         },
         {
           "ticker": "TCOM",
           "shares": 5,
           "cost_basis": 52.74,
-          "current_price": 52.25,
-          "pnl_percent": -0.93,
+          "current_price": 52.75,
+          "pnl_percent": 0.02,
           "note": "2026-03-16 买入5股 @$52.74，中线看旅游复苏逻辑"
         }
       ],
       "total_cost": 2362.36,
-      "total_current_value": 2516.37,
-      "total_pnl": 154.01,
-      "total_pnl_percent": 6.52,
+      "total_current_value": 2537.82,
+      "total_pnl": 175.46,
+      "total_pnl_percent": 7.43,
       "realized_pnl": 165.0,
       "realized_note": "CRCL 5股 @$120 已实现盈利"
     },
@@ -66,10 +66,10 @@
           "ticker_finnhub": "2208.HK",
           "shares": 600,
           "cost_basis": 14.084,
-          "current_price": 15.95,
-          "current_value": 9570.0,
-          "pnl_percent": 13.25,
-          "data_source": "tencent"
+          "current_price": 15.3,
+          "current_value": 9180.0,
+          "pnl_percent": 8.63,
+          "data_source": "eastmoney"
         },
         {
           "ticker": "03032",
@@ -77,10 +77,10 @@
           "ticker_finnhub": "3032.HK",
           "shares": 200,
           "cost_basis": 5.405,
-          "current_price": 5.155,
-          "current_value": 1031.0,
-          "pnl_percent": -4.63,
-          "data_source": "tencent"
+          "current_price": 5.08,
+          "current_value": 1016.0,
+          "pnl_percent": -6.01,
+          "data_source": "eastmoney"
         },
         {
           "ticker": "07226",
@@ -88,10 +88,10 @@
           "ticker_finnhub": "7226.HK",
           "shares": 5200,
           "cost_basis": 4.4973,
-          "current_price": 4.356,
-          "current_value": 22651.0,
-          "pnl_percent": -3.14,
-          "data_source": "tencent"
+          "current_price": 4.24,
+          "current_value": 22048.0,
+          "pnl_percent": -5.72,
+          "data_source": "eastmoney"
         },
         {
           "ticker": "07709",
@@ -99,10 +99,10 @@
           "ticker_finnhub": "7709.HK",
           "shares": 700,
           "cost_basis": 31.6914,
-          "current_price": 31.32,
-          "current_value": 21924.0,
-          "pnl_percent": -1.17,
-          "data_source": "tencent",
+          "current_price": 30.1,
+          "current_value": 21070.0,
+          "pnl_percent": -5.02,
+          "data_source": "eastmoney",
           "trades": [
             {
               "date": "2026-03-11",
@@ -119,10 +119,10 @@
           "ticker_finnhub": "7747.HK",
           "shares": 200,
           "cost_basis": 81.85,
-          "current_price": 77.70,
-          "current_value": 15540.0,
-          "pnl_percent": -5.07,
-          "data_source": "tencent"
+          "current_price": 74.5,
+          "current_value": 14900.0,
+          "pnl_percent": -8.98,
+          "data_source": "eastmoney"
         },
         {
           "ticker": "03033",
@@ -130,16 +130,16 @@
           "ticker_finnhub": "3033.HK",
           "shares": 1000,
           "cost_basis": 5.14,
-          "current_price": 5.065,
-          "current_value": 5065.0,
-          "pnl_percent": -1.46,
-          "data_source": "tencent"
+          "current_price": 4.998,
+          "current_value": 4998.0,
+          "pnl_percent": -2.76,
+          "data_source": "eastmoney"
         }
       ],
       "total_cost": 76611.3,
-      "total_current_value": 75781.0,
-      "total_pnl": -830.0,
-      "total_pnl_percent": -1.08
+      "total_current_value": 73212,
+      "total_pnl": -3399,
+      "total_pnl_percent": -4.44
     }
   }
 }
