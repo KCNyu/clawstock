@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-03-14 11:22:00",
+  "last_updated": "2026-03-17 09:33:00",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -9,51 +9,51 @@
           "ticker": "NVDA",
           "shares": 3,
           "cost_basis": 187.0,
-          "current_price": 180.25,
-          "pnl_percent": -3.61
+          "current_price": 183.22,
+          "pnl_percent": -2.02
         },
         {
           "ticker": "RKLB",
           "shares": 5,
           "cost_basis": 71.0,
-          "current_price": 68.41,
-          "pnl_percent": -3.65
+          "current_price": 71.31,
+          "pnl_percent": 0.44
         },
         {
           "ticker": "CRCL",
           "shares": 5,
           "cost_basis": 87.0,
-          "current_price": 115.38,
-          "pnl_percent": 32.62,
+          "current_price": 125.83,
+          "pnl_percent": 44.63,
           "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；剩余5股继续持有"
         },
         {
           "ticker": "OKLO",
           "shares": 2,
           "cost_basis": 62.83,
-          "current_price": 58.37,
-          "pnl_percent": -7.10
+          "current_price": 59.69,
+          "pnl_percent": -5.00
         },
         {
           "ticker": "QQQ",
           "shares": 1,
           "cost_basis": 622.0,
-          "current_price": 593.72,
-          "pnl_percent": -4.55
+          "current_price": 600.38,
+          "pnl_percent": -3.48
         },
         {
           "ticker": "TCOM",
           "shares": 5,
           "cost_basis": 52.74,
-          "current_price": 52.74,
-          "pnl_percent": 0.0,
+          "current_price": 52.25,
+          "pnl_percent": -0.93,
           "note": "2026-03-16 买入5股 @$52.74，中线看旅游复苏逻辑"
         }
       ],
       "total_cost": 2362.36,
-      "total_current_value": 2432.26,
-      "total_pnl": 69.90,
-      "total_pnl_percent": 2.96,
+      "total_current_value": 2516.37,
+      "total_pnl": 154.01,
+      "total_pnl_percent": 6.52,
       "realized_pnl": 165.0,
       "realized_note": "CRCL 5股 @$120 已实现盈利"
     },
@@ -69,7 +69,7 @@
           "current_price": 16.40,
           "current_value": 9840.0,
           "pnl_percent": 16.44,
-          "data_source": "eastmoney"
+          "data_source": "stooq"
         },
         {
           "ticker": "03032",
@@ -80,7 +80,7 @@
           "current_price": 5.080,
           "current_value": 1016.0,
           "pnl_percent": -6.01,
-          "data_source": "eastmoney"
+          "data_source": "stooq"
         },
         {
           "ticker": "07226",
@@ -91,7 +91,7 @@
           "current_price": 4.234,
           "current_value": 22016.8,
           "pnl_percent": -5.85,
-          "data_source": "eastmoney"
+          "data_source": "stooq"
         },
         {
           "ticker": "07709",
@@ -102,7 +102,7 @@
           "current_price": 29.960,
           "current_value": 20972.0,
           "pnl_percent": -5.46,
-          "data_source": "eastmoney",
+          "data_source": "stooq",
           "trades": [
             {
               "date": "2026-03-11",
@@ -122,7 +122,7 @@
           "current_price": 73.120,
           "current_value": 14624.0,
           "pnl_percent": -10.67,
-          "data_source": "eastmoney"
+          "data_source": "stooq"
         },
         {
           "ticker": "03033",
@@ -133,7 +133,7 @@
           "current_price": 4.998,
           "current_value": 4998.0,
           "pnl_percent": -2.76,
-          "data_source": "eastmoney"
+          "data_source": "stooq"
         }
       ],
       "total_cost": 76611.3,
