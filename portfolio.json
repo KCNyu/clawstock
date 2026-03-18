@@ -97,11 +97,11 @@
           "ticker": "07709",
           "name": "XL二南方海力士",
           "ticker_finnhub": "7709.HK",
-          "shares": 600,
+          "shares": 500,
           "cost_basis": 31.6914,
-          "current_price": 33.14,
-          "current_value": 19884.0,
-          "pnl_percent": 4.57,
+          "current_price": 35.44,
+          "current_value": 17720.0,
+          "pnl_percent": 11.83,
           "data_source": "eastmoney",
           "trades": [
             {
@@ -118,6 +118,14 @@
               "price": 33.14,
               "realized_pnl": 144.86,
               "note": "美光财报前减仓止盈，@HKD 33.14"
+            },
+            {
+              "date": "2026-03-18",
+              "action": "sell",
+              "shares": 100,
+              "price": 34.2,
+              "realized_pnl": 250.86,
+              "note": "下午挂单止盈 @HKD 34.2"
             }
           ]
         },
@@ -154,12 +162,12 @@
           "data_source": "eastmoney"
         }
       ],
-      "total_cost": 65257.2,
-      "total_current_value": 65664.8,
-      "total_pnl": 407.6,
-      "total_pnl_percent": 0.62,
-      "realized_pnl": 459.86,
-      "realized_note": "07747 100股@HKD 85（+315）+ 07709 100股@HKD 33.14（+144.86）"
+      "total_cost": 62072.4,
+      "total_current_value": 64173.0,
+      "total_pnl": 2100.6,
+      "total_pnl_percent": 3.38,
+      "realized_pnl": 710.72,
+      "realized_note": "07747 100股@85(+315) + 07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86)"
     }
   }
 }
