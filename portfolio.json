@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-03-17 21:45:16",
+  "last_updated": "2026-03-18 09:43:00",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -117,12 +117,22 @@
           "ticker": "07747",
           "name": "XL二南三星",
           "ticker_finnhub": "7747.HK",
-          "shares": 200,
+          "shares": 100,
           "cost_basis": 81.85,
-          "current_price": 74.5,
-          "current_value": 14900.0,
-          "pnl_percent": -8.98,
-          "data_source": "eastmoney"
+          "current_price": 83.96,
+          "current_value": 8396.0,
+          "pnl_percent": 2.58,
+          "data_source": "eastmoney",
+          "trades": [
+            {
+              "date": "2026-03-18",
+              "action": "sell",
+              "shares": 100,
+              "price": 85.0,
+              "realized_pnl": 315.0,
+              "note": "美光财报前减半仓止盈，@HKD 85"
+            }
+          ]
         },
         {
           "ticker": "03033",
@@ -136,10 +146,12 @@
           "data_source": "eastmoney"
         }
       ],
-      "total_cost": 76611.3,
-      "total_current_value": 73212,
-      "total_pnl": -3399,
-      "total_pnl_percent": -4.44
+      "total_cost": 68426.3,
+      "total_current_value": 68600.8,
+      "total_pnl": 174.5,
+      "total_pnl_percent": 0.26,
+      "realized_pnl": 315.0,
+      "realized_note": "07747 XL二南三星 100股 @HKD 85 已实现盈利（2026-03-18）"
     }
   }
 }
