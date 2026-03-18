@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-03-18 09:43:00",
+  "last_updated": "2026-03-18 11:59:00",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -97,11 +97,11 @@
           "ticker": "07709",
           "name": "XL二南方海力士",
           "ticker_finnhub": "7709.HK",
-          "shares": 700,
+          "shares": 600,
           "cost_basis": 31.6914,
-          "current_price": 30.1,
-          "current_value": 21070.0,
-          "pnl_percent": -5.02,
+          "current_price": 33.14,
+          "current_value": 19884.0,
+          "pnl_percent": 4.57,
           "data_source": "eastmoney",
           "trades": [
             {
@@ -110,6 +110,14 @@
               "shares": 100,
               "price": 29.6,
               "note": "补仓，摊低成本"
+            },
+            {
+              "date": "2026-03-18",
+              "action": "sell",
+              "shares": 100,
+              "price": 33.14,
+              "realized_pnl": 144.86,
+              "note": "美光财报前减仓止盈，@HKD 33.14"
             }
           ]
         },
@@ -146,12 +154,12 @@
           "data_source": "eastmoney"
         }
       ],
-      "total_cost": 68426.3,
-      "total_current_value": 68600.8,
-      "total_pnl": 174.5,
-      "total_pnl_percent": 0.26,
-      "realized_pnl": 315.0,
-      "realized_note": "07747 XL二南三星 100股 @HKD 85 已实现盈利（2026-03-18）"
+      "total_cost": 65257.2,
+      "total_current_value": 65664.8,
+      "total_pnl": 407.6,
+      "total_pnl_percent": 0.62,
+      "realized_pnl": 459.86,
+      "realized_note": "07747 100股@HKD 85（+315）+ 07709 100股@HKD 33.14（+144.86）"
     }
   }
 }
