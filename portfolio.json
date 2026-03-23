@@ -48,12 +48,20 @@
           "current_price": 51.06,
           "pnl_percent": -3.19,
           "note": "2026-03-16 买入5股 @$52.74，中线看旅游复苏逻辑"
+        },
+        {
+          "ticker": "TQQQ",
+          "shares": 8,
+          "cost_basis": 45.73,
+          "current_price": 45.73,
+          "pnl_percent": 0.0,
+          "note": "2026-03-23 买入8股 @$45.73，纳指反弹趋势押注"
         }
       ],
-      "total_cost": 2362.36,
-      "total_current_value": 2429.7,
+      "total_cost": 2728.2,
+      "total_current_value": 2795.54,
       "total_pnl": 67.34,
-      "total_pnl_percent": 2.85,
+      "total_pnl_percent": 2.47,
       "realized_pnl": 165.0,
       "realized_note": "CRCL 5股 @$120 已实现盈利"
     },
