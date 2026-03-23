@@ -97,11 +97,11 @@
           "ticker": "07709",
           "name": "XL二南方海力士",
           "ticker_finnhub": "7709.HK",
-          "shares": 500,
-          "cost_basis": 31.6914,
-          "current_price": 31.76,
-          "current_value": 15880.0,
-          "pnl_percent": 0.22,
+          "shares": 600,
+          "cost_basis": 31.0662,
+          "current_price": 27.64,
+          "current_value": 16596.0,
+          "pnl_percent": -11.12,
           "data_source": "stooq",
           "trades": [
             {
@@ -126,6 +126,13 @@
               "price": 34.2,
               "realized_pnl": 250.86,
               "note": "下午挂单止盈 @HKD 34.2"
+            },
+            {
+              "date": "2026-03-23",
+              "action": "buy",
+              "shares": 100,
+              "price": 27.94,
+              "note": "韩股暴跌日抄底补仓，摊低成本"
             }
           ]
         },
