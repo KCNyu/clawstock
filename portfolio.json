@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-03-23 16:00 (HK:3/23 close)",
+  "last_updated": "2026-03-24 00:11 (US:3/21 close, HK:3/23 close)",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -9,59 +9,59 @@
           "ticker": "NVDA",
           "shares": 3,
           "cost_basis": 187.0,
-          "current_price": 172.7,
-          "pnl_percent": -7.65
+          "current_price": 175.77,
+          "pnl_percent": -6.01
         },
         {
           "ticker": "RKLB",
           "shares": 5,
           "cost_basis": 71.0,
-          "current_price": 67.23,
-          "pnl_percent": -5.31
+          "current_price": 67.18,
+          "pnl_percent": -5.38
         },
         {
           "ticker": "CRCL",
           "shares": 2,
           "cost_basis": 87.0,
-          "current_price": 127.08,
-          "pnl_percent": 46.07,
+          "current_price": 122.99,
+          "pnl_percent": 41.37,
           "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；2026-03-23 卖出3股 @$127，实现盈利 $120；剩余2股长期持有（看好稳定币+agent支付赛道）"
         },
         {
           "ticker": "OKLO",
           "shares": 2,
           "cost_basis": 62.83,
-          "current_price": 53.97,
-          "pnl_percent": -14.1
+          "current_price": 55.61,
+          "pnl_percent": -11.49
         },
         {
           "ticker": "QQQ",
           "shares": 1,
           "cost_basis": 622.0,
-          "current_price": 582.06,
-          "pnl_percent": -6.42
+          "current_price": 589.47,
+          "pnl_percent": -5.23
         },
         {
           "ticker": "TCOM",
           "shares": 5,
           "cost_basis": 52.74,
-          "current_price": 51.06,
-          "pnl_percent": -3.19,
+          "current_price": 51.21,
+          "pnl_percent": -2.9,
           "note": "2026-03-16 买入5股 @$52.74，中线看旅游复苏逻辑"
         },
         {
           "ticker": "TQQQ",
           "shares": 8,
           "cost_basis": 45.73,
-          "current_price": 45.73,
-          "pnl_percent": 0.0,
+          "current_price": 44.92,
+          "pnl_percent": -1.77,
           "note": "2026-03-23 买入8股 @$45.73，纳指反弹趋势押注"
         }
       ],
-      "total_cost": 2728.2,
-      "total_current_value": 2795.54,
-      "total_pnl": 67.34,
-      "total_pnl_percent": 2.47,
+      "total_cost": 2467.2,
+      "total_current_value": 2425.29,
+      "total_pnl": -41.91,
+      "total_pnl_percent": -1.7,
       "realized_pnl": 285.0,
       "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120)"
     },
@@ -87,7 +87,7 @@
           "cost_basis": 5.405,
           "current_price": 4.686,
           "current_value": 937.2,
-          "pnl_percent": -13.30,
+          "pnl_percent": -13.3,
           "data_source": "stooq"
         },
         {
@@ -98,7 +98,7 @@
           "cost_basis": 4.4973,
           "current_price": 3.588,
           "current_value": 18657.6,
-          "pnl_percent": -20.21,
+          "pnl_percent": -20.22,
           "data_source": "stooq"
         },
         {
@@ -109,7 +109,7 @@
           "cost_basis": 31.0662,
           "current_price": 27.12,
           "current_value": 16272.0,
-          "pnl_percent": -12.73,
+          "pnl_percent": -12.7,
           "data_source": "stooq",
           "trades": [
             {
@@ -152,7 +152,7 @@
           "cost_basis": 81.85,
           "current_price": 67.88,
           "current_value": 6788.0,
-          "pnl_percent": -17.06,
+          "pnl_percent": -17.07,
           "data_source": "stooq",
           "trades": [
             {
@@ -177,9 +177,9 @@
           "data_source": "stooq"
         }
       ],
-      "total_cost": 64882.06,
+      "total_cost": 64882.08,
       "total_current_value": 56218.8,
-      "total_pnl": -8663.26,
+      "total_pnl": -8663.28,
       "total_pnl_percent": -13.35,
       "realized_pnl": 710.72,
       "realized_note": "07747 100股@85(+315) + 07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86)"
