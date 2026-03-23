@@ -21,11 +21,11 @@
         },
         {
           "ticker": "CRCL",
-          "shares": 5,
+          "shares": 2,
           "cost_basis": 87.0,
-          "current_price": 126.03,
-          "pnl_percent": 44.86,
-          "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；剩余5股继续持有"
+          "current_price": 127.08,
+          "pnl_percent": 46.07,
+          "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；2026-03-23 卖出3股 @$127，实现盈利 $120；剩余2股长期持有（看好稳定币+agent支付赛道）"
         },
         {
           "ticker": "OKLO",
@@ -62,8 +62,8 @@
       "total_current_value": 2795.54,
       "total_pnl": 67.34,
       "total_pnl_percent": 2.47,
-      "realized_pnl": 165.0,
-      "realized_note": "CRCL 5股 @$120 已实现盈利"
+      "realized_pnl": 285.0,
+      "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120)"
     },
     "hk_stocks": {
       "currency": "HKD",
