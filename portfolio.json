@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-03-24 00:11 (US:3/21 close, HK:3/23 close)",
+  "last_updated": "2026-03-24 09:36 (HK:07226加仓1000股@3.666)",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -94,12 +94,21 @@
           "ticker": "07226",
           "name": "南方2x恒科",
           "ticker_finnhub": "7226.HK",
-          "shares": 5200,
-          "cost_basis": 4.4973,
+          "shares": 6200,
+          "cost_basis": 4.3632,
           "current_price": 3.588,
-          "current_value": 18657.6,
-          "pnl_percent": -20.22,
-          "data_source": "stooq"
+          "current_value": 22245.6,
+          "pnl_percent": -17.76,
+          "data_source": "stooq",
+          "trades": [
+            {
+              "date": "2026-03-24",
+              "action": "buy",
+              "shares": 1000,
+              "price": 3.666,
+              "note": "加仓补摊，摊低成本至4.3632"
+            }
+          ]
         },
         {
           "ticker": "07709",
@@ -177,10 +186,10 @@
           "data_source": "stooq"
         }
       ],
-      "total_cost": 64882.08,
-      "total_current_value": 56218.8,
-      "total_pnl": -8663.28,
-      "total_pnl_percent": -13.35,
+      "total_cost": 68548.08,
+      "total_current_value": 59806.8,
+      "total_pnl": -8741.28,
+      "total_pnl_percent": -12.75,
       "realized_pnl": 710.72,
       "realized_note": "07747 100股@85(+315) + 07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86)"
     }
