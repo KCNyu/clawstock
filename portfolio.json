@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-03-26 21:32:05",
+  "last_updated": "2026-03-26 20:00:00 ET (close)",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -9,67 +9,67 @@
           "ticker": "NVDA",
           "shares": 3,
           "cost_basis": 187.0,
-          "current_price": 176.24,
-          "pnl_percent": -5.754010695187161
+          "current_price": 171.47,
+          "pnl_percent": -8.305
         },
         {
           "ticker": "RKLB",
           "shares": 5,
           "cost_basis": 71.0,
-          "current_price": 72.9,
-          "pnl_percent": 2.676056338028177
+          "current_price": 65.99,
+          "pnl_percent": -7.056
         },
         {
           "ticker": "CRCL",
           "shares": 2,
           "cost_basis": 87.0,
-          "current_price": 103.88,
-          "pnl_percent": 19.402298850574706,
+          "current_price": 98.145,
+          "pnl_percent": 12.810,
           "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；2026-03-23 卖出3股 @$127，实现盈利 $120；剩余2股长期持有（看好稳定币+agent支付赛道）"
         },
         {
           "ticker": "OKLO",
           "shares": 2,
           "cost_basis": 62.83,
-          "current_price": 53.58,
-          "pnl_percent": -14.722266433232534
+          "current_price": 51.81,
+          "pnl_percent": -17.541
         },
         {
           "ticker": "QQQ",
           "shares": 1,
           "cost_basis": 622.0,
-          "current_price": 582.48,
-          "pnl_percent": -6.353697749196138
+          "current_price": 573.89,
+          "pnl_percent": -7.734
         },
         {
           "ticker": "TCOM",
           "shares": 5,
           "cost_basis": 52.74,
-          "current_price": 51.36,
-          "pnl_percent": -2.6166097838452833,
+          "current_price": 50.22,
+          "pnl_percent": -4.777,
           "note": "2026-03-16 买入5股 @$52.74，中线看旅游复苏逻辑"
         },
         {
           "ticker": "TQQQ",
           "shares": 8,
           "cost_basis": 45.73,
-          "current_price": 43.22,
-          "pnl_percent": -5.4887382462278556,
+          "current_price": 41.23,
+          "pnl_percent": -9.840,
           "note": "2026-03-23 买入8股 @$45.73，纳指反弹趋势押注"
         },
         {
           "ticker": "HOOD",
           "shares": 5,
           "cost_basis": 73.5,
-          "current_price": 72.56,
-          "pnl_percent": -1.2789115646258473,
+          "current_price": 70.295,
+          "pnl_percent": -4.361,
           "note": "2026-03-26 买入5股 @$73.5，布林下轨反弹+加密情绪+散户平台逻辑"
         }
       ],
-      "total_cost": 2834.7,
-      "total_current_value": 2755.98,
-      "total_pnl": -78.72,
-      "total_pnl_percent": -2.777,
+      "total_cost": 2834.70,
+      "total_current_value": 2650.58,
+      "total_pnl": -184.12,
+      "total_pnl_percent": -6.496,
       "realized_pnl": 285.0,
       "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120)"
     },
