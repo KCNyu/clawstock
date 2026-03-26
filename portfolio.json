@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-03-26 09:30:00",
+  "last_updated": "2026-03-26 09:37:00",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -82,13 +82,13 @@
           "ticker_finnhub": "2208.HK",
           "shares": 600,
           "cost_basis": 14.084,
-          "current_price": 15.4,
-          "current_value": 9240.0,
-          "pnl_percent": 9.34,
-          "data_source": "stooq-2026-03-25-close",
+          "current_price": 15.24,
+          "current_value": 9144.0,
+          "pnl_percent": 8.207895484237437,
+          "data_source": "tencent-qtimg-2026-03-26-realtime",
           "today_change": 300.0,
           "today_change_pct": 3.36,
-          "pnl_abs": 789.6
+          "pnl_abs": 693.6000000000004
         },
         {
           "ticker": "03032",
@@ -96,13 +96,13 @@
           "ticker_finnhub": "3032.HK",
           "shares": 200,
           "cost_basis": 5.405,
-          "current_price": 4.892,
-          "current_value": 978.4,
-          "pnl_percent": -9.49,
-          "data_source": "stooq-2026-03-25-close",
+          "current_price": 4.846,
+          "current_value": 969.2,
+          "pnl_percent": -10.342275670675303,
+          "data_source": "tencent-qtimg-2026-03-26-realtime",
           "today_change": 16.400000000000148,
           "today_change_pct": 1.7,
-          "pnl_abs": -102.6
+          "pnl_abs": -111.79999999999995
         },
         {
           "ticker": "07226",
@@ -110,10 +110,10 @@
           "ticker_finnhub": "7226.HK",
           "shares": 6200,
           "cost_basis": 4.3632,
-          "current_price": 3.912,
-          "current_value": 24254.4,
-          "pnl_percent": -10.34,
-          "data_source": "stooq-2026-03-25-close",
+          "current_price": 3.826,
+          "current_value": 23721.2,
+          "pnl_percent": -12.31206453978731,
+          "data_source": "tencent-qtimg-2026-03-26-realtime",
           "trades": [
             {
               "date": "2026-03-24",
@@ -125,7 +125,7 @@
           ],
           "today_change": 892.8000000000008,
           "today_change_pct": 3.82,
-          "pnl_abs": -2797.44
+          "pnl_abs": -3330.6399999999994
         },
         {
           "ticker": "07709",
@@ -133,10 +133,10 @@
           "ticker_finnhub": "7709.HK",
           "shares": 500,
           "cost_basis": 31.0662,
-          "current_price": 31.28,
-          "current_value": 15640.0,
-          "pnl_percent": 0.69,
-          "data_source": "stooq-2026-03-25-close",
+          "current_price": 28.6,
+          "current_value": 14300.0,
+          "pnl_percent": -7.938531265491103,
+          "data_source": "tencent-qtimg-2026-03-26-realtime",
           "trades": [
             {
               "date": "2026-03-11",
@@ -179,7 +179,7 @@
           ],
           "today_change": 179.99999999999972,
           "today_change_pct": 1.16,
-          "pnl_abs": 106.9
+          "pnl_abs": -1233.0999999999985
         },
         {
           "ticker": "07747",
@@ -187,10 +187,10 @@
           "ticker_finnhub": "7747.HK",
           "shares": 100,
           "cost_basis": 81.85,
-          "current_price": 71.96,
-          "current_value": 7196.0,
-          "pnl_percent": -12.08,
-          "data_source": "stooq-2026-03-25-close",
+          "current_price": 66.1,
+          "current_value": 6609.999999999999,
+          "pnl_percent": -19.242516799022606,
+          "data_source": "tencent-qtimg-2026-03-26-realtime",
           "trades": [
             {
               "date": "2026-03-18",
@@ -203,7 +203,7 @@
           ],
           "today_change": -128.0000000000001,
           "today_change_pct": -1.75,
-          "pnl_abs": -989.0
+          "pnl_abs": -1575.0
         },
         {
           "ticker": "03033",
@@ -211,19 +211,19 @@
           "ticker_finnhub": "3033.HK",
           "shares": 1000,
           "cost_basis": 5.14,
-          "current_price": 4.82,
-          "current_value": 4820.0,
-          "pnl_percent": -6.23,
-          "data_source": "stooq-2026-03-25-close",
+          "current_price": 4.76,
+          "current_value": 4760.0,
+          "pnl_percent": -7.392996108949415,
+          "data_source": "tencent-qtimg-2026-03-26-realtime",
           "today_change": 102.00000000000031,
           "today_change_pct": 2.16,
-          "pnl_abs": -320.0
+          "pnl_abs": -380.0
         }
       ],
       "total_cost": 65441.34,
-      "total_current_value": 62128.8,
-      "total_pnl": -3312.54,
-      "total_pnl_percent": -5.06,
+      "total_current_value": 59504.4,
+      "total_pnl": -5936.939999999995,
+      "total_pnl_percent": -9.072155307333247,
       "realized_pnl": 954.1,
       "realized_note": "07747 100股@85(+315) + 07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243)",
       "today_total_change": 1363.2000000000007
