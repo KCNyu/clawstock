@@ -9,10 +9,18 @@
 
 ### ⚠️ 数据获取规则（重要）
 - **每次被问到持仓/股价，必须先获取最新实时数据，再回复，不得使用 portfolio.json 中的缓存旧价格**
-- 港股数据源优先级：**腾讯财经**（`qt.gtimg.cn/q=r_hkXXXXX`）✅ 境外可用、实时 → 东方财富批量API → stooq.com（收盘价）→ yfinance（限速慎用）
-- 美股数据源优先级：东方财富（`push2.eastmoney.com 105.XXXX`）→ Finnhub API → yfinance
-- 腾讯港股接口格式：`curl "https://qt.gtimg.cn/q=r_hk02208,r_hk03032"` — 代码5位补零，字段4是现价，字段32是时间戳，字段33是涨跌额，字段34是涨跌幅
-- 新浪美股（`hq.sinajs.cn/list=gb_nvda`）境外 403，不要尝试
+- **每次获取股价必须走自动 fallback 链，逐个尝试，失败了立即换下一个，直到成功为止**
+- 港股 fallback 链（按顺序逐个试）：
+  1. 腾讯财经 `qt.gtimg.cn/q=r_hkXXXXX` — 境外可用，实时，首选 ✅
+  2. 东方财富批量 API `push2.eastmoney.com` — `116.XXXXXX`（6位补零）
+  3. stooq.com `curl stooq.com/q/d/l/?s=XXXX.hk&i=d` — 收盘价，非实时
+  4. yfinance `2208.HK` — 限速慎用，最后备选
+- 美股 fallback 链（按顺序逐个试）：
+  1. 东方财富 `push2.eastmoney.com` — `105.NVDA`
+  2. Finnhub API（需 key）
+  3. yfinance — 限速慎用
+  4. Alpha Vantage（需 key，慢）
+- 新浪/腾讯美股接口境外 403，跳过不试
 - 如所有数据源均失败，必须明确告知用户"数据获取失败，以下为旧数据"，不能静默使用旧数据
 - 获取到最新数据后，更新 portfolio.json 并 git commit
 

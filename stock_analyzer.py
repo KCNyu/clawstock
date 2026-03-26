@@ -305,25 +305,95 @@ class StockAnalyzer:
             print(f"⚠️  Sina US failed for {ticker}: {e}")
             return None
 
+    def get_quote_stooq_hk(self, code: str) -> Optional[Dict]:
+        """Get HK stock quote from stooq.com (daily close, no rate limit)"""
+        symbol = f"{code.lstrip('0') or '0'}.hk"
+        url = f"https://stooq.com/q/d/l/?s={symbol}&i=d"
+        try:
+            r = requests.get(url, timeout=10)
+            r.raise_for_status()
+            lines = r.text.strip().splitlines()
+            if len(lines) < 2:
+                return None
+            # CSV: Date,Open,High,Low,Close,Volume
+            last = lines[-1].split(',')
+            if len(last) < 5 or last[4] in ('', 'N/D'):
+                return None
+            close = float(last[4])
+            return {
+                'c': close,
+                'h': float(last[2]) if last[2] else close,
+                'l': float(last[3]) if last[3] else close,
+                'o': float(last[1]) if last[1] else close,
+                'pc': close,
+                'source': 'stooq'
+            }
+        except Exception as e:
+            print(f"⚠️  stooq failed for {code}: {e}")
+            return None
+
+    def get_hk_quotes_tencent_batch(self, codes: List[str]) -> Dict[str, Dict]:
+        """Batch fetch HK quotes from Tencent Finance (境外可用, 实时)"""
+        # Tencent uses 6-digit zero-padded codes: r_hk002208
+        symbols = ','.join([f"r_hk{c.zfill(6)}" for c in codes])
+        url = f"https://qt.gtimg.cn/q={symbols}"
+        import re
+        results = {}
+        try:
+            r = requests.get(url, timeout=10)
+            r.encoding = 'gbk'
+            for line in r.text.splitlines():
+                m = re.search(r'r_hk(\d+)="([^"]+)"', line)
+                if not m:
+                    continue
+                raw_code = m.group(1)
+                # Normalize to 5-digit (strip leading zeros beyond 5)
+                code5 = raw_code.lstrip('0').zfill(5)
+                fields = m.group(2).split('~')
+                if len(fields) < 5 or not fields[3].strip():
+                    continue
+                try:
+                    current = float(fields[3])
+                    prev_close = float(fields[4]) if fields[4] else current
+                    results[code5] = {
+                        'c': current,
+                        'pc': prev_close,
+                        'h': float(fields[33]) if len(fields) > 33 and fields[33] else current,
+                        'l': float(fields[34]) if len(fields) > 34 and fields[34] else current,
+                        'o': float(fields[5]) if fields[5] else current,
+                        'source': 'Tencent'
+                    }
+                except (ValueError, IndexError):
+                    continue
+        except Exception as e:
+            print(f"⚠️  Tencent batch failed: {e}")
+        return results
+
     def get_hk_quote(self, code: str) -> Optional[Dict]:
-        """Get HK stock quote: yfinance -> Tencent -> Sina"""
-        # Yahoo Finance uses XXXXX.HK format (no leading zeros beyond 4 digits)
-        yf_symbol = f"{code.lstrip('0') or '0'}.HK"
-        quote = self.get_quote_yfinance(yf_symbol)
-        if quote:
-            print(f"✓ {code}: Yahoo Finance ({yf_symbol})")
-            return quote
-        # Fallback to Tencent
-        print(f"→ {code}: Trying Tencent Finance...")
+        """Get HK stock quote with auto fallback: Tencent → Eastmoney → stooq → yfinance"""
+        # 1. Tencent (境外实时，首选)
         quote = self.get_quote_tencent_hk(code)
         if quote:
             print(f"✓ {code}: Tencent Finance")
             return quote
-        # Fallback to Sina
-        print(f"→ {code}: Trying Sina Finance...")
-        quote = self.get_quote_sina_hk(code)
+        # 2. Eastmoney batch (单个 fallback)
+        print(f"→ {code}: Trying Eastmoney...")
+        em = self.get_hk_quotes_eastmoney([code])
+        if code in em:
+            print(f"✓ {code}: Eastmoney")
+            return em[code]
+        # 3. stooq (daily close)
+        print(f"→ {code}: Trying stooq...")
+        quote = self.get_quote_stooq_hk(code)
         if quote:
-            print(f"✓ {code}: Sina Finance")
+            print(f"✓ {code}: stooq (daily close)")
+            return quote
+        # 4. yfinance (最后备选)
+        print(f"→ {code}: Trying Yahoo Finance...")
+        yf_symbol = f"{code.lstrip('0') or '0'}.HK"
+        quote = self.get_quote_yfinance(yf_symbol)
+        if quote:
+            print(f"✓ {code}: Yahoo Finance")
             return quote
         print(f"✗ {code}: All HK APIs failed")
         return None
@@ -454,34 +524,39 @@ class StockAnalyzer:
         print(f"US Portfolio P&L: ${total_pnl:.2f} ({us_portfolio['total_pnl_percent']:.2f}%)")
     
     def update_hk_portfolio_prices(self):
-        """Update Hong Kong stock portfolio with current prices (Eastmoney batch)"""
+        """Update Hong Kong stock portfolio: Tencent batch → Eastmoney batch → per-stock fallback"""
         print("\nUpdating HK portfolio prices...")
         hk_portfolio = self.portfolio['portfolios']['hk_stocks']
         codes = [h['ticker'] for h in hk_portfolio['holdings']]
 
-        # Primary: Eastmoney batch (reliable, no rate limit)
-        em_data = self.get_hk_quotes_eastmoney(codes)
-        
+        # 1st: Tencent batch (境外实时，首选)
+        tc_data = self.get_hk_quotes_tencent_batch(codes)
+        missing = [c for c in codes if c not in tc_data]
+
+        # 2nd: Eastmoney batch for missing
+        em_data = self.get_hk_quotes_eastmoney(missing) if missing else {}
+        missing2 = [c for c in missing if c not in em_data]
+
         for holding in hk_portfolio['holdings']:
             code = holding['ticker']
-            quote = em_data.get(code)
+            quote = tc_data.get(code) or em_data.get(code)
             if quote:
                 old_price = holding['current_price']
                 holding['current_price'] = quote['c']
                 holding['current_value'] = quote['c'] * holding['shares']
                 holding['today_change'] = (quote['c'] - quote['pc']) * holding['shares']
                 pct = (quote['c'] - quote['pc']) / quote['pc'] * 100 if quote['pc'] else 0
-                print(f"✓ {code} {quote['name']}: HKD {old_price:.3f} -> HKD {quote['c']:.3f} ({pct:+.2f}%)")
-            else:
-                # Fallback to yfinance
-                yf_sym = f"{code.lstrip('0') or '0'}.HK"
-                yf_quote = self.get_quote_yfinance(yf_sym)
-                if yf_quote:
+                src = quote.get('source', '?')
+                print(f"✓ {code}: HKD {old_price:.3f} -> HKD {quote['c']:.3f} ({pct:+.2f}%) [{src}]")
+            elif code in missing2:
+                # 3rd: per-stock fallback chain (stooq → yfinance)
+                fb_quote = self.get_quote_stooq_hk(code) or self.get_quote_yfinance(f"{code.lstrip('0') or '0'}.HK")
+                if fb_quote:
                     old_price = holding['current_price']
-                    holding['current_price'] = yf_quote['c']
-                    holding['current_value'] = yf_quote['c'] * holding['shares']
-                    holding['today_change'] = (yf_quote['c'] - yf_quote['pc']) * holding['shares']
-                    print(f"✓ {code} (yfinance): HKD {old_price:.3f} -> HKD {yf_quote['c']:.3f}")
+                    holding['current_price'] = fb_quote['c']
+                    holding['current_value'] = fb_quote['c'] * holding['shares']
+                    holding['today_change'] = (fb_quote['c'] - fb_quote.get('pc', fb_quote['c'])) * holding['shares']
+                    print(f"✓ {code}: HKD {old_price:.3f} -> HKD {fb_quote['c']:.3f} [{fb_quote.get('source','fallback')}]")
                 else:
                     print(f"✗ {code}: All HK APIs failed")
 
