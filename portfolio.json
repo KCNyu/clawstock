@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-04-01 12:00 HKT (午盘)",
+  "last_updated": "2026-04-01 09:30 ET (美股开盘)",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -9,75 +9,84 @@
           "ticker": "NVDA",
           "shares": 3,
           "cost_basis": 187.0,
-          "current_price": 174.215,
-          "pnl_percent": -6.84,
-          "data_source": "finnhub-2026-03-31 收盘"
+          "current_price": 175.77,
+          "today_change_pct": 0.79,
+          "pnl_percent": -5.99,
+          "data_source": "finnhub-2026-04-01 09:30 ET"
         },
         {
           "ticker": "RKLB",
           "shares": 5,
           "cost_basis": 71.0,
-          "current_price": 64.245,
-          "pnl_percent": -9.51,
-          "data_source": "finnhub-2026-03-31 收盘"
+          "current_price": 65.49,
+          "today_change_pct": 1.98,
+          "pnl_percent": -7.76,
+          "data_source": "finnhub-2026-04-01 09:30 ET"
         },
         {
           "ticker": "CRCL",
           "shares": 2,
           "cost_basis": 87.0,
-          "current_price": 95.5,
-          "pnl_percent": 9.77,
-          "data_source": "finnhub-2026-03-31 收盘",
+          "current_price": 98.13,
+          "today_change_pct": 2.85,
+          "pnl_percent": 12.79,
+          "data_source": "finnhub-2026-04-01 09:30 ET",
           "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；2026-03-23 卖出3股 @$127，实现盈利 $120；剩余2股长期持有（看好稳定币+agent支付赛道）"
         },
         {
           "ticker": "OKLO",
           "shares": 2,
           "cost_basis": 62.83,
-          "current_price": 49.52,
-          "pnl_percent": -21.18,
-          "data_source": "finnhub-2026-03-31 收盘"
+          "current_price": 49.6,
+          "today_change_pct": 8.82,
+          "pnl_percent": -21.06,
+          "data_source": "finnhub-2026-04-01 (timestamp may be delayed)",
+          "note": "数据时间戳疑似昨日收盘，需核实"
         },
         {
           "ticker": "QQQ",
           "shares": 1,
           "cost_basis": 622.0,
-          "current_price": 577.25,
-          "pnl_percent": -7.19,
-          "data_source": "finnhub-2026-03-31 收盘"
+          "current_price": 581.7,
+          "today_change_pct": 0.78,
+          "pnl_percent": -6.48,
+          "data_source": "finnhub-2026-04-01 09:30 ET"
         },
         {
           "ticker": "TCOM",
           "shares": 5,
           "cost_basis": 52.74,
           "current_price": 49.8,
+          "today_change_pct": 1.28,
           "pnl_percent": -5.57,
-          "data_source": "finnhub-2026-03-31 收盘",
-          "note": "2026-03-16 买入5股 @$52.74，中线看旅游复苏逻辑"
+          "data_source": "finnhub-2026-04-01 (timestamp may be delayed)",
+          "note": "2026-03-16 买入5股 @$52.74，中线看旅游复苏逻辑；数据时间戳疑似昨日收盘"
         },
         {
           "ticker": "TQQQ",
           "shares": 8,
           "cost_basis": 45.73,
-          "current_price": 41.765,
-          "pnl_percent": -8.67,
-          "data_source": "finnhub-2026-03-31 收盘",
+          "current_price": 42.65,
+          "today_change_pct": 2.33,
+          "pnl_percent": -8.43,
+          "data_source": "finnhub-2026-04-01 09:30 ET",
           "note": "2026-03-23 买入8股 @$45.73，纳指反弹趋势押注"
         },
         {
           "ticker": "HOOD",
           "shares": 5,
           "cost_basis": 73.5,
-          "current_price": 69.28,
-          "pnl_percent": -5.74,
-          "data_source": "finnhub-2026-03-31 收盘",
+          "current_price": 71.145,
+          "today_change_pct": 2.66,
+          "pnl_percent": -3.20,
+          "data_source": "finnhub-2026-04-01 09:30 ET",
           "note": "2026-03-26 买入5股 @$73.5，布林下轨反弹+加密情绪+散户平台逻辑"
         }
       ],
       "total_cost": 2834.7,
-      "total_current_value": 2640.69,
-      "total_pnl": -194.01,
-      "total_pnl_percent": -6.85,
+      "total_current_value": 2677.85,
+      "total_pnl": -156.85,
+      "total_pnl_percent": -5.53,
       "realized_pnl": 285.0,
       "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120)"
     },
@@ -146,51 +155,12 @@
           "pnl_percent": -20.08,
           "data_source": "eastmoney-2026-04-01 12:00 HKT",
           "trades": [
-            {
-              "date": "2026-03-11",
-              "action": "buy",
-              "shares": 100,
-              "price": 29.6,
-              "note": "补仓，摊低成本"
-            },
-            {
-              "date": "2026-03-18",
-              "action": "sell",
-              "shares": 100,
-              "price": 33.14,
-              "realized_pnl": 144.86,
-              "note": "美光财报前减仓止盈，@HKD 33.14"
-            },
-            {
-              "date": "2026-03-18",
-              "action": "sell",
-              "shares": 100,
-              "price": 34.2,
-              "realized_pnl": 250.86,
-              "note": "下午挂单止盈 @HKD 34.2"
-            },
-            {
-              "date": "2026-03-23",
-              "action": "buy",
-              "shares": 100,
-              "price": 27.94,
-              "note": "韩股暴跌日抄底补仓，摊低成本"
-            },
-            {
-              "date": "2026-03-25",
-              "action": "sell",
-              "shares": 100,
-              "price": 33.5,
-              "realized_pnl": 243.38,
-              "note": "止盈减仓 @HKD 33.5"
-            },
-            {
-              "date": "2026-03-31",
-              "action": "buy",
-              "shares": 100,
-              "price": 22.0,
-              "note": "低位补仓，摊低成本至29.5552"
-            }
+            {"date": "2026-03-11","action": "buy","shares": 100,"price": 29.6,"note": "补仓，摊低成本"},
+            {"date": "2026-03-18","action": "sell","shares": 100,"price": 33.14,"realized_pnl": 144.86,"note": "美光财报前减仓止盈"},
+            {"date": "2026-03-18","action": "sell","shares": 100,"price": 34.2,"realized_pnl": 250.86,"note": "下午挂单止盈"},
+            {"date": "2026-03-23","action": "buy","shares": 100,"price": 27.94,"note": "韩股暴跌日抄底补仓"},
+            {"date": "2026-03-25","action": "sell","shares": 100,"price": 33.5,"realized_pnl": 243.38,"note": "止盈减仓"},
+            {"date": "2026-03-31","action": "buy","shares": 100,"price": 22.0,"note": "低位补仓，摊低成本至29.5552"}
           ],
           "today_change": 1980.0,
           "today_change_pct": 16.24,
@@ -207,14 +177,7 @@
           "pnl_percent": -18.07,
           "data_source": "eastmoney-2026-04-01 12:00 HKT",
           "trades": [
-            {
-              "date": "2026-03-18",
-              "action": "sell",
-              "shares": 100,
-              "price": 85.0,
-              "realized_pnl": 315.0,
-              "note": "美光财报前减半仓止盈，@HKD 85"
-            }
+            {"date": "2026-03-18","action": "sell","shares": 100,"price": 85.0,"realized_pnl": 315.0,"note": "美光财报前减半仓止盈"}
           ],
           "today_change": 1200.0,
           "today_change_pct": 21.79,
