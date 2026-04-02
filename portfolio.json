@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-04-02 12:00 HKT (港股午盘)",
+  "last_updated": "2026-04-02 16:00 HKT (港股收盘)",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -99,13 +99,13 @@
           "ticker_finnhub": "2208.HK",
           "shares": 600,
           "cost_basis": 14.084,
-          "current_price": 13.71,
-          "current_value": 8226.0,
-          "pnl_percent": -2.65,
-          "data_source": "eastmoney-2026-04-02 12:00 HKT",
-          "today_change": -222.0,
-          "today_change_pct": -2.63,
-          "pnl_abs": -224.4
+          "current_price": 13.58,
+          "current_value": 8148.0,
+          "pnl_percent": -3.58,
+          "data_source": "eastmoney-2026-04-02 16:00 HKT",
+          "today_change": -300.0,
+          "today_change_pct": -3.55,
+          "pnl_abs": -302.4
         },
         {
           "ticker": "03032",
@@ -113,13 +113,13 @@
           "ticker_finnhub": "3032.HK",
           "shares": 200,
           "cost_basis": 5.405,
-          "current_price": 4.624,
-          "current_value": 924.8,
-          "pnl_percent": -14.44,
-          "data_source": "eastmoney-2026-04-02 12:00 HKT",
-          "today_change": -20.8,
-          "today_change_pct": -2.2,
-          "pnl_abs": -156.2
+          "current_price": 4.646,
+          "current_value": 929.2,
+          "pnl_percent": -14.04,
+          "data_source": "eastmoney-2026-04-02 16:00 HKT",
+          "today_change": -16.4,
+          "today_change_pct": -1.73,
+          "pnl_abs": -151.8
         },
         {
           "ticker": "07226",
@@ -127,10 +127,10 @@
           "ticker_finnhub": "7226.HK",
           "shares": 6200,
           "cost_basis": 4.3632,
-          "current_price": 3.474,
-          "current_value": 21538.8,
-          "pnl_percent": -20.38,
-          "data_source": "eastmoney-2026-04-02 12:00 HKT",
+          "current_price": 3.51,
+          "current_value": 21762.0,
+          "pnl_percent": -19.55,
+          "data_source": "eastmoney-2026-04-02 16:00 HKT",
           "trades": [
             {
               "date": "2026-03-24",
@@ -140,9 +140,9 @@
               "note": "加仓补摊，摊低成本至4.3632"
             }
           ],
-          "today_change": -965.2,
-          "today_change_pct": -4.3,
-          "pnl_abs": -5531.64
+          "today_change": -744.0,
+          "today_change_pct": -3.31,
+          "pnl_abs": -5289.84
         },
         {
           "ticker": "07709",
@@ -150,10 +150,10 @@
           "ticker_finnhub": "7709.HK",
           "shares": 600,
           "cost_basis": 29.5552,
-          "current_price": 21.3,
-          "current_value": 12780.0,
-          "pnl_percent": -27.94,
-          "data_source": "eastmoney-2026-04-02 12:00 HKT",
+          "current_price": 21.24,
+          "current_value": 12744.0,
+          "pnl_percent": -28.13,
+          "data_source": "eastmoney-2026-04-02 16:00 HKT",
           "trades": [
             {
               "date": "2026-03-11",
@@ -201,9 +201,9 @@
               "note": "低位补仓，摊低成本至29.5552"
             }
           ],
-          "today_change": -1620.0,
-          "today_change_pct": -11.25,
-          "pnl_abs": -5133.12
+          "today_change": -1656.0,
+          "today_change_pct": -11.5,
+          "pnl_abs": -4989.12
         },
         {
           "ticker": "07747",
@@ -211,10 +211,10 @@
           "ticker_finnhub": "7747.HK",
           "shares": 100,
           "cost_basis": 81.85,
-          "current_price": 61.62,
-          "current_value": 6162.0,
-          "pnl_percent": -24.72,
-          "data_source": "eastmoney-2026-04-02 12:00 HKT",
+          "current_price": 62.7,
+          "current_value": 6270.0,
+          "pnl_percent": -23.4,
+          "data_source": "eastmoney-2026-04-02 16:00 HKT",
           "trades": [
             {
               "date": "2026-03-18",
@@ -225,9 +225,9 @@
               "note": "美光财报前减半仓止盈"
             }
           ],
-          "today_change": -752.0,
-          "today_change_pct": -10.88,
-          "pnl_abs": -2023.0
+          "today_change": -644.0,
+          "today_change_pct": -9.31,
+          "pnl_abs": -1915.0
         },
         {
           "ticker": "03033",
@@ -235,22 +235,22 @@
           "ticker_finnhub": "3033.HK",
           "shares": 1000,
           "cost_basis": 5.14,
-          "current_price": 4.546,
-          "current_value": 4546.0,
-          "pnl_percent": -11.56,
-          "data_source": "eastmoney-2026-04-02 12:00 HKT",
-          "today_change": -100.0,
-          "today_change_pct": -2.15,
-          "pnl_abs": -594.0
+          "current_price": 4.57,
+          "current_value": 4570.0,
+          "pnl_percent": -11.09,
+          "data_source": "eastmoney-2026-04-02 16:00 HKT",
+          "today_change": -76.0,
+          "today_change_pct": -1.64,
+          "pnl_abs": -570.0
         }
       ],
       "total_cost": 67641.36,
-      "total_current_value": 54177.6,
-      "total_pnl": -13463.76,
-      "total_pnl_percent": -19.9,
+      "total_current_value": 54423.2,
+      "total_pnl": -13218.16,
+      "total_pnl_percent": -19.54,
       "realized_pnl": 954.1,
       "realized_note": "07747 100股@85(+315) + 07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243)",
-      "today_total_change": -3680.0
+      "today_total_change": -3436.4
     }
   }
 }
