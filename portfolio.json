@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-04-03 16:00 HKT (港股收盘报告 - 今日Good Friday休市，价格为4月2日最后收盘)",
+  "last_updated": "2026-04-03 Good Friday 休市（使用4月2日收盘价，来源：Finnhub）",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -9,66 +9,66 @@
           "ticker": "NVDA",
           "shares": 3,
           "cost_basis": 187.0,
-          "current_price": 177.42,
-          "today_change_pct": 0.95,
+          "current_price": 177.41,
+          "today_change_pct": 0.94,
           "pnl_percent": -5.12,
-          "data_source": "eastmoney-2026-04-02 16:00 ET"
+          "data_source": "finnhub-2026-04-02 16:00 ET close"
         },
         {
           "ticker": "RKLB",
           "shares": 5,
           "cost_basis": 71.0,
-          "current_price": 67.73,
-          "today_change_pct": 3.37,
-          "pnl_percent": -4.61,
-          "data_source": "eastmoney-2026-04-02 16:00 ET"
+          "current_price": 67.75,
+          "today_change_pct": 3.40,
+          "pnl_percent": -4.58,
+          "data_source": "finnhub-2026-04-02 16:00 ET close"
         },
         {
           "ticker": "CRCL",
           "shares": 2,
           "cost_basis": 87.0,
-          "current_price": 90.26,
-          "today_change_pct": -0.53,
-          "pnl_percent": 3.75,
-          "data_source": "finnhub-2026-04-02 16:00 ET",
+          "current_price": 90.28,
+          "today_change_pct": -0.51,
+          "pnl_percent": 3.77,
+          "data_source": "finnhub-2026-04-02 16:00 ET close",
           "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；2026-03-23 卖出3股 @$127，实现盈利 $120；剩余2股长期持有（看好稳定币+agent支付赛道）"
         },
         {
           "ticker": "OKLO",
           "shares": 2,
           "cost_basis": 62.83,
-          "current_price": 48.13,
-          "today_change_pct": 0.12,
-          "pnl_percent": -23.4,
-          "data_source": "finnhub-2026-04-02 16:00 ET"
+          "current_price": 48.14,
+          "today_change_pct": 0.15,
+          "pnl_percent": -23.38,
+          "data_source": "finnhub-2026-04-02 16:00 ET close"
         },
         {
           "ticker": "QQQ",
           "shares": 1,
           "cost_basis": 622.0,
-          "current_price": 584.98,
-          "today_change_pct": 0.11,
+          "current_price": 585.00,
+          "today_change_pct": 0.12,
           "pnl_percent": -5.95,
-          "data_source": "finnhub-2026-04-02 16:00 ET"
+          "data_source": "finnhub-2026-04-02 16:00 ET close"
         },
         {
           "ticker": "TCOM",
           "shares": 5,
           "cost_basis": 52.74,
-          "current_price": 50.49,
-          "today_change_pct": 1.41,
-          "pnl_percent": -4.27,
-          "data_source": "eastmoney-2026-04-02 16:00 ET",
+          "current_price": 50.50,
+          "today_change_pct": 1.43,
+          "pnl_percent": -4.25,
+          "data_source": "finnhub-2026-04-02 16:00 ET close",
           "note": "2026-03-16 买入5股 @$52.74，中线看旅游复苏逻辑"
         },
         {
           "ticker": "TQQQ",
           "shares": 8,
           "cost_basis": 45.73,
-          "current_price": 43.355,
-          "today_change_pct": 0.29,
-          "pnl_percent": -5.19,
-          "data_source": "eastmoney-2026-04-02 16:00 ET",
+          "current_price": 43.34,
+          "today_change_pct": 0.25,
+          "pnl_percent": -5.22,
+          "data_source": "finnhub-2026-04-02 16:00 ET close",
           "note": "2026-03-23 买入8股 @$45.73，纳指反弹趋势押注"
         },
         {
@@ -76,17 +76,17 @@
           "shares": 5,
           "cost_basis": 73.5,
           "current_price": 68.92,
-          "today_change_pct": -1.7,
+          "today_change_pct": -1.70,
           "pnl_percent": -6.23,
-          "data_source": "eastmoney-2026-04-02 16:00 ET",
+          "data_source": "finnhub-2026-04-02 16:00 ET close",
           "note": "2026-03-26 买入5股 @$73.5，布林下轨反弹+加密情绪+散户平台逻辑"
         }
       ],
-      "total_cost": 2834.7,
-      "total_current_value": 2676.56,
-      "total_pnl": -158.14,
-      "total_pnl_percent": -5.58,
-      "today_total_change": 14.44,
+      "total_cost": 2834.70,
+      "total_current_value": 2676.64,
+      "total_pnl": -158.06,
+      "total_pnl_percent": -5.57,
+      "today_total_change": 12.50,
       "realized_pnl": 285.0,
       "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120)"
     },
