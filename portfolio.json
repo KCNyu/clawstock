@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-04-02 美股收盘（Good Friday 4/3休市，数据为4/2周四收盘价，来源：Finnhub）",
+  "last_updated": "2026-04-05 16:57:21",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -11,7 +11,7 @@
           "cost_basis": 187.0,
           "current_price": 177.39,
           "today_change_pct": 0.93,
-          "pnl_percent": -5.14,
+          "pnl_percent": -5.139037433155087,
           "data_source": "finnhub-2026-04-02 16:00 ET close"
         },
         {
@@ -20,7 +20,7 @@
           "cost_basis": 71.0,
           "current_price": 67.73,
           "today_change_pct": 3.37,
-          "pnl_percent": -4.61,
+          "pnl_percent": -4.605633802816896,
           "data_source": "finnhub-2026-04-02 16:00 ET close"
         },
         {
@@ -29,7 +29,7 @@
           "cost_basis": 87.0,
           "current_price": 90.26,
           "today_change_pct": -0.53,
-          "pnl_percent": 3.75,
+          "pnl_percent": 3.747126436781615,
           "data_source": "finnhub-2026-04-02 16:00 ET close",
           "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；2026-03-23 卖出3股 @$127，实现盈利 $120；剩余2股长期持有（看好稳定币+agent支付赛道）"
         },
@@ -39,7 +39,7 @@
           "cost_basis": 62.83,
           "current_price": 48.13,
           "today_change_pct": 0.12,
-          "pnl_percent": -23.40,
+          "pnl_percent": -23.396466656056017,
           "data_source": "finnhub-2026-04-02 16:00 ET close"
         },
         {
@@ -48,7 +48,7 @@
           "cost_basis": 622.0,
           "current_price": 584.98,
           "today_change_pct": 0.11,
-          "pnl_percent": -5.95,
+          "pnl_percent": -5.951768488745978,
           "data_source": "finnhub-2026-04-02 16:00 ET close"
         },
         {
@@ -57,7 +57,7 @@
           "cost_basis": 52.74,
           "current_price": 50.48,
           "today_change_pct": 1.39,
-          "pnl_percent": -4.29,
+          "pnl_percent": -4.28517254455822,
           "data_source": "finnhub-2026-04-02 16:00 ET close",
           "note": "2026-03-16 买入5股 @$52.74，中线看旅游复苏逻辑"
         },
@@ -67,7 +67,7 @@
           "cost_basis": 45.73,
           "current_price": 43.33,
           "today_change_pct": 0.23,
-          "pnl_percent": -5.25,
+          "pnl_percent": -5.24819593264815,
           "data_source": "finnhub-2026-04-02 16:00 ET close",
           "note": "2026-03-23 买入8股 @$45.73，纳指反弹趋势押注"
         },
@@ -75,18 +75,18 @@
           "ticker": "HOOD",
           "shares": 5,
           "cost_basis": 73.5,
-          "current_price": 68.90,
+          "current_price": 68.9,
           "today_change_pct": -1.73,
-          "pnl_percent": -6.26,
+          "pnl_percent": -6.258503401360536,
           "data_source": "finnhub-2026-04-02 16:00 ET close",
           "note": "2026-03-26 买入5股 @$73.5，布林下轨反弹+加密情绪+散户平台逻辑"
         }
       ],
-      "total_cost": 2834.70,
+      "total_cost": 2834.7,
       "total_current_value": 2676.12,
-      "total_pnl": -158.58,
-      "total_pnl_percent": -5.59,
-      "today_total_change": 14.00,
+      "total_pnl": -158.57999999999993,
+      "total_pnl_percent": -5.594242777013438,
+      "today_total_change": 14.0,
       "realized_pnl": 285.0,
       "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120)"
     },
@@ -114,10 +114,10 @@
           "shares": 200,
           "cost_basis": 5.405,
           "current_price": 4.646,
-          "current_value": 929.2,
+          "current_value": 929.1999999999999,
           "pnl_percent": -14.04,
           "data_source": "eastmoney-delay-2026-04-02 close HKT",
-          "today_change": -16.4,
+          "today_change": -16.39999999999997,
           "today_change_pct": -1.73,
           "pnl_abs": -151.8
         },
@@ -140,7 +140,7 @@
               "note": "加仓补摊，摊低成本至4.3632"
             }
           ],
-          "today_change": -744.0,
+          "today_change": -744.0000000000007,
           "today_change_pct": -3.31,
           "pnl_abs": -5289.84
         },
@@ -151,7 +151,7 @@
           "shares": 600,
           "cost_basis": 29.5552,
           "current_price": 21.24,
-          "current_value": 12744.0,
+          "current_value": 12743.999999999998,
           "pnl_percent": -28.13,
           "data_source": "eastmoney-delay-2026-04-02 close HKT",
           "trades": [
@@ -201,7 +201,7 @@
               "note": "低位补仓，摊低成本至29.5552"
             }
           ],
-          "today_change": -1656.0,
+          "today_change": -1656.000000000001,
           "today_change_pct": -11.5,
           "pnl_abs": -4989.12
         },
@@ -225,7 +225,7 @@
               "note": "美光财报前减半仓止盈"
             }
           ],
-          "today_change": -644.0,
+          "today_change": -643.9999999999998,
           "today_change_pct": -9.31,
           "pnl_abs": -1915.0
         },
@@ -239,7 +239,7 @@
           "current_value": 4570.0,
           "pnl_percent": -11.09,
           "data_source": "eastmoney-delay-2026-04-02 close HKT",
-          "today_change": -76.0,
+          "today_change": -75.99999999999963,
           "today_change_pct": -1.64,
           "pnl_abs": -570.0
         }
@@ -250,7 +250,7 @@
       "total_pnl_percent": -19.54,
       "realized_pnl": 954.1,
       "realized_note": "07747 100股@85(+315) + 07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243)",
-      "today_total_change": -3436.4
+      "today_total_change": -3436.400000000001
     }
   }
 }
