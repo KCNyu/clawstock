@@ -31,6 +31,11 @@
   2. Finnhub API（需 key）
   3. yfinance — 限速慎用
   4. Alpha Vantage（需 key，慢）
+- 韩股 fallback 链（按顺序逐个试）：
+  1. Naver Finance polling API `https://polling.finance.naver.com/api/realtime/domestic/stock/<code>` — **当前最稳，已验证 ✅**（2026-04-05）
+  2. Naver Finance 页面 `https://finance.naver.com/item/main.naver?code=<code>` — 页面解析备用
+  3. Google Finance / MarketWatch / Investing 页面搜索结果 — 仅作人工交叉验证
+  4. yfinance `000660.KS` / `005930.KS` — 易限流，不作为首选
 - 新浪/腾讯美股接口境外 403，跳过不试
 - 如所有数据源均失败，必须明确告知用户“数据获取失败，以下为旧数据”，不能静默使用旧数据
 - 获取到最新数据后，更新 `portfolio.json` 并 git commit
@@ -41,6 +46,19 @@
 - **单一来源：`portfolio.json`** — 每次问持仓直接读这个文件，不在 `MEMORY.md` 里维护副本
 - 为提高检索命中率，可先看 `memory/current-portfolio-summary.md`，但它不是权威来源
 - 更新后记得 git commit
+
+---
+
+## OpenClaw CLI 操作注意事项（2026-04-07 记录）
+
+### ⚠️ `openclaw cron` / `openclaw gateway status` 等子命令会卡死
+- **原因**：这些命令通过 WebSocket RPC 连接 gateway（端口 18789），在 agent exec 沙箱环境里无法完成 auth 握手，会一直 pending 直到被 SIGKILL
+- **影响范围**：所有需要 gateway RPC 的子命令，包括 `cron list/add/delete`、`gateway status`、`cron --help` 等
+- **解决方案**：
+  - 查 cron 任务 → 直接读 `~/.openclaw/cron/jobs.json`
+  - 查 gateway 状态 → `systemctl --user status openclaw-gateway` 或 `curl http://127.0.0.1:18789/health`
+  - 查 dreaming 状态 → 在 `jobs.json` 里找 `managed-by=memory-core` 的任务
+- **不是 bug**：设计如此，这些 CLI 命令原本只在宿主机 shell 里直接运行
 
 ---
 
