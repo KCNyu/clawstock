@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-04-05 16:57:21",
+  "last_updated": "2026-04-06 09:30:00 HKT",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -8,7 +8,7 @@
         {
           "ticker": "NVDA",
           "shares": 3,
-          "cost_basis": 187.0,
+          "cost_basis": 187,
           "current_price": 177.39,
           "today_change_pct": 0.93,
           "pnl_percent": -5.139037433155087,
@@ -17,7 +17,7 @@
         {
           "ticker": "RKLB",
           "shares": 5,
-          "cost_basis": 71.0,
+          "cost_basis": 71,
           "current_price": 67.73,
           "today_change_pct": 3.37,
           "pnl_percent": -4.605633802816896,
@@ -26,7 +26,7 @@
         {
           "ticker": "CRCL",
           "shares": 2,
-          "cost_basis": 87.0,
+          "cost_basis": 87,
           "current_price": 90.26,
           "today_change_pct": -0.53,
           "pnl_percent": 3.747126436781615,
@@ -45,7 +45,7 @@
         {
           "ticker": "QQQ",
           "shares": 1,
-          "cost_basis": 622.0,
+          "cost_basis": 622,
           "current_price": 584.98,
           "today_change_pct": 0.11,
           "pnl_percent": -5.951768488745978,
@@ -86,8 +86,8 @@
       "total_current_value": 2676.12,
       "total_pnl": -158.57999999999993,
       "total_pnl_percent": -5.594242777013438,
-      "today_total_change": 14.0,
-      "realized_pnl": 285.0,
+      "today_total_change": 14,
+      "realized_pnl": 285,
       "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120)"
     },
     "hk_stocks": {
@@ -100,10 +100,10 @@
           "shares": 600,
           "cost_basis": 14.084,
           "current_price": 13.58,
-          "current_value": 8148.0,
+          "current_value": 8148,
           "pnl_percent": -3.58,
-          "data_source": "eastmoney-delay-2026-04-02 close HKT",
-          "today_change": -300.0,
+          "data_source": "stooq-2026-04-02 close HKT (eastmoney open quote unavailable 2026-04-06 09:30)",
+          "today_change": -300,
           "today_change_pct": -3.55,
           "pnl_abs": -302.4
         },
@@ -114,9 +114,9 @@
           "shares": 200,
           "cost_basis": 5.405,
           "current_price": 4.646,
-          "current_value": 929.1999999999999,
+          "current_value": 929.2,
           "pnl_percent": -14.04,
-          "data_source": "eastmoney-delay-2026-04-02 close HKT",
+          "data_source": "stooq-2026-04-02 close HKT (eastmoney open quote unavailable 2026-04-06 09:30)",
           "today_change": -16.39999999999997,
           "today_change_pct": -1.73,
           "pnl_abs": -151.8
@@ -128,9 +128,9 @@
           "shares": 6200,
           "cost_basis": 4.3632,
           "current_price": 3.51,
-          "current_value": 21762.0,
+          "current_value": 21762,
           "pnl_percent": -19.55,
-          "data_source": "eastmoney-delay-2026-04-02 close HKT",
+          "data_source": "stooq-2026-04-02 close HKT (eastmoney open quote unavailable 2026-04-06 09:30)",
           "trades": [
             {
               "date": "2026-03-24",
@@ -151,9 +151,9 @@
           "shares": 600,
           "cost_basis": 29.5552,
           "current_price": 21.24,
-          "current_value": 12743.999999999998,
+          "current_value": 12744,
           "pnl_percent": -28.13,
-          "data_source": "eastmoney-delay-2026-04-02 close HKT",
+          "data_source": "stooq-2026-04-02 close HKT (eastmoney open quote unavailable 2026-04-06 09:30)",
           "trades": [
             {
               "date": "2026-03-11",
@@ -197,7 +197,7 @@
               "date": "2026-03-31",
               "action": "buy",
               "shares": 100,
-              "price": 22.0,
+              "price": 22,
               "note": "低位补仓，摊低成本至29.5552"
             }
           ],
@@ -212,22 +212,22 @@
           "shares": 100,
           "cost_basis": 81.85,
           "current_price": 62.7,
-          "current_value": 6270.0,
+          "current_value": 6270,
           "pnl_percent": -23.4,
-          "data_source": "eastmoney-delay-2026-04-02 close HKT",
+          "data_source": "stooq-2026-04-02 close HKT (eastmoney open quote unavailable 2026-04-06 09:30)",
           "trades": [
             {
               "date": "2026-03-18",
               "action": "sell",
               "shares": 100,
-              "price": 85.0,
-              "realized_pnl": 315.0,
+              "price": 85,
+              "realized_pnl": 315,
               "note": "美光财报前减半仓止盈"
             }
           ],
           "today_change": -643.9999999999998,
           "today_change_pct": -9.31,
-          "pnl_abs": -1915.0
+          "pnl_abs": -1915
         },
         {
           "ticker": "03033",
@@ -236,12 +236,12 @@
           "shares": 1000,
           "cost_basis": 5.14,
           "current_price": 4.57,
-          "current_value": 4570.0,
+          "current_value": 4570,
           "pnl_percent": -11.09,
-          "data_source": "eastmoney-delay-2026-04-02 close HKT",
+          "data_source": "stooq-2026-04-02 close HKT (eastmoney open quote unavailable 2026-04-06 09:30)",
           "today_change": -75.99999999999963,
           "today_change_pct": -1.64,
-          "pnl_abs": -570.0
+          "pnl_abs": -570
         }
       ],
       "total_cost": 67641.36,
@@ -250,7 +250,8 @@
       "total_pnl_percent": -19.54,
       "realized_pnl": 954.1,
       "realized_note": "07747 100股@85(+315) + 07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243)",
-      "today_total_change": -3436.400000000001
+      "today_total_change": -3436.400000000001,
+      "last_updated": "2026-04-06 09:30:00 HKT"
     }
   }
 }
