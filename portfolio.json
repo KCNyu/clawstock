@@ -157,10 +157,10 @@
           "shares": 600,
           "cost_basis": 14.084,
           "current_price": 13.58,
-          "current_value": 8148,
+          "current_value": 8148.0,
           "pnl_percent": -3.58,
-          "data_source": "stooq-2026-04-02 close HKT (eastmoney delayed endpoint unavailable 2026-04-06 close run)",
-          "today_change": -300,
+          "data_source": "eastmoney-delay-2026-04-07 09:30 HKT",
+          "today_change": -300.0,
           "today_change_pct": -3.55,
           "pnl_abs": -302.4,
           "day_open": 14.26,
@@ -177,7 +177,7 @@
           "current_price": 4.646,
           "current_value": 929.2,
           "pnl_percent": -14.04,
-          "data_source": "stooq-2026-04-02 close HKT (eastmoney delayed endpoint unavailable 2026-04-06 close run)",
+          "data_source": "eastmoney-delay-2026-04-07 09:30 HKT",
           "today_change": -16.4,
           "today_change_pct": -1.73,
           "pnl_abs": -151.8,
@@ -193,9 +193,9 @@
           "shares": 6200,
           "cost_basis": 4.3632,
           "current_price": 3.51,
-          "current_value": 21762,
+          "current_value": 21762.0,
           "pnl_percent": -19.55,
-          "data_source": "stooq-2026-04-02 close HKT (eastmoney delayed endpoint unavailable 2026-04-06 close run)",
+          "data_source": "eastmoney-delay-2026-04-07 09:30 HKT",
           "trades": [
             {
               "date": "2026-03-24",
@@ -205,7 +205,7 @@
               "note": "加仓补摊，摊低成本至4.3632"
             }
           ],
-          "today_change": -744,
+          "today_change": -744.0,
           "today_change_pct": -3.31,
           "pnl_abs": -5289.84,
           "day_open": 3.598,
@@ -220,9 +220,9 @@
           "shares": 600,
           "cost_basis": 29.5552,
           "current_price": 21.24,
-          "current_value": 12744,
+          "current_value": 12744.0,
           "pnl_percent": -28.13,
-          "data_source": "stooq-2026-04-02 close HKT (eastmoney delayed endpoint unavailable 2026-04-06 close run)",
+          "data_source": "eastmoney-delay-2026-04-07 09:30 HKT",
           "trades": [
             {
               "date": "2026-03-11",
@@ -270,13 +270,13 @@
               "note": "低位补仓，摊低成本至29.5552"
             }
           ],
-          "today_change": -1656,
+          "today_change": -1656.0,
           "today_change_pct": -11.5,
           "pnl_abs": -4989.12,
           "day_open": 23.2,
           "day_high": 23.2,
           "day_low": 20.1,
-          "prev_close": 24
+          "prev_close": 24.0
         },
         {
           "ticker": "07747",
@@ -285,9 +285,9 @@
           "shares": 100,
           "cost_basis": 81.85,
           "current_price": 62.7,
-          "current_value": 6270,
+          "current_value": 6270.0,
           "pnl_percent": -23.4,
-          "data_source": "stooq-2026-04-02 close HKT (eastmoney delayed endpoint unavailable 2026-04-06 close run)",
+          "data_source": "eastmoney-delay-2026-04-07 09:30 HKT",
           "trades": [
             {
               "date": "2026-03-18",
@@ -298,13 +298,13 @@
               "note": "美光财报前减半仓止盈"
             }
           ],
-          "today_change": -643,
+          "today_change": -644.0,
           "today_change_pct": -9.31,
-          "pnl_abs": -1915,
+          "pnl_abs": -1915.0,
           "day_open": 69.42,
           "day_high": 69.42,
           "day_low": 59.44,
-          "prev_close": 69.13
+          "prev_close": 69.14
         },
         {
           "ticker": "03033",
@@ -313,12 +313,12 @@
           "shares": 1000,
           "cost_basis": 5.14,
           "current_price": 4.57,
-          "current_value": 4570,
+          "current_value": 4570.0,
           "pnl_percent": -11.09,
-          "data_source": "stooq-2026-04-02 close HKT (eastmoney delayed endpoint unavailable 2026-04-06 close run)",
-          "today_change": -76,
+          "data_source": "eastmoney-delay-2026-04-07 09:30 HKT",
+          "today_change": -76.0,
           "today_change_pct": -1.64,
-          "pnl_abs": -570,
+          "pnl_abs": -570.0,
           "day_open": 4.624,
           "day_high": 4.634,
           "day_low": 4.526,
@@ -331,8 +331,8 @@
       "total_pnl_percent": -19.54,
       "realized_pnl": 954.1,
       "realized_note": "07747 100股@85(+315) + 07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243)",
-      "today_total_change": -3435.4,
-      "last_updated": "2026-04-06 16:00:00 HKT"
+      "today_total_change": -3436.4,
+      "last_updated": "2026-04-07 09:30:00 HKT"
     }
   }
 }
