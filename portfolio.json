@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-04-08 13:19:00 HKT",
+  "last_updated": "2026-04-08 16:42:00 HKT",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -217,11 +217,11 @@
           "ticker": "07709",
           "name": "XL二南方海力士",
           "ticker_finnhub": "7709.HK",
-          "shares": 600,
-          "cost_basis": 29.493,
+          "shares": 700,
+          "cost_basis": 29.6369,
           "current_price": 31.02,
-          "current_value": 18612.0,
-          "pnl_percent": 5.18,
+          "current_value": 21714.0,
+          "pnl_percent": 4.67,
           "data_source": "eastmoney-2026-04-08 close HKT",
           "trades": [
             {
@@ -283,11 +283,18 @@
               "price": 31.76,
               "realized_pnl": 226.7,
               "note": "按用户记录卖出"
+            },
+            {
+              "date": "2026-04-08",
+              "action": "buy",
+              "shares": 100,
+              "price": 30.5,
+              "note": "按用户记录买回"
             }
           ],
           "today_change": 5868.0,
           "today_change_pct": 46.05,
-          "pnl_abs": 916.2,
+          "pnl_abs": 968.17,
           "day_open": 24.42,
           "day_high": 32.26,
           "day_low": 24.42,
@@ -348,10 +355,10 @@
           "prev_close": 4.57
         }
       ],
-      "total_cost": 59419.04,
-      "total_current_value": 57248.8,
-      "total_pnl": -2170.24,
-      "total_pnl_percent": -3.65,
+      "total_cost": 62469.07,
+      "total_current_value": 60350.8,
+      "total_pnl": -2118.27,
+      "total_pnl_percent": -3.39,
       "realized_pnl": 1353.8,
       "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0)",
       "today_total_change": 9095.6,
