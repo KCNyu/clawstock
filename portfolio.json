@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-04-08 12:33:58",
+  "last_updated": "2026-04-08 13:19:00 HKT",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -217,10 +217,10 @@
           "ticker": "07709",
           "name": "XL二南方海力士",
           "ticker_finnhub": "7709.HK",
-          "shares": 700,
+          "shares": 600,
           "cost_basis": 29.493,
           "current_price": 30.36,
-          "current_value": 21252.0,
+          "current_value": 18216.0,
           "pnl_percent": 2.94,
           "data_source": "eastmoney-2026-04-08 12:00 HKT",
           "trades": [
@@ -275,11 +275,19 @@
               "shares": 100,
               "price": 29.12,
               "note": "按用户记录买入"
+            },
+            {
+              "date": "2026-04-08",
+              "action": "sell",
+              "shares": 100,
+              "price": 31.76,
+              "realized_pnl": 226.7,
+              "note": "按用户记录卖出"
             }
           ],
           "today_change": 6384.000000000001,
           "today_change_pct": 42.94,
-          "pnl_abs": 606.9,
+          "pnl_abs": 520.2,
           "day_open": 24.42,
           "day_high": 31.28,
           "day_low": 24.42,
@@ -340,12 +348,12 @@
           "prev_close": 4.57
         }
       ],
-      "total_cost": 62368.34,
-      "total_current_value": 59349.200000000004,
-      "total_pnl": -3019.14,
-      "total_pnl_percent": -4.84,
-      "realized_pnl": 1127.1,
-      "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0)",
+      "total_cost": 59419.04,
+      "total_current_value": 56313.2,
+      "total_pnl": -3105.84,
+      "total_pnl_percent": -5.23,
+      "realized_pnl": 1353.8,
+      "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0)",
       "today_total_change": 9072.000000000002,
       "last_updated": "2026-04-08 12:00:00 HKT",
       "midday_fetch_status": "2026-04-08 12:00 HKT Eastmoney midday quotes fetched successfully for HK holdings; requested index endpoint returned HSI only, so HSTECH supplemented via Eastmoney 124.HSTECH.",
