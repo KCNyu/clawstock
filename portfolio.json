@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-04-08 09:30:00 HKT",
+  "last_updated": "2026-04-08 10:03:00 HKT",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -217,11 +217,11 @@
           "ticker": "07709",
           "name": "XL二南方海力士",
           "ticker_finnhub": "7709.HK",
-          "shares": 600,
-          "cost_basis": 29.5552,
+          "shares": 700,
+          "cost_basis": 29.493,
           "current_price": 29.98,
-          "current_value": 17988.0,
-          "pnl_percent": 1.44,
+          "current_value": 20986.0,
+          "pnl_percent": 1.65,
           "data_source": "eastmoney-2026-04-08 09:30 HKT",
           "trades": [
             {
@@ -268,11 +268,18 @@
               "shares": 100,
               "price": 22,
               "note": "低位补仓，摊低成本至29.5552"
+            },
+            {
+              "date": "2026-04-08",
+              "action": "buy",
+              "shares": 100,
+              "price": 29.12,
+              "note": "按用户记录买入"
             }
           ],
           "today_change": 5244.0,
           "today_change_pct": 41.15,
-          "pnl_abs": 254.88,
+          "pnl_abs": 340.9,
           "day_open": 24.42,
           "day_high": 31.28,
           "day_low": 24.42,
@@ -282,11 +289,11 @@
           "ticker": "07747",
           "name": "XL二南三星",
           "ticker_finnhub": "7747.HK",
-          "shares": 100,
+          "shares": 0,
           "cost_basis": 81.85,
           "current_price": 80.08,
-          "current_value": 8008.0,
-          "pnl_percent": -2.16,
+          "current_value": 0.0,
+          "pnl_percent": 0,
           "data_source": "eastmoney-2026-04-08 09:30 HKT",
           "trades": [
             {
@@ -296,11 +303,19 @@
               "price": 85,
               "realized_pnl": 315,
               "note": "美光财报前减半仓止盈"
+            },
+            {
+              "date": "2026-04-08",
+              "action": "sell",
+              "shares": 100,
+              "price": 83.58,
+              "realized_pnl": 173.0,
+              "note": "按用户记录卖出"
             }
           ],
           "today_change": 1738.0,
           "today_change_pct": 27.72,
-          "pnl_abs": -177.0,
+          "pnl_abs": -0.0,
           "day_open": 72.1,
           "day_high": 84.0,
           "day_low": 72.1,
@@ -325,12 +340,12 @@
           "prev_close": 4.57
         }
       ],
-      "total_cost": 67641.36,
-      "total_current_value": 63338.4,
-      "total_pnl": -4302.96,
-      "total_pnl_percent": -6.36,
-      "realized_pnl": 954.1,
-      "realized_note": "07747 100股@85(+315) + 07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243)",
+      "total_cost": 62368.34,
+      "total_current_value": 58328.4,
+      "total_pnl": -4039.94,
+      "total_pnl_percent": -6.48,
+      "realized_pnl": 1127.1,
+      "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0)",
       "today_total_change": 8915.2,
       "last_updated": "2026-04-08 09:30:00 HKT",
       "midday_fetch_status": "2026-04-07 12:00 HKT attempted Eastmoney/Tencent midday fetch, but quote endpoints returned stale snapshots timestamped 2026-04-02; real-time midday holding prices unavailable in this environment",
