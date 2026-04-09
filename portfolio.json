@@ -220,11 +220,11 @@
           "ticker": "07709",
           "name": "XL二南方海力士",
           "ticker_finnhub": "7709.HK",
-          "shares": 700,
-          "cost_basis": 29.6369,
+          "shares": 800,
+          "cost_basis": 29.5347875,
           "current_price": 28.7,
-          "current_value": 20090.0,
-          "pnl_percent": -3.16,
+          "current_value": 22960.0,
+          "pnl_percent": -2.83,
           "data_source": "eastmoney-2026-04-09 16:00 HKT",
           "trades": [
             {
@@ -293,11 +293,18 @@
               "shares": 100,
               "price": 30.5,
               "note": "按用户记录买回"
+            },
+            {
+              "date": "2026-04-09",
+              "action": "buy",
+              "shares": 100,
+              "price": 28.82,
+              "note": "按用户记录买入"
             }
           ],
-          "today_change": -1652.0,
+          "today_change": -1888.0,
           "today_change_pct": -7.6,
-          "pnl_abs": -655.83,
+          "pnl_abs": -667.83,
           "day_open": 29.5,
           "day_high": 30.0,
           "day_low": 28.4,
@@ -358,10 +365,10 @@
           "prev_close": 4.83
         }
       ],
-      "total_cost": 62469.07,
-      "total_current_value": 57337.6,
-      "total_pnl": -5131.47,
-      "total_pnl_percent": -8.21,
+      "total_cost": 65351.07,
+      "total_current_value": 60207.6,
+      "total_pnl": -5143.47,
+      "total_pnl_percent": -7.87,
       "realized_pnl": 1353.8,
       "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0)",
       "today_total_change": -3038.4,
