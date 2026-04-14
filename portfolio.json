@@ -246,10 +246,10 @@
           "ticker": "07709",
           "name": "XL二南方海力士",
           "ticker_finnhub": "7709.HK",
-          "shares": 600,
+          "shares": 500,
           "cost_basis": 29.5347875,
           "current_price": 36.06,
-          "current_value": 21636.0,
+          "current_value": 18030.0,
           "pnl_percent": 22.093311150453,
           "data_source": "eastmoney-2026-04-14 12:00 HKT",
           "trades": [
@@ -342,11 +342,19 @@
               "price": 36.0,
               "realized_pnl": 646.52,
               "note": "按用户记录卖出"
+            },
+            {
+              "date": "2026-04-14",
+              "action": "sell",
+              "shares": 100,
+              "price": 36.02,
+              "realized_pnl": 648.52,
+              "note": "按用户记录卖出"
             }
           ],
           "today_change": 3472.0,
           "today_change_pct": 15.95,
-          "pnl_abs": 3915.128,
+          "pnl_abs": 3262.606,
           "day_open": 35.76,
           "day_high": 36.32,
           "day_low": 35.32,
@@ -410,12 +418,12 @@
           "volume": 716606400
         }
       ],
-      "total_cost": 59444.113,
-      "total_current_value": 59330.0,
-      "total_pnl": -114.112,
-      "total_pnl_percent": -0.19196518249,
-      "realized_pnl": 2196.84,
-      "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07709 100股@31.5(+196.52) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0) + 07709 100股@36(+646.52)",
+      "total_cost": 56490.634,
+      "total_current_value": 55724.0,
+      "total_pnl": -766.634,
+      "total_pnl_percent": -1.357099302514,
+      "realized_pnl": 2845.36,
+      "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07709 100股@31.5(+196.52) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0) + 07709 100股@36(+646.52) + 07709 100股@36.02(+648.52)",
       "today_total_change": 3944.0,
       "last_updated": "2026-04-14 12:00:00 HKT",
       "midday_fetch_status": "2026-04-14 12:00 HKT Eastmoney midday quotes fetched for HK holdings; HSI from 100.HSI and HSTECH fallback from 124.HSTECH because 100.HSTI returned empty.",
