@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-04-16 00:56:24",
+  "last_updated": "2026-04-16 01:10:00",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -125,20 +125,30 @@
         },
         {
           "ticker": "TQQQ",
-          "shares": 8,
+          "shares": 0,
           "cost_basis": 45.73,
-          "current_price": 54.21,
+          "current_price": 54.45,
           "today_change_pct": 0.83,
-          "pnl_percent": 18.543625628690148,
-          "data_source": "eastmoney-2026-04-15 10:07 ET",
+          "pnl_percent": 19.06844522195495,
+          "data_source": "user trade record-2026-04-16 01:10 ET",
           "note": "2026-03-23 买入8股 @$45.73，纳指反弹趋势押注",
           "day_high": 53.94,
           "day_low": 53.33,
           "day_open": 53.565,
           "prev_close": 53.41,
-          "current_value": 430.84,
-          "pnl_abs": 65.0,
-          "today_change": 0.445
+          "current_value": 0.0,
+          "pnl_abs": 0.0,
+          "today_change": 0.445,
+          "trades": [
+            {
+              "date": "2026-04-16",
+              "action": "sell",
+              "shares": 8,
+              "price": 54.45,
+              "realized_pnl": 69.76,
+              "note": "按用户记录清仓"
+            }
+          ]
         },
         {
           "ticker": "HOOD",
@@ -158,14 +168,14 @@
           "today_change": 6.03
         }
       ],
-      "total_cost": 1651.6999999999998,
-      "total_current_value": 1811.97,
-      "total_pnl": 160.2700000000002,
-      "total_pnl_percent": 9.703335956892913,
+      "total_cost": 1285.8600000000001,
+      "total_current_value": 1378.29,
+      "total_pnl": 92.42999999999998,
+      "total_pnl_percent": 7.188185338994911,
       "today_total_change": 46.839999999999996,
-      "realized_pnl": 331.53,
-      "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120) + NVDA 3股 @$199.41(+37.23) + QQQ 1股 @$631.30(+9.30)",
-      "last_updated": "2026-04-15 22:40:35 ET",
+      "realized_pnl": 401.29,
+      "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120) + NVDA 3股 @$199.41(+37.23) + QQQ 1股 @$631.30(+9.30) + TQQQ 8股 @$54.45(+69.76)",
+      "last_updated": "2026-04-16 01:10:00 ET",
       "open_fetch_status": "2026-04-15 10:07 ET realtime quotes refreshed for active US holdings; CRCL/OKLO/QQQ via Finnhub fallback.",
       "close_fetch_status": "2026-04-14 16:00 ET Eastmoney close quotes fetched for NVDA/RKLB/TCOM/TQQQ/HOOD and NDX/SPX. CRCL/OKLO unavailable on Eastmoney and QQQ endpoint returned null, so Finnhub fallback used for CRCL/OKLO/QQQ.",
       "last_close_attempted": "2026-04-14 16:00:00 ET",
