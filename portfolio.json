@@ -1,25 +1,35 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-04-15 22:36:07",
+  "last_updated": "2026-04-15 22:40:35",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
       "holdings": [
         {
           "ticker": "NVDA",
-          "shares": 3,
+          "shares": 0,
           "cost_basis": 187,
-          "current_price": 199.72,
+          "current_price": 199.41,
           "today_change_pct": 0.99,
-          "pnl_percent": 6.802139037433154,
-          "data_source": "eastmoney-2026-04-15 10:07 ET",
+          "pnl_percent": 6.636363636363638,
+          "data_source": "user trade record-2026-04-15 22:40 ET",
           "day_high": 198.795,
           "day_low": 196.26,
           "day_open": 196.55,
           "prev_close": 196.51,
-          "current_value": 595.35,
-          "pnl_abs": 34.35,
-          "today_change": 1.94
+          "current_value": 0.0,
+          "pnl_abs": 0.0,
+          "today_change": 1.94,
+          "trades": [
+            {
+              "date": "2026-04-15",
+              "action": "sell",
+              "shares": 3,
+              "price": 199.41,
+              "realized_pnl": 37.23,
+              "note": "按用户截图记录清仓"
+            }
+          ]
         },
         {
           "ticker": "RKLB",
@@ -72,19 +82,29 @@
         },
         {
           "ticker": "QQQ",
-          "shares": 1,
+          "shares": 0,
           "cost_basis": 622,
-          "current_price": 631.96,
+          "current_price": 631.3,
           "today_change_pct": 0.2657,
-          "pnl_percent": 1.6012861736334463,
-          "data_source": "finnhub fallback-2026-04-15 10:07 ET",
+          "pnl_percent": 1.495176848874598,
+          "data_source": "user trade record-2026-04-15 22:39 ET",
           "day_high": 630.5937,
           "day_low": 628.2,
           "day_open": 629.09,
           "prev_close": 628.6,
-          "current_value": 630.27,
-          "pnl_abs": 8.27,
-          "today_change": 1.67
+          "current_value": 0.0,
+          "pnl_abs": 0.0,
+          "today_change": 1.67,
+          "trades": [
+            {
+              "date": "2026-04-15",
+              "action": "sell",
+              "shares": 1,
+              "price": 631.3,
+              "realized_pnl": 9.3,
+              "note": "按用户截图记录清仓"
+            }
+          ]
         },
         {
           "ticker": "TCOM",
@@ -138,14 +158,14 @@
           "today_change": 6.03
         }
       ],
-      "total_cost": 2834.7,
-      "total_current_value": 3064.44,
-      "total_pnl": 229.74000000000024,
-      "total_pnl_percent": 8.104561329241198,
-      "today_total_change": 54.33,
-      "realized_pnl": 285,
-      "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120)",
-      "last_updated": "2026-04-15 10:07:12 ET",
+      "total_cost": 1651.7,
+      "total_current_value": 1833.32,
+      "total_pnl": 181.6199999999999,
+      "total_pnl_percent": 10.995943573288121,
+      "today_total_change": 46.839999999999996,
+      "realized_pnl": 331.53,
+      "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120) + NVDA 3股 @$199.41(+37.23) + QQQ 1股 @$631.30(+9.30)",
+      "last_updated": "2026-04-15 22:40:35 ET",
       "open_fetch_status": "2026-04-15 10:07 ET realtime quotes refreshed for active US holdings; CRCL/OKLO/QQQ via Finnhub fallback.",
       "close_fetch_status": "2026-04-14 16:00 ET Eastmoney close quotes fetched for NVDA/RKLB/TCOM/TQQQ/HOOD and NDX/SPX. CRCL/OKLO unavailable on Eastmoney and QQQ endpoint returned null, so Finnhub fallback used for CRCL/OKLO/QQQ.",
       "last_close_attempted": "2026-04-14 16:00:00 ET",
