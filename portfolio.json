@@ -238,10 +238,10 @@
           "ticker": "07709",
           "name": "XL二南方海力士",
           "ticker_finnhub": "7709.HK",
-          "shares": 400,
+          "shares": 0,
           "cost_basis": 29.5347875,
           "current_price": 36.9,
-          "current_value": 14760.0,
+          "current_value": 0.0,
           "pnl_percent": 24.93741490437335,
           "data_source": "tencent-2026-04-15 22:07 HKT",
           "trades": [
@@ -350,11 +350,19 @@
               "price": 38.7,
               "realized_pnl": 916.52,
               "note": "按用户更正卖出"
+            },
+            {
+              "date": "2026-04-15",
+              "action": "sell",
+              "shares": 400,
+              "price": 36.98,
+              "realized_pnl": 2978.08,
+              "note": "按用户补充记录清仓"
             }
           ],
           "today_change": 584.0,
           "today_change_pct": 4.12,
-          "pnl_abs": 2946.085,
+          "pnl_abs": 0.0,
           "day_open": 39.4,
           "day_high": 39.42,
           "day_low": 36.8,
@@ -418,12 +426,12 @@
           "volume": 1309189731
         }
       ],
-      "total_cost": 53537.155,
-      "total_current_value": 53553.6,
-      "total_pnl": 16.445,
-      "total_pnl_percent": 0.03071698524137116,
-      "realized_pnl": 3761.88,
-      "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07709 100股@31.5(+196.52) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0) + 07709 100股@36(+646.52) + 07709 100股@36.02(+648.52) + 07709 100股@38.7(+916.52)",
+      "total_cost": 41723.24,
+      "total_current_value": 38793.6,
+      "total_pnl": -2929.64,
+      "total_pnl_percent": -7.021602349194358,
+      "realized_pnl": 6739.96,
+      "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07709 100股@31.5(+196.52) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0) + 07709 100股@36(+646.52) + 07709 100股@36.02(+648.52) + 07709 100股@38.7(+916.52) + 07709 400股@36.98(+2978.08)",
       "today_total_change": 1164.4,
       "last_updated": "2026-04-15 22:07:12 HKT",
       "midday_fetch_status": "2026-04-15 12:00 HKT Eastmoney midday quotes fetched for HK holdings; HSI from 100.HSI and HSTECH from 124.HSTECH fallback because 100.HSTI returned empty.",
