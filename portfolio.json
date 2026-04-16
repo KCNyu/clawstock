@@ -475,7 +475,7 @@
       "midday_fetch_status": "2026-04-15 12:00 HKT Eastmoney midday quotes fetched for HK holdings; HSI from 100.HSI and HSTECH from 124.HSTECH fallback because 100.HSTI returned empty.",
       "close_fetch_status": "2026-04-15 22:07 HKT latest HK quotes refreshed via Tencent.",
       "last_close_attempted": "2026-04-15 22:07:12 HKT",
-      "open_fetch_status": "2026-04-16 09:30 HKT Eastmoney real-time quotes fetched for HK holdings; HSI from 100.HSI. 100.HSTI returned empty, so HSTECH point was estimated from live tracking ETFs 03032/03033 and open-news cross-check.",
+      "open_fetch_status": "2026-04-16 09:35 HKT Eastmoney real-time quotes fetched for HK holdings; HSI from 100.HSI and HSTECH from 124.HSTECH fallback because 100.HSTI returned empty.",
       "indices_snapshot": {
         "HSI": {
           "price": 26140.78,
@@ -484,12 +484,12 @@
           "source": "eastmoney-2026-04-16 09:30 HKT"
         },
         "HSTECH": {
-          "price": 4987.12,
-          "chg_pct": 1.53,
-          "chg_abs": 75.33,
-          "source": "estimated from live 03032/03033 tracking and 2026-04-16 09:26-09:30 open-news cross-check because 100.HSTI/124.HSTECH were unavailable"
+          "price": 4989.46,
+          "chg_pct": 1.58,
+          "chg_abs": 77.67,
+          "source": "eastmoney-2026-04-16 09:35 HKT fallback 124.HSTECH"
         },
-        "source": "mixed: Eastmoney 100.HSI + HSTECH proxy estimate"
+        "source": "mixed: Eastmoney 100.HSI + Eastmoney 124.HSTECH fallback"
       },
       "last_midday_attempted": "2026-04-15 12:00:00 HKT",
       "last_open_attempted": "2026-04-16 09:30:00 HKT"
