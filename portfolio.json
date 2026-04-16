@@ -212,18 +212,18 @@
           "ticker_finnhub": "2208.HK",
           "shares": 600,
           "cost_basis": 14.084,
-          "current_price": 15.14,
-          "current_value": 9084.0,
-          "pnl_percent": 7.497869923317246,
-          "data_source": "tencent-2026-04-16 09:40 HKT",
-          "today_change": 101.99999999999996,
-          "today_change_pct": 1.135604542418169,
-          "pnl_abs": 633.6000000000004,
+          "current_price": 14.97,
+          "current_value": 8982.0,
+          "pnl_percent": 6.290826469753,
+          "data_source": "eastmoney-2026-04-16 12:00 HKT",
+          "today_change": 0.0,
+          "today_change_pct": 0.0,
+          "pnl_abs": 531.6,
           "day_open": 15.2,
           "day_high": 15.4,
-          "day_low": 15.11,
+          "day_low": 14.93,
           "prev_close": 14.97,
-          "volume": 3522490
+          "volume": 15058410
         },
         {
           "ticker": "03032",
@@ -231,18 +231,18 @@
           "ticker_finnhub": "3032.HK",
           "shares": 200,
           "cost_basis": 5.405,
-          "current_price": 4.984,
-          "current_value": 996.8,
-          "pnl_percent": -7.789084181313603,
-          "data_source": "tencent-2026-04-16 09:40 HKT",
-          "today_change": 17.99999999999997,
-          "today_change_pct": 1.8389865140988937,
-          "pnl_abs": -84.20000000000005,
+          "current_price": 5.045,
+          "current_value": 1009.0,
+          "pnl_percent": -6.660499537465,
+          "data_source": "eastmoney-2026-04-16 12:00 HKT",
+          "today_change": 30.2,
+          "today_change_pct": 3.09,
+          "pnl_abs": -72.0,
           "day_open": 4.95,
-          "day_high": 4.988,
+          "day_high": 5.045,
           "day_low": 4.95,
           "prev_close": 4.894,
-          "volume": 3689451
+          "volume": 21412801
         },
         {
           "ticker": "07226",
@@ -250,10 +250,10 @@
           "ticker_finnhub": "7226.HK",
           "shares": 6200,
           "cost_basis": 4.3632,
-          "current_price": 4.016,
-          "current_value": 24899.2,
-          "pnl_percent": -7.957462412907956,
-          "data_source": "tencent-2026-04-16 09:40 HKT",
+          "current_price": 4.104,
+          "current_value": 25444.8,
+          "pnl_percent": -5.940594059406,
+          "data_source": "eastmoney-2026-04-16 12:00 HKT",
           "trades": [
             {
               "date": "2026-03-24",
@@ -263,14 +263,14 @@
               "note": "加仓补摊，摊低成本至4.3632"
             }
           ],
-          "today_change": 880.3999999999994,
-          "today_change_pct": 3.665462054723797,
-          "pnl_abs": -2152.6399999999994,
+          "today_change": 1426.0,
+          "today_change_pct": 5.94,
+          "pnl_abs": -1607.04,
           "day_open": 3.976,
-          "day_high": 4.022,
+          "day_high": 4.112,
           "day_low": 3.972,
           "prev_close": 3.874,
-          "volume": 58106320
+          "volume": 203862260
         },
         {
           "ticker": "07709",
@@ -278,10 +278,10 @@
           "ticker_finnhub": "7709.HK",
           "shares": 0,
           "cost_basis": 29.5347875,
-          "current_price": 38.36,
+          "current_price": 38.06,
           "current_value": 0.0,
-          "pnl_percent": 29.880738095711706,
-          "data_source": "tencent-2026-04-16 09:40 HKT",
+          "pnl_percent": 28.864986755026,
+          "data_source": "eastmoney-2026-04-16 12:00 HKT",
           "trades": [
             {
               "date": "2026-03-11",
@@ -399,13 +399,13 @@
             }
           ],
           "today_change": 0.0,
-          "today_change_pct": 3.9566395663956664,
+          "today_change_pct": 3.14,
           "pnl_abs": 0.0,
           "day_open": 38.48,
           "day_high": 38.94,
-          "day_low": 38.1,
+          "day_low": 37.86,
           "prev_close": 36.9,
-          "volume": 5816680
+          "volume": 20389592
         },
         {
           "ticker": "07747",
@@ -413,10 +413,10 @@
           "ticker_finnhub": "7747.HK",
           "shares": 0,
           "cost_basis": 81.85,
-          "current_price": 87.58,
+          "current_price": 88.68,
           "current_value": 0.0,
-          "pnl_percent": 7.0006108735491805,
-          "data_source": "tencent-2026-04-16 09:40 HKT",
+          "pnl_percent": 8.344532681735,
+          "data_source": "eastmoney-2026-04-16 12:00 HKT",
           "trades": [
             {
               "date": "2026-03-18",
@@ -436,13 +436,13 @@
             }
           ],
           "today_change": 0.0,
-          "today_change_pct": 5.315055315055317,
+          "today_change_pct": 6.64,
           "pnl_abs": 0.0,
           "day_open": 85.18,
-          "day_high": 87.9,
+          "day_high": 90.0,
           "day_low": 85.18,
           "prev_close": 83.16,
-          "volume": 1649500
+          "volume": 4886067
         },
         {
           "ticker": "03033",
@@ -450,56 +450,48 @@
           "ticker_finnhub": "3033.HK",
           "shares": 1000,
           "cost_basis": 5.14,
-          "current_price": 4.9,
-          "current_value": 4900.0,
-          "pnl_percent": -4.669260700389092,
-          "data_source": "tencent-2026-04-16 09:40 HKT",
-          "today_change": 86.0000000000003,
-          "today_change_pct": 1.786456169505615,
-          "pnl_abs": -240.0,
+          "current_price": 4.954,
+          "current_value": 4954.0,
+          "pnl_percent": -3.618677042802,
+          "data_source": "eastmoney-2026-04-16 12:00 HKT",
+          "today_change": 140.0,
+          "today_change_pct": 2.91,
+          "pnl_abs": -186.0,
           "day_open": 4.874,
-          "day_high": 4.904,
+          "day_high": 4.96,
           "day_low": 4.872,
           "prev_close": 4.814,
-          "volume": 43143200
+          "volume": 614639856
         }
       ],
       "total_cost": 41723.24,
-      "total_current_value": 39880.0,
-      "total_pnl": -1843.239999999998,
-      "total_pnl_percent": -4.417777718125433,
+      "total_current_value": 40389.8,
+      "total_pnl": -1333.44,
+      "total_pnl_percent": -3.195916712125,
       "realized_pnl": 6739.96,
       "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07709 100股@31.5(+196.52) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0) + 07709 100股@36(+646.52) + 07709 100股@36.02(+648.52) + 07709 100股@38.7(+916.52) + 07709 400股@36.98(+2978.08)",
-      "today_total_change": 1086.3999999999996,
-      "last_updated": "2026-04-16 09:40:00 HKT",
-      "midday_fetch_status": "2026-04-15 12:00 HKT Eastmoney midday quotes fetched for HK holdings; HSI from 100.HSI and HSTECH from 124.HSTECH fallback because 100.HSTI returned empty.",
+      "today_total_change": 1596.2,
+      "last_updated": "2026-04-16 12:00:00 HKT",
+      "midday_fetch_status": "2026-04-16 12:00 HKT Eastmoney midday quotes fetched for HK holdings; HSI from 100.HSI and HSTECH from 124.HSTECH fallback because 100.HSTI returned empty.",
       "close_fetch_status": "2026-04-15 22:07 HKT latest HK quotes refreshed via Tencent.",
       "last_close_attempted": "2026-04-15 22:07:12 HKT",
       "open_fetch_status": "2026-04-16 09:40 HKT Tencent real-time quotes fetched for HK holdings; HSI/HSTECH index snapshot refreshed via Eastmoney.",
       "indices_snapshot": {
         "HSI": {
-          "price": 26168.51,
-          "chg_pct": 0.85,
-          "chg_abs": 221.19,
-          "high": 26185.48,
-          "low": 26122.8,
-          "open": 26122.8,
-          "prev_close": 25947.32,
-          "source": "eastmoney-2026-04-16 09:40 HKT"
+          "price": 26306.26,
+          "chg_pct": 1.38,
+          "chg_abs": 358.94,
+          "source": "eastmoney-2026-04-16 12:00 HKT"
         },
         "HSTECH": {
-          "price": 5003.08,
-          "chg_pct": 1.86,
-          "chg_abs": 91.29,
-          "high": 5008.04,
-          "low": 4976.17,
-          "open": 4976.17,
-          "prev_close": 4911.79,
-          "source": "eastmoney-2026-04-16 09:40 HKT fallback 124.HSTECH"
+          "price": 5057.98,
+          "chg_pct": 2.98,
+          "chg_abs": 146.19,
+          "source": "eastmoney-2026-04-16 12:00 HKT fallback 124.HSTECH"
         },
-        "source": "mixed: Tencent holdings + Eastmoney 100.HSI + Eastmoney 124.HSTECH fallback"
+        "source": "mixed: Eastmoney 100.HSI + Eastmoney 124.HSTECH fallback"
       },
-      "last_midday_attempted": "2026-04-15 12:00:00 HKT",
+      "last_midday_attempted": "2026-04-16 12:00:00 HKT",
       "last_open_attempted": "2026-04-16 09:40:00 HKT"
     }
   },
