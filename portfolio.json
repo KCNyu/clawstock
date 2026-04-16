@@ -166,19 +166,45 @@
           "current_value": 439.0,
           "pnl_abs": 71.5,
           "today_change": 0.48
+        },
+        {
+          "ticker": "PLTU",
+          "shares": 11,
+          "cost_basis": 42.32,
+          "current_price": 41.18,
+          "today_change_pct": 9.29,
+          "pnl_percent": -2.693761814744803,
+          "data_source": "eastmoney-2026-04-16 regular session snapshot",
+          "day_high": 41.37,
+          "day_low": 37.18,
+          "day_open": 38.255,
+          "prev_close": 37.68,
+          "current_value": 452.98,
+          "pnl_abs": -12.540000000000006,
+          "today_change": 38.5,
+          "note": "2026-04-16 按用户截图记录买入，做 PLTR 2x 杠杆短线仓",
+          "trades": [
+            {
+              "date": "2026-04-16",
+              "action": "buy",
+              "shares": 11,
+              "price": 42.32,
+              "note": "按用户截图记录买入"
+            }
+          ]
         }
       ],
-      "total_cost": 1285.86,
-      "total_current_value": 1455.245,
-      "total_pnl": 169.385,
-      "total_pnl_percent": 13.172895960680012,
-      "today_total_change": 42.305,
+      "total_cost": 1751.3799999999999,
+      "total_current_value": 1908.225,
+      "total_pnl": 156.84500000000003,
+      "total_pnl_percent": 8.95550936975414,
+      "today_total_change": 48.092999999999996,
       "realized_pnl": 401.29,
       "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120) + NVDA 3股 @$199.41(+37.23) + QQQ 1股 @$631.30(+9.30) + TQQQ 8股 @$54.45(+69.76)",
-      "last_updated": "2026-04-16 09:30:00 ET",
+      "last_updated": "2026-04-16 16:00:00 ET",
       "open_fetch_status": "2026-04-16 09:30 ET realtime quotes refreshed for requested US tickers; CRCL/OKLO unavailable on Eastmoney and QQQ endpoint returned null, so Finnhub fallback used for CRCL/OKLO/QQQ.",
-      "close_fetch_status": "2026-04-15 16:00 ET Eastmoney close quotes fetched for NVDA/RKLB/TCOM/TQQQ/HOOD and NDX/SPX. CRCL/OKLO unavailable on Eastmoney and QQQ endpoint returned null, so Finnhub fallback used for CRCL/OKLO/QQQ.",
-      "last_close_attempted": "2026-04-15 16:00:00 ET",
+      "close_fetch_status": "2026-04-16 regular session snapshot fetched for PLTR/PLTU; existing 2026-04-15 close quotes retained for other US holdings pending full refresh.",
+      "last_close_attempted": "2026-04-16 16:00:00 ET",
       "last_open_attempted": "2026-04-16 09:30:00 ET",
       "indices_snapshot": {
         "NDX": {
