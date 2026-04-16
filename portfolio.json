@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-04-15 16:00:00 ET",
+  "last_updated": "2026-04-16 13:15:00 HKT",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -206,6 +206,36 @@
     "hk_stocks": {
       "currency": "HKD",
       "holdings": [
+        {
+          "ticker": "00100",
+          "name": "MINIMAX-W",
+          "ticker_finnhub": "0100.HK",
+          "shares": 20,
+          "cost_basis": 899.5,
+          "current_price": 896.5,
+          "current_value": 17930.0,
+          "pnl_percent": -0.33351862145636463,
+          "data_source": "tencent-2026-04-16 13:15 HKT",
+          "today_change": 980.0,
+          "today_change_pct": 5.781710914454277,
+          "pnl_abs": -60.0,
+          "day_open": 815.5,
+          "day_high": 918.0,
+          "day_low": 815.5,
+          "prev_close": 847.5,
+          "volume": 1088480,
+          "lot_size": 20,
+          "note": "按用户记录，2026-04-16 买入 20 股做 MiniMax 短线仓",
+          "trades": [
+            {
+              "date": "2026-04-16",
+              "action": "buy",
+              "shares": 20,
+              "price": 899.5,
+              "note": "按用户记录买入"
+            }
+          ]
+        },
         {
           "ticker": "02208",
           "name": "金风科技",
@@ -464,18 +494,18 @@
           "volume": 614639856
         }
       ],
-      "total_cost": 41723.24,
-      "total_current_value": 40389.8,
-      "total_pnl": -1333.44,
-      "total_pnl_percent": -3.195916712125,
+      "total_cost": 59713.24,
+      "total_current_value": 58319.8,
+      "total_pnl": -1393.439999999995,
+      "total_pnl_percent": -2.3335528268102603,
       "realized_pnl": 6739.96,
       "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07709 100股@31.5(+196.52) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0) + 07709 100股@36(+646.52) + 07709 100股@36.02(+648.52) + 07709 100股@38.7(+916.52) + 07709 400股@36.98(+2978.08)",
-      "today_total_change": 1596.2,
-      "last_updated": "2026-04-16 12:00:00 HKT",
+      "today_total_change": 2576.2,
+      "last_updated": "2026-04-16 13:15:00 HKT",
       "midday_fetch_status": "2026-04-16 12:00 HKT Eastmoney midday quotes fetched for HK holdings; HSI from 100.HSI and HSTECH from 124.HSTECH fallback because 100.HSTI returned empty.",
       "close_fetch_status": "2026-04-15 22:07 HKT latest HK quotes refreshed via Tencent.",
       "last_close_attempted": "2026-04-15 22:07:12 HKT",
-      "open_fetch_status": "2026-04-16 09:40 HKT Tencent real-time quotes fetched for HK holdings; HSI/HSTECH index snapshot refreshed via Eastmoney.",
+      "open_fetch_status": "2026-04-16 13:15 HKT Tencent real-time quotes fetched for HK holdings incl. 00100 MINIMAX-W; HSI/HSTECH latest snapshot remains from 12:00 HKT Eastmoney.",
       "indices_snapshot": {
         "HSI": {
           "price": 26306.26,
@@ -492,7 +522,7 @@
         "source": "mixed: Eastmoney 100.HSI + Eastmoney 124.HSTECH fallback"
       },
       "last_midday_attempted": "2026-04-16 12:00:00 HKT",
-      "last_open_attempted": "2026-04-16 09:40:00 HKT"
+      "last_open_attempted": "2026-04-16 13:15:00 HKT"
     }
   },
   "market_context": {
