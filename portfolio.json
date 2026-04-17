@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-04-17 09:31:00 ET",
+  "last_updated": "2026-04-17 09:55:15 ET",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -192,20 +192,46 @@
               "note": "按用户截图记录买入"
             }
           ]
+        },
+        {
+          "ticker": "SOXL",
+          "shares": 10,
+          "cost_basis": 91.87,
+          "current_price": 91.62,
+          "today_change_pct": 3.6777,
+          "pnl_percent": -0.27212365298791774,
+          "data_source": "finnhub-2026-04-17 09:55:15 ET",
+          "day_high": 93.42,
+          "day_low": 90.882,
+          "day_open": 91.0375,
+          "prev_close": 88.37,
+          "current_value": 916.2,
+          "pnl_abs": -2.5,
+          "today_change": 3.25,
+          "note": "2026-04-17 按用户截图记录买入，做半导体 3x 杠杆短线仓",
+          "trades": [
+            {
+              "date": "2026-04-17",
+              "action": "buy",
+              "shares": 10,
+              "price": 91.87,
+              "note": "按用户截图记录买入"
+            }
+          ]
         }
       ],
-      "total_cost": 1751.38,
-      "total_current_value": 1989.226,
-      "total_pnl": 237.846,
-      "total_pnl_percent": 13.580490812958923,
-      "today_total_change": 67.366,
+      "total_cost": 2670.08,
+      "total_current_value": 2905.426,
+      "total_pnl": 235.346,
+      "total_pnl_percent": 8.814192833173538,
+      "today_total_change": 99.866,
       "realized_pnl": 401.29,
       "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120) + NVDA 3股 @$199.41(+37.23) + QQQ 1股 @$631.30(+9.30) + TQQQ 8股 @$54.45(+69.76)",
-      "last_updated": "2026-04-17 09:39:31 ET",
-      "open_fetch_status": "2026-04-17 09:39:31 ET realtime quotes refreshed; Eastmoney first, Finnhub fallback used for HOOD, PLTU.",
+      "last_updated": "2026-04-17 09:55:15 ET",
+      "open_fetch_status": "2026-04-17 09:55:15 ET realtime quotes refreshed; Eastmoney first, Finnhub fallback used for HOOD, PLTU, SOXL.",
       "close_fetch_status": "2026-04-16 16:00 ET close quotes refreshed for US holdings; Eastmoney returned NVDA/RKLB/TCOM/TQQQ/HOOD and NDX/SPX, while CRCL/OKLO/QQQ were completed via Finnhub fallback because Eastmoney missed CRCL/OKLO and QQQ endpoint returned null. PLTU refreshed via Finnhub.",
       "last_close_attempted": "2026-04-16 16:00:00 ET",
-      "last_open_attempted": "2026-04-17 09:39:31 ET",
+      "last_open_attempted": "2026-04-17 09:55:15 ET",
       "indices_snapshot": {
         "NDX": {
           "price": 24358.52,
