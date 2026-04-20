@@ -313,18 +313,18 @@
           "ticker_finnhub": "3032.HK",
           "shares": 200,
           "cost_basis": 5.405,
-          "current_price": 5.01,
-          "current_value": 1002.0,
-          "pnl_percent": -7.308048,
-          "data_source": "eastmoney-2026-04-20 09:30 HKT",
-          "today_change": -3.0,
-          "today_change_pct": -0.3,
-          "pnl_abs": -79.0,
+          "current_price": 5.07,
+          "current_value": 1014.0,
+          "pnl_percent": -6.197964847363551,
+          "data_source": "tencent-2026-04-20 11:03:38 HKT",
+          "today_change": 9.0,
+          "today_change_pct": 0.9,
+          "pnl_abs": -67.0,
           "day_open": 5.025,
-          "day_high": 5.03,
+          "day_high": 5.085,
           "day_low": 5.005,
           "prev_close": 5.025,
-          "volume": 557800
+          "volume": 9279044
         },
         {
           "ticker": "07226",
@@ -332,10 +332,10 @@
           "ticker_finnhub": "7226.HK",
           "shares": 6200,
           "cost_basis": 4.3632,
-          "current_price": 4.046,
-          "current_value": 25085.2,
-          "pnl_percent": -7.269894,
-          "data_source": "eastmoney-2026-04-20 09:30 HKT",
+          "current_price": 4.146,
+          "current_value": 25705.2,
+          "pnl_percent": -4.977997799779979,
+          "data_source": "tencent-2026-04-20 11:03:54 HKT",
           "trades": [
             {
               "date": "2026-03-24",
@@ -345,14 +345,14 @@
               "note": "加仓补摊，摊低成本至4.3632"
             }
           ],
-          "today_change": -148.8,
-          "today_change_pct": -0.59,
-          "pnl_abs": -1966.64,
+          "today_change": 471.2,
+          "today_change_pct": 1.87,
+          "pnl_abs": -1346.64,
           "day_open": 4.1,
-          "day_high": 4.1,
-          "day_low": 4.044,
+          "day_high": 4.172,
+          "day_low": 4.042,
           "prev_close": 4.07,
-          "volume": 4823900
+          "volume": 115402142
         },
         {
           "ticker": "07709",
