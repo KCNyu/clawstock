@@ -267,7 +267,7 @@
           "current_price": 878.5,
           "current_value": 17570.0,
           "pnl_percent": -2.3346303501945527,
-          "data_source": "eastmoney-2026-04-20 09:37 HKT",
+          "data_source": "eastmoney-2026-04-20 09:41 HKT",
           "today_change": 390.0,
           "today_change_pct": 2.27,
           "pnl_abs": -420.0,
@@ -275,7 +275,7 @@
           "day_high": 890.0,
           "day_low": 858.0,
           "prev_close": 859.0,
-          "volume": 70100,
+          "volume": 86340,
           "lot_size": 20,
           "note": "按用户记录，2026-04-16 买入 20 股做 MiniMax 短线仓",
           "trades": [
