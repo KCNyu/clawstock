@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-04-21 11:59:59 HKT",
+  "last_updated": "2026-04-21 12:06:00 HKT",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -297,7 +297,7 @@
           "current_price": 16.6,
           "current_value": 9960.0,
           "pnl_percent": 17.864243,
-          "data_source": "tencent-2026-04-21 11:59:39 HKT",
+          "data_source": "eastmoney-2026-04-21 12:06:00 HKT",
           "today_change": -198.0,
           "today_change_pct": -1.95,
           "pnl_abs": 1509.6,
@@ -316,7 +316,7 @@
           "current_price": 5.01,
           "current_value": 1002.0,
           "pnl_percent": -7.308048,
-          "data_source": "tencent-2026-04-21 11:57:56 HKT",
+          "data_source": "eastmoney-2026-04-21 12:06:00 HKT",
           "today_change": -8.0,
           "today_change_pct": -0.79,
           "pnl_abs": -79.0,
@@ -335,7 +335,7 @@
           "current_price": 4.054,
           "current_value": 25134.8,
           "pnl_percent": -7.086542,
-          "data_source": "tencent-2026-04-21 11:59:54 HKT",
+          "data_source": "eastmoney-2026-04-21 12:06:00 HKT",
           "trades": [
             {
               "date": "2026-03-24",
@@ -363,7 +363,7 @@
           "current_price": 42.48,
           "current_value": 0.0,
           "pnl_percent": 0.0,
-          "data_source": "tencent-2026-04-21 11:59:59 HKT",
+          "data_source": "eastmoney-2026-04-21 12:06:00 HKT",
           "trades": [
             {
               "date": "2026-03-11",
@@ -495,10 +495,10 @@
           "ticker_finnhub": "7747.HK",
           "shares": 0,
           "cost_basis": 81.85,
-          "current_price": 89.4,
+          "current_price": 89.36,
           "current_value": 0.0,
           "pnl_percent": 0.0,
-          "data_source": "tencent-2026-04-21 11:59:45 HKT",
+          "data_source": "eastmoney-2026-04-21 12:06:00 HKT",
           "trades": [
             {
               "date": "2026-03-18",
@@ -518,7 +518,7 @@
             }
           ],
           "today_change": 0.0,
-          "today_change_pct": 2.31,
+          "today_change_pct": 2.27,
           "pnl_abs": 0.0,
           "day_open": 90.0,
           "day_high": 90.48,
@@ -535,7 +535,7 @@
           "current_price": 4.924,
           "current_value": 4924.0,
           "pnl_percent": -4.202335,
-          "data_source": "tencent-2026-04-21 11:59:47 HKT",
+          "data_source": "eastmoney-2026-04-21 12:06:00 HKT",
           "today_change": -26.0,
           "today_change_pct": -0.53,
           "pnl_abs": -216.0,
@@ -553,8 +553,8 @@
       "realized_pnl": 6739.96,
       "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07709 100股@31.5(+196.52) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0) + 07709 100股@36(+646.52) + 07709 100股@36.02(+648.52) + 07709 100股@38.7(+916.52) + 07709 400股@36.98(+2978.08)",
       "today_total_change": -1049.6,
-      "last_updated": "2026-04-21 11:59:59 HKT",
-      "midday_fetch_status": "2026-04-21 12:00 HKT Eastmoney batch/indices API timed out. Required Stooq fallback executed for 02208/03032/07226/07709/07747/03033, but Stooq returned prior close data dated 2026-04-20. Portfolio noon snapshot therefore updated with fresher Tencent 11:57-11:59 HKT quotes for the specified HK tickers; HSI/HSTECH also from Tencent fallback.",
+      "last_updated": "2026-04-21 12:06:00 HKT",
+      "midday_fetch_status": "2026-04-21 12:06 HKT Eastmoney batch quotes succeeded for 02208/03032/07226/07709/07747/03033. Index endpoint 100.HSI returned HSI normally, while 100.HSTI returned null, so HSTECH was filled with Eastmoney 124.HSTECH real-time quote.",
       "close_fetch_status": "2026-04-20 16:00 HKT Eastmoney close quotes fetched for HK holdings; HSI from 100.HSI and HSTECH from 124.HSTECH fallback because 100.HSTI returned empty.",
       "last_close_attempted": "2026-04-20 16:00:00 HKT",
       "open_fetch_status": "2026-04-21 09:30 HKT Eastmoney real-time quotes fetched for tracked HK tickers; HSI from 100.HSI and HSTECH from 124.HSTECH fallback because 100.HSTI returned empty.",
@@ -563,17 +563,17 @@
           "price": 26394.86,
           "chg_pct": 0.13,
           "chg_abs": 33.79,
-          "source": "tencent-2026-04-21 11:59:59 HKT"
+          "source": "eastmoney-2026-04-21 12:06:00 HKT"
         },
         "HSTECH": {
           "price": 5028.21,
           "chg_pct": -0.74,
           "chg_abs": -37.42,
-          "source": "tencent-2026-04-21 11:59:59 HKT"
+          "source": "eastmoney-124.HSTECH-2026-04-21 12:06:00 HKT"
         },
-        "source": "Tencent fallback after Eastmoney timeout; required Stooq fallback also executed for specified holdings"
+        "source": "Eastmoney noon snapshot; 100.HSTI null, fallback to 124.HSTECH real-time quote"
       },
-      "last_midday_attempted": "2026-04-21 12:00:00 HKT",
+      "last_midday_attempted": "2026-04-21 12:06:00 HKT",
       "last_open_attempted": "2026-04-21 09:30:00 HKT"
     }
   },
