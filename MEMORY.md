@@ -7,6 +7,7 @@
 - **不用追踪历史交易记录**：忽略 `trades` 字段里的历史操作，focus 当前仓位
 - 简洁明了，不需要交代背景或之前发生过什么
 - 风险偏好：**激进型**，可用现金约 15万人民币（≈$20,500 USD），不排斥高波动标的
+- 关注重点以**美股为主**，港股也看，但后续分析默认先从美股角度展开
 
 ### openclaw workspace 投资入口（重要）
 - 凡是用户问到：`持仓`、`portfolio`、`美股`、`港股`、`节后操作`、`加仓/减仓`
@@ -84,3 +85,65 @@
 - 油价↓（地缘缓和）↔ 加密/科技涨
 - CRCL 逻辑：GENIUS Act 稳定币法案推进（与大盘相对独立）
 - OKLO 逻辑：核能 + Sam Altman 背书，长期看好，但当前套牢
+
+## Promoted From Short-Term Memory (2026-04-09)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-03-11.md:1:32 -->
+- ## 2026-03-10 交易日复盘 ### 市场背景 - 催化剂：特朗普"伊朗停战"发言 → 地缘风险降低 → KOSPI +6%，港股全线走强 - SK海力士收盘 +12.2%（938,000 KRW），三星 +9.22%（189,500 KRW） - 美股存储板块：MU +6%，WDC +6.8%，STX +4.1%（全部在日内高位收盘） ### kcn 持仓状态（收盘） **港股** - 07709 XL海力士(2x)：28.90 +22%，累计亏损 -1,884 HKD，距回本 +10.9% - 07747 XL三星(2x)：72.20 +14%，累计亏损 -1,930 HKD，距回本 +13.4% - 07226 XL恒科(2x)：4.158 +5.16%，亏 -1,764 HKD - 03032 恒生科技ETF：5.035 +2.5%，亏 -74 HKD - 03033 南方恒科：4.946 +2.57%，亏 -194 HKD，距回本仅 3.9% ⭐ - 02208 金风科技：14.57 +0.48%，已回本 +292 HKD ✅ - 港股今日回血：+HKD 6,329；总亏损从 -11,884 收窄至 -5,555（-7.54%） **美股** - CRCL：收盘约 $118，今日 +5.8%，持仓盈利 +$298（+34%），成本 $87 x10股 - NVDA：$184.75 +1.15%，持仓小亏 -$7 - RKLB：$71.75 +0.4%，持仓微盈 - QQQ：$607~610，持仓小亏 ### CRCL 分析 - 公司：Circle Internet Group（USDC稳定币发行商） - 催化剂：GENIUS Act（稳定币法案）推进 + Bernstein目标价 $200（+70%空间） - 历史高点：$298.99（2025-06-23），当前 ~$118，距高点 -60% - 58% 历史成交量在当前价格以上（套牢盘多） - 套牢压力位：$120~130 / $145~160 / $180~200 - 技术面：RSI 74.6（超买），量价背离，MACD趋平 [score=0.842 recalls=4 avg=0.656 source=memory/2026-03-11.md:1-32]
+
+## Promoted From Short-Term Memory (2026-04-10)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-03-19.md:1:25 -->
+- # 2026-03-19 Daily Notes ## 04:35 AM - 美光(MU)财报出炉 **MU Q2 FY2026 实际业绩**（截至2026年2月）: - 营收：$23.86B（同比 +196%，上季 $13.64B） - 净利润：$13.785B - 盘后股价：$454.82（-1.50%，-$6.91） - 收盘价：$461.73 **信号：业绩炸裂但盘后小跌** - 典型"buy the rumor sell the news" - MU 52周从 $61.54 涨到 $471，已涨7倍，可能消化了预期 - Bernstein 上调目标价 $330→$510（维持Buy，3/18/2026） - 分析师共识：Strong Buy，均价目标 $377.47（低于当前价） **持仓影响分析：** - 07709（海力士2x ETF）700股 @28.72：谨慎，等开盘观察 - 07747（三星2x ETF）200股 @72.20：谨慎，等开盘观察 建议：港股开盘前15-30分钟观察走势，若相关标的跌幅>3%考虑减仓 ## HEARTBEAT.md 任务状态 MU财报已出，检查完成。通知kcn（Telegram发送失败，需要更新chat ID） [score=0.878 recalls=4 avg=0.754 source=memory/2026-03-19.md:1-25]
+
+## Promoted From Short-Term Memory (2026-04-16)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-04-09.md:87:96 -->
+- - Candidate: Assistant: [[reply_to_current]] 可以，这个逻辑其实很清楚，我给你压缩成能直接用的版本。 ## 一、先看韩股，再映射港股 你这类票的链条是： - **美股存储/半导体情绪** - -> **韩股海力士、三星** - -> **港股 07709、07747** - 再叠加 **港股自己情绪、ETF杠杆损耗、开盘溢价** 所以你做港股，不是只看港股K线， 而是要先判断： **韩股今天是强趋势、弱趋势，还是震荡。** --- ## 二、今天韩股给出的信号 ### 海力士现在 - **99.9万** - **-3.29%** - 高 - confidence: 0.00 - evidence: memory/.dreams/session-corpus/2026-04-09.txt:58-58 - recalls: 0 - status: staged - Candidate: Possible Lasting Truths: ## 2026-03-10 交易日复盘 ### 市场背景 - 催化剂：特朗普"伊朗停战"发言 → 地缘风险降低 → KOSPI +6%，港股全线走强 - SK海力士收盘 +12.2%（938,000 KRW），三星 +9.22%（189,500 KRW） - 美股存储板块：MU +6%，WDC +6.8%，STX +4.1%（全部在日内高位收盘） ### kcn 持仓状态（收盘） **港股** - 07709 XL海力士(2x)：28.90 +22%，累计亏损 -1,884 HKD，距回本 +10.9% - confidence: 0.00 - evidence: memory/2026-04-09.md:324-326 - recalls: 0 - status: staged [score=0.852 recalls=3 avg=0.922 source=memory/2026-04-09.md:87-96]
+
+## Promoted From Short-Term Memory (2026-04-17)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-04-10.md:83:89 -->
+- - Candidate: Assistant: [[reply_to_current]] 对，你这个担心是对的。 如果单次 T 的价差太小，**很容易忙半天，最后全给手续费和滑点吃掉**。 像刚才那种 **30.28 -> 31.28** 看着有 1 块，其实才比较勉强成立； 如果你做的是 **几毛钱来回**，大概率不划算。 ## 直接说结论 你现在这票更适合： - **不做超短小T** - 只做 **大一点的波段T** - 目标至少拉到 **每股 0.8 到 1.2 HKD** 的空间，再动手 ## 对 07709 更实用的做法 你现在 700 股里： - **600股核心仓别 - confidence: 0.00 - evidence: memory/.dreams/session-corpus/2026-04-10.txt:76-76 - recalls: 0 - status: staged - Candidate: Assistant: [[reply_to_current]] 可以，这个思路**比现在 100 股小打小闹更像样**。 我同意你的方向： - **如果真要吃小波动** - 那就要靠 **更大的 T 仓** - 不然价差太薄，利润不够看 但我也得直接提醒一句： ## 核心问题 你现在 **总持仓才 700股**， 所以“下次 1000 股做T”这个想法，前提是你后面要把仓位重新加大，或者以后在别的类似票上这么做。 否则以你现在这只 07709 的真实仓位， 更现实的是： - **核心仓 500 到 700** - **T仓 200 到 400** - 而 - confidence: 0.00 [score=0.817 recalls=3 avg=1.000 source=memory/2026-04-10.md:83-89]
+<!-- openclaw-memory-promotion:memory:memory/2026-04-11.md:173:179 -->
+- - Candidate: Assistant: [[reply_to_current]] 对，你这个担心是对的。 如果单次 T 的价差太小，**很容易忙半天，最后全给手续费和滑点吃掉**。 像刚才那种 **30.28 -> 31.28** 看着有 1 块，其实才比较勉强成立； 如果你做的是 **几毛钱来回**，大概率不划算。 ## 直接说结论 你现在这票更适合： - **不做超短小T** - 只做 **大一点的波段T** - 目标至少拉到 **每股 0.8 到 1.2 HKD** 的空间，再动手 ## 对 07709 更实用的做法 你现在 700 股里： - **600股核心仓别 - confidence: 0.00 - evidence: memory/.dreams/session-corpus/2026-04-10.txt:76-76 - recalls: 0 - status: staged - Candidate: Assistant: [[reply_to_current]] 可以，这个思路**比现在 100 股小打小闹更像样**。 我同意你的方向： - **如果真要吃小波动** - 那就要靠 **更大的 T 仓** - 不然价差太薄，利润不够看 但我也得直接提醒一句： ## 核心问题 你现在 **总持仓才 700股**， 所以“下次 1000 股做T”这个想法，前提是你后面要把仓位重新加大，或者以后在别的类似票上这么做。 否则以你现在这只 07709 的真实仓位， 更现实的是： - **核心仓 500 到 700** - **T仓 200 到 400** - 而 - confidence: 0.00 [score=0.817 recalls=3 avg=1.000 source=memory/2026-04-11.md:173-179]
+<!-- openclaw-memory-promotion:memory:memory/2026-04-12.md:198:204 -->
+- - Candidate: Assistant: [[reply_to_current]] 对，你这个担心是对的。 如果单次 T 的价差太小，**很容易忙半天，最后全给手续费和滑点吃掉**。 像刚才那种 **30.28 -> 31.28** 看着有 1 块，其实才比较勉强成立； 如果你做的是 **几毛钱来回**，大概率不划算。 ## 直接说结论 你现在这票更适合： - **不做超短小T** - 只做 **大一点的波段T** - 目标至少拉到 **每股 0.8 到 1.2 HKD** 的空间，再动手 ## 对 07709 更实用的做法 你现在 700 股里： - **600股核心仓别 - confidence: 0.00 - evidence: memory/.dreams/session-corpus/2026-04-10.txt:76-76 - recalls: 0 - status: staged - Candidate: Assistant: [[reply_to_current]] 可以，这个思路**比现在 100 股小打小闹更像样**。 我同意你的方向： - **如果真要吃小波动** - 那就要靠 **更大的 T 仓** - 不然价差太薄，利润不够看 但我也得直接提醒一句： ## 核心问题 你现在 **总持仓才 700股**， 所以“下次 1000 股做T”这个想法，前提是你后面要把仓位重新加大，或者以后在别的类似票上这么做。 否则以你现在这只 07709 的真实仓位， 更现实的是： - **核心仓 500 到 700** - **T仓 200 到 400** - 而 - confidence: 0.00 [score=0.817 recalls=3 avg=1.000 source=memory/2026-04-12.md:198-204]
+
+## Promoted From Short-Term Memory (2026-04-19)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-04-11.md:263:266 -->
+- - Candidate: Reflections: Theme: `assistant` kept surfacing across 377 memories.; confidence: 1.00; evidence: memory/.dreams/session-corpus/2026-04-06.txt:2-2, memory/.dreams/session-corpus/2026-04-06.txt:3-3, memory/.dreams/session-corpus/2026-04-06.txt:5-5; note: reflection - confidence: 0.00 - evidence: memory/2026-04-11.md:263-266 - recalls: 0 [score=0.845 recalls=0 avg=0.620 source=memory/2026-04-11.md:3-6]
+<!-- openclaw-memory-promotion:memory:memory/2026-04-11.md:269:271 -->
+- - Candidate: Possible Lasting Truths: - 16:42 交易记录：07709 XL二南方海力士 30.50 买回 100 股，持仓回到 700 股，摊薄后成本约 29.6369。 - 今日盘中重点结论：海力士（07709）经历长时间回调后出现强修复，大阳线更像“反转候选信号”而非单纯超涨，但短线已进入高波动分歧区，适合保留核心仓并用 100-200 股做T，不宜高位追涨。 - 今日组合判断：港股最大风险源仍是 07226（南方2x恒科）和 07709（海力士）两只高弹性仓位，后续应优先做结构管理，思路是“保留强仓、滚动做T、逐步精简弱仓、为后续 - confidence: 0.00 - evidence: memory/2026-04-10.md:274-276 [score=0.845 recalls=0 avg=0.620 source=memory/2026-04-11.md:53-55]
+<!-- openclaw-memory-promotion:memory:memory/2026-04-12.md:278:281 -->
+- - Candidate: Reflections: Theme: `assistant` kept surfacing across 379 memories.; confidence: 1.00; evidence: memory/.dreams/session-corpus/2026-04-06.txt:2-2, memory/.dreams/session-corpus/2026-04-06.txt:3-3, memory/.dreams/session-corpus/2026-04-06.txt:5-5; note: reflection - confidence: 0.00 - evidence: memory/2026-04-12.md:278-281 - recalls: 0 [score=0.845 recalls=0 avg=0.620 source=memory/2026-04-12.md:3-6]
+<!-- openclaw-memory-promotion:memory:memory/2026-04-12.md:284:286 -->
+- - Candidate: Possible Lasting Truths: - 16:42 交易记录：07709 XL二南方海力士 30.50 买回 100 股，持仓回到 700 股，摊薄后成本约 29.6369。 - 今日盘中重点结论：海力士（07709）经历长时间回调后出现强修复，大阳线更像“反转候选信号”而非单纯超涨，但短线已进入高波动分歧区，适合保留核心仓并用 100-200 股做T，不宜高位追涨。 - 今日组合判断：港股最大风险源仍是 07226（南方2x恒科）和 07709（海力士）两只高弹性仓位，后续应优先做结构管理，思路是“保留强仓、滚动做T、逐步精简弱仓、为后续 - confidence: 0.00 - evidence: memory/2026-04-10.md:274-276 [score=0.845 recalls=0 avg=0.620 source=memory/2026-04-12.md:78-80]
+<!-- openclaw-memory-promotion:memory:memory/2026-04-13.md:274:276 -->
+- - Candidate: Possible Lasting Truths: - 16:42 交易记录：07709 XL二南方海力士 30.50 买回 100 股，持仓回到 700 股，摊薄后成本约 29.6369。 - 今日盘中重点结论：海力士（07709）经历长时间回调后出现强修复，大阳线更像“反转候选信号”而非单纯超涨，但短线已进入高波动分歧区，适合保留核心仓并用 100-200 股做T，不宜高位追涨。 - 今日组合判断：港股最大风险源仍是 07226（南方2x恒科）和 07709（海力士）两只高弹性仓位，后续应优先做结构管理，思路是“保留强仓、滚动做T、逐步精简弱仓、为后续 - confidence: 0.00 - evidence: memory/2026-04-10.md:274-276 [score=0.838 recalls=0 avg=0.620 source=memory/2026-04-13.md:53-55]
+<!-- openclaw-memory-promotion:memory:memory/2026-03-26.md:1:27 -->
+- # 2026-03-26 Daily Notes ## 13:34 - 自我诊断 & 记忆优化 ### 诊断发现 1. **MEMORY.md 偏瘦** - 只有数据规则，无持仓摘要/关键上下文 2. **TOOLS.md 持仓表过期** - 还在显示 3/11 数据，与 portfolio.json 不符 3. **数据源描述冲突** - TOOLS.md 说东财是#1，MEMORY.md 说腾讯是#1（腾讯已验证境外可用） 4. **HEARTBEAT.md 遗留问题** - 3/19 Telegram chat ID 失败，1周后仍未解决 5. **日志断档** - 3/19 之后无日志，但 3/23、3/25 有真实交易 6. **memory_search FTS 返回空** - 索引不可用，但 memory_get 正常 ### 修复措施 - ✅ MEMORY.md 大幅扩充：加入持仓摘要、关键交易历史、待办事项、市场联动关系 - ✅ 创建 2026-03-26 日志（本文） - ⚠️ TOOLS.md 持仓表仍旧（需要今天刷新持仓后更新） - ⚠️ Telegram chat ID 问题待 kcn 确认 ### 今日持仓状态（12:00 腾讯财经数据） - 港股今日大跌：07709 -10.55%，07747 -8.53% - 美股整体小幅亏损（未刷新，2026-03-26 12:00 数据） - 港股总亏损约 HKD -6994（-10.7%） ### 关键待办 - [ ] 确认 Telegram chat ID（HEARTBEAT 通知失败问题） - [ ] 今日港股走势（07709/07747 跌幅是否需要减仓） [score=0.801 recalls=3 avg=0.838 source=memory/2026-03-26.md:1-27]
+
+## Promoted From Short-Term Memory (2026-04-20)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-04-14.md:273:276 -->
+- 12:07 交易记录：07709 XL二南方海力士 36.00 卖出 100 股，按持仓成本 29.5348 计，本次实现盈利约 646.52 HKD；持仓降至 600 股。 13:06 交易记录：07709 XL二南方海力士 36.02 卖出 100 股，按持仓成本 29.5348 计，本次实现盈利约 648.52 HKD；持仓降至 500 股。 [score=0.843 recalls=0 avg=0.620 source=memory/2026-04-14.md:273-274]
+<!-- openclaw-memory-promotion:memory:memory/2026-04-14.md:277:278 -->
+- 今日盘中操作思路更新：由于用户明确担心 2x 杠杆磨损，下午策略从“保留 600 股核心仓 + 100 股做T”调整为更防守的“07709 降到 500 股左右”，核心逻辑是把高波动杠杆仓从方向赌注改成波动管理仓。 [score=0.843 recalls=0 avg=0.620 source=memory/2026-04-14.md:277-277]
+
+## Promoted From Short-Term Memory (2026-04-21)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-04-15.md:1:1 -->
+- 09:34 交易记录：07709 XL二南方海力士 38.70 卖出 100 股，按持仓成本 29.5348 计，本次实现盈利约 916.52 HKD；持仓降至 400 股。 [score=0.850 recalls=0 avg=0.620 source=memory/2026-04-15.md:1-1]
+<!-- openclaw-memory-promotion:memory:memory/2026-04-15.md:276:278 -->
+- ## Light Sleep <!-- openclaw:dreaming:light:start --> - Candidate: Reflections: Theme: `assistant` kept surfacing across 486 memories.; confidence: 1.00; evidence: memory/.dreams/session-corpus/2026-04-06.txt:2-2, memory/.dreams/session-corpus/2026-04-06.txt:3-3, memory/.dreams/session-corpus/2026-04-06.txt:5-5; note: reflection - confidence: 0.62 - evidence: memory/2026-04-14.md:263-266 - recalls: 0 - status: staged - Candidate: Possible Lasting Truths: - Candidate: Assistant: [[reply_to_current]] 那这个影响会很大，甚至可能比 system prompt cache 更大。 你现在的瓶颈很像是： - LLM 先决定调用 tool A - 你执行 tool A - 再把结果喂回去 - LLM 再决定 tool B - 再执行 - 最后再总结 这会导致每个 tool 都多出一整轮： **“一次模型调用 + 一次工具等待 + 一次上下文回填”** 如果一次分析要 3 到 5 个 tools，这个串行链路很容易就炸到几 [score=0.850 recalls=0 avg=0.620 source=memory/2026-04-15.md:282-289]
+<!-- openclaw-memory-promotion:memory:memory/2026-04-15.md:280:280 -->
+- 09:34 交易记录：07709 XL二南方海力士 38.70 卖出 100 股，按持仓成本 29.5348 计，本次实现盈利约 916.52 HKD；持仓降至 400 股。 [score=0.850 recalls=0 avg=0.620 source=memory/2026-04-15.md:280-280]
+<!-- openclaw-memory-promotion:memory:memory/2026-04-15.md:555:557 -->
+- - Candidate: Possible Lasting Truths: - Candidate: Assistant: [[reply_to_current]] 那这个影响会很大，甚至可能比 system prompt cache 更大。 你现在的瓶颈很像是： - LLM 先决定调用 tool A - 你执行 tool A - 再把结果喂回去 - LLM 再决定 tool B - 再执行 - 最后再总结 这会导致每个 tool 都多出一整轮： **“一次模型调用 + 一次工具等待 + 一次上下文回填”** 如果一次分析要 3 到 5 个 tools，这个串行链路很容易就炸到几 - confidence: 0.62 - evidence: memory/2026-04-14.md:269-271 [score=0.801 recalls=0 avg=0.620 source=memory/2026-04-15.md:289-291]
+
+## Promoted From Short-Term Memory (2026-04-22)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-04-16.md:244:246 -->
+- - recalls: 0 - status: staged - Candidate: Reflections: Theme: `assistant` kept surfacing across 545 memories.; confidence: 1.00; evidence: memory/.dreams/session-corpus/2026-04-06.txt:2-2, memory/.dreams/session-corpus/2026-04-06.txt:3-3, memory/.dreams/session-corpus/2026-04-06.txt:5-5; note: reflection - confidence: 0.62 - evidence: memory/2026-04-15.md:270-273 - recalls: 0 - status: staged - Candidate: Possible Lasting Truths: - Candidate: Assistant: [[reply_to_current]] 那这个影响会很大，甚至可能比 system prompt cache 更大。 你现在的瓶颈很像是： - LLM 先决定调用 tool A - 你执行 tool A - 再把结果喂回去 - LLM 再决定 tool B - 再执行 - 最后再总结 这会导致每个 tool 都多出一整轮： **“一次模型调用 + 一次工具等待 + 一次上下文回填”** 如果一次分析要 3 到 5 个 tools，这个串行链路很容易就炸到几 [score=0.841 recalls=0 avg=0.620 source=memory/2026-04-16.md:253-260]
