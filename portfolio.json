@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-04-22 23:49:00",
+  "last_updated": "2026-04-23 00:13:00",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -123,7 +123,7 @@
         },
         {
           "ticker": "TCOM",
-          "shares": 5,
+          "shares": 0,
           "cost_basis": 52.74,
           "current_price": 53.832,
           "today_change_pct": -1.0979,
@@ -134,10 +134,20 @@
           "day_low": 53.92,
           "day_open": 54.26,
           "prev_close": 54.65,
-          "current_value": 269.16,
-          "pnl_abs": 5.46,
+          "current_value": 0.0,
+          "pnl_abs": 0.0,
           "today_change": -0.6,
-          "name": "携程"
+          "name": "携程",
+          "trades": [
+            {
+              "date": "2026-04-22",
+              "action": "sell",
+              "shares": 5,
+              "price": 53.86,
+              "realized_pnl": 5.6,
+              "note": "按用户今晚成交记录清仓"
+            }
+          ]
         },
         {
           "ticker": "TQQQ",
@@ -303,13 +313,13 @@
           "pnl_percent": 0.131184
         }
       ],
-      "total_cost": 2990.72,
-      "total_current_value": 3274.35,
-      "total_pnl": 283.63,
-      "total_pnl_percent": 9.483669,
+      "total_cost": 2727.02,
+      "total_current_value": 3005.19,
+      "total_pnl": 278.17,
+      "total_pnl_percent": 10.200512,
       "today_total_change": 147.93,
-      "realized_pnl": 485.93,
-      "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120) + NVDA 3股 @$199.41(+37.23) + QQQ 1股 @$631.30(+9.30) + TQQQ 8股 @$54.45(+69.76) + OKLO 2股 @$68.0(+10.34) + HOOD 5股 @$88.36(+74.3)",
+      "realized_pnl": 491.53,
+      "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120) + NVDA 3股 @$199.41(+37.23) + QQQ 1股 @$631.30(+9.30) + TQQQ 8股 @$54.45(+69.76) + OKLO 2股 @$68.0(+10.34) + HOOD 5股 @$88.36(+74.3) + TCOM 5股 @$53.86(+5.6)",
       "last_updated": "2026-04-22 09:30:00 ET",
       "open_fetch_status": "2026-04-22 09:30 ET realtime quotes refreshed for dynamic US holdings list NVDA,RKLB,CRCL,OKLO,QQQ,TCOM,TQQQ,HOOD,PLTU,SOXL,RKLX. Eastmoney succeeded for NVDA,RKLB,QQQ,TCOM,TQQQ,HOOD,PLTU,RKLX,CRCL,OKLO; fallback used for SOXL(finnhub).",
       "close_fetch_status": "2026-04-21 16:00 ET close quotes refreshed for US holdings; Eastmoney returned NVDA/RKLB/TCOM/TQQQ/HOOD and NDX/SPX, while CRCL/OKLO/QQQ were completed via Finnhub fallback because Eastmoney batch/QQQ endpoint missed them. PLTU/SOXL/RKLX refreshed via Finnhub to keep current US holdings in sync.",
