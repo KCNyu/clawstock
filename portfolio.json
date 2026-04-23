@@ -320,21 +320,31 @@
       "today_total_change": -22.27,
       "realized_pnl": 491.53,
       "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120) + NVDA 3股 @$199.41(+37.23) + QQQ 1股 @$631.30(+9.30) + TQQQ 8股 @$54.45(+69.76) + OKLO 2股 @$68.0(+10.34) + HOOD 5股 @$88.36(+74.3) + TCOM 5股 @$53.86(+5.6)",
-      "last_updated": "2026-04-23 13:35:42 ET",
-      "open_fetch_status": "2026-04-23 13:34:47 ET realtime quotes refreshed for dynamic US holdings list NVDA,RKLB,CRCL,OKLO,QQQ,TCOM,TQQQ,HOOD,PLTU,SOXL,RKLX,ROBN. Eastmoney batch failed: HTTPSConnectionPool(host='push2delay.eastmoney.com', port=443): Read timed out. (read timeout=12); Finnhub fallback used for CRCL,HOOD,NVDA,OKLO,PLTU,QQQ,RKLB,RKLX,ROBN,SOXL,TCOM,TQQQ; NDX fetch failed: HTTPSConnectionPool(host='push2delay.eastmoney.com', port=443): Read timed out. (read timeout=12); NDX yfinance failed: Too Many Requests. Rate limited. Try after a while.; SPX yfinance failed: Too Many Requests. Rate limited. Try after a while.",
+      "last_updated": "2026-04-23 13:36:13 ET",
+      "open_fetch_status": "2026-04-23 13:34:47 ET realtime quotes refreshed for dynamic US holdings list NVDA,RKLB,CRCL,OKLO,QQQ,TCOM,TQQQ,HOOD,PLTU,SOXL,RKLX,ROBN. Eastmoney batch failed: HTTPSConnectionPool(host='push2delay.eastmoney.com', port=443): Read timed out. (read timeout=12); Finnhub fallback used for CRCL,HOOD,NVDA,OKLO,PLTU,QQQ,RKLB,RKLX,ROBN,SOXL,TCOM,TQQQ; NDX fetch failed: HTTPSConnectionPool(host='push2delay.eastmoney.com', port=443): Read timed out. (read timeout=12); NDX yfinance failed: Too Many Requests. Rate limited. Try after a while.; SPX yfinance failed: Too Many Requests. Rate limited. Try after a while.; indices fallback used via Stooq for NDX/SPX.",
       "close_fetch_status": "2026-04-22 21:25 ET refresh for active US holdings RKLB,CRCL,PLTU,SOXL,RKLX,ROBN. Eastmoney timed out; fallback used for all via Finnhub.",
       "last_close_attempted": "2026-04-22 21:25:00 ET",
       "last_open_attempted": "2026-04-23 13:34:47 ET",
       "indices_snapshot": {
+        "NDX": {
+          "price": 26870.037,
+          "chg_abs": null,
+          "chg_pct": null,
+          "high": 26871.918,
+          "low": 26820.209,
+          "open": 26820.209,
+          "prev_close": null,
+          "source": "stooq-2026-04-23 15:35:39 UTC"
+        },
         "SPX": {
-          "price": 71.1986,
-          "chg_abs": -0.1804,
-          "chg_pct": -0.0025,
-          "high": 71.2442,
-          "low": 71.1612,
-          "open": 71.188,
-          "prev_close": 71.37899999999999,
-          "source": "eastmoney-100.SPX"
+          "price": 7121.0,
+          "chg_abs": null,
+          "chg_pct": null,
+          "high": 7123.5,
+          "low": 7118.8,
+          "open": 7118.8,
+          "prev_close": null,
+          "source": "stooq-2026-04-23 15:35:27 UTC"
         }
       }
     },
