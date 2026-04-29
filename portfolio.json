@@ -921,7 +921,8 @@
         }
       },
       "last_midday_attempted": "2026-04-29 15:34:00 HKT",
-      "last_open_attempted": "2026-04-29 09:30:00 HKT"
+      "last_open_attempted": "2026-04-29 09:30:00 HKT",
+      "close_report_generated_at": "2026-04-29 16:03 HKT"
     }
   },
   "market_context": {
