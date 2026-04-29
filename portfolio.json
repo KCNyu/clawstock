@@ -36,36 +36,42 @@
           "ticker": "RKLB",
           "shares": 5,
           "cost_basis": 71,
-          "current_price": 78.59,
-          "today_change_pct": -4.4963,
-          "pnl_percent": 10.6901,
-          "data_source": "finnhub-close-2026-04-28 ET",
+          "current_price": 78.85,
+          "today_change_pct": 0.33,
+          "pnl_percent": 11.0563,
+          "data_source": "nasdaq-api Pre-Market Apr 29, 2026 9:04 AM ET",
           "day_high": 81.78,
           "day_low": 77.6,
           "day_open": 80.075,
-          "prev_close": 82.29,
-          "current_value": 392.95,
-          "pnl_abs": 37.95,
-          "today_change": -18.5,
-          "name": "Rocket Lab Corp"
+          "prev_close": 78.59,
+          "current_value": 394.25,
+          "pnl_abs": 39.25,
+          "today_change": 1.3,
+          "name": "Rocket Lab Corp",
+          "bid": 78.83,
+          "ask": 79.18,
+          "premarket_volume": "298,740.235202"
         },
         {
           "ticker": "CRCL",
           "shares": 2,
           "cost_basis": 87,
-          "current_price": 94.35,
-          "today_change_pct": -1.1421,
-          "pnl_percent": 8.4483,
-          "data_source": "finnhub-close-2026-04-28 ET",
+          "current_price": 93.9627,
+          "today_change_pct": -0.41,
+          "pnl_percent": 8.0031,
+          "data_source": "nasdaq-api Pre-Market Apr 29, 2026 9:04 AM ET",
           "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；2026-03-23 卖出3股 @$127，实现盈利 $120；剩余2股长期持有（看好稳定币+agent支付赛道）",
           "day_high": 95.3857,
           "day_low": 92.2616,
           "day_open": 92.5,
-          "prev_close": 95.44,
-          "current_value": 188.7,
-          "pnl_abs": 14.7,
-          "today_change": -2.18,
-          "name": "Circle Internet Group Inc-A"
+          "prev_close": 94.35,
+          "current_value": 187.9254,
+          "pnl_abs": 13.9254,
+          "today_change": -0.7746,
+          "name": "Circle Internet Group Inc-A",
+          "bid": 93.78,
+          "ask": 94.07,
+          "premarket_volume": "257,338.219173"
         },
         {
           "ticker": "OKLO",
@@ -181,10 +187,10 @@
           "ticker": "HOOD",
           "shares": 0,
           "cost_basis": 73.5,
-          "current_price": 72.2727,
-          "today_change_pct": -11.94,
-          "pnl_percent": -1.6698,
-          "data_source": "nasdaq-api Pre-Market Apr 29, 2026 9:03 AM ET",
+          "current_price": 72.0591,
+          "today_change_pct": -12.2,
+          "pnl_percent": -1.9604,
+          "data_source": "nasdaq-api Pre-Market Apr 29, 2026 9:05 AM ET",
           "note": "2026-03-26 买入5股 @$73.5，布林下轨反弹+加密情绪+散户平台逻辑",
           "day_high": 83.14,
           "day_low": 80.82,
@@ -204,25 +210,25 @@
               "note": "按用户今晚成交记录清仓"
             }
           ],
-          "bid": 72.15,
-          "ask": 72.24,
-          "premarket_volume": "3,400,846.040248"
+          "bid": 72.08,
+          "ask": 72.12,
+          "premarket_volume": "3,545,264.199405"
         },
         {
           "ticker": "PLTU",
           "shares": 11,
           "cost_basis": 42.32,
-          "current_price": 40.09,
-          "today_change_pct": -2.7178,
-          "pnl_percent": -5.2694,
-          "data_source": "finnhub-close-2026-04-28 ET",
+          "current_price": 39.7569,
+          "today_change_pct": -0.83,
+          "pnl_percent": -6.0565,
+          "data_source": "nasdaq-api Pre-Market Apr 29, 2026 9:04 AM ET",
           "day_high": 41.56,
           "day_low": 39.68,
           "day_open": 40.56,
-          "prev_close": 41.21,
-          "current_value": 440.99,
-          "pnl_abs": -24.53,
-          "today_change": -12.32,
+          "prev_close": 40.09,
+          "current_value": 437.3259,
+          "pnl_abs": -28.1941,
+          "today_change": -3.6641,
           "note": "2026-04-16 按用户截图记录买入，做 PLTR 2x 杠杆短线仓",
           "trades": [
             {
@@ -233,23 +239,26 @@
               "note": "按用户截图记录买入"
             }
           ],
-          "name": "二倍做多PLTR ETF-Direxion"
+          "name": "二倍做多PLTR ETF-Direxion",
+          "bid": 39.68,
+          "ask": 39.76,
+          "premarket_volume": "108,608.249988"
         },
         {
           "ticker": "SOXL",
           "shares": 5,
           "cost_basis": 91.87,
-          "current_price": 109.56,
-          "today_change_pct": -11.2084,
-          "pnl_percent": 19.2555,
-          "data_source": "finnhub-close-2026-04-28 ET",
+          "current_price": 114.23,
+          "today_change_pct": 4.26,
+          "pnl_percent": 24.3387,
+          "data_source": "nasdaq-api Pre-Market Apr 29, 2026 9:04 AM ET",
           "day_high": 115.62,
           "day_low": 103.99,
           "day_open": 108.75,
-          "prev_close": 123.39,
-          "current_value": 547.8,
-          "pnl_abs": 88.45,
-          "today_change": -69.15,
+          "prev_close": 109.56,
+          "current_value": 571.15,
+          "pnl_abs": 111.8,
+          "today_change": 23.35,
           "note": "2026-04-17 按用户截图记录买入，做半导体 3x 杠杆短线仓",
           "trades": [
             {
@@ -268,23 +277,26 @@
               "note": "按用户截图记录卖出，SOXL 减仓一半"
             }
           ],
-          "name": "三倍做多半导体ETF-Direxion"
+          "name": "三倍做多半导体ETF-Direxion",
+          "bid": 114.22,
+          "ask": 114.24,
+          "premarket_volume": "5,221,572.506142"
         },
         {
           "ticker": "RKLX",
           "shares": 6,
           "cost_basis": 46.7,
-          "current_price": 36.27,
-          "today_change_pct": -9.0065,
-          "pnl_percent": -22.334,
-          "data_source": "finnhub-close-2026-04-28 ET",
+          "current_price": 36.46,
+          "today_change_pct": 0.52,
+          "pnl_percent": -21.9272,
+          "data_source": "nasdaq-api Pre-Market Apr 29, 2026 9:04 AM ET",
           "day_high": 39.3,
           "day_low": 35.3,
           "day_open": 37.55,
-          "prev_close": 39.86,
-          "current_value": 217.62,
-          "pnl_abs": -62.58,
-          "today_change": -21.54,
+          "prev_close": 36.27,
+          "current_value": 218.76,
+          "pnl_abs": -61.44,
+          "today_change": 1.14,
           "note": "2026-04-21 按用户截图记录买入，做 RKLB 2x 杠杆短线仓",
           "trades": [
             {
@@ -295,22 +307,25 @@
               "note": "按用户截图记录买入"
             }
           ],
-          "name": "Defiance Daily Target 2X Long R"
+          "name": "Defiance Daily Target 2X Long R",
+          "bid": 36.4,
+          "ask": 36.53,
+          "premarket_volume": "113,820"
         },
         {
           "ticker": "ROBN",
           "shares": 20,
           "cost_basis": 26.68,
-          "current_price": 17.53,
-          "today_change_pct": -23.98,
-          "data_source": "nasdaq-api Pre-Market Apr 29, 2026 9:02 AM ET",
+          "current_price": 17.49,
+          "today_change_pct": -24.15,
+          "data_source": "nasdaq-api Pre-Market Apr 29, 2026 9:05 AM ET",
           "day_high": 23.6329,
           "day_low": 22.31,
           "day_open": 22.64,
           "prev_close": 23.06,
-          "current_value": 350.6,
-          "pnl_abs": -183.0,
-          "today_change": -110.6,
+          "current_value": 349.8,
+          "pnl_abs": -183.8,
+          "today_change": -111.4,
           "name": "二倍做多HOOD ETF-T-Rex",
           "trades": [
             {
@@ -321,22 +336,22 @@
               "note": "按用户今晚成交记录买入，替代 HOOD 方向为 2x 杠杆仓"
             }
           ],
-          "pnl_percent": -34.2954,
-          "bid": 17.43,
-          "ask": 17.65,
-          "premarket_volume": "668,057"
+          "pnl_percent": -34.4453,
+          "bid": 17.19,
+          "ask": 17.63,
+          "premarket_volume": "680,373"
         },
         {
           "ticker": "MSFU",
           "name": "二倍做多微软ETF-Direxion",
           "shares": 20,
           "cost_basis": 29.130000000000003,
-          "current_price": 30.53,
-          "current_value": 610.6,
-          "pnl_abs": 28.0,
-          "pnl_percent": 4.806,
-          "today_change": 12.2,
-          "today_change_pct": 2.0388,
+          "current_price": 30.2791,
+          "current_value": 605.582,
+          "pnl_abs": 22.982,
+          "pnl_percent": 3.9447,
+          "today_change": -4.618,
+          "today_change_pct": -0.76,
           "trades": [
             {
               "date": "2026-04-24",
@@ -347,21 +362,24 @@
             }
           ],
           "note": "2026-04-24 按用户截图记录买入，微软 2x 杠杆 ETF，财报前修复短线仓",
-          "prev_close": 29.92,
+          "prev_close": 30.51,
           "day_high": 30.59,
           "day_low": 29.4701,
           "day_open": 29.84,
-          "data_source": "finnhub-close-2026-04-28 ET"
+          "data_source": "nasdaq-api Pre-Market Apr 29, 2026 9:05 AM ET",
+          "bid": 30.23,
+          "ask": 30.28,
+          "premarket_volume": "378,509.610000"
         }
       ],
       "total_cost": 2850.27,
-      "total_current_value": 2749.26,
-      "total_pnl": -101.01,
-      "total_pnl_percent": -3.5439,
-      "today_total_change": -222.09,
+      "total_current_value": 2764.7933,
+      "total_pnl": -85.4767,
+      "total_pnl_percent": -2.9989,
+      "today_total_change": -94.6667,
       "realized_pnl": 592.18,
       "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120) + NVDA 3股 @$199.41(+37.23) + QQQ 1股 @$631.30(+9.30) + TQQQ 8股 @$54.45(+69.76) + OKLO 2股 @$68.0(+10.34) + HOOD 5股 @$88.36(+74.3) + TCOM 5股 @$53.86(+5.6) + SOXL 5股 @$112.00(+100.65)",
-      "last_updated": "2026-04-29 09:02 ET premarket partial HOOD/ROBN",
+      "last_updated": "2026-04-29 09:05 ET premarket",
       "open_fetch_status": {
         "attempted_all_holdings": [
           "NVDA",
@@ -488,10 +506,16 @@
       "premarket_fetch_status": {
         "source": "Nasdaq API",
         "updated": [
+          "RKLB",
+          "CRCL",
           "HOOD",
-          "ROBN"
+          "PLTU",
+          "SOXL",
+          "RKLX",
+          "ROBN",
+          "MSFU"
         ],
-        "note": "Only HOOD and ROBN refreshed for user question; other US holdings remain at prior close."
+        "note": "Premarket refresh for active US holdings plus HOOD reference."
       }
     },
     "hk_stocks": {
