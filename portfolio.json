@@ -181,17 +181,17 @@
           "ticker": "HOOD",
           "shares": 0,
           "cost_basis": 73.5,
-          "current_price": 82.07,
-          "today_change_pct": -2.2394,
-          "pnl_percent": 11.6599,
-          "data_source": "finnhub-close-2026-04-28 ET",
+          "current_price": 72.2727,
+          "today_change_pct": -11.94,
+          "pnl_percent": -1.6698,
+          "data_source": "nasdaq-api Pre-Market Apr 29, 2026 9:03 AM ET",
           "note": "2026-03-26 买入5股 @$73.5，布林下轨反弹+加密情绪+散户平台逻辑",
           "day_high": 83.14,
           "day_low": 80.82,
           "day_open": 81.46,
-          "prev_close": 83.95,
+          "prev_close": 82.07,
           "current_value": 0.0,
-          "pnl_abs": 0.0,
+          "pnl_abs": -0.0,
           "today_change": -0.0,
           "name": "Robinhood Markets Inc-A",
           "trades": [
@@ -203,7 +203,10 @@
               "realized_pnl": 74.3,
               "note": "按用户今晚成交记录清仓"
             }
-          ]
+          ],
+          "bid": 72.15,
+          "ask": 72.24,
+          "premarket_volume": "3,400,846.040248"
         },
         {
           "ticker": "PLTU",
@@ -298,16 +301,16 @@
           "ticker": "ROBN",
           "shares": 20,
           "cost_basis": 26.68,
-          "current_price": 23.06,
-          "today_change_pct": -4.5925,
-          "data_source": "finnhub-close-2026-04-28 ET",
+          "current_price": 17.53,
+          "today_change_pct": -23.98,
+          "data_source": "nasdaq-api Pre-Market Apr 29, 2026 9:02 AM ET",
           "day_high": 23.6329,
           "day_low": 22.31,
           "day_open": 22.64,
-          "prev_close": 24.17,
-          "current_value": 461.2,
-          "pnl_abs": -72.4,
-          "today_change": -22.2,
+          "prev_close": 23.06,
+          "current_value": 350.6,
+          "pnl_abs": -183.0,
+          "today_change": -110.6,
           "name": "二倍做多HOOD ETF-T-Rex",
           "trades": [
             {
@@ -318,7 +321,10 @@
               "note": "按用户今晚成交记录买入，替代 HOOD 方向为 2x 杠杆仓"
             }
           ],
-          "pnl_percent": -13.5682
+          "pnl_percent": -34.2954,
+          "bid": 17.43,
+          "ask": 17.65,
+          "premarket_volume": "668,057"
         },
         {
           "ticker": "MSFU",
@@ -349,13 +355,13 @@
         }
       ],
       "total_cost": 2850.27,
-      "total_current_value": 2859.86,
-      "total_pnl": 9.59,
-      "total_pnl_percent": 0.3365,
-      "today_total_change": -133.69,
+      "total_current_value": 2749.26,
+      "total_pnl": -101.01,
+      "total_pnl_percent": -3.5439,
+      "today_total_change": -222.09,
       "realized_pnl": 592.18,
       "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120) + NVDA 3股 @$199.41(+37.23) + QQQ 1股 @$631.30(+9.30) + TQQQ 8股 @$54.45(+69.76) + OKLO 2股 @$68.0(+10.34) + HOOD 5股 @$88.36(+74.3) + TCOM 5股 @$53.86(+5.6) + SOXL 5股 @$112.00(+100.65)",
-      "last_updated": "2026-04-28 close ET",
+      "last_updated": "2026-04-29 09:02 ET premarket partial HOOD/ROBN",
       "open_fetch_status": {
         "attempted_all_holdings": [
           "NVDA",
@@ -478,6 +484,14 @@
           "MSFU"
         ],
         "note": "MSFU 2026-04-24 buy 20 @29.130 recorded from user screenshot."
+      },
+      "premarket_fetch_status": {
+        "source": "Nasdaq API",
+        "updated": [
+          "HOOD",
+          "ROBN"
+        ],
+        "note": "Only HOOD and ROBN refreshed for user question; other US holdings remain at prior close."
       }
     },
     "hk_stocks": {
