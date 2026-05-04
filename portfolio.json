@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-05-04 09:30 ET open",
+  "last_updated": "2026-05-04 22:15:00",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -324,8 +324,8 @@
         },
         {
           "ticker": "ROBN",
-          "shares": 20,
-          "cost_basis": 26.68,
+          "shares": 30,
+          "cost_basis": 24.343333333333337,
           "current_price": 19.34,
           "today_change_pct": 6.7329,
           "data_source": "Finnhub realtime quote 2026-05-04 09:30 ET (fallback after Eastmoney miss)",
@@ -333,8 +333,8 @@
           "day_low": 18.517,
           "day_open": 18.580000000000002,
           "prev_close": 18.12,
-          "current_value": 386.8,
-          "pnl_abs": -146.8,
+          "current_value": 580.2,
+          "pnl_abs": -150.10000000000014,
           "today_change": 24.4,
           "name": "二倍做多HOOD ETF-T-Rex",
           "trades": [
@@ -344,9 +344,16 @@
               "shares": 20,
               "price": 26.68,
               "note": "按用户今晚成交记录买入，替代 HOOD 方向为 2x 杠杆仓"
+            },
+            {
+              "date": "2026-05-04",
+              "action": "buy",
+              "shares": 10,
+              "price": 19.67,
+              "note": "按用户记录买入，加仓摊低 ROBN 成本"
             }
           ],
-          "pnl_percent": -27.511244,
+          "pnl_percent": -20.553197316171445,
           "bid": 16.41,
           "ask": 16.48,
           "premarket_volume": "680,373",
