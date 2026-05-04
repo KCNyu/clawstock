@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-05-02 10:44:44",
+  "last_updated": "2026-05-04 09:30:57",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -558,18 +558,18 @@
           "ticker_finnhub": "0100.HK",
           "shares": 60,
           "cost_basis": 822.83,
-          "current_price": 713.0,
-          "current_value": 42780.0,
-          "pnl_percent": -13.347836,
-          "data_source": "tencent gtimg live request (fallback after Eastmoney failure; HK holiday so quotes are previous trading session) @ 2026/04/30 16:08:24",
-          "today_change": 300.0,
-          "today_change_pct": 0.71,
-          "pnl_abs": -6589.8,
-          "day_open": 685.0,
-          "day_high": 723.0,
-          "day_low": 685.0,
-          "prev_close": 708.0,
-          "volume": 853408.0,
+          "current_price": 770.0,
+          "current_value": 46200.0,
+          "pnl_percent": -6.420524,
+          "data_source": "Eastmoney push2 live quote @ 2026-05-04 09:30:55 HKT",
+          "today_change": 3420.0,
+          "today_change_pct": 7.99,
+          "pnl_abs": -3169.8,
+          "day_open": 749.0,
+          "day_high": 775.0,
+          "day_low": 748.5,
+          "prev_close": 713.0,
+          "volume": 64227.0,
           "lot_size": 20,
           "note": "2026-04-16 买入 20 股，2026-04-24 869 加仓 20 股，2026-04-27 700 加仓 20 股，做 MiniMax 短线仓",
           "trades": [
@@ -595,8 +595,8 @@
               "note": "按用户截图记录加仓"
             }
           ],
-          "turnover": 601438617.5,
-          "today_change_abs": 5.0
+          "turnover": 48644317.0,
+          "today_change_abs": 57.0
         },
         {
           "ticker": "02208",
@@ -604,18 +604,18 @@
           "ticker_finnhub": "2208.HK",
           "shares": 400,
           "cost_basis": 14.084,
-          "current_price": 17.28,
-          "current_value": 6912.0,
-          "pnl_percent": 22.692417,
-          "data_source": "tencent gtimg live request (fallback after Eastmoney failure; HK holiday so quotes are previous trading session) @ 2026/04/30 16:08:22",
-          "today_change": 288.0,
-          "today_change_pct": 4.35,
-          "pnl_abs": 1278.4,
-          "day_open": 16.77,
-          "day_high": 17.78,
-          "day_low": 16.62,
-          "prev_close": 16.56,
-          "volume": 54559866.0,
+          "current_price": 17.66,
+          "current_value": 7064.0,
+          "pnl_percent": 25.390514,
+          "data_source": "Eastmoney push2 live quote @ 2026-05-04 09:30:55 HKT",
+          "today_change": 152.0,
+          "today_change_pct": 2.2,
+          "pnl_abs": 1430.4,
+          "day_open": 17.4,
+          "day_high": 17.66,
+          "day_low": 17.4,
+          "prev_close": 17.28,
+          "volume": 200000.0,
           "trades": [
             {
               "date": "2026-04-27",
@@ -626,8 +626,8 @@
               "note": "按用户截图记录减仓200股"
             }
           ],
-          "turnover": 940597251.97,
-          "today_change_abs": 0.72
+          "turnover": 3494448.0,
+          "today_change_abs": 0.38
         },
         {
           "ticker": "03032",
@@ -635,20 +635,20 @@
           "ticker_finnhub": "3032.HK",
           "shares": 200,
           "cost_basis": 5.405,
-          "current_price": 4.866,
-          "current_value": 973.2,
-          "pnl_percent": -9.972248,
-          "data_source": "tencent gtimg live request (fallback after Eastmoney failure; HK holiday so quotes are previous trading session) @ 2026/04/30 16:08:24",
-          "today_change": -5.2,
-          "today_change_pct": -0.53,
-          "pnl_abs": -107.8,
-          "day_open": 4.872,
-          "day_high": 4.876,
-          "day_low": 4.806,
-          "prev_close": 4.892,
-          "volume": 29694277.0,
-          "turnover": 143846695.3,
-          "today_change_abs": -0.026
+          "current_price": 4.96,
+          "current_value": 992.0,
+          "pnl_percent": -8.233117,
+          "data_source": "Eastmoney push2 live quote @ 2026-05-04 09:30:55 HKT",
+          "today_change": 18.8,
+          "today_change_pct": 1.93,
+          "pnl_abs": -89.0,
+          "day_open": 4.866,
+          "day_high": 4.966,
+          "day_low": 4.866,
+          "prev_close": 4.866,
+          "volume": 588600.0,
+          "turnover": 2905814.0,
+          "today_change_abs": 0.094
         },
         {
           "ticker": "07226",
@@ -656,10 +656,10 @@
           "ticker_finnhub": "7226.HK",
           "shares": 6200,
           "cost_basis": 4.3632,
-          "current_price": 3.792,
-          "current_value": 23510.4,
-          "pnl_percent": -13.091309,
-          "data_source": "tencent gtimg live request (fallback after Eastmoney failure; HK holiday so quotes are previous trading session) @ 2026/04/30 16:08:25",
+          "current_price": 3.95,
+          "current_value": 24490.0,
+          "pnl_percent": -9.470114,
+          "data_source": "Eastmoney push2 live quote @ 2026-05-04 09:30:55 HKT",
           "trades": [
             {
               "date": "2026-03-24",
@@ -669,16 +669,16 @@
               "note": "加仓补摊，摊低成本至4.3632"
             }
           ],
-          "today_change": -310.0,
-          "today_change_pct": -1.3,
-          "pnl_abs": -3541.44,
-          "day_open": 3.8,
-          "day_high": 3.82,
-          "day_low": 3.71,
-          "prev_close": 3.842,
-          "volume": 236822500.0,
-          "turnover": 891400187.6,
-          "today_change_abs": -0.05
+          "today_change": 979.6,
+          "today_change_pct": 4.17,
+          "pnl_abs": -2561.84,
+          "day_open": 3.908,
+          "day_high": 3.96,
+          "day_low": 3.898,
+          "prev_close": 3.792,
+          "volume": 13607700.0,
+          "turnover": 53465713.0,
+          "today_change_abs": 0.158
         },
         {
           "ticker": "07709",
@@ -686,10 +686,10 @@
           "ticker_finnhub": "7709.HK",
           "shares": 0,
           "cost_basis": 29.5347875,
-          "current_price": 47.6,
+          "current_price": 53.98,
           "current_value": 0.0,
-          "pnl_percent": 61.165879,
-          "data_source": "tencent gtimg live request (fallback after Eastmoney failure; HK holiday so quotes are previous trading session) @ 2026/04/30 16:08:24",
+          "pnl_percent": 82.767525,
+          "data_source": "Eastmoney push2 live quote @ 2026-05-04 09:30:55 HKT",
           "trades": [
             {
               "date": "2026-03-11",
@@ -807,15 +807,15 @@
             }
           ],
           "today_change": 0.0,
-          "today_change_pct": 0.42,
+          "today_change_pct": 13.4,
           "pnl_abs": 0.0,
-          "day_open": 48.52,
-          "day_high": 48.98,
-          "day_low": 46.6,
-          "prev_close": 47.4,
-          "volume": 27658415.0,
-          "turnover": 1326470385.62,
-          "today_change_abs": 0.2
+          "day_open": 52.76,
+          "day_high": 54.0,
+          "day_low": 52.76,
+          "prev_close": 47.6,
+          "volume": 1277998.0,
+          "turnover": 68369012.0,
+          "today_change_abs": 6.38
         },
         {
           "ticker": "07747",
@@ -823,10 +823,10 @@
           "ticker_finnhub": "7747.HK",
           "shares": 0,
           "cost_basis": 81.85,
-          "current_price": 92.24,
+          "current_price": 97.12,
           "current_value": 0.0,
-          "pnl_percent": 12.693952,
-          "data_source": "tencent gtimg live request (fallback after Eastmoney failure; HK holiday so quotes are previous trading session) @ 2026/04/30 16:08:24",
+          "pnl_percent": 18.656078,
+          "data_source": "Eastmoney push2 live quote @ 2026-05-04 09:30:55 HKT",
           "trades": [
             {
               "date": "2026-03-18",
@@ -846,15 +846,15 @@
             }
           ],
           "today_change": 0.0,
-          "today_change_pct": -2.82,
+          "today_change_pct": 5.29,
           "pnl_abs": 0.0,
-          "day_open": 96.64,
-          "day_high": 96.64,
-          "day_low": 90.68,
-          "prev_close": 94.92,
-          "volume": 6166123.0,
-          "turnover": 579674443.72,
-          "today_change_abs": -2.68
+          "day_open": 96.2,
+          "day_high": 97.16,
+          "day_low": 96.2,
+          "prev_close": 92.24,
+          "volume": 327000.0,
+          "turnover": 31665740.0,
+          "today_change_abs": 4.88
         },
         {
           "ticker": "03033",
@@ -862,30 +862,30 @@
           "ticker_finnhub": "3033.HK",
           "shares": 1000,
           "cost_basis": 5.14,
-          "current_price": 4.776,
-          "current_value": 4776.0,
-          "pnl_percent": -7.081712,
-          "data_source": "tencent gtimg live request (fallback after Eastmoney failure; HK holiday so quotes are previous trading session) @ 2026/04/30 16:08:22",
-          "today_change": -34.0,
-          "today_change_pct": -0.71,
-          "pnl_abs": -364.0,
-          "day_open": 4.78,
-          "day_high": 4.792,
-          "day_low": 4.72,
-          "prev_close": 4.81,
-          "volume": 940418650.0,
-          "turnover": 4475772061.18,
-          "today_change_abs": -0.034
+          "current_price": 4.874,
+          "current_value": 4874.0,
+          "pnl_percent": -5.175097,
+          "data_source": "Eastmoney push2 live quote @ 2026-05-04 09:30:55 HKT",
+          "today_change": 98.0,
+          "today_change_pct": 2.05,
+          "pnl_abs": -266.0,
+          "day_open": 4.844,
+          "day_high": 4.88,
+          "day_low": 4.838,
+          "prev_close": 4.776,
+          "volume": 9937000.0,
+          "turnover": 48370646.0,
+          "today_change_abs": 0.098
         }
       ],
       "total_cost": 88276.24,
-      "total_current_value": 78951.6,
-      "total_pnl": -9324.64,
-      "total_pnl_percent": -10.563024,
+      "total_current_value": 83620.0,
+      "total_pnl": -4656.24,
+      "total_pnl_percent": -5.274624,
       "realized_pnl": 7259.16,
       "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07709 100股@31.5(+196.52) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0) + 07709 100股@36(+646.52) + 07709 100股@36.02(+648.52) + 07709 100股@38.7(+916.52) + 07709 400股@36.98(+2978.08) + 02208 200股@16.68(+519.2)",
-      "today_total_change": 238.8,
-      "last_updated": "2026-05-01 16:00 HKT close (HK holiday; latest available quotes are previous trading session)",
+      "today_total_change": 4668.4,
+      "last_updated": "2026-05-04 09:30 HKT open",
       "midday_fetch_status": {
         "attempted_all_holdings": [
           "00100",
@@ -987,37 +987,34 @@
           "03033"
         ],
         "missing_after_fallback": [],
-        "errors": [
-          "Eastmoney failed: HTTPError HTTP Error 502: Bad Gateway",
-          "Eastmoney indices failed: HTTPError HTTP Error 502: Bad Gateway"
-        ],
-        "source": "tencent gtimg live request (fallback after Eastmoney failure; HK holiday so quotes are previous trading session)",
-        "note": "按 portfolio.json 动态生成全部港股 holdings；报告明细仅列 shares>0。2026-05-01 为香港劳动节休市，未产生当日开盘价；已按优先东方财富、失败后腾讯 fallback 获取上一交易日最新报价，禁止误当作今日开盘成交。"
+        "errors": [],
+        "source": "Eastmoney",
+        "note": "按 portfolio.json 动态生成全部港股 holdings；报告明细仅列 shares>0。"
       },
       "indices_snapshot": {
         "HSI": {
-          "price": 25776.53,
-          "chg_abs": -335.31,
-          "chg_pct": -1.28,
-          "open": 26008.32,
-          "high": 26072.24,
-          "low": 25734.16,
-          "prev_close": 26111.84,
-          "source": "tencent gtimg index quote @ 2026/04/30 18:31:11 (fallback after Eastmoney failure; HK holiday previous session)"
+          "price": 26229.94,
+          "chg_abs": 453.41,
+          "chg_pct": 1.76,
+          "open": 26138.34,
+          "high": 26239.88,
+          "low": 26138.34,
+          "prev_close": 25776.53,
+          "source": "Eastmoney index quote @ 2026-05-04 09:30:57 HKT"
         },
         "HSTECH": {
-          "price": 4871.32,
-          "chg_abs": -38.7,
-          "chg_pct": -0.79,
-          "open": 4876.72,
-          "high": 4897.39,
-          "low": 4823.75,
-          "prev_close": 4910.02,
-          "source": "tencent gtimg index quote @ 2026/04/30 16:08:42 (fallback after Eastmoney failure; HK holiday previous session)"
+          "price": 4980.22,
+          "chg_abs": 108.9,
+          "chg_pct": 2.24,
+          "open": 4948.43,
+          "high": 4981.16,
+          "low": 4948.43,
+          "prev_close": 4871.32,
+          "source": "Eastmoney index quote @ 2026-05-04 09:30:57 HKT"
         }
       },
       "last_midday_attempted": "2026-05-01 12:00:00 HKT (HK holiday, no trading)",
-      "last_open_attempted": "2026-05-01 09:30:00 HKT (HK holiday, no trading)",
+      "last_open_attempted": "2026-05-04 09:30:00 HKT",
       "close_report_generated_at": "2026-05-01 16:00 HKT"
     }
   },
