@@ -93,14 +93,7 @@ class PriceAlertMonitor:
                         {'price': 4.20, 'action': '📈 考虑清仓', 'type': 'above'},
                     ]
                 },
-                {
-                    'ticker': '07709',
-                    'name': 'XL二南方海力士',
-                    'current': 28.46,
-                    'alerts': [
-                        {'price': 26.00, 'action': '⚠️ 止损位', 'type': 'below'},
-                    ]
-                },
+                # 07709/07747 已清仓 2026-05-05，移除相关提醒
             ]
         }
     

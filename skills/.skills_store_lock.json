@@ -42,6 +42,24 @@
       "zip_url": "http://lightmake.site/api/v1/download?slug=us-stock-analysis",
       "source": "skillhub",
       "version": "0.1.1"
+    },
+    "travel-cn": {
+      "name": "Travel CN",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=travel-cn",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "trip": {
+      "name": "Trip",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=trip",
+      "source": "skillhub",
+      "version": "1.2.0"
+    },
+    "ctrip-hot-trend": {
+      "name": "Ctrip",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=ctrip-hot-trend",
+      "source": "skillhub",
+      "version": "0.1.0"
     }
   }
 }

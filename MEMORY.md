@@ -32,11 +32,7 @@
   2. Finnhub API（需 key）
   3. yfinance — 限速慎用
   4. Alpha Vantage（需 key，慢）
-- 韩股 fallback 链（按顺序逐个试）：
-  1. Naver Finance polling API `https://polling.finance.naver.com/api/realtime/domestic/stock/<code>` — **当前最稳，已验证 ✅**（2026-04-05）
-  2. Naver Finance 页面 `https://finance.naver.com/item/main.naver?code=<code>` — 页面解析备用
-  3. Google Finance / MarketWatch / Investing 页面搜索结果 — 仅作人工交叉验证
-  4. yfinance `000660.KS` / `005930.KS` — 易限流，不作为首选
+- 韩股 fallback 链：已移除（2026-05-05，07709/07747 均已清仓，不再追踪韩股）
 - 新浪/腾讯美股接口境外 403，跳过不试
 - 如所有数据源均失败，必须明确告知用户“数据获取失败，以下为旧数据”，不能静默使用旧数据
 - 获取到最新数据后，更新 `portfolio.json` 并 git commit
@@ -81,10 +77,9 @@
 ---
 
 ## 关键市场联动关系
-- 美股存储（MU/WDC）→ 韩股（海力士/三星）→ 港股杠杆ETF（07709/07747）
 - 油价↓（地缘缓和）↔ 加密/科技涨
 - CRCL 逻辑：GENIUS Act 稳定币法案推进（与大盘相对独立）
-- OKLO 逻辑：核能 + Sam Altman 背书，长期看好，但当前套牢
+- 港股核心驱动：恒科指数方向 + 个股独立逻辑（00100 AI概念、02208 风电政策）
 
 ## Promoted From Short-Term Memory (2026-04-09)
 
@@ -147,3 +142,24 @@
 
 <!-- openclaw-memory-promotion:memory:memory/2026-04-16.md:244:246 -->
 - - recalls: 0 - status: staged - Candidate: Reflections: Theme: `assistant` kept surfacing across 545 memories.; confidence: 1.00; evidence: memory/.dreams/session-corpus/2026-04-06.txt:2-2, memory/.dreams/session-corpus/2026-04-06.txt:3-3, memory/.dreams/session-corpus/2026-04-06.txt:5-5; note: reflection - confidence: 0.62 - evidence: memory/2026-04-15.md:270-273 - recalls: 0 - status: staged - Candidate: Possible Lasting Truths: - Candidate: Assistant: [[reply_to_current]] 那这个影响会很大，甚至可能比 system prompt cache 更大。 你现在的瓶颈很像是： - LLM 先决定调用 tool A - 你执行 tool A - 再把结果喂回去 - LLM 再决定 tool B - 再执行 - 最后再总结 这会导致每个 tool 都多出一整轮： **“一次模型调用 + 一次工具等待 + 一次上下文回填”** 如果一次分析要 3 到 5 个 tools，这个串行链路很容易就炸到几 [score=0.841 recalls=0 avg=0.620 source=memory/2026-04-16.md:253-260]
+
+## Promoted From Short-Term Memory (2026-04-28)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-04-22.md:1:4 -->
+- 01:05 交易记录：RKLX（Defiance Daily Target 2X Long RKLB）46.70 美元买入 6 股，按用户截图记录，作为 RKLB 2x 杠杆短线仓；当前持仓新增 RKLX 6 股。 13:56 更正：刚才误记。用户主要关注**港股**，后续分析应默认先从港股持仓、节奏和机会展开，美股作为补充观察。 23:23 交易记录：OKLO 68.00 美元卖出 2 股，按持仓成本 62.83 计，本次实现盈利约 10.34 美元；OKLO 清仓。 23:28 交易记录：HOOD 88.36 美元卖出 5 股，按持仓成本 73.50 计，本次实现盈利约 74.30 美元；HOOD 清仓。 [score=0.843 recalls=0 avg=0.620 source=memory/2026-04-22.md:1-4]
+<!-- openclaw-memory-promotion:memory:memory/2026-04-22.md:5:8 -->
+- 23:37 交易记录：ROBN（T-REX 2X Long HOOD Daily Target ETF）26.68 美元买入 20 股，作为 HOOD 方向的 2x 杠杆替代仓。 23:49 持仓对齐：美股真实持仓更新为 RKLB / CRCL / TCOM / PLTU / SOXL / RKLX / ROBN；已清仓 OKLO、HOOD。 23:58 交易记录：TCOM 53.86 美元卖出 5 股，按持仓成本 52.74 计，本次实现盈利约 5.60 美元；TCOM 清仓。 00:13 再次对齐：美股真实持仓更新为 RKLB / CRCL / PLTU / SOXL / RKLX / ROBN；已清仓 OKLO、HOOD、TCOM。 [score=0.843 recalls=0 avg=0.620 source=memory/2026-04-22.md:5-8]
+
+## Promoted From Short-Term Memory (2026-04-30)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-04-24.md:1:1 -->
+- 09:31 交易记录：00100 MINIMAX-W 869.0 买入 20 股；持仓增至 40 股，摊薄后成本约 884.25 HKD。 [score=0.843 recalls=0 avg=0.620 source=memory/2026-04-24.md:1-1]
+
+## Promoted From Short-Term Memory (2026-05-04)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-04-29.md:3:3 -->
+- 16:02 港股收盘复盘：恒指 26106.98（+1.66%），恒科 4912.72（+1.77%）。kcn 港股持仓收盘市值 78,785.6 HKD，今日合计 +252.4 HKD，总浮亏 -9,490.64 HKD（-10.75%）。 [score=0.872 recalls=0 avg=0.620 source=memory/2026-04-29.md:3-3]
+<!-- openclaw-memory-promotion:memory:memory/2026-04-29.md:5:5 -->
+- 持仓：00100 MiniMax 709.5（-1.94%），今日拖累 -840 HKD，浮亏 -6,799.8 HKD；02208 金风科技 16.57（+3.43%），浮盈 +994.4 HKD，仍是港股最稳强仓；07226 2x恒科 3.838（+3.34%），今日贡献 +768.8 HKD，但尾盘从 3.86 回落，仍是组合主要杠杆风险；03032 4.89（+1.62%）；03033 4.814（+1.86%）。 [score=0.872 recalls=0 avg=0.620 source=memory/2026-04-29.md:5-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-04-29.md:7:7 -->
+- 结论：指数强、恒科修复、07226 有效反弹但未强到可追，00100 明显弱于大盘且仍未站回 723/730，短线不补。后续若 07226 冲 3.90-4.00 可考虑减一点杠杆风险；02208 继续持有观察。 [score=0.822 recalls=0 avg=0.620 source=memory/2026-04-29.md:7-7]

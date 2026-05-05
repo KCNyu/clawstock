@@ -734,182 +734,6 @@
           "today_change_abs": -0.148
         },
         {
-          "ticker": "07709",
-          "name": "XL二南方海力士",
-          "ticker_finnhub": "7709.HK",
-          "shares": 0,
-          "cost_basis": 29.5347875,
-          "current_price": 59.36,
-          "current_value": 0.0,
-          "pnl_percent": 100.9833,
-          "data_source": "Tencent Finance qt.gtimg.cn midday quote 2026-05-05 12:00 HKT",
-          "trades": [
-            {
-              "date": "2026-03-11",
-              "action": "buy",
-              "shares": 100,
-              "price": 29.6,
-              "note": "补仓，摊低成本"
-            },
-            {
-              "date": "2026-03-18",
-              "action": "sell",
-              "shares": 100,
-              "price": 33.14,
-              "realized_pnl": 144.86,
-              "note": "美光财报前减仓止盈"
-            },
-            {
-              "date": "2026-03-18",
-              "action": "sell",
-              "shares": 100,
-              "price": 34.2,
-              "realized_pnl": 250.86,
-              "note": "下午挂单止盈"
-            },
-            {
-              "date": "2026-03-23",
-              "action": "buy",
-              "shares": 100,
-              "price": 27.94,
-              "note": "韩股暴跌日抄底补仓"
-            },
-            {
-              "date": "2026-03-25",
-              "action": "sell",
-              "shares": 100,
-              "price": 33.5,
-              "realized_pnl": 243.38,
-              "note": "止盈减仓"
-            },
-            {
-              "date": "2026-03-31",
-              "action": "buy",
-              "shares": 100,
-              "price": 22,
-              "note": "低位补仓，摊低成本至29.5552"
-            },
-            {
-              "date": "2026-04-08",
-              "action": "buy",
-              "shares": 100,
-              "price": 29.12,
-              "note": "按用户记录买入"
-            },
-            {
-              "date": "2026-04-08",
-              "action": "sell",
-              "shares": 100,
-              "price": 31.76,
-              "realized_pnl": 226.7,
-              "note": "按用户记录卖出"
-            },
-            {
-              "date": "2026-04-08",
-              "action": "buy",
-              "shares": 100,
-              "price": 30.5,
-              "note": "按用户记录买回"
-            },
-            {
-              "date": "2026-04-09",
-              "action": "buy",
-              "shares": 100,
-              "price": 28.82,
-              "note": "按用户记录买入"
-            },
-            {
-              "date": "2026-04-10",
-              "action": "sell",
-              "shares": 100,
-              "price": 31.5,
-              "realized_pnl": 196.52,
-              "note": "按用户记录卖出"
-            },
-            {
-              "date": "2026-04-14",
-              "action": "sell",
-              "shares": 100,
-              "price": 36.0,
-              "realized_pnl": 646.52,
-              "note": "按用户记录卖出"
-            },
-            {
-              "date": "2026-04-14",
-              "action": "sell",
-              "shares": 100,
-              "price": 36.02,
-              "realized_pnl": 648.52,
-              "note": "按用户记录卖出"
-            },
-            {
-              "date": "2026-04-15",
-              "action": "sell",
-              "shares": 100,
-              "price": 38.7,
-              "realized_pnl": 916.52,
-              "note": "按用户更正卖出"
-            },
-            {
-              "date": "2026-04-15",
-              "action": "sell",
-              "shares": 400,
-              "price": 36.98,
-              "realized_pnl": 2978.08,
-              "note": "按用户补充记录清仓"
-            }
-          ],
-          "today_change": 0.0,
-          "today_change_pct": 1.4,
-          "pnl_abs": 0.0,
-          "day_open": 58.54,
-          "day_high": 59.8,
-          "day_low": 58.4,
-          "prev_close": 58.54,
-          "volume": 10583461.0,
-          "turnover": 627904175.58,
-          "today_change_abs": 0.82
-        },
-        {
-          "ticker": "07747",
-          "name": "XL二南三星",
-          "ticker_finnhub": "7747.HK",
-          "shares": 0,
-          "cost_basis": 81.85,
-          "current_price": 102.2,
-          "current_value": 0.0,
-          "pnl_percent": 24.8626,
-          "data_source": "Tencent Finance qt.gtimg.cn midday quote 2026-05-05 12:00 HKT",
-          "trades": [
-            {
-              "date": "2026-03-18",
-              "action": "sell",
-              "shares": 100,
-              "price": 85,
-              "realized_pnl": 315,
-              "note": "美光财报前减半仓止盈"
-            },
-            {
-              "date": "2026-04-08",
-              "action": "sell",
-              "shares": 100,
-              "price": 83.58,
-              "realized_pnl": 173.0,
-              "note": "按用户记录卖出"
-            }
-          ],
-          "today_change": 0.0,
-          "today_change_pct": 1.34,
-          "pnl_abs": 0.0,
-          "day_open": 100.15,
-          "day_high": 103.3,
-          "day_low": 99.1,
-          "prev_close": 100.85,
-          "volume": 3189050.0,
-          "turnover": 324104204.0,
-          "today_change_abs": 1.35
-        },
-        {
           "ticker": "03033",
           "name": "南方恒生科技",
           "ticker_finnhub": "3033.HK",
@@ -980,8 +804,6 @@
           "02208",
           "03032",
           "07226",
-          "07709",
-          "07747",
           "03033"
         ],
         "active_holdings": [
@@ -991,14 +813,12 @@
           "07226",
           "03033"
         ],
-        "eastmoney_dynamic_secids": "116.00100,116.02208,116.03032,116.07226,116.07709,116.07747,116.03033",
+        "eastmoney_dynamic_secids": "116.00100,116.02208,116.03032,116.07226,116.03033",
         "updated": [
           "00100",
           "02208",
           "03032",
           "07226",
-          "07709",
-          "07747",
           "03033"
         ],
         "missing_after_fallback": [],
@@ -1013,8 +833,6 @@
           "02208",
           "03032",
           "07226",
-          "07709",
-          "07747",
           "03033"
         ],
         "active_holdings": [
@@ -1029,8 +847,6 @@
           "02208",
           "03032",
           "07226",
-          "07709",
-          "07747",
           "03033"
         ],
         "missing_after_fallback": [],
@@ -1065,26 +881,5 @@
       "close_report_generated_at": "2026-05-04 16:00 HKT"
     }
   },
-  "market_context": {
-    "kr_linkage": {
-      "fetched_at": "2026-04-17 16:24:23 HKT",
-      "source": "naver polling",
-      "holdings_context": {
-        "000660": {
-          "name": "SK하이닉스",
-          "close_price": "1,128,000",
-          "change": "-27,000",
-          "pct": "-2.34",
-          "status": "FALLING"
-        },
-        "005930": {
-          "name": "삼성전자",
-          "close_price": "216,000",
-          "change": "-1,500",
-          "pct": "-0.69",
-          "status": "FALLING"
-        }
-      }
-    }
-  }
+  "market_context": {}
 }

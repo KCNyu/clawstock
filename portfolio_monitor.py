@@ -31,8 +31,8 @@ LOT_SIZES = {
     '03032': 100,   # 恒生科技ETF
     '03033': 100,   # 南方恒生科技
     '07226': 100,   # XL二南方恒科 2x
-    '07709': 100,   # XL二南方海力士 2x
-    '07747': 100,   # XL二南三星 2x
+    # '07709': 100,   # 已清仓 2026-05-05
+    # '07747': 100,   # 已清仓 2026-05-05
 }
 
 def to_lots(ticker, shares):
@@ -42,7 +42,7 @@ def to_lots(ticker, shares):
 
 # 触发阈值
 INTRADAY_DIP_THRESHOLD = -5.0      # 当日跌幅 >= 5% 触发提醒
-EXTREME_DIP_THRESHOLD = -10.0      # 当日跌幅 >= 10% 极端提醒（杠杆ETF专属）
+EXTREME_DIP_THRESHOLD = -8.0       # 当日跌幅 >= 8% 极端提醒
 BOUNCE_FROM_LOW_THRESHOLD = 2.0    # 从日内低点反弹 >= 2%（今天暴跌行情降低阈值）
 BELOW_COST_THRESHOLD = -8.0        # 跌破成本 >= 8% 可考虑摊平
 ALERT_COOLDOWN_MINUTES = 20        # bounce/dip 冷却时间（分钟）
