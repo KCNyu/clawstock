@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-05-06 22:52 HKT",
+  "last_updated": "2026-05-06 22:57 HKT",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -234,19 +234,19 @@
         },
         {
           "ticker": "PLTU",
-          "shares": 11,
-          "cost_basis": 42.32,
+          "shares": 14,
+          "cost_basis": 40.957142857142856,
           "current_price": 35.8657,
           "today_change_pct": -2.54,
-          "pnl_percent": -15.2512,
+          "pnl_percent": -12.4311,
           "data_source": "Nasdaq API realtime quote May 6, 2026 10:51 AM ET (etf)",
           "day_high": 40.915,
           "day_low": 36.138,
           "day_open": 39.355,
           "prev_close": 36.8,
-          "current_value": 394.52,
-          "pnl_abs": -71.0,
-          "today_change": -10.28,
+          "current_value": 502.12,
+          "pnl_abs": -71.28,
+          "today_change": -13.08,
           "note": "2026-04-16 按用户截图记录买入，做 PLTR 2x 杠杆短线仓",
           "trades": [
             {
@@ -255,6 +255,13 @@
               "shares": 11,
               "price": 42.32,
               "note": "按用户截图记录买入"
+            },
+            {
+              "date": "2026-05-06",
+              "action": "buy",
+              "shares": 3,
+              "price": 35.96,
+              "note": "用户记录：35.96 买入 3 股 PLTU，加仓摊低成本"
             }
           ],
           "name": "二倍做多PLTR ETF-Direxion",
@@ -402,11 +409,11 @@
           "volume": 4173584.069829
         }
       ],
-      "total_cost": 3046.97,
-      "total_current_value": 3230.93,
-      "total_pnl": 183.96,
-      "total_pnl_percent": 6.0375,
-      "today_total_change": 117.69,
+      "total_cost": 3154.85,
+      "total_current_value": 3338.53,
+      "total_pnl": 183.68,
+      "total_pnl_percent": 5.8221,
+      "today_total_change": 114.89,
       "realized_pnl": 592.18,
       "realized_note": "CRCL 5股 @$120(+165) + CRCL 3股 @$127(+120) + NVDA 3股 @$199.41(+37.23) + QQQ 1股 @$631.30(+9.30) + TQQQ 8股 @$54.45(+69.76) + OKLO 2股 @$68.0(+10.34) + HOOD 5股 @$88.36(+74.3) + TCOM 5股 @$53.86(+5.6) + SOXL 5股 @$112.00(+100.65)",
       "last_updated": "2026-05-06 22:52 HKT",
@@ -654,7 +661,8 @@
           "MSFU"
         ],
         "note": "Premarket refresh for active US holdings plus HOOD reference."
-      }
+      },
+      "last_trade_update": "2026-05-06 22:57 HKT"
     },
     "hk_stocks": {
       "currency": "HKD",
