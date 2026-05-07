@@ -87,6 +87,8 @@ bash check_portfolio.sh
 ## 现有脚本梳理
 
 ### 核心
+## 辅助工具
+- **Scrapling**（新增，2026-05-08）：自适应爬虫框架，可绕过反爬（Cloudflare等），支持 JS 渲染。安装：`pip3 install scrapling --break-system-packages`。使用见 `skills/scrapling/SKILL.md`
 - `stock_analyzer.py`：主更新与分析脚本，负责读取 `portfolio.json`、抓取行情、更新盈亏
 - `hk_stock_fetcher.py`：港股更新脚本
 - `final_analysis.py`：已有持仓分析输出脚本
