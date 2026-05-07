@@ -42,7 +42,7 @@
           "current_price": 78.58,
           "today_change_pct": -7.17,
           "pnl_percent": 10.6761,
-          "data_source": "Eastmoney+Finnhub close May 7, 2026 16:00 ET",
+          "data_source": "Close May 7 2026 16:00 ET",
           "day_high": 84.79,
           "day_low": 83.16,
           "day_open": 84.71,
@@ -63,7 +63,7 @@
           "current_price": 113.25,
           "today_change_pct": -7.02,
           "pnl_percent": 30.1724,
-          "data_source": "Eastmoney+Finnhub close May 7, 2026 16:00 ET",
+          "data_source": "Close May 7 2026 16:00 ET",
           "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；2026-03-23 卖出3股 @$127，实现盈利 $120；剩余2股长期持有（看好稳定币+agent支付赛道）",
           "day_high": 119.35,
           "day_low": 116.63,
@@ -239,7 +239,7 @@
           "current_price": 37.39,
           "today_change_pct": 4.84,
           "pnl_percent": -8.7095,
-          "data_source": "Eastmoney+Finnhub close May 7, 2026 16:00 ET",
+          "data_source": "Close May 7 2026 16:00 ET",
           "day_high": 37.66,
           "day_low": 36.18,
           "day_open": 36.35,
@@ -277,7 +277,7 @@
           "current_price": 152.1,
           "today_change_pct": -8.29,
           "pnl_percent": 65.56,
-          "data_source": "Eastmoney+Finnhub close May 7, 2026 16:00 ET",
+          "data_source": "Close May 7 2026 16:00 ET",
           "day_high": 162.8,
           "day_low": 157.21,
           "day_open": 162.115,
@@ -314,9 +314,9 @@
           "shares": 6,
           "cost_basis": 46.7,
           "current_price": 35.31,
-          "today_change_pct": -14.41,
+          "today_change_pct": -14.4,
           "pnl_percent": -24.3897,
-          "data_source": "Eastmoney+Finnhub close May 7, 2026 16:00 ET",
+          "data_source": "Close May 7 2026 16:00 ET",
           "day_high": 41.34,
           "day_low": 39.78,
           "day_open": 40.89,
@@ -346,7 +346,7 @@
           "cost_basis": 24.343333333333337,
           "current_price": 19.26,
           "today_change_pct": -7.14,
-          "data_source": "Eastmoney+Finnhub close May 7, 2026 16:00 ET",
+          "data_source": "Close May 7 2026 16:00 ET",
           "day_high": 20.82,
           "day_low": 20.47,
           "day_open": 20.66,
@@ -402,7 +402,7 @@
           "day_high": 29.47,
           "day_low": 28.91,
           "day_open": 29.11,
-          "data_source": "Eastmoney+Finnhub close May 7, 2026 16:00 ET",
+          "data_source": "Close May 7 2026 16:00 ET",
           "bid": 29.68,
           "ask": 29.69,
           "premarket_volume": "378,509.610000",
@@ -494,10 +494,28 @@
         "updated_at": "2026-05-07 09:30 ET open"
       },
       "close_fetch_status": {
+        "attempted_all_holdings": [
+          "RKLB",
+          "CRCL",
+          "PLTU",
+          "SOXL",
+          "RKLX",
+          "ROBN",
+          "MSFU"
+        ],
+        "active_holdings": [
+          "RKLB",
+          "CRCL",
+          "PLTU",
+          "SOXL",
+          "RKLX",
+          "ROBN",
+          "MSFU"
+        ],
         "source_counts": {
           "eastmoney": 4,
           "finnhub": 7,
-          "investing_com": 2
+          "investing_com_indices": 2
         },
         "updated": [
           "RKLB",
@@ -508,11 +526,8 @@
           "ROBN",
           "MSFU"
         ],
-        "indices": [
-          "NDX",
-          "SPX"
-        ],
-        "note": "Close prices May 7 2026. RKLB/PLTU/RKLX/MSFU via Eastmoney; CRCL/SOXL/ROBN via Finnhub; NDX/SPX via investing.com",
+        "missing_after_fallback": [],
+        "note": "Close May 7 2026. RKLB/PLTU/RKLX/MSFU via Eastmoney+Finnhub; CRCL/SOXL/ROBN via Finnhub; NDX/SPX via investing.com",
         "updated_at": "May 7, 2026 16:00 ET"
       },
       "last_close_attempted": "May 7, 2026 16:00 ET close",
