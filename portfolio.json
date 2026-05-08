@@ -767,12 +767,12 @@
       ],
       "total_cost": 88276.24,
       "total_current_value": 83771.4,
-      "total_pnl": -4504.84,
-      "total_pnl_percent": -5.1031,
+      "total_pnl": -4504.840000000011,
+      "total_pnl_percent": -5.103117214779437,
       "realized_pnl": 7259.16,
       "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07709 100股@31.5(+196.52) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0) + 07709 100股@36(+646.52) + 07709 100股@36.02(+648.52) + 07709 100股@38.7(+916.52) + 07709 400股@36.98(+2978.08) + 02208 200股@16.68(+519.2)",
       "today_total_change": -4516.8,
-      "last_updated": "2026/05/08 12:00 HKT midday",
+      "last_updated": "2026/05/08 13:33 HKT afternoon",
       "midday_fetch_status": {
         "attempted_all_holdings": [
           "00100",
@@ -869,25 +869,25 @@
       "indices_snapshot": {
         "HSI": {
           "name": "恒生指数",
-          "price": 26337.1,
-          "chg_pct": -1.09,
-          "chg_abs": -289.18,
+          "price": 26366.27,
+          "chg_pct": -0.98,
+          "chg_abs": -260.01,
           "open": 26359.79,
           "high": 26424.02,
           "low": 26274.8,
           "prev_close": 26626.28,
-          "source": "Tencent qt.gtimg.cn realtime 2026/05/08 12:00 HKT"
+          "source": "Tencent qt.gtimg.cn realtime 2026/05/08 13:33 HKT"
         },
         "HSTECH": {
           "name": "恒生科技指数",
-          "price": 5066.2,
-          "chg_pct": -1.07,
-          "chg_abs": -54.9,
+          "price": 5076.25,
+          "chg_pct": -0.88,
+          "chg_abs": -44.85,
           "open": 5079.77,
           "high": 5094.33,
           "low": 5047.17,
           "prev_close": 5121.1,
-          "source": "Tencent qt.gtimg.cn realtime 2026/05/08 12:00 HKT"
+          "source": "Tencent qt.gtimg.cn realtime 2026/05/08 13:33 HKT"
         }
       },
       "last_midday_attempted": "2026-05-07 12:00:00 HKT",
@@ -922,7 +922,36 @@
         "updated_at": "2026/05/07 11:38:33 HKT",
         "note": "用户盘中询问，按 portfolio.json 动态生成全部港股 holdings；腾讯实时行情。"
       },
-      "midday_report_generated_at": "2026-05-07 12:00 HKT"
+      "midday_report_generated_at": "2026-05-07 12:00 HKT",
+      "afternoon_fetch_status": {
+        "attempted_all_holdings": [
+          "00100",
+          "02208",
+          "03032",
+          "07226",
+          "03033"
+        ],
+        "active_holdings": [
+          "00100",
+          "02208",
+          "03032",
+          "07226",
+          "03033"
+        ],
+        "updated": [
+          "00100",
+          "02208",
+          "03032",
+          "07226",
+          "03033"
+        ],
+        "missing_after_fallback": [],
+        "source": "Tencent qt.gtimg.cn realtime quote",
+        "index_source": "Tencent r_hkHSI + r_hkHSTECH",
+        "errors": [],
+        "note": "Afternoon snapshot 2026/05/08 13:33 HKT.",
+        "updated_at": "2026-05-08 13:33 HKT"
+      }
     }
   },
   "market_context": {}
