@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026-05-08 12:00 HKT midday",
+  "last_updated": "2026/05/11 09:33 HKT",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -589,18 +589,18 @@
           "ticker_finnhub": "0100.HK",
           "shares": 60,
           "cost_basis": 822.83,
-          "current_price": 740.0,
-          "current_value": 44400.0,
-          "pnl_percent": -10.0665,
-          "data_source": "Tencent qt.gtimg.cn realtime 2026/05/08 12:00 HKT midday",
-          "today_change": -4830.0,
-          "today_change_pct": -9.8111,
-          "pnl_abs": -4969.8,
-          "day_open": 801.0,
-          "day_high": 802.0,
-          "day_low": 760.0,
-          "prev_close": 820.5,
-          "volume": 535894.0,
+          "current_price": 725.5,
+          "current_value": 43530.0,
+          "pnl_percent": -11.828688793553958,
+          "data_source": "Tencent qt.gtimg.cn realtime 2026/05/11 09:33 HKT",
+          "today_change": -1020.0,
+          "today_change_pct": -2.29,
+          "pnl_abs": -5839.800000000003,
+          "day_open": 744.5,
+          "day_high": 748.0,
+          "day_low": 725.5,
+          "prev_close": 742.5,
+          "volume": 49422.0,
           "lot_size": 20,
           "note": "2026-04-16 买入 20 股，2026-04-24 869 加仓 20 股，2026-04-27 700 加仓 20 股，做 MiniMax 短线仓",
           "trades": [
@@ -626,8 +626,8 @@
               "note": "按用户截图记录加仓"
             }
           ],
-          "turnover": 936900595.3,
-          "today_change_abs": -80.5
+          "turnover": 36609029.62,
+          "today_change_abs": -17.0
         },
         {
           "ticker": "02208",
@@ -635,18 +635,18 @@
           "ticker_finnhub": "2208.HK",
           "shares": 400,
           "cost_basis": 14.084,
-          "current_price": 17.45,
-          "current_value": 6980.0,
-          "pnl_percent": 23.8995,
-          "data_source": "Tencent qt.gtimg.cn realtime 2026/05/08 12:00 HKT midday",
-          "today_change": -220.0,
-          "today_change_pct": -3.0556,
-          "pnl_abs": 1346.4,
-          "day_open": 17.81,
-          "day_high": 18.05,
-          "day_low": 17.05,
-          "prev_close": 18.0,
-          "volume": 17449617.0,
+          "current_price": 17.7,
+          "current_value": 7080.0,
+          "pnl_percent": 25.674524282874184,
+          "data_source": "Tencent qt.gtimg.cn realtime 2026/05/11 09:33 HKT",
+          "today_change": 140.0,
+          "today_change_pct": 2.02,
+          "pnl_abs": 1446.4000000000005,
+          "day_open": 17.52,
+          "day_high": 17.88,
+          "day_low": 17.52,
+          "prev_close": 17.35,
+          "volume": 1764200.0,
           "trades": [
             {
               "date": "2026-04-27",
@@ -657,8 +657,8 @@
               "note": "按用户截图记录减仓200股"
             }
           ],
-          "turnover": 603207641.84,
-          "today_change_abs": -0.55
+          "turnover": 31249330.0,
+          "today_change_abs": 0.35
         },
         {
           "ticker": "03032",
@@ -666,20 +666,20 @@
           "ticker_finnhub": "3032.HK",
           "shares": 200,
           "cost_basis": 5.405,
-          "current_price": 5.085,
-          "current_value": 1017.0,
-          "pnl_percent": -5.9204,
-          "data_source": "Tencent qt.gtimg.cn realtime 2026/05/08 12:00 HKT midday",
-          "today_change": -2.0,
-          "today_change_pct": -0.1963,
-          "pnl_abs": -64.0,
-          "day_open": 5.09,
-          "day_high": 5.09,
-          "day_low": 5.02,
-          "prev_close": 5.095,
-          "volume": 20229654.0,
-          "turnover": 247723419.475,
-          "today_change_abs": -0.01
+          "current_price": 5.08,
+          "current_value": 1016.0,
+          "pnl_percent": -6.012950971322852,
+          "data_source": "Tencent qt.gtimg.cn realtime 2026/05/11 09:33 HKT",
+          "today_change": -1.0,
+          "today_change_pct": -0.1,
+          "pnl_abs": -65.0,
+          "day_open": 5.05,
+          "day_high": 5.08,
+          "day_low": 5.05,
+          "prev_close": 5.085,
+          "volume": 865900.0,
+          "turnover": 4387480.0,
+          "today_change_abs": -0.005
         },
         {
           "ticker": "07226",
@@ -687,10 +687,10 @@
           "ticker_finnhub": "7226.HK",
           "shares": 6200,
           "cost_basis": 4.3632,
-          "current_price": 4.142,
-          "current_value": 25680.4,
-          "pnl_percent": -5.0697,
-          "data_source": "Tencent qt.gtimg.cn realtime 2026/05/08 12:00 HKT midday",
+          "current_price": 4.126,
+          "current_value": 25581.2,
+          "pnl_percent": -5.436376971030428,
+          "data_source": "Tencent qt.gtimg.cn realtime 2026/05/11 09:33 HKT",
           "trades": [
             {
               "date": "2026-03-24",
@@ -700,16 +700,16 @@
               "note": "加仓补摊，摊低成本至4.3632"
             }
           ],
-          "today_change": -148.8,
-          "today_change_pct": -0.5761,
-          "pnl_abs": -1371.44,
-          "day_open": 4.114,
-          "day_high": 4.126,
-          "day_low": 4.044,
-          "prev_close": 4.166,
-          "volume": 146839755.0,
-          "turnover": 1643624591.94,
-          "today_change_abs": -0.024
+          "today_change": -99.2,
+          "today_change_pct": -0.39,
+          "pnl_abs": -1470.6399999999994,
+          "day_open": 4.086,
+          "day_high": 4.132,
+          "day_low": 4.086,
+          "prev_close": 4.142,
+          "volume": 12448600.0,
+          "turnover": 51212538.4,
+          "today_change_abs": -0.016
         },
         {
           "ticker": "03033",
@@ -717,30 +717,30 @@
           "ticker_finnhub": "3033.HK",
           "shares": 1000,
           "cost_basis": 5.14,
-          "current_price": 5.06,
-          "current_value": 5060.0,
-          "pnl_percent": -1.5564,
-          "data_source": "Tencent qt.gtimg.cn realtime 2026/05/08 12:00 HKT midday",
-          "today_change": 50.0,
-          "today_change_pct": 0.998,
-          "pnl_abs": -80.0,
-          "day_open": 4.986,
-          "day_high": 4.986,
-          "day_low": 4.936,
-          "prev_close": 5.01,
-          "volume": 1030003845.0,
-          "turnover": 3792865449.916,
-          "today_change_abs": 0.05
+          "current_price": 4.988,
+          "current_value": 4988.0,
+          "pnl_percent": -2.957198443579752,
+          "data_source": "Tencent qt.gtimg.cn realtime 2026/05/11 09:33 HKT",
+          "today_change": -10.0,
+          "today_change_pct": -0.2,
+          "pnl_abs": -152.0,
+          "day_open": 4.96,
+          "day_high": 4.99,
+          "day_low": 4.958,
+          "prev_close": 4.998,
+          "volume": 16265200.0,
+          "turnover": 81021715.2,
+          "today_change_abs": -0.01
         }
       ],
       "total_cost": 88276.24,
-      "total_current_value": 83137.4,
-      "total_pnl": -5138.84,
-      "total_pnl_percent": -5.8213,
+      "total_current_value": 82195.2,
+      "total_pnl": -6081.040000000008,
+      "total_pnl_percent": -6.888648632973049,
       "realized_pnl": 7259.16,
       "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07709 100股@31.5(+196.52) + 07747 100股@85(+315) + 07747 100股@83.58(+173.0) + 07709 100股@36(+646.52) + 07709 100股@36.02(+648.52) + 07709 100股@38.7(+916.52) + 07709 400股@36.98(+2978.08) + 02208 200股@16.68(+519.2)",
-      "today_total_change": -5150.8,
-      "last_updated": "2026/05/08 16:03 HKT close",
+      "today_total_change": -990.2,
+      "last_updated": "2026/05/11 09:33 HKT",
       "midday_fetch_status": {
         "attempted_all_holdings": [
           "00100",
@@ -827,31 +827,31 @@
         "source": "Tencent qt.gtimg.cn realtime quote",
         "index_source": "Tencent r_hkHSI + r_hkHSTECH",
         "errors": [
-          "Eastmoney push2 SSL handshake timeout; Tencent fallback OK"
+          "Eastmoney push2 SSL timeout → Tencent fallback OK"
         ],
         "note": "东方财富 push2 SSL 超时，fallback 到腾讯财经 qt.gtimg.cn 成功。",
-        "updated_at": "2026-05-08 09:33 HKT"
+        "updated_at": "2026-05-11 09:33 HKT"
       },
       "indices_snapshot": {
         "HSI": {
           "name": "恒生指数",
-          "price": 26411.81,
-          "chg_pct": -0.81,
-          "prev_close": 26626.28,
-          "source": "Tencent qt.gtimg.cn close 2026/05/08 16:03 HKT"
+          "price": 26284.42,
+          "chg_pct": -0.41,
+          "prev_close": 26393.71,
+          "source": "Tencent qt.gtimg.cn realtime 2026/05/11 09:33 HKT"
         },
         "HSTECH": {
           "name": "恒生科技指数",
-          "price": 5108.14,
-          "chg_pct": -0.25,
-          "prev_close": 5121.1,
-          "source": "Tencent qt.gtimg.cn close 2026/05/08 16:03 HKT"
+          "price": 5095.5,
+          "chg_pct": -0.14,
+          "prev_close": 5102.79,
+          "source": "Tencent qt.gtimg.cn realtime 2026/05/11 09:33 HKT"
         }
       },
       "last_midday_attempted": "2026-05-07 12:00:00 HKT",
-      "last_open_attempted": "2026-05-07 09:30 HKT",
+      "last_open_attempted": "2026-05-11 09:30 HKT",
       "close_report_generated_at": "2026-05-07 16:00 HKT",
-      "open_report_generated_at": "2026-05-08 09:30 HKT",
+      "open_report_generated_at": "2026-05-11 09:30 HKT",
       "live_fetch_status": {
         "attempted_all_holdings": [
           "00100",
