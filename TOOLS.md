@@ -40,16 +40,18 @@ bash check_portfolio.sh
 3. **stooq** 日线收盘
 4. **yfinance** 最后备选
 
-### 美股 fallback 链
-1. **东方财富** `push2.eastmoney.com`
-2. **Finnhub**
-3. **yfinance**
-4. **Alpha Vantage**
+### 美股 fallback 链（按顺序，逐个试）
+1. **CNBC web_fetch** `https://www.cnbc.com/quotes/{TICKER}` — **首选，最快最可靠**
+2. **东方财富** `push2.eastmoney.com` — `105.{TICKER}`
+3. **Finnhub**（需 key）
+4. **Yahoo Finance**
+5. **Alpha Vantage**（需 key，慢）
 
 ### 说明
 - 不要继续依赖旧版“境外一定拿不到腾讯港股”的结论，`MEMORY.md` 已记录 2026-03-26 实测可用
 - 分析持仓前，必须先获取最新价格
 - 如果全部失败，必须明确说明是旧数据
+- ⚠️ **2026-05-11 教训：曾用 portfolio.json 缓存价（RKLB $110 vs 实时 $118，RKLX $59 vs $73）导致累计盈利从 +$790 错写成约 +$550。必须先拉实时价再回答，不得使用缓存价。**
 
 ---
 
