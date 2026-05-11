@@ -163,3 +163,65 @@
 - 持仓：00100 MiniMax 709.5（-1.94%），今日拖累 -840 HKD，浮亏 -6,799.8 HKD；02208 金风科技 16.57（+3.43%），浮盈 +994.4 HKD，仍是港股最稳强仓；07226 2x恒科 3.838（+3.34%），今日贡献 +768.8 HKD，但尾盘从 3.86 回落，仍是组合主要杠杆风险；03032 4.89（+1.62%）；03033 4.814（+1.86%）。 [score=0.872 recalls=0 avg=0.620 source=memory/2026-04-29.md:5-5]
 <!-- openclaw-memory-promotion:memory:memory/2026-04-29.md:7:7 -->
 - 结论：指数强、恒科修复、07226 有效反弹但未强到可追，00100 明显弱于大盘且仍未站回 723/730，短线不补。后续若 07226 冲 3.90-4.00 可考虑减一点杠杆风险；02208 继续持有观察。 [score=0.822 recalls=0 avg=0.620 source=memory/2026-04-29.md:7-7]
+
+## Promoted From Short-Term Memory (2026-05-08)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-03.md:3:3 -->
+- 17:34 检查 OpenClaw GitHub changelog：v2026.5.2 已发布，重点包括外部插件/npm cutover、Gateway/session 性能优化、WebChat/Control UI 稳定性、WhatsApp/Telegram/Discord/Slack/Signal 等消息通道修复，以及 Heartbeats structured `heartbeat_respond`。 [score=0.870 recalls=0 avg=0.620 source=memory/2026-05-03.md:3-3]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-03.md:5:5 -->
+- 17:34 检查最近 memory：workspace 最近的日记文件到 2026-04-29；2026-05-02 和 2026-05-03 当时不存在，说明近期日记有断档。 [score=0.870 recalls=0 avg=0.620 source=memory/2026-05-03.md:5-5]
+
+## Promoted From Short-Term Memory (2026-05-09)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-04.md:11:14 -->
+- | 代码 | 股数 | 成本 | 收盘 | 涨跌 | 市值 | 浮盈 | |------|------|------|------|------|------|------| | RKLB | 5 | $71.00 | $80.30 | +1.89% | $401.50 | +$46.50 | | CRCL | 2 | $87.00 | $119.57 | +19.92% | $239.13 | +$65.13 | [score=0.808 recalls=0 avg=0.620 source=memory/2026-05-04.md:11-14]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-04.md:15:18 -->
+- | PLTU | 11 | $42.32 | $42.83 | +2.98% | $471.13 | +$5.61 | | SOXL | 5 | $91.87 | $127.55 | -2.19% | $637.75 | +$178.40 | | RKLX | 6 | $46.70 | $37.37 | +3.66% | $224.22 | -$55.98 | | ROBN | 30 | $24.34 | $19.50 | +7.62% | $585.00 | -$145.30 | [score=0.808 recalls=0 avg=0.620 source=memory/2026-05-04.md:15-18]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-04.md:19:19 -->
+- | MSFU | 20 | $29.13 | $28.24 | -0.39% | $564.80 | -$17.80 | [score=0.808 recalls=0 avg=0.620 source=memory/2026-05-04.md:19-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-04.md:21:21 -->
+- **总计：成本 $3,046.97 | 市值 $3,123.53 | 浮盈 +$76.56 (+2.51%) | 今日 +$93.69** [score=0.808 recalls=0 avg=0.620 source=memory/2026-05-04.md:21-21]
+
+## Promoted From Short-Term Memory (2026-05-11)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-06.md:1:1 -->
+- 22:56 交易记录：PLTU 35.96 美元买入 3 股，持仓从 11 股增至 14 股；按当前持仓加权成本从 42.32 降至约 40.9571。当前按最新价约 35.8657 计，PLTU 浮亏约 -71.28 美元（-12.43%）。 [score=0.857 recalls=0 avg=0.620 source=memory/2026-05-06.md:1-1]
+
+## 时区问题记录（重要，2026-05-11补充）
+- **美股交易时间**：美东 9:30-16:00 ET（北京时间 21:30-次日 04:00）
+- **港股交易时间**：香港 9:30-12:00 / 13:00-16:00 HKT（北京时间同）
+- 北京时间 21:39 = 美股刚开盘约10分钟，没有收盘价
+- 北京时间 16:02 = 港股刚收盘
+- **每次回答持仓问题前，先确认市场是否已收盘，避免把盘中价格当成收盘价**
+
+## ⚠️ 数据准确性铁律（2026-05-11 补充）
+
+**每次被问到持仓、盈亏、实时价格时，必须遵守以下规则：**
+
+1. **不得使用 portfolio.json 中的缓存价格计算盈亏** — 该文件的 current_price 是上次更新时的旧数据，不代表当前实时价格
+2. **必须先实时抓取最新价格，再回答任何持仓问题**
+3. **使用 fallback 链路，不能在任何一个数据源失败时放弃**
+
+### 美股实时价格 fallback 链路（按顺序）
+1. CNBC web_fetch（最快最可靠）：`https://www.cnbc.com/quotes/{TICKER}`
+2. 东方财富：`push2.eastmoney.com` 格式 `105.{TICKER}`
+3. Finnhub（需 key）
+4. Yahoo Finance：`finance.yahoo.com/quote/{TICKER}`
+5. Alpha Vantage（需 key，慢）
+
+### 港股实时价格 fallback 链路（按顺序）
+1. 腾讯财经：`qt.gtimg.cn/q=r_hkXXXXX`（境外可用，已验证✅）
+2. 东方财富：`push2.eastmoney.com` 格式 `116.XXXXXX`（6位补零）
+3. stooq.com：`curl stooq.com/q/d/l/?s=XXXX.hk&i=d`（收盘价，非实时）
+4. yfinance：`2208.HK` 等
+
+### 验证规则
+- 每次回答前，必须确认数据是从实时 API 获取的
+- 如果所有 fallback 都失败，必须明确告知用户"数据获取失败，以下为旧数据"，不能静默使用旧数据
+- **严禁在持仓分析中省略数据来源说明**
+
+### 本次教训（2026-05-11）
+- RKLB 盘中价格写成 $110，但实际 CNBC 实时价为 $118
+- RKLX 盘中价格写成 $59，但实际 CNBC 实时价为 $73
+- 导致累计盈利从真实的 +$790 错误写成约 +$550
+- 原因：使用了 portfolio.json 中的旧数据，而非实时 API
