@@ -22,17 +22,25 @@
 ### ⚠️ 数据获取规则（重要）
 - **每次被问到持仓/股价，必须先获取最新实时数据，再回复，不得使用 `portfolio.json` 中的缓存旧价格**
 - **每次获取股价必须走自动 fallback 链，逐个尝试，失败了立即换下一个，直到成功为止**
-- 港股 fallback 链（按顺序逐个试）：
-  1. 腾讯财经 `qt.gtimg.cn/q=r_hkXXXXX` — 境外可用，实时，**已验证 ✅**（2026-03-26 noon 成功）
-  2. 东方财富批量 API `push2.eastmoney.com` — `116.XXXXXX`（6位补零）
-  3. stooq.com `curl stooq.com/q/d/l/?s=XXXX.hk&i=d` — 收盘价，非实时
-  4. yfinance `2208.HK` — 限速慎用，最后备选
-- 美股 fallback 链（按顺序逐个试）：
-  1. 东方财富 `push2.eastmoney.com` — `105.NVDA`
-  2. Finnhub API（需 key）
-  3. yfinance — 限速慎用
-  4. Alpha Vantage（需 key，慢）
-- 韩股 fallback 链：已移除（2026-05-05，07709/07747 均已清仓，不再追踪韩股）
+- 港股 fallback 链（脚本方式，跑 `python3 analyze_hk_stocks.py`）：
+  1. **腾讯财经** `qt.gtimg.cn/q=r_hkXXXXX` — 境外可用，实时，主源
+  2. **stooq.com** CSV — 同日 OHLCV，prev_close 用 open 近似
+  3. **yfinance** — 经常被限速，最后兜底
+  - ⚠️ 东方财富 HK API（116.XXXXX）从此服务器 502 不可达，已移除
+  - ⚠️ **00100 MINIMAX 没有任何 fallback 覆盖**（IPO 太新，stooq/Eastmoney/yfinance 均无数据），Tencent 是唯一来源
+- 美股分析工作流（2026-05-11 更新）：
+  - `python3 analyze_us_stocks.py` — 一键完成：刷价格 + RSI/MA + Finnhub新闻 + 信号生成
+  - `python3 fetch_us_stocks.py` — 仅刷价格
+  - `python3 analyze_us_stocks.py --no-fetch` — 用缓存价格，只跑分析
+
+- 美股 fallback 链（脚本方式，推荐先跑 `python3 fetch_us_stocks.py`）：
+  1. **Nasdaq API** `api.nasdaq.com/api/quote/{TICKER}/info?assetclass=stocks|etf` — 无需 key ✅（2026-05-11 验证 7/7 成功）
+  2. 东方财富 `push2.eastmoney.com` — `105.TICKER`（NASDAQ）或 `106.TICKER`（NYSE/ARCA）
+  3. Finnhub API（需 key）
+  4. Yahoo v8 API `query1.finance.yahoo.com/v8/finance/chart/{TICKER}`
+  5. yfinance 库 — 限速慎用
+  6. Alpha Vantage（需 key，慢）
+  7. Polygon（需 key，前一日收盘价兜底）
 - 新浪/腾讯美股接口境外 403，跳过不试
 - 如所有数据源均失败，必须明确告知用户“数据获取失败，以下为旧数据”，不能静默使用旧数据
 - 获取到最新数据后，更新 `portfolio.json` 并 git commit
@@ -60,14 +68,6 @@
 ---
 
 ## 已知问题 & 待办
-
-### ❌ Telegram 通知失败（2026-03-19 起）
-- Heartbeat 推送失败，原因：chat ID 可能已变更
-- **待办：kcn 需要确认当前 Telegram chat ID**，更新 openclaw 配置
-
-### 📝 日志断档
-- 3/23、3/25 有真实交易，无日志记录
-- 后续每次重要交易或分析结论，更新当天 `memory/YYYY-MM-DD.md`
 
 ### 🧠 检索稳定性
 - 仅依赖语义检索时，可能漏掉 `portfolio.json` 这类结构化数据
@@ -202,18 +202,29 @@
 2. **必须先实时抓取最新价格，再回答任何持仓问题**
 3. **使用 fallback 链路，不能在任何一个数据源失败时放弃**
 
-### 美股实时价格 fallback 链路（按顺序）
-1. CNBC web_fetch（最快最可靠）：`https://www.cnbc.com/quotes/{TICKER}`
-2. 东方财富：`push2.eastmoney.com` 格式 `105.{TICKER}`
+### 美股实时价格 fallback 链路
+
+**⭐ 脚本方式（最可靠）：**
+```bash
+python3 /root/.openclaw/workspace/fetch_us_stocks.py
+```
+脚本内部顺序：Nasdaq API → Eastmoney → Finnhub → Yahoo v8 → yfinance → Alpha Vantage → Polygon
+
+**Claude 直接 web_fetch 时（按顺序）：**
+1. CNBC web_fetch：`https://www.cnbc.com/quotes/{TICKER}`
+2. 东方财富：`push2.eastmoney.com` 格式 `105.{TICKER}`（NASDAQ）/ `106.{TICKER}`（NYSE）
 3. Finnhub（需 key）
 4. Yahoo Finance：`finance.yahoo.com/quote/{TICKER}`
 5. Alpha Vantage（需 key，慢）
 
-### 港股实时价格 fallback 链路（按顺序）
-1. 腾讯财经：`qt.gtimg.cn/q=r_hkXXXXX`（境外可用，已验证✅）
-2. 东方财富：`push2.eastmoney.com` 格式 `116.XXXXXX`（6位补零）
-3. stooq.com：`curl stooq.com/q/d/l/?s=XXXX.hk&i=d`（收盘价，非实时）
-4. yfinance：`2208.HK` 等
+### 港股实时价格 fallback 链路（按顺序，2026-05-13 修正）
+脚本：`python3 analyze_hk_stocks.py`
+1. **腾讯财经** `qt.gtimg.cn/q=r_hkXXXXX` — 主源，覆盖最全
+2. **stooq.com** CSV — 同日 OHLCV，prev_close ≈ open（不精确）
+3. **yfinance** — 经常被限速
+
+⚠️ 东方财富 `push2.eastmoney.com` HK API **从此服务器 502 不可达**，已从链路移除
+⚠️ **00100 MINIMAX 无任何 fallback 覆盖**（新 IPO），Tencent 是唯一数据源
 
 ### 验证规则
 - 每次回答前，必须确认数据是从实时 API 获取的
@@ -225,3 +236,9 @@
 - RKLX 盘中价格写成 $59，但实际 CNBC 实时价为 $73
 - 导致累计盈利从真实的 +$790 错误写成约 +$550
 - 原因：使用了 portfolio.json 中的旧数据，而非实时 API
+
+### 本次教训（2026-05-12）
+- `prev_close` 字段被写成和 `current_price` 一样的值，导致 `today_change = 0`，无法回答"今天亏了多少"
+- 原因：live-quote API（Nasdaq 等）在收盘后会把 `PreviousClose` 更新为当日收盘价；部分 ETF 的 `PreviousClose` 字段本来就缺失，脚本 fallback 到 `pc = current_price`
+- 修复（2026-05-12）：`fetch_us_stocks.py` 新增独立的 Polygon 历史接口调用专门获取 prev_close（带交易日日期戳），同时增加"从 dp% 反推 prev_close"兜底
+- **脚本跑完后 `today_change` 字段可直接使用；`prev_close_date` 字段记录前收来源日期，可验证**

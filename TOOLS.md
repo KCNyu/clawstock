@@ -6,9 +6,9 @@
 - 投资工作流：`INVESTMENT_SOP.md`
 - 当前持仓摘要：`memory/current-portfolio-summary.md`
 - 每日复盘/交易日志：`memory/YYYY-MM-DD.md`
-- 主分析脚本：`stock_analyzer.py`
+- 美股完整分析：`analyze_us_stocks.py`
+- 港股完整分析：`analyze_hk_stocks.py`
 - 快速查看：`check_portfolio.sh`
-- 监控/提醒：`price_alert_monitor.py`、`hk_monitor.py`、`portfolio_monitor.py`
 
 ## 推荐工作流
 
@@ -22,7 +22,8 @@
 
 ### 2. 更新价格
 ```bash
-python3 stock_analyzer.py
+python3 analyze_us_stocks.py   # 美股
+python3 analyze_hk_stocks.py   # 港股
 ```
 
 ### 3. 快速查看持仓
@@ -34,92 +35,90 @@ bash check_portfolio.sh
 
 ## 数据源清单（当前约定）
 
-### 港股 fallback 链
-1. **腾讯财经** `qt.gtimg.cn/q=r_hkXXXXX`
-2. **东方财富** `push2.eastmoney.com` 批量 API
-3. **stooq** 日线收盘
-4. **yfinance** 最后备选
+### 港股 fallback 链（脚本实现，2026-05-13 修正）
+1. **腾讯财经** `qt.gtimg.cn/q=r_hkXXXXX` — 主源，覆盖最全
+2. **stooq.com** CSV — 同日 OHLCV，**注意**：新 IPO（如 00100 MINIMAX）无覆盖；prev_close 用 open 近似
+3. **yfinance** — 经常被限速，最后兜底
 
-### 美股 fallback 链（按顺序，逐个试）
-1. **CNBC web_fetch** `https://www.cnbc.com/quotes/{TICKER}` — **首选，最快最可靠**
-2. **东方财富** `push2.eastmoney.com` — `105.{TICKER}`
-3. **Finnhub**（需 key）
-4. **Yahoo Finance**
-5. **Alpha Vantage**（需 key，慢）
+⚠️ **东方财富 `push2.eastmoney.com` 从此服务器 502 不可达，已从链路移除**
+⚠️ **00100 MINIMAX 没有可用 fallback** — Tencent 是唯一来源，必须保持工作
+
+### 美股 & 港股脚本（推荐用法）
+
+```bash
+# 美股（含 RSI/MA/新闻/信号）
+python3 analyze_us_stocks.py             # 完整分析（默认带新闻）
+python3 analyze_us_stocks.py --no-news   # 跳过新闻（省 Finnhub 配额）
+python3 analyze_us_stocks.py --no-fetch  # 用缓存价，只跑分析
+python3 fetch_us_stocks.py               # 仅刷价格
+
+# 港股（含恒指/恒科/P&L/Finnhub新闻/信号）
+python3 analyze_hk_stocks.py             # 完整分析
+python3 analyze_hk_stocks.py --no-fetch  # 用缓存价
+python3 analyze_hk_stocks.py --no-news   # 跳过新闻
+python3 analyze_hk_stocks.py --dry-run   # 不写文件
+```
+
+### 美股 fallback 链
+
+**脚本内部 provider 顺序：**
+1. **Nasdaq API** `api.nasdaq.com/api/quote/{TICKER}/info?assetclass=stocks|etf` — 无需 key，JSON，覆盖股票和 ETF ✅
+2. **东方财富** `push2.eastmoney.com` — 批量 JSON，无需 key，`105.{TICKER}`（NASDAQ）/ `106.{TICKER}`（NYSE）
+3. **Finnhub** — 需 `FINNHUB_API_KEY`
+4. **Yahoo v8 API** `query1.finance.yahoo.com/v8/finance/chart/{TICKER}` — 无需 key，偶有限速
+5. **yfinance** 库 — 无需 key，偶有限速
+6. **Alpha Vantage** — 需 `ALPHA_VANTAGE_API_KEY`，慢（免费 25次/天）
+7. **Polygon** — 需 `POLYGON_API_KEY`，返回前一日收盘价
+
+**Claude 直接 web_fetch 时的顺序：**
+1. CNBC `cnbc.com/quotes/{TICKER}` — 网页，快速可靠
+2. 东方财富、Finnhub、Yahoo Finance
 
 ### 说明
-- 不要继续依赖旧版“境外一定拿不到腾讯港股”的结论，`MEMORY.md` 已记录 2026-03-26 实测可用
-- 分析持仓前，必须先获取最新价格
+- 分析持仓前，必须先获取最新价格，**不得直接使用 `portfolio.json` 的缓存价**
 - 如果全部失败，必须明确说明是旧数据
-- ⚠️ **2026-05-11 教训：曾用 portfolio.json 缓存价（RKLB $110 vs 实时 $118，RKLX $59 vs $73）导致累计盈利从 +$790 错写成约 +$550。必须先拉实时价再回答，不得使用缓存价。**
+- ⚠️ **2026-05-11 教训：曾用缓存价（RKLB $110 vs 实时 $118，RKLX $59 vs $73）导致盈利从 +$790 错写成 +$550**
+- ⚠️ **2026-05-12 教训：live-quote API 的 `PreviousClose` 字段在收盘后会被更新成当日收盘价，导致 `prev_close == current_price`，`today_change = 0`，无法回答"今天亏多少"**
+  - 修复：脚本现在额外调用 Polygon `/prev` 历史接口获取带日期戳的前收，回退链：Polygon历史 → API pc字段 → 保留现有（3天内） → 从dp%反推
+  - `prev_close_date` 字段同步写入 portfolio.json，可验证前收来自哪个交易日
+  - 脚本跑完后 `today_change` 字段即可直接使用，无需额外换算
+- 新浪美股接口境外 403，跳过不试
 
 ---
 
-## 当前持仓梳理（基于 `portfolio.json` 2026-05-05 更新）
+## 当前持仓
 
-### 美股真实持仓（shares > 0）
-- `RKLB` 5股
-- `CRCL` 2股
-- `PLTU` 11股
-- `SOXL` 5股
-- `RKLX` 6股
-- `ROBN` 30股
-- `MSFU` 20股
+**Single source of truth：`portfolio.json`**（不在此重复，避免漂移）
 
-### 港股真实持仓（shares > 0）
-- `00100` MiniMax-W 60股
-- `02208` 金风科技 400股
-- `03032` 恒生科技ETF 200股
-- `07226` 南方2x恒科 6200股
-- `03033` 南方恒生科技 1000股
-
-### 已清仓（不再追踪）
-- 美股：`NVDA`、`OKLO`、`QQQ`、`TCOM`、`TQQQ`、`HOOD`
-- 港股：`07709`、`07747`（韩链条已断开，2026-05-05 确认移除所有追踪）
-
-### 持仓特征
+### 持仓结构特征（相对稳定）
 - 风格激进，波动容忍度较高
 - 港股风险集中在 `00100` MiniMax 和 `07226` 两倍恒科
 - `03032/03033` 属于相对更稳的科技敞口
-- 美股当前偏高弹性成长 + 杠杆短线仓
-- 韩股不再追踪（07709/07747 已清仓，000660/005930 已移除）
+- 美股偏高弹性成长 + 杠杆短线仓
+- 韩股已完全清仓（07709/07747/000660/005930 不追踪）
 
 ---
 
 ## 现有脚本梳理
 
-### 核心
-## 辅助工具
-- **Scrapling**（新增，2026-05-08）：自适应爬虫框架，可绕过反爬（Cloudflare等），支持 JS 渲染。安装：`pip3 install scrapling --break-system-packages`。使用见 `skills/scrapling/SKILL.md`
-- `stock_analyzer.py`：主更新与分析脚本，负责读取 `portfolio.json`、抓取行情、更新盈亏
-- `hk_stock_fetcher.py`：港股更新脚本
-- `final_analysis.py`：已有持仓分析输出脚本
+### 核心（当前在用）
+- **`fetch_us_stocks.py`**：美股多 provider 抓取（7 路 fallback），自动写回 portfolio.json；prev_close 由 Polygon `/prev` 独立获取（带日期戳）
+- **`analyze_us_stocks.py`**：美股完整分析 = 刷价格 + RSI-14/MA20/50 + Finnhub 新闻 + 信号
+- **`analyze_hk_stocks.py`**：港股完整分析 = Tencent→stooq→yfinance fallback + 恒指/恒科 + Finnhub 新闻 + 信号
+- `check_portfolio.sh`：快速查看持仓
 
-### 监控类
+### 辅助
+- **Scrapling**：自适应爬虫框架，绕过反爬（Cloudflare 等），支持 JS 渲染。`pip3 install scrapling --break-system-packages`。详见 `skills/scrapling/SKILL.md`
 - `price_alert_monitor.py`：价格提醒
-- `hk_monitor.py`：港股监控
 - `portfolio_monitor.py`：组合监控
-- `hk_open_monitor.py`：港股开盘监控
-- `hk_ai_monitor.py`：港股 AI 方向监控
+- `portfolio_table.py` / `portfolio_visualization.py`：可视化
 
-### 展示类
-- `portfolio_table.py`
-- `portfolio_visualization.py`
-
-### 研究/探索类
-- `deep_analysis.py`
-- `find_opportunities.py`
-- `check_ai_stocks.py`
-- `multi_agent_stock_analysis.py`
-- `monday_signal.py`
-- `TradingAgents/`
-
----
-
-## 当前主要问题
-- `MEMORY.md` 与 `portfolio.json` 分工已清晰，但过去缺少一个给检索友好的中间摘要层
-- 定时任务/模板若写死代码和股数，容易和真实持仓漂移，现已改为应以 `portfolio.json` 动态生成
-- 部分历史日志是“会话元信息”，不是投资复盘，后续应尽量把重要投资结论写入标准日记
+### 已废弃（请勿使用）
+- `stock_analyzer.py` — 被 `analyze_us_stocks.py` + `analyze_hk_stocks.py` 取代
+- `hk_stock_fetcher.py` — 已被 `analyze_hk_stocks.py` 内联
+- `hk_monitor.py` / `hk_open_monitor.py` / `hk_ai_monitor.py` — 为已清仓的韩股链（07709/07747）写的，无现役作用
+- `final_analysis.py` / `deep_analysis.py` / `find_opportunities.py` / `monday_signal.py` — 实验性脚本，未集成进定时任务
+- `multi_agent_stock_analysis.py` / `TradingAgents/` — 实验目录
 
 ---
 
