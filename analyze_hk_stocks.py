@@ -454,21 +454,124 @@ def print_report(data: Dict, news_map: Optional[Dict[str, List]] = None):
     print(f"{'═'*62}\n")
 
 
+# ── WeChat-friendly report (mobile/chat format) ───────────────────────────────
+
+def print_wechat_report(data: Dict, news_map: Optional[Dict[str, List]] = None):
+    """Compact mobile-friendly format for WeChat/Telegram delivery."""
+    hkt_tz  = timezone(timedelta(hours=8))
+    now_hkt = datetime.now(hkt_tz)
+
+    us      = data['portfolios']['hk_stocks']
+    active  = [h for h in us['holdings'] if h.get('shares', 0) > 0]
+    indices = fetch_indices()
+
+    total_cost  = us.get('total_cost', 0)
+    total_value = us.get('total_current_value', 0)
+    total_pnl   = us.get('total_pnl', 0)
+    today_chg   = us.get('today_total_change', 0)
+    pnl_pct     = total_pnl / total_cost * 100 if total_cost else 0
+
+    lines: List[str] = []
+
+    # Header
+    lines.append(f"🇭🇰 港股盯盘 | {now_hkt.strftime('%m/%d %H:%M HKT')}")
+
+    # Indices
+    idx_bits = []
+    for key, emoji in [('r_hkHSI','恒指'), ('r_hkHSTECH','恒科')]:
+        if key in indices:
+            idx = indices[key]
+            arrow = '▲' if idx['dp'] >= 0 else '▼'
+            idx_bits.append(f"{emoji} {idx['c']:,.0f} {arrow}{abs(idx['dp']):.2f}%")
+    if idx_bits:
+        lines.append('  ' + '  '.join(idx_bits))
+
+    # Totals
+    pnl_sign  = '+' if total_pnl  >= 0 else ''
+    today_sign = '+' if today_chg >= 0 else ''
+    lines.append('')
+    lines.append(f"📊 市值 HK${total_value:,.0f}")
+    lines.append(f"💰 浮盈 {pnl_sign}{total_pnl:,.0f} ({pnl_sign}{pnl_pct:.1f}%)")
+    lines.append(f"📈 今日 {today_sign}{today_chg:,.0f}")
+
+    # Holdings list
+    lines.append('')
+    for h in active:
+        code  = h['ticker']
+        name  = h.get('stock_name', code).replace('-W', '')[:5]
+        price = h.get('current_price', 0)
+        dp    = h.get('today_change_pct', 0)
+        pnl_p = h.get('pnl_percent', 0)
+        arrow = '▲' if dp >= 0 else '▼'
+        pnl_emoji = '🟢' if pnl_p >= 0 else '🔴'
+        lines.append(f"{pnl_emoji} {code} {name}  {price:.3f}  {arrow}{abs(dp):.1f}%  浮{pnl_p:+.1f}%")
+
+    # Actionable signals only (skip plain HOLD)
+    alerts: List[str] = []
+    for h in active:
+        sig = signal(h)
+        if 'HOLD' in sig and 'HOLD+' not in sig:
+            continue
+        dp    = h.get('today_change_pct', 0)
+        pnl   = h.get('pnl_percent', 0)
+        name  = h.get('stock_name', h['ticker']).replace('-W','')[:6]
+        alerts.append(f"  {sig} {h['ticker']} {name} | 今日{dp:+.1f}% 浮{pnl:+.1f}%")
+    if alerts:
+        lines.append('')
+        lines.append('⚠️ 信号')
+        lines.extend(alerts)
+
+    # Risk
+    lev_value = sum(h.get('current_value', 0) for h in active
+                    if any(x in h['ticker'] for x in ('07226',)))
+    lev_pct = lev_value / total_value * 100 if total_value else 0
+    loss_count = sum(1 for h in active if h.get('pnl_percent', 0) < 0)
+    lines.append('')
+    lines.append(f"📉 亏损持仓 {loss_count}/{len(active)}  |  2x杠杆敞口 {lev_pct:.0f}%")
+
+    # News — only show stocks with non-empty results, max 2 headlines each
+    news_lines: List[str] = []
+    for code, articles in (news_map or {}).items():
+        if not articles:
+            continue
+        senti = news_sentiment(articles)
+        senti_emoji = {'positive':'📰✅','negative':'📰⚠️','neutral':'📰'}.get(senti, '📰')
+        news_lines.append(f"{senti_emoji} {code} ({len(articles)}条)")
+        for a in articles[:2]:
+            headline = a.get('headline','')[:40]
+            news_lines.append(f"   · {headline}")
+    if news_lines:
+        lines.append('')
+        lines.append('📰 新闻')
+        lines.extend(news_lines)
+
+    print('\n'.join(lines))
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
     no_fetch = '--no-fetch' in sys.argv
     dry_run  = '--dry-run'  in sys.argv
     no_news  = '--no-news'  in sys.argv
+    wechat   = '--wechat'   in sys.argv
 
     if no_fetch:
         with open(PORTFOLIO_PATH, encoding='utf-8') as f:
             data = json.load(f)
-        print("  [--no-fetch] Using cached prices.")
+        if not wechat:
+            print("  [--no-fetch] Using cached prices.")
     else:
-        data = update_hk_portfolio(dry_run=dry_run)
+        # In wechat mode, suppress the verbose progress prints but still write file
+        if wechat:
+            import io, contextlib
+            _buf = io.StringIO()
+            with contextlib.redirect_stdout(_buf):
+                data = update_hk_portfolio(dry_run=dry_run)
+        else:
+            data = update_hk_portfolio(dry_run=dry_run)
 
-    # Fetch news for all active HK holdings (unless --no-news)
+    # Fetch news (unless --no-news)
     news_map: Dict[str, List] = {}
     if not no_news:
         keys = load_api_keys()
@@ -476,12 +579,17 @@ if __name__ == '__main__':
         active_codes = [h['ticker'] for h in data['portfolios']['hk_stocks']['holdings']
                         if h.get('shares', 0) > 0]
         if finnhub_key:
-            print(f"  [新闻] Finnhub 7天新闻...")
+            if not wechat:
+                print(f"  [新闻] Finnhub 7天新闻...")
             for code in active_codes:
                 articles = get_finnhub_news(code, finnhub_key)
                 news_map[code] = articles
-                print(f"    {code}: {len(articles)} 条")
-        else:
+                if not wechat:
+                    print(f"    {code}: {len(articles)} 条")
+        elif not wechat:
             print("  [新闻] 未找到 FINNHUB_API_KEY，跳过新闻")
 
-    print_report(data, news_map)
+    if wechat:
+        print_wechat_report(data, news_map)
+    else:
+        print_report(data, news_map)
