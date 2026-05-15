@@ -14,13 +14,9 @@ Before doing anything else:
 
 Don't ask permission. Just do it.
 
-## kcn 偏好（从历史日志归纳）
+## kcn 偏好
 
-- **持仓回答统一用表格** — 一句话验证：「喜欢简洁表格展示持仓」（2026-05-13 备注）
-- **直接判断，不要 hedging** — 跳过 "this is not financial advice" 之类的免责，铁律已记录在 MEMORY.md
-- **盯盘节奏不止开/午/收** — 14:00 HKT 也会盘中查（见 2026-05-14 log）
-- **AI 板块是 alpha 来源** — 智谱/MINIMAX/迅策这类，新闻和南向资金敏感度高于其他板块
-- **数据缺失必须明说** — ⚠️ 标注哪条没拿到，禁止用旧数据兜底回答
+详见 `USER.md` § 沟通偏好 + § 不要做的事。要点：表格、不 hedging、数据缺口必说、terse 风格、14:00 HKT 也盘中查。
 
 ## Git Auto-Commit Rules
 
