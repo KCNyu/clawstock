@@ -1,289 +1,226 @@
 # 股票查询 API 与 Skills 整理（分享版）
 
-这份文档整理了当前 workspace 里用于查询股票、更新持仓、分析组合的主要数据源、脚本和可复用工作流，方便分享给其他人直接照着搭。
+这份文档整理了 kcn workspace 里查询股票、更新持仓、分析组合的主要数据源、脚本、skill 和工作流。设计为**可独立分享**——别人按本文搭一套类似 setup 就能跑。
+
+最后更新：2026-05-16。Workspace 本身仍是单一事实来源；本文是面向外部的快照。
+
+---
+
+## 0. 一分钟概览
+
+```
+持仓 (portfolio.json)
+   ↓
+脚本 (analyze_us_stocks.py / analyze_hk_stocks.py)
+   ↓ 7-route fallback (US) / 3-route fallback (HK)
+   ↓ 写回 portfolio.json
+   ↓
+Skill (us-stock-analysis / hk-stock-analysis / portfolio-risk-review / portfolio-swarm-review)
+   ↓ 包装分析逻辑（Mode 1-7）
+   ↓
+WeChat / 对话 (cron 触发 Mode 6/7 推送；用户对话走 Mode 1-5)
+```
+
+**核心约定**：
+- 永远走脚本，不允许 raw curl / WebFetch / yfinance 当主源
+- 永远先实时取价，不用 `portfolio.json` 里的缓存价回答盈亏
+- 失败必须明说，禁止静默用旧数据
 
 ---
 
 ## 1. 当前核心文件
 
-- `portfolio.json`：权威持仓数据源
-- `stock_analyzer.py`：主更新脚本，负责拉行情、更新价格、计算盈亏
-- `MEMORY.md`：长期规则、fallback 约定、分析偏好
-- `TOOLS.md`：工具总览和推荐工作流
-- `memory/YYYY-MM-DD.md`：每日交易与分析日志
+| 文件 | 角色 |
+|---|---|
+| `portfolio.json` | 权威持仓数据源（含 cost / shares / current_price / today_change / prev_close_date 等） |
+| `analyze_us_stocks.py` | 美股全套分析（价格 + RSI/MA + Finnhub 新闻 + 信号） |
+| `analyze_hk_stocks.py` | 港股全套分析（价格 + 恒指/恒科基准 + 新闻 + 信号） |
+| `fetch_us_stocks.py` | 美股仅刷价格（不带分析），可指定 ticker |
+| `MEMORY.md` | 长期规则、铁律、用户偏好、已知陷阱 |
+| `TOOLS.md` | 数据链 / skill 路由 / 情绪面源 / cron 路由的总入口 |
+| `AGENTS.md` | agent 启动时必读，每次 session 入口 |
+| `INVESTMENT_SOP.md` | 投资类问题的标准启动顺序 |
+| `memory/current-portfolio-summary.md` | 当前活跃 ticker 摘要（不替代 portfolio.json） |
+| `memory/YYYY-MM-DD.md` | 每日交易/复盘日志 |
+| `memory/_TEMPLATE.md` | daily memory 模板 |
 
 ---
 
 ## 2. 推荐工作流
 
-### 回答持仓/股价/组合问题时
-按顺序读取：
-1. `MEMORY.md`
-2. `portfolio.json`
-3. `memory/current-portfolio-summary.md`
-4. 必要时读最近 `memory/YYYY-MM-DD.md`
-5. **先拉最新价格，再分析**
+### 用户问个股 / 持仓 / 加减仓 / 美股港股
+1. 读 `MEMORY.md` 拿铁律
+2. 读 `portfolio.json` 拿持仓
+3. 读 `memory/current-portfolio-summary.md` 拿活跃 ticker
+4. 必要时读最近 1-3 篇 `memory/YYYY-MM-DD.md`
+5. **跑脚本**取最新价：`analyze_us_stocks.py` / `analyze_hk_stocks.py`
+6. 按 skill Mode 1-5 输出分析（见 §5）
+7. 重要操作后更新 `portfolio.json` + 当天 `memory/YYYY-MM-DD.md` + git commit
 
-### 更新价格
+### 仅刷价格
 ```bash
-python3 stock_analyzer.py
+python3 analyze_us_stocks.py --no-news  # US 全持仓刷价 + 跳过新闻
+python3 fetch_us_stocks.py RKLB SOXL    # US 指定 ticker
+python3 analyze_hk_stocks.py --no-news  # HK 全持仓
 ```
 
-### 快速查看持仓
-```bash
-bash check_portfolio.sh
-```
+### 微信简报（cron 自动触发）
+8 个 cron job 自动跑：港股开/午/午后/收 + 盘中盯盘 + 美股开/盘中/收。详见 §6。
 
 ---
 
 ## 3. 数据源与 fallback 规则
 
-### A. 港股（HK）
+### A. 港股（HK）— 3 路 fallback
 
-#### 当前约定 fallback 链
-1. **腾讯财经 Tencent Finance**，实时，当前首选
-   - 接口：`https://qt.gtimg.cn/q=r_hkXXXXX`
-   - 例子：`r_hk07709`
-   - 备注：境外环境已验证可用
+脚本内部顺序（`analyze_hk_stocks.py` / 内置）：
 
-2. **东方财富 Eastmoney**，批量接口，适合一次拉多个标的
-   - 接口：`https://push2.eastmoney.com/api/qt/ulist.np/get`
-   - `secid` 规则：`116.XXXXXX`（6位补零）
-   - 例子：`116.007709`
+1. **腾讯财经 Tencent**（实时，首选，覆盖最全）
+   - 接口：`https://qt.gtimg.cn/q=r_hkXXXXX`，例：`r_hk00100`
+   - 编码：`gbk`
+   - **00100 MINIMAX 等新 IPO 只能用此源**，没有兜底
 
-3. **stooq**，日线收盘备用
+2. **stooq.com**（CSV，同日 OHLCV）
    - 接口：`https://stooq.com/q/d/l/?s=XXXX.hk&i=d`
-   - 例子：`7709.hk`
-   - 备注：非实时，更适合兜底
+   - **caveat**：新 IPO 无覆盖；`prev_close` 用 `open` 近似
 
-4. **Yahoo Finance / yfinance**，最后备选
-   - 代码格式：`7709.HK`
-   - 备注：有限流风险
+3. **yfinance**（最后兜底）
+   - 代码：`XXXX.HK`
+   - 经常被限速
 
-#### 在 `stock_analyzer.py` 中的相关函数
-- `get_quote_tencent_hk(code)`
-- `get_hk_quotes_tencent_batch(codes)`
-- `get_hk_quotes_eastmoney(codes)`
-- `get_quote_stooq_hk(code)`
-- `get_quote_yfinance(symbol)`
-- `get_hk_quote(code)`（单票自动 fallback）
-- `update_hk_portfolio_prices()`（组合批量更新）
+**❌ 已从链路移除**：
+- **东方财富** `push2.eastmoney.com` — 从这台服务器 502 不可达（旧文档 / 旧脚本仍提及，请忽略）
+- **AAStocks / 富途网页** — 反爬严重，不值得维护
 
----
+### B. 美股（US）— 7 路 fallback
 
-### B. 美股（US）
+脚本内部顺序（`fetch_us_stocks.py`）：
 
-#### 当前约定 fallback 链
-1. **东方财富 Eastmoney**，批量接口，当前首选
-   - 接口：`https://push2.eastmoney.com/api/qt/ulist.np/get`
-   - `secid` 规则：
-     - NASDAQ：`105.TICKER`
-     - NYSE：`106.TICKER`
-   - 例子：`105.NVDA`、`106.CRCL`
+1. **Nasdaq API** ✅ 首选 — `api.nasdaq.com/api/quote/{TICKER}/info?assetclass=stocks|etf`
+   - 无 key、自动识别股票/ETF、2026-05 全持仓 7/7 验证通过
+2. **东方财富** `push2.eastmoney.com`（美股可达）— `105.{T}`(NASDAQ) / `106.{T}`(NYSE/ARCA)
+3. **Finnhub**（需 `FINNHUB_API_KEY`）
+4. **Yahoo v8 API** `query1.finance.yahoo.com/v8/finance/chart/{T}`
+5. **yfinance** 库
+6. **Alpha Vantage**（需 key，免费 25/天）
+7. **Polygon**（需 key，返回前一日收盘价兜底）
 
-2. **Finnhub**
-   - 接口：`https://finnhub.io/api/v1/quote?symbol={ticker}&token=...`
-   - 用途：实时报价、公司资料、新闻
+**prev_close 独立链**（2026-05-12 新增解决收盘后 `PreviousClose` 污染）：
+- Polygon `/v2/aggs/ticker/{T}/prev` 拿带交易日日期戳的前收
+- → API 的 pc 字段 → 保留现有 prev_close（3 天内）→ 从 dp% 反推 → 最终兜底 pc=c
 
-3. **Yahoo Finance / yfinance**
-   - 用途：备用报价
-   - 备注：易限流，不建议作为主线路
+**❌ 已永久跳过**：新浪美股接口（境外 403）
 
-4. **Alpha Vantage**
-   - 接口：`GLOBAL_QUOTE`
-   - 备注：慢，适合兜底
+### C. 韩股（KR）— 已清仓不追踪
 
-5. **Polygon.io**
-   - 代码里已接入，属于更后备的兜底路线
-
-#### 特别说明
-- 新浪/腾讯美股接口在境外环境常见 403 或不可用，当前策略里**不作为主线路**
-- `stock_analyzer.py` 里虽然还有 `get_quote_sina_us()`，但工作流层面不建议依赖它
-
-#### 在 `stock_analyzer.py` 中的相关函数
-- `get_us_quotes_eastmoney(tickers)`
-- `get_quote_finnhub(ticker)`
-- `get_quote_alpha_vantage(ticker)`
-- `get_quote_polygon(ticker)`
-- `get_quote_yfinance(symbol)`
-- `get_quote(ticker)`（单票 fallback）
-- `update_us_portfolio_prices()`（组合批量更新）
-
----
-
-### C. 韩股（KR）
-
-当前规则主要记录在 `MEMORY.md`，适合做海力士/三星映射分析。
-
-#### 当前约定 fallback 链
-1. **Naver Finance polling API**，当前最稳
-   - 接口：`https://polling.finance.naver.com/api/realtime/domestic/stock/<code>`
-   - 例子：海力士 `000660`，三星 `005930`
-
-2. **Naver Finance 页面解析**
-   - 接口：`https://finance.naver.com/item/main.naver?code=<code>`
-
-3. **Google Finance / MarketWatch / Investing 页面搜索**
-   - 用于人工交叉验证
-
-4. **Yahoo Finance / yfinance**
-   - `000660.KS` / `005930.KS`
-   - 最后备选
-
-#### 备注
-- 当前 workspace 主脚本还没有把韩股完全整合进 `stock_analyzer.py` 的统一更新流，但这套规则已经稳定可用，适合后续单独封装 skill 或脚本
+`07709 / 07747 / 000660 / 005930` 全部清仓（2026-05-05），脚本里的 KR 代码可作为参考但不在现役持仓。
 
 ---
 
 ## 4. API Keys 需求
 
-`stock_analyzer.py` 会从 `.api_keys` 中读取：
+`.api_keys` 文件（**不入 git**）：
 
-- `FINNHUB_API_KEY`
-- `ALPHA_VANTAGE_API_KEY`
-- `POLYGON_API_KEY`
+```
+FINNHUB_API_KEY=...
+ALPHA_VANTAGE_API_KEY=...
+POLYGON_API_KEY=...
+```
 
-说明：
-- 港股查询很多场景下可以不依赖 key（Tencent / Eastmoney / stooq）
-- 美股如果 Eastmoney 失效，Finnhub key 会非常有用
-- Alpha Vantage / Polygon 属于兜底层
-
----
-
-## 5. 当前脚本清单
-
-### 核心
-- `stock_analyzer.py`
-  - 读取 `portfolio.json`
-  - 拉取美股/港股最新价格
-  - 更新当前价格、组合市值、浮盈亏
-  - 输出持仓报告
-
-- `hk_stock_fetcher.py`
-  - 港股专项更新脚本
-
-- `final_analysis.py`
-  - 组合分析输出脚本
-
-### 监控类
-- `price_alert_monitor.py`
-- `hk_monitor.py`
-- `portfolio_monitor.py`
-- `hk_open_monitor.py`
-- `hk_ai_monitor.py`
-
-### 展示类
-- `portfolio_table.py`
-- `portfolio_visualization.py`
-
-### 研究/探索类
-- `deep_analysis.py`
-- `find_opportunities.py`
-- `check_ai_stocks.py`
-- `multi_agent_stock_analysis.py`
-- `monday_signal.py`
+- 没 key 也能跑：Nasdaq + Eastmoney + Yahoo + yfinance 都不需要 key
+- 加 key 后多 3 路兜底 + 新闻
 
 ---
 
-## 6. 当前实际分析规则
+## 5. Skills（按场景路由）
 
-### 必须遵守的规则
-1. **每次问到持仓/股价，先拉最新数据，不直接用缓存旧价**
-2. **必须走 fallback 链，失败立刻切下一个源**
-3. **如果全部失败，要明确告诉用户“以下为旧数据”**
-4. **获取到最新数据后，更新 `portfolio.json` 并 git commit**
-
-### 持仓分析口径
-- 直接分析**当前仓位**
-- 用 `portfolio.json` 中的 `cost_basis` vs 最新价格算浮盈亏
-- 一般**不追溯历史 trades** 做复杂流水分析
-- 交易发生后，补记到 `memory/YYYY-MM-DD.md`
+| 场景 | Skill | Mode |
+|---|---|---|
+| "分析 AAPL" / 美股个股 | `us-stock-analysis` | 1-5（Quick / Technical / Fundamental / Full / Sentiment） |
+| "分析 00100" / 港股个股 | `hk-stock-analysis` | 1-5（含港股专属 Mode 4 Sector + Mode 5 雪球/富途） |
+| 持仓快速复盘 | `portfolio-risk-review` | 4-lens 单 pass |
+| 持仓深度调仓前 | `portfolio-swarm-review` | TradingAgents 3-tier（regime → 4 analyst → bull/bear → risk debate → judge） |
+| WeChat 简报（开/午/收） | `{us,hk}-stock-analysis` | Mode 6 |
+| WeChat 盘中盯盘（30 分一次） | `{us,hk}-stock-analysis` | Mode 7 |
+| 教育性问题 | `trading`（第三方） | guardrails 重，不给具体买卖判断 |
 
 ---
 
-## 7. 适合分享给他人的 skill 方向
+## 6. Cron 自动化（WeChat 推送）
 
-如果要给别人复用，我觉得最值得做成 skill 的有这几类：
+8 个 stock-related cron job：
 
-### 1. `portfolio-price-refresh`
-用途：
-- 读取 `portfolio.json`
-- 按市场自动调用 API fallback 更新价格
-- 输出组合总览
+| 时段 | Schedule | Skill Mode |
+|---|---|---|
+| 港股开盘 | 09:30 HKT 工作日 | hk Mode 6 |
+| 港股午盘 | 12:00 HKT 工作日 | hk Mode 6 |
+| 港股午后 | 13:30 HKT 工作日 | hk Mode 6 |
+| 港股收盘 | 16:00 HKT 工作日 | hk Mode 6 |
+| HK 盘中盯盘 | 9-15 每 30 分 HKT | hk Mode 7 |
+| 美股开盘 | 09:30 ET 工作日 | us Mode 6 |
+| 美股盘中盯盘 | 9-15 每 30 分 ET | us Mode 7 |
+| 美股收盘 | 16:00 ET 工作日 | us Mode 6 |
 
-核心能力：
-- HK / US 多数据源 fallback
-- 批量更新
-- 自动写回 JSON
+cron prompt 全部精简成"按 skill Mode N 执行"+ 自包含 fallback。改格式只需改 SKILL.md 里的 Mode 段，不动 jobs.json。
 
-### 2. `hk-stock-quote`
-用途：
-- 查询港股单票或批量实时价
-- 默认走 Tencent → Eastmoney → stooq → yfinance
-
-适合：
-- 港股投资者
-- 做盘中 quick check
-
-### 3. `us-stock-quote`
-用途：
-- 查询美股单票或批量价
-- 默认走 Eastmoney → Finnhub → yfinance → Alpha Vantage
-
-适合：
-- 美股持仓分析
-- 快速更新 watchlist
-
-### 4. `cross-market-ai-chain`
-用途：
-- 分析美股存储链（MU/WDC）→ 韩股海力士/三星 → 港股映射 ETF
-- 适合做 AI 硬件链联动分析
-
-这类 skill 更像“研究工作流 skill”，不只是报价工具
+推送通道：`openclaw-weixin`。
 
 ---
 
-## 8. 给别人复用时的最小落地方案
+## 7. 情绪面数据源（Mode 5 调用顺序）
 
-如果别人不想整套搬，只想快速搭一个能跑的版本，最低配置建议：
+### 美股
+1. Finnhub news（脚本内置） — 主英文媒体 + 关键词打分
+2. Tavily（`skills/tavily-search/scripts/search.mjs "{TICKER} sentiment" --topic news --days 3`）
+3. Reddit JSON（免 auth）：
+   ```bash
+   curl -sH "User-Agent: openclaw/1.0" \
+     "https://www.reddit.com/r/wallstreetbets/search.json?q={T}&restrict_sr=1&sort=new&limit=25"
+   ```
+4. Scrapling 兜底深度抓取
 
-### 港股最小方案
-- Tencent Finance
-- Eastmoney
-- stooq
-
-### 美股最小方案
-- Eastmoney
-- Finnhub
-- yfinance
-
-### 文件结构最小方案
-- `portfolio.json`
-- `stock_analyzer.py`
-- `.api_keys`
-
-这样就足够做一个实用版持仓助手。
+### 港股
+1. Finnhub news（覆盖稀疏但有 Reuters/Bloomberg/SCMP）
+2. Tavily 中文搜索
+3. **雪球 HK 评论区**（核心，scrapling StealthyFetcher）：`https://xueqiu.com/S/HK{TICKER}`
+4. **富途牛牛社区**（scrapling）：`https://www.futunn.com/stock/{TICKER}-HK`
+5. 南向资金（Tavily 搜当日数据）
 
 ---
 
-## 9. 实操建议
+## 8. 工具栈
 
-### 如果分享给普通投资者
-重点强调：
-- 先用 `portfolio.json` 管持仓
-- 再用 `stock_analyzer.py` 更新价格
-- 不要只依赖单一 API
-
-### 如果分享给会折腾 OpenClaw / agent 的人
-重点强调：
-- 把 fallback 规则写进 skill
-- 把 API key 读取集中在 `.api_keys`
-- 把“更新价格 -> 写回持仓 -> 输出分析”做成统一工作流
+| 工具 | 用途 |
+|---|---|
+| Scrapling | 反爬绕过、JS 渲染、雪球/富途/Reddit 深页抓取 |
+| Tavily | AI 优化的 web 搜索（新闻 / X / 中文社区 / 政策） |
+| Finnhub | 公司新闻、英文媒体（已集成进脚本） |
+| TradingAgents | TauricResearch 多 agent 框架（已 clone，swarm-review 借其角色设计） |
 
 ---
 
-## 10. 一句话总结
+## 9. 别人想自己搭一套的最小步骤
 
-这套体系的关键不是某一个 API，而是：
+1. clone workspace（去掉 `.api_keys` / `*.bak` / `.openclaw/`）
+2. 准备 `.api_keys` 三个 key（可选）
+3. 装 deps：`pip3 install scrapling --break-system-packages`，节点：`npm i -g @fly-ai/flyai-cli`（如需 Tavily 这里其实是 tavily-search skill）
+4. 改 `portfolio.json` 为自己持仓
+5. 跑一次 `analyze_us_stocks.py` / `analyze_hk_stocks.py` 验证
+6. 装 openclaw + 配 cron jobs（按本文 §6 时间表）
+7. AGENTS.md / SOUL.md / USER.md / IDENTITY.md 改成自己身份
 
-**用 `portfolio.json` 做单一权威持仓源，用 `stock_analyzer.py` 做多数据源 fallback 更新，用固定工作流保证每次分析前都先拿到最新价格。**
+---
+
+## 10. 已废弃（不要再用）
+
+| 脚本 / 文件 | 为什么 |
+|---|---|
+| `stock_analyzer.py` | 被 `analyze_us_stocks.py` + `analyze_hk_stocks.py` 取代 |
+| `hk_stock_fetcher.py` / `hk_monitor*.py` | 已并入新脚本 / 为已清仓韩股链写的 |
+| `price_alert_monitor.py` | 上一代轮询，2026-03 后停摆 |
+| `final_analysis.py` / `deep_analysis.py` / `find_opportunities.py` / `monday_signal.py` | 实验脚本未集成 |
+| `multi_agent_stock_analysis.py` | 实验，被 portfolio-swarm-review skill 替代 |
+| 东方财富港股接口 | 此服务器 502 |
+| 新浪美股接口 | 境外 403 |
+
+这些文件**作为参考代码可读**（旧 fallback 思路），但不要当主路径调起来。
