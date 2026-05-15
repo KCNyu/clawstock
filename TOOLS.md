@@ -165,6 +165,20 @@ python3 -c "import json; d=json.load(open('/root/.openclaw/cron/jobs.json')); ..
 
 ---
 
+## Skill 安装顺序（重要）
+
+见 `skills-store-policy.md`。**先 `skillhub`（cn-optimized）再 `clawhub`（公开 registry）兜底**：
+
+```bash
+skillhub search <kw>         # 第一选择
+skillhub install <slug>      # cn-optimized 源
+# 不可用 / 无匹配 / 限流时 →
+clawhub search <kw>
+clawhub install <slug>
+```
+
+安装前列出 source / version / risk signal 给用户确认。
+
 ## Skill 路由表（什么场景用哪个）
 
 | 场景 | 入口 skill | 备注 |
