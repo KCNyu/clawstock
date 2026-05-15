@@ -1,141 +1,184 @@
 ---
 name: portfolio-swarm-review
-description: Run a swarm-style multi-role review of kcn's current holdings using workspace files and our own market-data chain. Use for portfolio-wide action plans, post-close reviews, holiday or next-session operation planning, cross-market linkage analysis, leverage ETF risk assessment, and judge-style final recommendations built from multiple analyst roles.
+description: Multi-agent swarm review of kcn's current holdings. Inspired by TauricResearch/TradingAgents framework already in workspace — three-tier analysis (analysts → bull/bear debate → risk debate + judge) with confidence scoring. Use for post-close reviews, holiday/next-session planning, pre-add sizing decisions, and any moment where a single-pass review is not enough. For lighter single-shot work, use portfolio-risk-review.
 ---
 
 # Portfolio Swarm Review
 
-Use this skill when a single-pass holdings review is not enough and a multi-role decision process is more useful.
+Multi-agent portfolio review. Structure mirrors `/root/.openclaw/workspace/TradingAgents/tradingagents/agents/` — analysts (Tier 1) → researchers (Tier 2) → risk debators + judge (Tier 3). Each tier is distinct in the output; the Judge synthesizes.
 
 ## Required reads
 
-Always read in this order:
+In this order:
 1. `/root/.openclaw/workspace/MEMORY.md`
 2. `/root/.openclaw/workspace/portfolio.json`
 3. `/root/.openclaw/workspace/memory/current-portfolio-summary.md`
-4. Recent daily memory files when recent trades affect interpretation
+4. `/root/.openclaw/workspace/INVESTMENT_SOP.md`
+5. Recent daily memory files when recent trades affect interpretation
+6. `/root/.openclaw/workspace/TOOLS.md` for data chain detail
 
 ## Fresh data rule
 
-Before producing conclusions, refresh or verify fresh market data using our own workflow.
+Refresh quotes before producing conclusions:
 
-### Use our own data chain
-- HK holdings: Eastmoney or Tencent first
-- US holdings: Eastmoney first when available, then Finnhub fallback
-- KR linkage: Naver polling first
-- If any leg is stale, say exactly which leg is stale and limit confidence accordingly
+```bash
+python3 /root/.openclaw/workspace/analyze_us_stocks.py    # US 7-route fallback
+python3 /root/.openclaw/workspace/analyze_hk_stocks.py    # HK Tencent → stooq → yfinance
+```
 
-## Four-role swarm framework
+If a leg is stale, name the exact ticker and limit confidence on conclusions involving it. **00100 only has Tencent** — flag explicitly if that leg fails. KR linkage (07709/07747) is exited; do not run any KR-side fetch.
 
-Run the analysis as if four specialized analysts worked in sequence.
-You may do this in one response, but keep the roles distinct internally and in the final synthesis.
+## Holdings bucketing — read each run, do not hardcode
 
-### Role 1. Position Analyst
-Focus:
-- current price vs cost
-- unrealized PnL and distance to breakeven
-- classify each position as core, tactical, weak, or leverage-risk
+Pull live set from `portfolio.json` (`shares > 0`) and `current-portfolio-summary.md`. Stable bucket structure; contents drift:
 
-Output:
-- one-line verdict for each active holding
-- identify strongest and weakest positions
+- **US growth / single-name beta** — active US non-leveraged growth names
+- **US leverage ETF** — anything `is_leveraged_etf: true`
+- **US theme / special situation** — catalyst-driven names
+- **HK lower-beta core** — index/sector ETFs (e.g. 03032, 03033)
+- **HK single-name** — individual equities (e.g. 00100 AI, 02208 wind)
+- **HK leverage ETF** — 2x/3x recipes (e.g. 07226)
 
-### Role 2. Cross-Market Linkage Analyst
-Focus:
-- US growth / Nasdaq tone for NVDA, TQQQ, HOOD, QQQ
-- storage / semi chain for 07709 via SK hynix and Samsung
-- HSTECH tone for 07226, 03032, 03033
-- theme linkage for CRCL and OKLO when relevant
+## Regime detection (run first)
 
-Output:
-- whether each linkage chain is supportive, neutral, or weak
-- the one or two most important inter-market signals
+Before any role analysis, classify current regime — this calibrates everything downstream:
 
-### Role 3. Risk Analyst
-Focus:
-- concentration risk
-- leverage decay risk
-- top drawdown contributors by money and by volatility
-- correlation clusters inside the portfolio
+| Regime | Trigger | Implication for sizing |
+|---|---|---|
+| **Trending up** | Index ADX > 25, MA20 > MA50, RSI 50-70 across book | Momentum-friendly — leveraged ETF holdable, trim only on overheats (RSI > 75) |
+| **Trending down** | Index ADX > 25, MA20 < MA50, broad lower lows | Risk-off — leveraged ETF decay accelerates, prefer cash, no add |
+| **Range-bound** | ADX < 20, sideways action, RSI mean-reverting around 50 | Mean-reversion plays — T-only, fade extremes |
+| **Volatile / regime change** | High variance, conflicting MA stacks, sentiment chaos | Reduce size, widen stops, no convictions until clarity returns |
 
-Output:
-- rank the top 3 risk sources
-- identify where one bad session can hurt the whole book
+Index proxies: 纳指 / QQQ for US growth book; ^HSTECH for HK tech-heavy book.
 
-### Role 4. Decision Judge
-Focus:
-- convert the first three roles into action priorities
-- preserve aggressive style but reduce unnecessary damage
-- distinguish between hold, reduce, T-only, and conditional add
+## Tier 1 — Analysts (parallel)
 
-Output:
-- practical action list
-- next-session or post-holiday plan
-- triggers that would change the recommendation
+Four analyst roles, run independently. Mirrors `tradingagents/agents/analysts/`.
 
-## Portfolio grouping template
+### Analyst 1 — Position / Market
+- For each active holding: price vs cost, PnL $ and %, distance to breakeven
+- Technical state: trend, RSI-14, MA20/50 stance, immediate support/resistance
+- Classify: core / tactical / weak / leverage-risk
+- Output: one-line verdict per ticker + strongest/weakest called out
 
-Use these buckets unless the portfolio changes materially.
+### Analyst 2 — Fundamentals
+- Recent earnings / revenue trend for non-ETF names
+- Valuation snapshot (P/E, P/S vs sector and history)
+- Balance sheet headlines for special-situation names (cash runway, debt)
+- For ETFs: underlying basket health, NAV premium/discount, decay since holding date
+- Output: per non-ETF holding — "fair / stretched / cheap"; per ETF — "structurally OK / decay-risk now"
 
-### US growth / beta
-- NVDA
-- RKLB
-- QQQ
-- TQQQ
-- HOOD
-- TCOM
+### Analyst 3 — News / Sentiment
+- Finnhub news from scripts (`analyze_*_stocks.py` without `--no-news` already pulls 7 days + keyword sentiment)
+- For US names: Reddit (r/wallstreetbets + r/stocks JSON, no auth) + Tavily news/X
+- For HK names: 雪球 HK 评论区 + 富途社区 (scrapling StealthyFetcher) + Tavily 中文搜索
+- 南向资金 当日 net (web search) for HK macro tone
+- Output per holding: sentiment score -1 to +1 + 1-2 narratives + divergence vs price call-out
 
-### Special situation / theme
-- CRCL
-- OKLO
+### Analyst 4 — Cross-Market Linkage
+- US side: 纳指 / 罗素 / SOX tone; theme threads (stablecoin reg for CRCL, space/defense for RKLB, AI infra threads)
+- HK side: 恒科 direction; 南向资金 flow; sector policy (风电 / AI / 监管)
+- Inter-market: US tech overnight → HK tech open relationship; note when the link breaks
+- Output: supportive / neutral / weak tag per chain, single most important inter-market signal
 
-### HK lower-beta core / proxy exposure
-- 02208
-- 03032
-- 03033
+## Tier 2 — Bull vs Bear Researchers
 
-### HK high-risk leverage
-- 07226
-- 07709
+Mirrors `tradingagents/agents/researchers/`. Run after Tier 1; each researcher reads all four analyst reports and argues a position.
 
-### Watch-only linkage name
-- 07747 when Samsung linkage matters
+### Bull Researcher
+- Compose the strongest "hold and add" case using Tier 1 outputs
+- Cite specific analyst findings as evidence (not gut)
+- Identify what would have to be true for the position to work out
+- Call out asymmetric upside specifically (leverage, catalyst dates, sentiment-vs-fundamentals gaps)
 
-## Required final output structure
+### Bear Researcher
+- Compose the strongest "trim and avoid" case
+- Cite specific risk findings, decay math, sentiment topping signals
+- Identify the worst plausible outcome and what triggers it
+- Counter the bull's strongest point directly
 
-### Swarm summary
-- one paragraph summarizing the combined judgment
+The output is a debate snippet (not a checklist), 100-200 words each side.
 
-### Role 1, Position Analyst
-- bullet list for each active holding with price, PnL, verdict
+## Tier 3 — Risk Debate + Judge
 
-### Role 2, Cross-Market Linkage Analyst
-- US side
-- HK side
-- KR side
-- key cross-market implication
+Mirrors `tradingagents/agents/risk_mgmt/` + `managers/risk_manager.py`.
 
-### Role 3, Risk Analyst
-- top 3 risks ranked
-- what is causing most drawdown now
-- what can create the next sharp drawdown
+### Aggressive Risk Voice
+- Argues for upside capture; pushes for full sizing on conviction names
+- Quotes bull's strongest points
+- Specifically calls out where the conservative voice misses opportunity cost
 
-### Role 4, Decision Judge
-Split into four buckets:
-- hold and watch
-- trim on rebound
-- T-only
-- add only on trigger
+### Conservative Risk Voice
+- Argues for capital preservation; pushes for trim on weak structure
+- Quotes bear's strongest points
+- Specifically calls out where the aggressive voice underestimates tail risk
 
-### Next-step plan
-Give a direct operating plan for the next session or post-holiday period:
-- what to watch first
-- which holdings matter most at the open
-- which price / market triggers would upgrade or downgrade the stance
+### Neutral Voice
+- Calls the middle ground — what specifically should size up, what should size down, what stays
+- Required: pick a side for each contested holding, no "it depends" outputs
+
+### Judge (Risk Manager)
+Final synthesis. Weighs the three risk voices given:
+- The user's documented risk preference: **aggressive** (per workspace MEMORY.md), so the aggressive voice gets weight unless its structural counter is strong
+- Current regime (from regime detection above)
+- Data freshness — any stale leg downgrades confidence
+
+Output buckets per ticker:
+- **Hold and watch** — thesis intact, no action
+- **Trim on rebound** — thesis weakening, wait for strength
+- **T-only** — no overnight conviction, fade extremes
+- **Add only on trigger** — explicit trigger (price / MA cross / earnings / policy)
+- **Cut** — thesis broken, exit on next acceptable bid (use sparingly)
+
+Each item: ticker + concrete reason + concrete trigger/level if applicable.
+
+## Confidence scoring
+
+End the report with a confidence score per major call, 0-100%:
+
+| Confidence | Calibration |
+|---|---|
+| 80-100% | All four analysts align, both researchers' strongest cases converge, fresh data, regime clear |
+| 60-79% | Most analysts align, one analyst dissents, regime clear |
+| 40-59% | Analysts split, regime mixed, or one major data leg stale |
+| 20-39% | Conflicting signals, regime change suspected, multiple stale legs |
+| < 20% | Don't act on this read; wait for clarity |
+
+## Final output structure
+
+### Header
+- Regime: {trending up / trending down / range / volatile}
+- Data freshness: timestamp + any stale ticker flagged with ⚠️
+- Book summary: total US PnL, total HK PnL, biggest winner/loser
+
+### Tier 1 — Analyst reports
+Four sub-sections (Market, Fundamentals, News/Sentiment, Cross-Market). Each terse — tables where data, prose where judgment.
+
+### Tier 2 — Bull vs Bear
+Two paragraphs, side by side framing.
+
+### Tier 3 — Risk debate
+- Aggressive voice (paragraph)
+- Conservative voice (paragraph)
+- Neutral voice (paragraph)
+
+### Judge synthesis
+Five action buckets with tickers and reasons.
+
+### Confidence calls
+Bullet list: "{Action} {Ticker} — confidence XX% — {one-line reason}"
+
+### Next-session plan
+Concrete plan: what to watch first at the open, which holdings matter most, price/macro triggers that flip the stance.
 
 ## Style rules
-- Keep it practical, not academic
-- Tie each conclusion to real holdings
-- Say plainly when a position is weak
-- Do not let a high-conviction theme hide a bad structure
-- Keep the final plan concise enough to trade from
+
+- Practical, not academic
+- Every claim tied to a real ticker in the current book
+- The four analysts' outputs must be DIFFERENT angles, not the same content reformatted
+- Bull/Bear must actually disagree on at least one position — if they fully agree, the debate failed and the user should know
+- Don't let high-conviction theme hide a bad structure (e.g. "RKLB story is strong" doesn't mean today's RSI 75 is a buy)
+- Tables for any 3+ data points
+- ⚠️ stale data flagged before any conclusion uses it
+- Final plan concise enough to trade from

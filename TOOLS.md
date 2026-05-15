@@ -109,16 +109,104 @@ python3 analyze_hk_stocks.py --dry-run   # 不写文件
 
 ### 辅助
 - **Scrapling**：自适应爬虫框架，绕过反爬（Cloudflare 等），支持 JS 渲染。`pip3 install scrapling --break-system-packages`。详见 `skills/scrapling/SKILL.md`
-- `price_alert_monitor.py`：价格提醒
 - `portfolio_monitor.py`：组合监控
 - `portfolio_table.py` / `portfolio_visualization.py`：可视化
 
-### 已废弃（请勿使用）
-- `stock_analyzer.py` — 被 `analyze_us_stocks.py` + `analyze_hk_stocks.py` 取代
-- `hk_stock_fetcher.py` — 已被 `analyze_hk_stocks.py` 内联
-- `hk_monitor.py` / `hk_open_monitor.py` / `hk_ai_monitor.py` — 为已清仓的韩股链（07709/07747）写的，无现役作用
+### 价格提醒 / 监控
+**当前在用**：cron-driven WeChat report（不是常驻轮询）
+
+**8 个 stock cron job** (位于 `~/.openclaw/cron/jobs.json`)：
+
+| Job 名 | Schedule | 入口 |
+|---|---|---|
+| 港股开盘报告 | 09:30 HKT 工作日 | `hk-stock-analysis` Mode 6 |
+| 港股午盘报告 | 12:00 HKT 工作日 | `hk-stock-analysis` Mode 6 |
+| 港股午后快报 | 13:30 HKT 工作日 | `hk-stock-analysis` Mode 6 |
+| 港股收盘报告 | 16:00 HKT 工作日 | `hk-stock-analysis` Mode 6 |
+| 盘中盯盘 | 9-15 每 30 分 HKT 工作日 | `hk-stock-analysis` Mode 7 |
+| 美股开盘报告 | 09:30 ET 工作日 | `us-stock-analysis` Mode 6 |
+| 美股盘中盯盘 | 9-15 每 30 分 ET 工作日 | `us-stock-analysis` Mode 7 |
+| 美股收盘报告 | 16:00 ET 工作日 | `us-stock-analysis` Mode 6 |
+
+每个 cron prompt 已精简成"按 skill Mode 6/7 执行"+ 自包含 fallback 指令，改格式时**只改 SKILL.md 里的 Mode 段**，不动 jobs.json。
+
+**改 cron prompt 的步骤**（如果真要改）：
+```bash
+cp ~/.openclaw/cron/jobs.json ~/.openclaw/cron/jobs.json.bak-$(date +%Y%m%d_%H%M%S)
+python3 -c "import json; d=json.load(open('/root/.openclaw/cron/jobs.json')); ..."
+```
+不要手编辑 jobs.json — JSON 错误会让全部 9 个 job 停摆（包括 Memory Dreaming）。
+
+**已停摆**（2026-03-19 后无运行）：
+- `price_alert_monitor.py` — 上一代轮询架构，无 cron，代码里硬编码 NVDA/QQQ 等已清仓 ticker
+- `monitor_state.json` / `monitor.log` — 同上
+
+**已停摆**（2026-03-19 后无运行）：
+- `price_alert_monitor.py` — 上一代轮询架构，无 cron，代码里硬编码 NVDA/QQQ 等已清仓 ticker
+- `monitor_state.json` / `monitor.log` — 同上
+
+### 已废弃（不作为调用入口，但作为参考代码可读）
+> 这些脚本**不要直接调起来跑**当主路径，但里面的 URL、header、fallback 思路、解析片段在调试或场景超出现役脚本时仍有参考价值。
+- `stock_analyzer.py` — 被 `analyze_us_stocks.py` + `analyze_hk_stocks.py` 取代；早期 fallback 顺序的来源
+- `hk_stock_fetcher.py` — 已被 `analyze_hk_stocks.py` 内联；Tencent 解析参考
+- `hk_monitor.py` / `hk_open_monitor.py` / `hk_ai_monitor.py` — 为已清仓的韩股链（07709/07747）写的，无现役作用；监控循环写法参考
 - `final_analysis.py` / `deep_analysis.py` / `find_opportunities.py` / `monday_signal.py` — 实验性脚本，未集成进定时任务
-- `multi_agent_stock_analysis.py` / `TradingAgents/` — 实验目录
+- `multi_agent_stock_analysis.py` — 实验脚本
+
+### TradingAgents/ — 已 clone 的 TauricResearch 多 agent 框架
+**不当主路径，但 swarm-review skill 直接借用其 agent 角色设计。**
+关键参考路径：
+- `TradingAgents/tradingagents/agents/analysts/` — market / fundamentals / news / social_media 4 个 analyst 的 prompt 设计
+- `TradingAgents/tradingagents/agents/researchers/` — bull / bear 对辩
+- `TradingAgents/tradingagents/agents/risk_mgmt/` — aggressive / conservative / neutral debator
+- `TradingAgents/tradingagents/dataflows/` — alpha_vantage 套件 + yfinance_news 实现参考（脚本里的 fallback 思路可对照）
+
+需要重 LLM 编排的深度分析时可启动 `python main.py`（需 API key），日常用 swarm-review skill 走同样框架就够了。
+
+---
+
+## Skill 路由表（什么场景用哪个）
+
+| 场景 | 入口 skill | 备注 |
+|---|---|---|
+| "分析 RKLB" / "compare AAPL vs MSFT" / 美股个股问题 | `us-stock-analysis` | 4 模式（quick/technical/fundamental/full）+ sentiment mode 5 |
+| "分析 00100" / "07226 怎么样" / "恒科今天" / 港股问题 | `hk-stock-analysis` | 4 模式 + 港股专属 sentiment（雪球/富途）+ 南向资金 |
+| "看下持仓 / 节后操作 / 持仓有什么风险" | `portfolio-risk-review` | 单 pass、4 lens、快速可行动 |
+| "深度复盘 / 持仓全面诊断 / 大幅调仓前" | `portfolio-swarm-review` | 3 tier（analyst→bull/bear→risk debate）+ confidence 评分，重，慢 |
+| 教育性问题（"什么是 MACD"、"position sizing 怎么算"） | `trading`（clawhub 装的） | guardrails 重、不给具体买卖判断；具体判断走上面 4 个 |
+| 抓需 JS 渲染 / 反爬的页面（雪球评论 / Futu 社区 / Reddit 深页） | `scrapling` | 配合上面的 stock-analysis Mode 5 调用 |
+| Web 搜索（新闻 / X / 中文社区 / 政策） | `tavily-search` | 不要让模型自己改用 Yahoo/Google 临时拼搜索 |
+| openclaw 升级后健康检查 / 磁盘膨胀 | `openclaw-tune` | 不动股票 |
+
+⚠️ **不要做的 routing 错误**：
+- `trading` skill 默认禁止"直接买卖建议" → 用户问"应该买不买" 时不走它，走 `us/hk-stock-analysis`（用户偏好已写在 MEMORY.md）
+- 持仓问题不要走 `us-stock-analysis` 的 Full Report → 走 `portfolio-risk-review`（持仓视角）
+- 单只股的分析也不要走 `portfolio-swarm-review`（杀鸡用牛刀）→ 走 `us/hk-stock-analysis` Mode 4
+
+## 情绪面数据源速查
+
+按市场和重要性顺序：
+
+### 美股
+1. **Finnhub news** —— `analyze_us_stocks.py` 默认拉取，主英文媒体 + 关键词情绪打分
+2. **Tavily** —— 新闻 + X/Twitter trending（`node skills/tavily-search/scripts/search.mjs "{TICKER} sentiment" --topic news`）
+3. **Reddit JSON**（无需 auth）—— r/wallstreetbets（散户动量）+ r/stocks（理性）：
+   ```bash
+   curl -sH "User-Agent: openclaw/1.0" "https://www.reddit.com/r/wallstreetbets/search.json?q={TICKER}&restrict_sr=1&sort=new&limit=25"
+   ```
+4. **scrapling** —— 上述源失败或要评论级深度
+
+### 港股
+1. **Finnhub news** —— 港股覆盖稀疏但能拿到 Reuters/Bloomberg/SCMP
+2. **Tavily 中文搜索** —— 主要中文媒体 + 政策
+3. **雪球 HK 评论区**（scrapling StealthyFetcher）—— `https://xueqiu.com/S/HK{TICKER}`，港股散户情绪核心
+4. **富途牛牛社区**（scrapling）—— `https://www.futunn.com/stock/{TICKER}-HK`
+5. **南向资金 净流入**（Tavily 搜当日）—— 港股大盘情绪锚
+
+### 跨市场宏观情绪
+- VIX（美股恐慌指数）—— Tavily 搜或脚本扩展
+- HIBOR（港元流动性）—— Tavily 搜，HIBOR 升 = 港股估值压力
+- 美债收益率 —— 影响成长股估值
 
 ---
 

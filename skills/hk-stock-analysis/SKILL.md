@@ -1,0 +1,197 @@
+---
+name: hk-stock-analysis
+description: Workspace-aware Hong Kong stock analysis for kcn. Routes through analyze_hk_stocks.py (Tencent → stooq → yfinance fallback chain) for price/技术指标/news, layered with HK-specific concepts — 南向资金, HSTECH 方向, 杠杆 ETF 衰减, 老千股警惕, T+0 无涨跌幅. Use when user asks about a HK ticker (e.g. "分析 00100", "07226 怎么样", "恒科今天"), HK book performance, or HK sector view.
+triggers:
+  - "分析 {5位港股代码}"
+  - "港股 {ticker}"
+  - "恒科 / 恒指 / HSTECH"
+  - "南向资金"
+  - "{ticker} 怎么样"
+---
+
+# HK Stock Analysis
+
+Workspace-native Hong Kong stock analyst. Uses the local fetch pipeline for live price + 恒指/恒科 baseline, then layers HK-specific analysis.
+
+## Required reads before answering
+
+In this order:
+1. `/root/.openclaw/workspace/MEMORY.md` — data rules, traps, 00100-only-Tencent warning
+2. `/root/.openclaw/workspace/TOOLS.md` — HK fallback chain detail, skill routing
+3. `/root/.openclaw/workspace/INVESTMENT_SOP.md` — standard startup sequence
+4. `/root/.openclaw/workspace/portfolio.json` — if the ticker is in the active book
+
+## Data source rule (non-negotiable)
+
+**Default path — use the workspace script, not web search:**
+
+```bash
+# Full analysis: refreshes price + 恒指/恒科基准 + RSI/MA + Finnhub news + signal
+python3 /root/.openclaw/workspace/analyze_hk_stocks.py {TICKER}
+python3 /root/.openclaw/workspace/analyze_hk_stocks.py {TICKER} --no-news    # skip news
+python3 /root/.openclaw/workspace/analyze_hk_stocks.py --no-fetch            # use cached, analysis only
+```
+
+**HK fallback chain (inside script):**
+1. **Tencent** `qt.gtimg.cn/q=r_hk{CODE}` — primary, best coverage
+2. **stooq.com** CSV — same-day OHLCV; **caveat**: new IPOs (e.g. 00100) not covered, `prev_close` approximated from `open`
+3. **yfinance** — frequently rate-limited, last-resort fallback
+
+**Removed routes (do not retry):**
+- ❌ Eastmoney `push2.eastmoney.com` — 502 from this server, removed from chain
+- ❌ AAStocks / 富途网页 — anti-scraping, not worth the fight; use Tencent
+
+**Critical trap — 00100 MINIMAX has only Tencent.** As a new IPO it has no stooq/yfinance coverage. If Tencent fails on 00100, say so explicitly before falling back — do not silently use yesterday's cache.
+
+**Web search is only for:** company news, 南向资金 flows, sector policy, peer fundamentals, qualitative thesis — never primary quotes.
+
+## Four analysis modes
+
+### Mode 1 — Quick Read (most common)
+**When:** "07226 怎么样" / "00100 今天表现"
+1. Run `analyze_hk_stocks.py {TICKER} --no-news`
+2. If in active book, pull cost/PnL from `portfolio.json`
+3. Output: price, today's move, 恒科/恒指 baseline for context, one-line verdict
+
+### Mode 2 — Technical Read
+**When:** Trend / oversold / breakout questions
+1. Run `analyze_hk_stocks.py {TICKER} --no-news`
+2. Output: trend, RSI-14, MA20/50 stance, support/resistance from recent action, 量价配合 if visible
+
+### Mode 3 — Fundamental + Macro Read
+**When:** "00100 估值合理吗" / "金风的业绩"
+1. Run script for fresh baseline
+2. Web search: latest财报, 营收/毛利率, 行业政策, 同业对比
+3. Layer in HK-specific macro: 南向资金近一周流向, 港元 HIBOR 走势, 恒科 vs 纳指相对强弱
+4. Output: 基本面 + 估值 + 流动性环境 + 风险
+
+### Mode 4 — Sector / Index Read
+**When:** "恒科怎么样" / "港股 AI 板块"
+1. Pull 恒指 / 恒科 from script's index baseline (script auto-includes ^HSI, ^HSTECH)
+2. 南向资金 净流入/流出（web search 当日数据）
+3. 板块代表股的相对强弱
+4. Output: 大势研判 + 板块归因 + 个股带头/拖累
+
+### Mode 7 — Intraday Check-in (cron-driven, every 30 min during trading hours)
+**When:** 盘中盯盘 cron (`*/30 9-15 * * 1-5`)，比 Mode 6 更轻量、更高频。
+
+Workflow:
+1. `python3 /root/.openclaw/workspace/analyze_hk_stocks.py --wechat`
+2. 脚本输出原样作为消息开头
+3. 追加 `▎我的看法` 段（2-3 行）：
+   - 重点变动：哪只票有信号 / 异常波动 / RSI 极值
+   - 简短判断：今天该看 / 该等 / 该减；不复述脚本里的数字
+4. ≤600 字
+5. 不需要标题（高频推送不加标题，避免微信刷屏）
+
+**和 Mode 6 的区别**：没有 ▎情绪面/▎技术面/▎操作建议 三段分离；没有 ▎风险提示 段；没有 git commit（脚本本身已写 portfolio.json，cron 多次触发不每次都 commit）。
+
+### Mode 6 — WeChat Briefing (cron-driven)
+**When:** 港股开盘/午盘/收盘 cron 触发，或任何 HK-session 推送。三个 cron job (`港股开盘报告`/`港股午盘报告`/`港股收盘报告`) 全部走这个 mode。
+
+Workflow:
+
+1. `cd /root/.openclaw/workspace && python3 analyze_hk_stocks.py --wechat`
+2. 脚本输出**原样**作为消息开头（事实数据块）
+3. 追加 3 段分析（共 4-6 行）：
+   - `▎情绪面` — Finnhub 新闻 + 今日恒指/恒科表现 → 大盘方向判断
+   - `▎技术面` — 综合脚本里 RSI / 价格位置 → 超买/超卖/突破
+   - `▎操作建议` — 重点关注哪只；如建议交易给出大致价位
+4. 若脚本里 STOP/TRIM 信号 ≥ 2 只 → 追加 `▎风险提示`
+5. 提交：`git -C /root/.openclaw/workspace add portfolio.json && git -C /root/.openclaw/workspace commit -m "portfolio: 港股{开盘/午盘/收盘}价格更新"`
+6. 整条消息 ≤ 800 字
+
+**标题模板（按 session 选）：**
+- 开盘（09:30 HKT）：`📊 港股开盘快报｜[今日日期] 09:30`
+- 午盘（12:00 HKT）：`☕ 港股午盘快报｜[今日日期] 12:00`
+- 收盘（16:00 HKT）：`🔔 港股收盘日报｜[今日日期]`
+
+**硬性规则**：
+- ⚠️ 数据缺口必须明说，禁止编造
+- **00100 MINIMAX 只有 Tencent 一个源**，失败必须明说"实时价获取失败"
+- 不用 `message` 工具，直接回复文本（cron delivery 包装）
+- 不简单复述数字，必须做模型自己的解读
+
+### Mode 5 — Sentiment / 情绪面 Read
+**When:** "市场怎么看 X" / "雪球怎么聊 00100" / "港股情绪" / before sizing
+
+港股情绪面跟美股不同 — 主战场是中文社区（雪球/富途牛牛/同花顺论坛/微博），不在 Reddit/X。源使用顺序：
+
+1. **Finnhub news（脚本带）** — `analyze_hk_stocks.py {TICKER}` 默认拉 Finnhub 7 天新闻。港股覆盖比美股稀疏，但能拿到主要英文媒体（Reuters / Bloomberg / SCMP）
+2. **Tavily 中文搜索** — 主要的中文新闻聚合：
+   ```bash
+   node /root/.openclaw/workspace/skills/tavily-search/scripts/search.mjs "{TICKER} 港股 最新" --topic news --days 3
+   node /root/.openclaw/workspace/skills/tavily-search/scripts/search.mjs "{中文公司名} 雪球 讨论"
+   ```
+3. **雪球 HK 评论区（scrapling）** — 港股零售情绪核心，5 位代码格式 `HK{TICKER}`：
+   ```python
+   from scrapling.fetchers import StealthyFetcher
+   sp = StealthyFetcher.fetch(f"https://xueqiu.com/S/HK{TICKER}", headless=True)
+   # 取最近讨论标题 + 多/空票数 + 评论热度
+   ```
+4. **富途牛牛社区** — 同样的中文零售情绪源：
+   ```python
+   sp = StealthyFetcher.fetch(f"https://www.futunn.com/stock/{TICKER}-HK", headless=True)
+   ```
+5. **南向资金净流入** — 跟单只股没直接关系，但是港股大盘情绪的硬指标，Tavily 搜"南向资金 {date}"
+
+Output:
+- **Sentiment score**: -1 (极度看空) 到 +1 (狂热)；明确标注跟价格的背离（"涨了但雪球普遍看空 = 空头未投降" 之类）
+- **Key narratives**（2-3 条）：中文社区的核心叙事，跟英文媒体可能不同
+- **南向资金 context**：当日净流入 / 近一周累计，作为情绪锚
+- **Volume signal**：讨论帖数 vs 上周平均 — 升温 / 冷淡
+
+**港股专属警示**：
+- 中文社区"庄"、"洗盘"、"游资"等词高频出现 → 短线 sentiment，不要当基本面信号
+- 老千股嫌疑标的（频繁配股 / 长期阴跌）在雪球往往有专门骂帖，这些是早期信号
+- 00100 这种新 IPO 在雪球评论区流量大但样本偏，给情绪打分时降权
+
+## HK-specific concepts to apply
+
+| Concept | When to use | How to apply |
+|---|---|---|
+| **南向资金** | Tone-setting for HK sessions | 流入 → 内资定价权强 / 流出 → 外资抛压. Quote daily net figure when available. |
+| **HIBOR / 港元汇率** | Liquidity environment | HIBOR 升 = 流动性收紧 = 港股估值压力, 尤其打击高估值科技股 |
+| **恒科 vs 纳指联动** | 03032 / 07226 / 03033 / 09988 / 00700 etc. | 美股科技夜盘强 → 次日恒科开盘往往跟随；联动断裂时单独分析 |
+| **T+0 + 无涨跌幅** | Risk sizing on all HK | 单日波动可远超 A 股. 杠杆 ETF（07226 2x）单日 ±5-10% 是常态 |
+| **老千股警惕** | 任何新接触的小市值标的 | 频繁配股 / 1-供-N / 历史多次合股 / 股价长期阴跌 → 排除. 现役持仓不在此列 |
+| **杠杆 ETF 衰减** | 07226 (2x恒科), 类似 SOXL/TQQQ | 震荡市衰减明显, 强趋势市才适合多日持有. 默认按短线对待 |
+
+## Output style (kcn-tuned)
+
+- **直接判断, 不绕弯.** "07226 RSI 76 短期太高, 反弹位减仓"  优于 "may be approaching overbought territory"
+- **表格优先.** 3 个以上数据点必用表
+- **数据时效必须标注.** 收盘后给数据要说"收盘价"; 盘中给要说"实时"
+- **失败要明说.** Tencent 挂了 → "00100 取价失败, 以下基于昨日收盘"
+
+## Critical reminders (从 workspace MEMORY 同步)
+
+- 港股交易时段: HKT 09:30-12:00 / 13:00-16:00 (北京时间同)
+- 北京时间 16:02 = 港股刚收盘 (不是 still trading)
+- 00100 是新 IPO, 数据源单一; PLTU/RKLX 这类美股新 IPO 同理但有 Nasdaq 兜底
+- 港股核心驱动 (per MEMORY.md): 恒科指数方向 + 个股逻辑 (00100 AI / 02208 风电政策)
+
+## Examples
+
+**User:** "00100 怎么样"
+**Approach:** Mode 1 — `analyze_hk_stocks.py 00100 --no-news`, 注意 Tencent 是唯一源, 失败要明说; 输出价 + PnL + 一句话判断
+
+**User:** "恒科今天什么情况"
+**Approach:** Mode 4 — 拉 ^HSTECH 走势, 加南向资金当日数据, 列出 03032/07226 等代表股表现, 一段大势判断
+
+**User:** "02208 估值"
+**Approach:** Mode 3 — 跑脚本, web 搜风电政策最新动向 + 同业 (龙源/中广核新能源) 对比, 给估值区间
+
+## Reference files (lazy-load)
+
+港股跟美股共享的市场无关教育内容，全部在 `../us-stock-analysis/references/`：
+- `../us-stock-analysis/references/technical-analysis.md` — RSI / MACD / MA / 形态定义
+- `../us-stock-analysis/references/fundamental-analysis.md` — 业务质量 / 财务健康度 / 估值框架
+- `../us-stock-analysis/references/financial-metrics.md` — 比率公式
+- `../us-stock-analysis/references/report-template.md` — Full Report 结构骨架
+
+## Companion tools
+
+- `../scrapling/SKILL.md` — 当 Tencent/stooq/yfinance 全挂 或需要抓雪球/富途社区时
+- `../tavily-search/SKILL.md` — 中文新闻 / 南向资金数据 / 政策搜索的首选 web 搜索
+- `/root/.openclaw/workspace/TradingAgents/` — 用户已克隆的 TauricResearch 多 agent 框架。深度分析需要 bull/bear debate 时可参考其 agent 角色设计

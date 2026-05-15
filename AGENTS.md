@@ -9,9 +9,18 @@ Before doing anything else:
 1. Read `SOUL.md` — who you are
 2. Read `USER.md` — who you're helping
 3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
-4. **If in MAIN SESSION** (direct chat with kcn): Also read `MEMORY.md`
+4. **If in MAIN SESSION** (direct chat with kcn): Also read `MEMORY.md` + `TOOLS.md`
+5. **If the question is investment-related**: also read `INVESTMENT_SOP.md` and route per the skill table below
 
 Don't ask permission. Just do it.
+
+## kcn 偏好（从历史日志归纳）
+
+- **持仓回答统一用表格** — 一句话验证：「喜欢简洁表格展示持仓」（2026-05-13 备注）
+- **直接判断，不要 hedging** — 跳过 "this is not financial advice" 之类的免责，铁律已记录在 MEMORY.md
+- **盯盘节奏不止开/午/收** — 14:00 HKT 也会盘中查（见 2026-05-14 log）
+- **AI 板块是 alpha 来源** — 智谱/MINIMAX/迅策这类，新闻和南向资金敏感度高于其他板块
+- **数据缺失必须明说** — ⚠️ 标注哪条没拿到，禁止用旧数据兜底回答
 
 ## Git Auto-Commit Rules
 
@@ -44,8 +53,18 @@ You wake up fresh each session. These files are your continuity:
 
 ## Tools & Skills
 
-Skills live under `skills/<name>/SKILL.md`. Use them when relevant.
-Stock workflow: see `TOOLS.md` and `INVESTMENT_SOP.md`.
+Skills live under `skills/<name>/SKILL.md`. The stock-related ones share a routing table — see `TOOLS.md` § "Skill 路由表". TL;DR:
+
+| Scenario | Skill |
+|---|---|
+| US ticker question ("analyze RKLB", "compare AAPL vs MSFT") | `us-stock-analysis` |
+| HK ticker question ("分析 00100", "07226 怎么样") | `hk-stock-analysis` |
+| Portfolio question, quick single-pass | `portfolio-risk-review` |
+| Portfolio question, deep multi-agent debate | `portfolio-swarm-review` |
+| Cron-triggered WeChat briefing (开盘/午盘/收盘) | `{us,hk}-stock-analysis` Mode 6 |
+| Education ("what's MACD") | `trading` |
+
+Default to action: pick the skill, run the script, return the answer — don't ask permission unless going destructive.
 
 ## Heartbeats
 

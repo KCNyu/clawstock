@@ -1,294 +1,188 @@
 ---
 name: us-stock-analysis
-description: Comprehensive US stock analysis including fundamental analysis (financial metrics, business quality, valuation), technical analysis (indicators, chart patterns, support/resistance), stock comparisons, and investment report generation. Use when user requests analysis of US stock tickers (e.g., "analyze AAPL", "compare TSLA vs NVDA", "give me a report on Microsoft"), evaluation of financial metrics, technical chart analysis, or investment recommendations for American stocks.
+description: Workspace-aware US stock analysis for kcn. Routes through the local fetch pipeline (analyze_us_stocks.py / fetch_us_stocks.py) instead of generic web search, then layers fundamental/technical/news analysis on top. Use when user asks to analyze a US ticker (e.g. "analyze AAPL", "look at RKLB", "compare TSLA vs NVDA"), check earnings, run technicals, or write an investment report on a US name.
+triggers:
+  - "analyze {US ticker}"
+  - "美股 {ticker}"
+  - "look at AAPL/NVDA/..."
+  - "compare X vs Y"
+  - "stock report"
 ---
 
 # US Stock Analysis
 
-## Overview
+Workspace-native US stock analyst. Always uses kcn's local pipeline for price/RSI/MA/signal — uses web search only for news, peer data, fundamentals.
 
-Perform comprehensive analysis of US stocks covering fundamental analysis (financials, business quality, valuation), technical analysis (indicators, trends, patterns), peer comparisons, and generate detailed investment reports. Fetch real-time market data via web search tools and apply structured analytical frameworks.
+## Required reads before answering
 
-## Data Sources
+In this order:
+1. `/root/.openclaw/workspace/MEMORY.md` — data rules and traps (especially the "禁止用 portfolio.json 缓存价" rule)
+2. `/root/.openclaw/workspace/TOOLS.md` — script paths, provider fallback chains, skill routing table
+3. `/root/.openclaw/workspace/INVESTMENT_SOP.md` — standard startup sequence for investment questions
+4. `/root/.openclaw/workspace/portfolio.json` — if the ticker is in the active book, cost basis and PnL matter
 
-Always use web search tools to gather current market data:
+## Data source rule (non-negotiable)
 
-**Primary Data to Fetch:**
-1. **Current stock price and trading data** (price, volume, 52-week range)
-2. **Financial statements** (income statement, balance sheet, cash flow)
-3. **Key metrics** (P/E, EPS, revenue, margins, debt ratios)
-4. **Analyst ratings and price targets**
-5. **Recent news and developments**
-6. **Peer/competitor data** (for comparisons)
-7. **Technical data** (moving averages, RSI, MACD when available)
+**Default path — use the workspace script, not web search:**
 
-**Search Strategy:**
-- Use ticker symbol + specific data needed (e.g., "AAPL financial metrics 2024")
-- For comprehensive data: Search for earnings reports, investor presentations, or SEC filings
-- For technical data: Search for "AAPL technical analysis" or use financial data sites
-- Always verify data recency (prefer data from last quarter)
+```bash
+# Full analysis: refreshes price + RSI-14 / MA20 / MA50 + Finnhub news + signal
+python3 /root/.openclaw/workspace/analyze_us_stocks.py {TICKER}
+python3 /root/.openclaw/workspace/analyze_us_stocks.py {TICKER} --no-news    # skip news (save Finnhub quota)
 
-**Quality Sources:**
-- Yahoo Finance, Google Finance, MarketWatch, Seeking Alpha, Bloomberg, CNBC
-- Company investor relations pages
-- SEC filings (10-K, 10-Q) for detailed financials
-- TradingView, StockCharts for technical data
+# Price-only refresh
+python3 /root/.openclaw/workspace/fetch_us_stocks.py {TICKER}
+```
 
-## Analysis Types
+The script internally runs the 7-route fallback (Nasdaq API → Eastmoney → Finnhub → Yahoo v8 → yfinance → Alpha Vantage → Polygon), pulls `prev_close` independently from Polygon's `/prev` endpoint (so `today_change` is trustworthy after close), and writes back to `portfolio.json` if the ticker is held. Bypassing it re-introduces every bug it was written to fix.
 
-This skill supports four types of analysis. Determine which type(s) the user needs:
+**Web search is only for:** earnings transcripts, SEC filings, analyst notes, sector news, peer fundamentals, qualitative thesis material — never primary price quotes.
 
-1. **Basic Stock Info** - Quick overview with key metrics
-2. **Fundamental Analysis** - Deep dive into business, financials, valuation
-3. **Technical Analysis** - Chart patterns, indicators, trend analysis
-4. **Comprehensive Report** - Complete analysis combining all approaches
+**Forbidden:** Sina US quotes API (境外 403), raw Yahoo scraping when the script already covers it, reading `portfolio.json` cached `current_price` without first refreshing.
 
-## Analysis Workflows
+## Four analysis modes
 
-### 1. Basic Stock Information
+Pick the smallest mode that answers the question. Default to **Quick Read** unless the user explicitly asks for deep analysis.
 
-**When to Use:** User asks for quick overview or basic info
+### Mode 1 — Quick Read (most common)
+**When:** "What's RKLB at?" / "How's NVDA doing today?"
+1. Run `analyze_us_stocks.py {TICKER} --no-news` for price + RSI/MA/signal
+2. If in active book, pull cost basis + PnL from `portfolio.json`
+3. One short paragraph: price, today's move, RSI/MA stance, one-line verdict
 
-**Steps:**
-1. Search for current stock data (price, volume, market cap)
-2. Gather key metrics (P/E, EPS, revenue growth, margins)
-3. Get 52-week range and year-to-date performance
-4. Find recent news or major developments
-5. Present in concise summary format
+### Mode 2 — Technical Read
+**When:** "Is X oversold?" / "Where's resistance on Y?"
+1. Run `analyze_us_stocks.py {TICKER} --no-news`
+2. Load `references/technical-analysis.md` for indicator interpretation
+3. Output: trend (up/down/sideways), MA20/50 stance, RSI-14 reading (oversold <30, overbought >70), recent support/resistance from price action, one-line risk note
 
-**Output Format:**
-- Company description (1-2 sentences)
-- Current price and trading metrics
-- Key valuation metrics (table)
-- Recent performance
-- Notable recent news (if any)
+### Mode 3 — Fundamental Read
+**When:** "Is X overvalued?" / "Analyze Y's business"
+1. Run `analyze_us_stocks.py {TICKER}` for fresh price baseline
+2. Web search for: latest earnings, revenue/EPS trend (3-5 yr), margins, balance sheet, peer multiples
+3. Load `references/fundamental-analysis.md` for framework, `references/financial-metrics.md` for ratio definitions
+4. Output: business overview, financial trends, valuation vs peers/history, key risks, fair value range
 
-### 2. Fundamental Analysis
+### Mode 4 — Full Report
+**When:** "Give me a full report on X" / "Should I add X?"
+1. Run script (Mode 1 baseline)
+2. Do fundamentals (Mode 3)
+3. Do technicals (Mode 2)
+4. Do sentiment (Mode 5)
+5. Web search for catalysts (next earnings date, upcoming product/regulatory events)
+6. Load `references/report-template.md` for structure
+7. Output: executive summary + bull case + bear case + valuation + technical setup + sentiment read + risk + catalyst calendar + concrete entry/exit levels
 
-**When to Use:** User wants financial analysis, valuation assessment, or business evaluation
+### Mode 7 — Intraday Check-in (cron-driven, every 30 min during trading hours)
+**When:** US 盘中盯盘 cron (`*/30 9-15 * * 1-5 America/New_York`)，比 Mode 6 更轻量、更高频。
 
-**Steps:**
-1. **Gather comprehensive financial data:**
-   - Revenue, earnings, cash flow (3-5 year trends)
-   - Balance sheet metrics (debt, cash, working capital)
-   - Profitability metrics (margins, ROE, ROIC)
-   
-2. **Read references/fundamental-analysis.md** for analytical framework
+Workflow:
+1. `cd /root/.openclaw/workspace && python3 analyze_us_stocks.py --wechat`
+2. 脚本输出原样作为消息开头
+3. 追加 `▎我的看法` 段（2-3 行）：
+   - 重点变动：哪只票有信号 / 异常波动 / RSI 极值
+   - 简短判断：今天该看 / 该等 / 该减；不复述数字
+4. ≤600 字
+5. 无标题（高频推送避免微信刷屏）
 
-3. **Read references/financial-metrics.md** for metric definitions and calculations
+**和 Mode 6 的区别**：单段 `▎我的看法` 取代三段；无 ▎风险提示；无 git commit。
 
-4. **Analyze business quality:**
-   - Competitive advantages
-   - Management track record
-   - Industry position
-   
-5. **Perform valuation analysis:**
-   - Calculate key ratios (P/E, PEG, P/B, EV/EBITDA)
-   - Compare to historical averages
-   - Compare to peer group
-   - Estimate fair value range
-   
-6. **Identify risks:**
-   - Company-specific risks
-   - Market/macro risks
-   - Red flags from financial data
+### Mode 6 — WeChat Briefing (cron-driven)
+**When:** Triggered by cron at US open (or any session timestamp); used by the "美股开盘报告" job and any future US-session pushes.
 
-7. **Generate output** following references/report-template.md structure
+Workflow (must be reproducible from cron without needing additional context):
 
-**Critical Analyses:**
-- Profitability trends (improving/declining margins)
-- Cash flow quality (FCF vs earnings)
-- Balance sheet strength (debt levels, liquidity)
-- Growth sustainability
-- Valuation vs peers and historical average
+1. `cd /root/.openclaw/workspace && python3 analyze_us_stocks.py --wechat`
+2. Script prints a pre-formatted block — take it **verbatim** as the message body's facts section
+3. Append 3 commentary lines (4-6 lines total):
+   - `▎情绪面` — synthesize Finnhub news + 纳指 tone, call market direction
+   - `▎技术面` — synthesize script's RSI/MA stance, name overbought/oversold/breakout
+   - `▎操作建议` — name the one ticker to watch; if action suggested, give approximate price
+4. If script flagged STOP/TRIM signals on ≥ 2 holdings, append `▎风险提示`
+5. Commit: `git -C /root/.openclaw/workspace add portfolio.json && git -C /root/.openclaw/workspace commit -m "portfolio: 美股开盘价格更新"`
+6. Total message ≤ 800 字
 
-### 3. Technical Analysis
+**Title template:** `🌅 美股开盘快报｜[今日日期] 21:30 CST`
 
-**When to Use:** User asks for technical analysis, chart patterns, or trading signals
+**Hard rules:**
+- ⚠️ data gaps must be stated explicitly, never fabricate
+- Do not use `message` tool; reply text directly (cron delivery wraps it)
+- No simple number recitation — model must add interpretation
 
-**Steps:**
-1. **Gather technical data:**
-   - Current price and recent price action
-   - Volume trends
-   - Moving averages (20-day, 50-day, 200-day)
-   - Technical indicators (RSI, MACD, Bollinger Bands)
-   
-2. **Read references/technical-analysis.md** for indicator definitions and patterns
+### Mode 5 — Sentiment Read
+**When:** "市场情绪怎么样" / "推上怎么说 X" / "Reddit 怎么聊 X" / before a sizing decision
 
-3. **Identify trend:**
-   - Uptrend, downtrend, or sideways
-   - Strength of trend
-   
-4. **Locate support and resistance levels:**
-   - Recent highs and lows
-   - Moving average levels
-   - Round numbers
-   
-5. **Analyze indicators:**
-   - RSI: Overbought (>70) or oversold (<30)
-   - MACD: Crossovers and divergences
-   - Volume: Confirmation or divergence
-   - Bollinger Bands: Squeeze or expansion
-   
-6. **Identify chart patterns:**
-   - Reversal patterns (head and shoulders, double top/bottom)
-   - Continuation patterns (flags, triangles)
-   
-7. **Generate technical outlook:**
-   - Current trend assessment
-   - Key levels to watch
-   - Risk/reward analysis
-   - Short and medium-term outlook
+Sources, in order:
+1. **Finnhub news (in script)** — `analyze_us_stocks.py {TICKER}` without `--no-news` already pulls last 7 days with keyword sentiment scoring. **This is the first source — read it before anything else.**
+2. **Tavily (news + X)** — for trending discussions, analyst notes, X/Twitter sentiment:
+   ```bash
+   node /root/.openclaw/workspace/skills/tavily-search/scripts/search.mjs "{TICKER} stock sentiment" --topic news --days 3
+   node /root/.openclaw/workspace/skills/tavily-search/scripts/search.mjs "{TICKER} reddit wallstreetbets"
+   ```
+3. **Reddit JSON (no auth needed)** — direct fetch:
+   ```bash
+   curl -sH "User-Agent: openclaw/1.0" \
+     "https://www.reddit.com/r/wallstreetbets/search.json?q={TICKER}&restrict_sr=1&sort=new&limit=25" \
+     | jq '.data.children[].data | {title, score, num_comments, created_utc}'
+   curl -sH "User-Agent: openclaw/1.0" \
+     "https://www.reddit.com/r/stocks/search.json?q={TICKER}&restrict_sr=1&sort=new&limit=15" \
+     | jq '.data.children[].data | {title, score}'
+   ```
+   r/wallstreetbets is retail momentum; r/stocks is more measured. Both together give the retail temperature.
+4. **scrapling fallback** — if Reddit JSON 429s or content needs comment-level depth, use `StealthyFetcher` (see `../scrapling/SKILL.md`). Same for X if Tavily misses.
 
-**Interpretation Guidelines:**
-- Confirm signals with multiple indicators
-- Consider volume for validation
-- Note divergences between price and indicators
-- Always identify risk levels (stop-loss)
+Output:
+- **Sentiment score**: -1 (extremely fearful) to +1 (euphoric); call out divergence from price action ("price up but Reddit fearful — short squeeze setup" or vice versa)
+- **Key narratives** (2-3 bullets): what people are actually saying / focused on
+- **Catalyst chatter**: earnings expectations, upcoming events, FUD threads
+- **Volume signal**: ↑ post count vs prior week = topic heating up
 
-### 4. Comprehensive Investment Report
+## Comparison mode
 
-**When to Use:** User asks for detailed report, investment recommendation, or complete analysis
+For "X vs Y" requests:
+1. Run script for both tickers
+2. Build side-by-side metric table (price, today_change, RSI, MA50 stance, P/E, revenue growth, margins, market cap)
+3. Verdict in one paragraph — which has the cleaner setup and why; don't hedge
 
-**Steps:**
-1. **Perform data gathering** (as in Basic Info)
+## Output style (kcn-tuned)
 
-2. **Execute fundamental analysis** (follow workflow above)
+The user is aggressive, table-first, and hates filler. Match that:
 
-3. **Execute technical analysis** (follow workflow above)
+- **Direct verdicts.** "RKLB looks toppy at $118, RSI 73, would trim on strength" beats "RKLB shows signs of being overbought; consider monitoring."
+- **Tables for any 3+ data points.** Price/PnL/RSI/MA/signal lives in a table, not prose.
+- **No hedging boilerplate.** Skip "This is not financial advice" — the user knows, and `MEMORY.md` has the trading style on record.
+- **Cite the data freshness.** End with "数据: analyze_us_stocks.py {timestamp}" so the user knows price is live, not cached.
+- **Flag stale data loudly.** If the script's fallback chain failed all 7 routes, lead with "⚠️ 数据获取失败，以下为旧缓存数据" before any analysis.
 
-4. **Read references/report-template.md** for complete report structure
+## Special handling — leverage ETFs
 
-5. **Synthesize findings:**
-   - Integrate fundamental and technical insights
-   - Develop bull and bear cases
-   - Assess risk/reward
-   
-6. **Generate recommendation:**
-   - Buy/Hold/Sell rating
-   - Target price with timeframe
-   - Conviction level
-   - Entry strategy
-   
-7. **Create formatted report** following template structure
+When the ticker is a leveraged ETF (SOXL, TQQQ, RKLX, MSFU, ROBN — anything with the `is_leveraged_etf=true` flag in `portfolio.json` or 2x/3x in the name):
+- Always note decay risk for multi-day holding periods
+- Verdicts must reference the underlying's direction, not just the ETF's chart
+- 1-day RSI on these is noisy; weight MA20/50 stance higher
 
-**Report Must Include:**
-- Executive summary with recommendation
-- Company overview
-- Investment thesis (bull and bear cases)
-- Fundamental analysis section
-- Technical analysis section
-- Valuation analysis
-- Risk assessment
-- Catalysts and timeline
-- Conclusion
+## Examples
 
-## Stock Comparison Analysis
+**User:** "RKLB 怎么样"
+**Approach:** Mode 1 — `python3 analyze_us_stocks.py RKLB --no-news`, read its position from portfolio.json, output table + one-line verdict.
 
-**When to Use:** User asks to compare two or more stocks (e.g., "compare AAPL vs MSFT")
+**User:** "compare AAPL vs MSFT"
+**Approach:** Comparison mode — script both, side-by-side table, paragraph verdict.
 
-**Steps:**
-1. **Gather data for all stocks:**
-   - Follow data gathering steps for each ticker
-   - Ensure comparable timeframes
-   
-2. **Read references/fundamental-analysis.md** and references/financial-metrics.md
+**User:** "Give me a deep report on PLTU"
+**Approach:** Mode 4 — full pipeline with references/report-template.md structure.
 
-3. **Create side-by-side comparison:**
-   - Business models comparison
-   - Financial metrics table (all key ratios)
-   - Valuation metrics table
-   - Growth rates comparison
-   - Profitability comparison
-   - Balance sheet strength
-   
-4. **Identify relative strengths:**
-   - Where each company excels
-   - Quantified advantages
-   
-5. **Technical comparison:**
-   - Relative strength
-   - Momentum comparison
-   - Which is in better technical position
-   
-6. **Generate recommendation:**
-   - Which stock is more attractive and why
-   - Consider both fundamental and technical factors
-   - Portfolio allocation suggestion
-   - Risk-adjusted return assessment
+## Reference files (lazy-load)
 
-**Output Format:** Follow "Comparison Report Structure" in references/report-template.md
+- `references/technical-analysis.md` — indicator definitions, chart patterns, support/resistance methodology
+- `references/fundamental-analysis.md` — business quality, financial health, valuation frameworks, red flags
+- `references/financial-metrics.md` — every ratio formula needed for valuation work
+- `references/report-template.md` — full-report skeleton for Mode 4
 
-## Output Guidelines
+These are market-agnostic; `hk-stock-analysis` also references them.
 
-**General Principles:**
-- Use tables for financial data and comparisons (easy to scan)
-- Bold key metrics and findings
-- Include data sources and dates
-- Quantify whenever possible
-- Present both bull and bear perspectives
-- Be clear about assumptions and uncertainties
+## Companion tools
 
-**Formatting:**
-- **Headers** for clear section separation
-- **Tables** for metrics, comparisons, historical data
-- **Bullet points** for lists, factors, risks
-- **Bold text** for key findings, important metrics
-- **Percentages** for growth rates, returns, margins
-- **Currency** formatted consistently ($B for billions, $M for millions)
-
-**Tone:**
-- Objective and balanced
-- Acknowledge uncertainty
-- Support claims with data
-- Avoid hyperbole
-- Present risks clearly
-
-## Reference Files
-
-Load these references as needed during analysis:
-
-**references/technical-analysis.md**
-- When: Performing technical analysis or interpreting indicators
-- Contains: Indicator definitions, chart patterns, support/resistance concepts, analysis workflow
-
-**references/fundamental-analysis.md**
-- When: Performing fundamental analysis or business evaluation
-- Contains: Business quality assessment, financial health analysis, valuation frameworks, risk assessment, red flags
-
-**references/financial-metrics.md**
-- When: Need definitions or calculation methods for financial ratios
-- Contains: All key metrics with formulas (profitability, valuation, growth, liquidity, leverage, efficiency, cash flow)
-
-**references/report-template.md**
-- When: Creating comprehensive report or comparison
-- Contains: Complete report structure, formatting guidelines, section templates, comparison format
-
-## Example Queries
-
-**Basic Info:**
-- "What's the current price of AAPL?"
-- "Give me key metrics for Tesla"
-- "Quick overview of Microsoft stock"
-
-**Fundamental:**
-- "Analyze NVDA's financials"
-- "Is Amazon overvalued?"
-- "Evaluate Apple's business quality"
-- "What's Google's debt situation?"
-
-**Technical:**
-- "Technical analysis of TSLA"
-- "Is Netflix oversold?"
-- "Show me support levels for AAPL"
-- "What's the trend for AMD?"
-
-**Comprehensive:**
-- "Complete analysis of Microsoft"
-- "Give me a full report on AAPL"
-- "Should I invest in Tesla? Give me detailed analysis"
-
-**Comparison:**
-- "Compare AAPL vs MSFT"
-- "Tesla vs Nvidia - which is better?"
-- "Analyze Meta vs Google"
+- `../scrapling/SKILL.md` — when all 7 script-internal fallbacks fail, or when Reddit/social needs comment-level depth past the public JSON
+- `../tavily-search/SKILL.md` — primary web search tool for news/sentiment/research (do not let the model improvise with Yahoo/Google scraping)
+- `/root/.openclaw/workspace/TradingAgents/` — TauricResearch multi-agent framework already cloned in workspace. For deep bull/bear debate analysis, its `tradingagents/agents/` taxonomy (analysts → researchers → risk debators → trader) is the reference design — `portfolio-swarm-review` borrows this structure

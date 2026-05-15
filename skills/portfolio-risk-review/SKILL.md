@@ -1,115 +1,117 @@
 ---
 name: portfolio-risk-review
-description: Analyze kcn's current portfolio with our own workspace data sources and holdings files. Use for current holdings analysis, portfolio review, position risk ranking, HK-US-KR linkage assessment, leverage ETF risk review, and final actionable investment reports based on portfolio.json plus fresh market quotes from our fallback chain.
+description: Single-pass holdings analysis for kcn using workspace files and the local fetch chain. Use for portfolio review, position risk ranking, US-HK cross-market read, leverage ETF risk assessment, and one-shot actionable reports based on portfolio.json plus fresh quotes from analyze_us_stocks.py / analyze_hk_stocks.py.
 ---
 
 # Portfolio Risk Review
 
-Use this skill to produce a practical holdings report for kcn.
+Single-pass portfolio review. For multi-role analyst framework, use `portfolio-swarm-review` instead.
 
-## Required inputs
+## Required reads
 
-Read in this order:
-1. `/root/.openclaw/workspace/MEMORY.md`
-2. `/root/.openclaw/workspace/portfolio.json`
-3. `/root/.openclaw/workspace/memory/current-portfolio-summary.md`
-4. Recent `memory/YYYY-MM-DD.md` entries when trade context matters
+In this order:
+1. `/root/.openclaw/workspace/MEMORY.md` — rules, traps, user preferences
+2. `/root/.openclaw/workspace/portfolio.json` — authoritative holdings
+3. `/root/.openclaw/workspace/memory/current-portfolio-summary.md` — active ticker list (also lists exited names so you know what NOT to analyze)
+4. Recent `memory/YYYY-MM-DD.md` entries when recent trades matter
+5. `/root/.openclaw/workspace/TOOLS.md` — data chain reference if anything fails
 
-## Market data rule
+## Fresh data rule
 
-Always use fresh quotes before judging the portfolio.
+**Always refresh quotes before judging the book. Use the workspace scripts.**
 
-### Use our own data chain, not generic defaults
-- HK stocks / ETFs: Tencent or Eastmoney first, then other fallback already documented in workspace
-- US stocks: Eastmoney first where available, then Finnhub fallback
-- KR linkage names: Naver polling API first
-- If fresh data cannot be obtained, say so explicitly and mark any stale conclusions
+```bash
+# US: 7-route fallback, RSI/MA/news/signal, writes back to portfolio.json
+python3 /root/.openclaw/workspace/analyze_us_stocks.py
+python3 /root/.openclaw/workspace/analyze_us_stocks.py --no-news    # skip news
 
-## Analysis workflow
+# HK: Tencent → stooq → yfinance fallback
+python3 /root/.openclaw/workspace/analyze_hk_stocks.py
+python3 /root/.openclaw/workspace/analyze_hk_stocks.py --no-news
+```
 
-### 1. Build the portfolio map
-For each holding, identify:
-- market
-- shares
-- cost basis
-- latest price
-- unrealized PnL
-- whether it is core, tactical, or high-risk leverage exposure
+If any leg of the fallback fails for a holding, mark that line stale in the output. Special trap: **00100 only has Tencent** — Tencent down means 00100 is stale.
 
-### 2. Group the book into risk buckets
-Use buckets that fit this portfolio:
-- US growth / beta: NVDA, RKLB, TQQQ, HOOD, QQQ, TCOM
-- theme / special situation: CRCL, OKLO
-- HK core / lower beta: 02208, 03032, 03033
-- HK leverage / high-risk: 07226, 07709
-- exited but relevant watch items: 07747 when linkage matters
+KR linkage names are no longer tracked (07709/07747 exited per `current-portfolio-summary.md`). Do not run any KR fetch.
 
-### 3. Run four lenses
+## Holdings bucketing
 
-#### Lens A, PnL and position quality
-Judge each position by:
-- gain/loss magnitude
-- proximity to breakeven
-- whether thesis is intact, weakening, or broken
-- whether the position is suitable for holding, trimming, or only doing T
+**Do not hardcode tickers here** — names rotate. Pull the active list from `portfolio.json` (`shares > 0`) and `current-portfolio-summary.md`, then bucket by category each run:
 
-#### Lens B, cross-market linkage
-Explicitly review:
-- NASDAQ / US growth tone for TQQQ, NVDA, HOOD
-- storage / semi linkage into SK hynix and Samsung for 07709 and 07747 context
-- Hang Seng Tech direction for 07226, 03032, 03033
+| Bucket | What goes in |
+|---|---|
+| **US growth / single-name beta** | Active US non-leveraged names (typically aggressive growth) |
+| **US leverage ETF** | Anything in `portfolio.json` flagged `is_leveraged_etf: true` (SOXL, RKLX, MSFU, ROBN-class names; rotates over time) |
+| **US theme / special situation** | Regulatory / catalyst-driven (e.g. CRCL ~ GENIUS Act stablecoin) |
+| **HK lower-beta core** | Index / sector ETFs without leverage (currently 03032, 03033) |
+| **HK single-name** | Individual HK equities (currently 00100 AI, 02208 wind) |
+| **HK leverage ETF** | 2x/3x recipes (currently 07226 南方2x恒科) |
 
-#### Lens C, concentration and drawdown risk
-Highlight:
-- largest loss contributors
-- leverage decay risk
-- correlation clusters
-- which positions can cause outsized portfolio drawdown in one bad day
+The framing is stable; the contents drift. Verify each session against `current-portfolio-summary.md`.
 
-#### Lens D, action priority
+## Four-lens analysis
+
+### Lens A — PnL and position quality
+For each active holding:
+- gain/loss in $ and %
+- distance to breakeven
+- thesis status: intact / weakening / broken
+- holdable / trim / T-only / cut
+
+### Lens B — Cross-market linkage
+US side (typically):
+- NASDAQ / 纳指夜盘 tone — drives next-day HK tech open
+- Specific theme threads (e.g. stablecoin reg for CRCL, space/defense for RKLB)
+
+HK side:
+- 恒科指数方向 — primary driver for 03032 / 03033 / 07226
+- 南向资金当日净流向 (web search when material)
+- Sector policy: 风电 for 02208, AI capex for 00100
+
+Note explicit "supportive / neutral / weak" tag for each chain.
+
+### Lens C — Concentration and drawdown risk
+- Largest $ loss contributors right now
+- Leverage decay risk (any 2x/3x ETF held > 5 trading days?)
+- Correlation clusters (e.g. multiple 杠杆 ETF + single high-beta name = one bet)
+- One-bad-day worst case for the book
+
+### Lens D — Action priority
 Sort positions into:
-- keep and watch
-- can reduce on rebound
-- suitable for tactical T only
-- only add if a defined trigger appears
+- **Hold and watch** — thesis intact
+- **Trim on rebound** — thesis weakening but not broken; wait for strength
+- **T-only** — don't add, exit on bounces, no overnight conviction
+- **Add only on trigger** — define the trigger explicitly (price, MA cross, earnings, policy)
 
-## Output format
-
-Use this exact structure.
+## Output structure
 
 ### Portfolio snapshot
-- total US PnL
-- total HK PnL
-- biggest winner
-- biggest loser
-- main risk source
+- 总 US PnL / 总 HK PnL
+- 最大盈利位 / 最大亏损位
+- 主要风险源 (one line)
 
-### Position-by-position view
-For each active holding, give:
-- ticker
-- latest price
-- PnL
-- short verdict in one line
+### Position-by-position
+Table format:
+
+| Ticker | Price | PnL ($) | PnL (%) | One-line verdict |
+|---|---|---|---|---|
 
 ### Cross-market read
-Cover:
-- US side
-- HK side
-- KR linkage side
+- **US side**: tone + key threads
+- **HK side**: 恒科方向 + 南向 + sector policy notes
 
-### Risk ranking
-Rank the top 3 portfolio risks from highest to lowest.
+### Top 3 risks (ranked)
+Highest to lowest, each with concrete cause.
 
 ### Action plan
-Give practical actions in plain language:
-- what to hold
-- what to trim on strength
-- what to avoid adding blindly
-- what to use for T only
+Four buckets from Lens D, with concrete triggers/levels where applicable.
 
 ## Style rules
-- Be direct and practical
-- Prefer concrete judgments over generic finance prose
-- Tie every conclusion back to the actual holdings
-- Respect the user's aggressive style, but still call out real risk plainly
-- Do not replace our data-source workflow with external framework defaults
+
+- Direct, practical, no academic hedging
+- Tie every conclusion to actual holdings (no hypothetical names)
+- Respect the user's aggressive style — but call real risk plainly
+- Tables for any 3+ data points
+- Cite data freshness: "数据: analyze_us_stocks.py / analyze_hk_stocks.py {timestamp}"
+- Flag stale legs loudly with ⚠️ before any conclusion drawn from them
+- Do not substitute external "best practice" frameworks for the workspace data chain
