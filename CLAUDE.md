@@ -26,9 +26,32 @@ Entry pointer for Claude Code in kcn's investment workspace. Same workflow as `A
 | Iron rules / traps | `MEMORY.md` |
 | Scripts / fallback / skill routing / cron | `TOOLS.md` |
 | Skill bodies | `skills/{name}/SKILL.md` |
+| Data scripts | `scripts/data/` (analyze, fetch, update, build_dashboard) |
+| Harness scripts | `scripts/harness/` (brief/report/intraday × preflight/postflight) |
+| Legacy / reference scripts | `scripts/legacy/` |
 | Daily logs (template `_TEMPLATE.md`) | `memory/YYYY-MM-DD.md` |
+| Daily deep brief output | `memory/{date}-pre-open.md` + `memory/{date}-plan.json` |
+| Daily portfolio snapshots | `memory/snapshots/{date}.json` |
+| Preflight context (gitignored) | `memory/.tmp/` |
 | Startup sequence | `INVESTMENT_SOP.md` |
 | Heartbeat workflow | `HEARTBEAT.md` (heartbeat poll only) |
 | Auto-commit rules | `AGENTS.md` |
+| Pages dashboard input | `assets/data/dashboard.json` (built by `scripts/data/build_dashboard.py`) |
+| Pages landing | `index.html` (dashboard) + `briefs.md` (daily briefs index) |
+
+## Cron run loop (what openclaw fires)
+
+Each cron job's prompt tells you which harness 4-step to execute:
+
+```
+Step 1  preflight     scripts/harness/{brief|report|intraday}_preflight.py [args]
+                      → writes memory/.tmp/{brief|report|intraday}-context-*.json
+Step 2  read context  inside that .json: raw_wechat_block, anomalies, title, signals, etc.
+Step 3  LLM synthesis you write the report + (brief only) plan.json
+                      following the SKILL.md Mode template, MUST quote raw_wechat_block verbatim
+Step 4  postflight    scripts/harness/{brief|report|intraday}_postflight.py [args]
+                      validates report, computes wechat_prefix, pass/warn → auto-commit
+                      (brief/report also auto-runs build_dashboard.py to keep Pages in sync)
+```
 
 Don't ask permission for internal reads/edits. Action over confirmation.

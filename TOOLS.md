@@ -6,9 +6,19 @@
 - 投资工作流：`INVESTMENT_SOP.md`
 - 当前持仓摘要：`memory/current-portfolio-summary.md`
 - 每日复盘/交易日志：`memory/YYYY-MM-DD.md`
-- 美股完整分析：`scripts/data/analyze_us_stocks.py`
-- 港股完整分析：`scripts/data/analyze_hk_stocks.py`
+- 数据脚本（被 harness / 手动调用）：`scripts/data/`
+- Harness 脚本（cron 调起）：`scripts/harness/`
+- 历史/参考脚本：`scripts/legacy/`
+- Dashboard 入口：`index.html` (落到 `kcnyu.github.io/clawock`)；数据 `assets/data/dashboard.json` 由 `scripts/data/build_dashboard.py` 聚合
 - 快速查看：`check_portfolio.sh`
+
+## 公共发布层（仓库 = `github.com/KCNyu/clawock`）
+
+- Repo 是 **public**，含真实仓位（用户已知情授权）
+- Dashboard live: https://kcnyu.github.io/clawock/ — 自动从 `assets/data/dashboard.json` 取数
+- Briefs index: https://kcnyu.github.io/clawock/briefs.html — 自动列 `memory/*-pre-open.md`
+- `_layouts/default.html` + `assets/dashboard.css` 给所有 markdown 页面统一样式；不要再加 jekyll-theme
+- Pages 自动 build on push；GitHub Action `.github/workflows/harness-regression.yml` 跑 schema 校验
 
 ## 推荐工作流
 
@@ -163,60 +173,43 @@ python3 scripts/data/analyze_hk_stocks.py --dry-run   # 不写文件
 
 ### 辅助
 - **Scrapling**：自适应爬虫框架，绕过反爬（Cloudflare 等），支持 JS 渲染。`pip3 install scrapling --break-system-packages`。详见 `skills/scrapling/SKILL.md`
-- `scripts/legacy/portfolio_monitor.py`：组合监控
-- `scripts/legacy/portfolio_table.py` / `scripts/legacy/portfolio_visualization.py`：可视化
+- **`scripts/data/build_dashboard.py`**：聚合 `portfolio.json` + `memory/snapshots/` + `memory/*-plan.json` → `assets/data/dashboard.json`。**brief/report postflight 自动调起**，手动也可以跑一次刷新 Pages 数据。
+- **`scripts/data/update_portfolio.py`** / **`update_us_portfolio.js`**：手动调仓后写 portfolio.json 的辅助
 
-### 价格提醒 / 监控
-**当前在用**：cron-driven WeChat report（不是常驻轮询）
+### Cron map（**10 个 job 位于 `~/.openclaw/cron/jobs.json`**）
 
-**8 个 stock cron job** (位于 `~/.openclaw/cron/jobs.json`)：
+| Job 名 | Schedule | Mode | Preflight | Postflight |
+|---|---|---|---|---|
+| Memory Dreaming Promotion | 03:00 daily | (system) | — | — |
+| 📊 盘前深度简报 | **08:00 HKT 工作日** | `daily-deep-brief` (全 swarm + FX + SEC EDGAR) | `brief_preflight.py` | `brief_postflight.py` |
+| 港股开盘报告 | 09:30 HKT 工作日 | Mode 6 | `report_preflight.py --market hk --phase open` | `report_postflight.py --market hk --phase open` |
+| 港股盘中盯盘 | 9-15 每 30 分 HKT 工作日 | Mode 7 | `intraday_preflight.py --market hk` | `intraday_postflight.py --market hk` |
+| 港股午盘报告 | 12:00 HKT 工作日 | Mode 6 | `report_preflight.py --market hk --phase mid` | `report_postflight.py --market hk --phase mid` |
+| 港股午后快报 | 13:30 HKT 工作日 | Mode 6 | `report_preflight.py --market hk --phase pm` | `report_postflight.py --market hk --phase pm` |
+| 港股收盘报告 | 16:00 HKT 工作日 | Mode 6 | `report_preflight.py --market hk --phase close` | `report_postflight.py --market hk --phase close` |
+| 美股开盘报告 | 09:30 ET 工作日 | Mode 6 | `report_preflight.py --market us --phase open` | `report_postflight.py --market us --phase open` |
+| 美股盘中盯盘 | 9-15 每 30 分 ET 工作日 | Mode 7 | `intraday_preflight.py --market us` | `intraday_postflight.py --market us` |
+| 美股收盘报告 | 16:00 ET 工作日 | Mode 6 | `report_preflight.py --market us --phase close` | `report_postflight.py --market us --phase close` |
 
-| Job 名 | Schedule | 入口 |
-|---|---|---|
-| 盘前深度简报 | **08:00 HKT 工作日** | `daily-deep-brief` (全 swarm + FX + SEC EDGAR) |
-| 港股开盘报告 | 09:30 HKT 工作日 | `hk-stock-analysis` Mode 6 |
-| 港股午盘报告 | 12:00 HKT 工作日 | `hk-stock-analysis` Mode 6 |
-| 港股午后快报 | 13:30 HKT 工作日 | `hk-stock-analysis` Mode 6 |
-| 港股收盘报告 | 16:00 HKT 工作日 | `hk-stock-analysis` Mode 6 |
-| 盘中盯盘 | 9-15 每 30 分 HKT 工作日 | `hk-stock-analysis` Mode 7 |
-| 美股开盘报告 | 09:30 ET 工作日 | `us-stock-analysis` Mode 6 |
-| 美股盘中盯盘 | 9-15 每 30 分 ET 工作日 | `us-stock-analysis` Mode 7 |
-| 美股收盘报告 | 16:00 ET 工作日 | `us-stock-analysis` Mode 6 |
+所有 harness preflight/postflight 都在 `scripts/harness/`。Mode 6 / brief 的 postflight 会在 pass/warn 时
+自动跑 `scripts/data/build_dashboard.py` 刷新 `assets/data/dashboard.json` 并一起 commit，保证 Pages 同步。
 
-每个 cron prompt 已精简成"按 skill Mode 6/7 执行"+ 自包含 fallback 指令，改格式时**只改 SKILL.md 里的 Mode 段**，不动 jobs.json。
+cron prompt 已精简成"按 skill 的 harness 4-step 跑"+ 自包含 fallback 指令，改格式时**只改 SKILL.md 里的 Mode 段**，不动 jobs.json。
 
-**改 cron prompt 的步骤**（如果真要改）：
+**改 cron prompt 的安全步骤**：
 ```bash
 cp ~/.openclaw/cron/jobs.json ~/.openclaw/cron/jobs.json.bak-$(date +%Y%m%d_%H%M%S)
 python3 -c "import json; d=json.load(open('/root/.openclaw/cron/jobs.json')); ..."
 ```
-不要手编辑 jobs.json — JSON 错误会让全部 9 个 job 停摆（包括 Memory Dreaming）。
-
-**已停摆**（2026-03-19 后无运行）：
-- `price_alert_monitor.py` — 上一代轮询架构，无 cron，代码里硬编码 NVDA/QQQ 等已清仓 ticker
-- `monitor_state.json` / `monitor.log` — 同上
-
-**已停摆**（2026-03-19 后无运行）：
-- `price_alert_monitor.py` — 上一代轮询架构，无 cron，代码里硬编码 NVDA/QQQ 等已清仓 ticker
-- `monitor_state.json` / `monitor.log` — 同上
+不要手编辑 jobs.json — JSON 错误会让全部 10 个 job 停摆（包括 Memory Dreaming）。
 
 ### 已废弃（不作为调用入口，但作为参考代码可读）
 > 这些脚本**不要直接调起来跑**当主路径，但里面的 URL、header、fallback 思路、解析片段在调试或场景超出现役脚本时仍有参考价值。
-- `scripts/legacy/stock_analyzer.py` — 被 `scripts/data/analyze_us_stocks.py` + `scripts/data/analyze_hk_stocks.py` 取代；早期 fallback 顺序的来源
-- `scripts/legacy/hk_stock_fetcher.py` — 已被 `scripts/data/analyze_hk_stocks.py` 内联；Tencent 解析参考
-- `scripts/legacy/hk_monitor.py` / `scripts/legacy/hk_open_monitor.py` / `hk_ai_monitor.py` — 为已清仓的韩股链（07709/07747）写的，无现役作用；监控循环写法参考
-- `final_analysis.py` / `deep_analysis.py` / `find_opportunities.py` / `monday_signal.py` — 实验性脚本，未集成进定时任务
-- `multi_agent_stock_analysis.py` — 实验脚本
-
-### TradingAgents/ — 已 clone 的 TauricResearch 多 agent 框架
-**不当主路径，但 swarm-review skill 直接借用其 agent 角色设计。**
-关键参考路径：
-- `TradingAgents/tradingagents/agents/analysts/` — market / fundamentals / news / social_media 4 个 analyst 的 prompt 设计
-- `TradingAgents/tradingagents/agents/researchers/` — bull / bear 对辩
-- `TradingAgents/tradingagents/agents/risk_mgmt/` — aggressive / conservative / neutral debator
-- `TradingAgents/tradingagents/dataflows/` — alpha_vantage 套件 + yfinance_news 实现参考（脚本里的 fallback 思路可对照）
-
-需要重 LLM 编排的深度分析时可启动 `python main.py`（需 API key），日常用 swarm-review skill 走同样框架就够了。
+- `scripts/legacy/stock_analyzer.py` — 被 `scripts/data/analyze_us_stocks.py` + `analyze_hk_stocks.py` 取代；早期 fallback 顺序的来源
+- `scripts/legacy/hk_stock_fetcher.py` — 已被 `analyze_hk_stocks.py` 内联；Tencent 解析参考
+- `scripts/legacy/hk_monitor.py` / `hk_open_monitor.py` — 为已清仓的韩股链（07709/07747）写的，无现役作用；监控循环写法参考
+- `scripts/legacy/portfolio_monitor.py` / `portfolio_table.py` / `portfolio_visualization.py` — 早期可视化/监控参考
+- **完全删掉** (2026-05-16 大扫除)：`monday_signal.py` (含硬编码 key)、`api_retry_wrapper.py`、`baidu_search_wrapper.py`、`deep_analysis.py`、`final_analysis.py`、`find_opportunities.py`、`hk_ai_monitor.py`、`multi_agent_stock_analysis.py`、`price_alert_monitor.py`、`TradingAgents/` 整目录
 
 ---
 

@@ -234,4 +234,4 @@ These are market-agnostic; `hk-stock-analysis` also references them.
 
 - `../scrapling/SKILL.md` — when all 7 script-internal fallbacks fail, or when Reddit/social needs comment-level depth past the public JSON
 - `../tavily-search/SKILL.md` — primary web search tool for news/sentiment/research (do not let the model improvise with Yahoo/Google scraping)
-- `/root/.openclaw/workspace/TradingAgents/` — TauricResearch multi-agent framework already cloned in workspace. For deep bull/bear debate analysis, its `tradingagents/agents/` taxonomy (analysts → researchers → risk debators → trader) is the reference design — `portfolio-swarm-review` borrows this structure
+- `portfolio-swarm-review` skill — deep bull/bear/judge debate framework (analysts → researchers → risk debators → trader), inspired by TauricResearch/TradingAgents design; use when single-shot analysis isn't enough

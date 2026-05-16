@@ -20,17 +20,23 @@ Don't ask permission. Just do it.
 
 ## Git Auto-Commit Rules
 
-The workspace is a local git repo. After any of the following changes, run a git commit automatically — no need to ask:
+The workspace is a local git repo. **`origin` is the public repo `github.com/KCNyu/clawock`** — the
+contents (positions, plans, memory logs) are intentionally public per kcn's instruction.
+After any of the following changes, run a git commit automatically — no need to ask:
 
 | Change | Commit |
 |---|---|
 | `portfolio.json` updated (price refresh / buy / sell) | `portfolio: <brief>` |
 | `memory/YYYY-MM-DD.md` created or updated | `memory: daily notes YYYY-MM-DD` |
+| Harness produced new `memory/{date}-pre-open.md` + `-plan.json` | `memory: daily deep brief <date>` (postflight auto-commits) |
+| `assets/data/dashboard.json` refreshed via `build_dashboard.py` | bundled with the relevant data commit |
 | Any script added or modified | `script: <what changed>` |
-| Workspace docs changed (SOUL/AGENTS/TOOLS/USER) | `docs: <what changed>` |
+| Workspace docs changed (SOUL/AGENTS/TOOLS/USER/CLAUDE/README) | `docs: <what changed>` |
 
 Message style: `<type>: <concise description>`, Chinese is fine.
-**Never commit:** `.api_keys`, `*.png`/`*.jpg`, `.openclaw/`, `.clawhub/` (already gitignored).
+**Never commit:** `.api_keys`, `*.png`/`*.jpg`, `.openclaw/`, `.clawhub/`, `memory/.dreams/`, `memory/.tmp/` (all gitignored).
+
+Push: only when explicitly asked. The cron harness commits locally; `git push` is a human action.
 
 ## Memory
 

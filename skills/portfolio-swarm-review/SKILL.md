@@ -5,7 +5,7 @@ description: Multi-agent swarm review of kcn's current holdings. Inspired by Tau
 
 # Portfolio Swarm Review
 
-Multi-agent portfolio review. Structure mirrors `/root/.openclaw/workspace/TradingAgents/tradingagents/agents/` — analysts (Tier 1) → researchers (Tier 2) → risk debators + judge (Tier 3). Each tier is distinct in the output; the Judge synthesizes.
+Multi-agent portfolio review. Structure mirrors the TauricResearch/TradingAgents design — analysts (Tier 1) → researchers (Tier 2) → risk debators + judge (Tier 3). Each tier is distinct in the output; the Judge synthesizes. (The reference repo is no longer cloned locally; the structure is recorded here.)
 
 ## Required reads
 
