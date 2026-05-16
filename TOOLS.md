@@ -138,6 +138,10 @@ python3 analyze_hk_stocks.py --dry-run   # 不写文件
 - **`analyze_hk_stocks.py`**：港股完整分析 = Tencent→stooq→yfinance fallback + 恒指/恒科 + Finnhub 新闻 + 信号
 - `check_portfolio.sh`：快速查看持仓
 
+### Daily deep brief harness（08:00 HKT cron 专用）
+- **`brief_preflight.py`**：跑所有确定性步骤 — 刷 US/HK 价 + FX + portfolio snapshot + HHI 算法 + SEC EDGAR (仅 `is_leveraged_etf=false` US 单股) + retrospective vs 上次 plan.json。输出 `memory/.tmp/brief-context-{date}.json`。daily-deep-brief skill **Step 1 必跑**
+- **`brief_postflight.py`**：校验 LLM 写的 `memory/{date}-pre-open.md` + `memory/{date}-plan.json`（段标记齐全、plan schema、HHI/FX 提及、HKD+USD bug pattern）；pass/warn 自动 git commit；输出 `wechat_prefix` 给 LLM 拼到 WeChat 前面。daily-deep-brief skill **Step 5 必跑**
+
 ### 辅助
 - **Scrapling**：自适应爬虫框架，绕过反爬（Cloudflare 等），支持 JS 渲染。`pip3 install scrapling --break-system-packages`。详见 `skills/scrapling/SKILL.md`
 - `portfolio_monitor.py`：组合监控
