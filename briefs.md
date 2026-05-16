@@ -1,33 +1,31 @@
 ---
 layout: default
 title: clawock · daily briefs
+description: 全部历史每日深度简报 + 手写笔记 + plan.json
 ---
 
-# 📊 clawock · Daily Briefs
+# Daily Briefs
 
-← [Dashboard](/) ｜ [README](README.html) ｜ [GitHub](https://github.com/KCNyu/clawock)
+每个工作日 08:00 HKT 自动跑 Tier 1/2/3 + Judge 全 swarm 分析 → markdown 落盘 + WeChat 推送 + dashboard 数据刷新。
 
----
+## 📊 盘前深度简报 (Daily Deep Brief)
 
-## 📅 盘前深度简报 (Daily Deep Brief)
-
-每个工作日 08:00 HKT 自动跑全 swarm 分析 → markdown 落盘 + WeChat 推送。
 按日期倒序：
 
-<ul>
+<ul class="brief-list">
 {% assign sorted = site.static_files | sort: 'path' | reverse %}
 {% for f in sorted %}
   {% if f.path contains '/memory/' and f.extname == '.md' and f.path contains '-pre-open' %}
   <li>
-    <a href="https://github.com/KCNyu/clawock/blob/master{{ f.path }}">{{ f.name | replace: '.md', '' }}</a>
+    <a href="https://github.com/KCNyu/clawock/blob/master{{ f.path }}">{{ f.name | replace: '.md', '' | replace: '-pre-open', '' }}</a>
   </li>
   {% endif %}
 {% endfor %}
 </ul>
 
-## 📝 Daily Notes (kcn 手写笔记)
+## 📝 Daily Notes (手写笔记)
 
-<ul>
+<ul class="brief-list">
 {% for f in sorted %}
   {% if f.path contains '/memory/' and f.extname == '.md' and f.name != '_TEMPLATE.md' %}
     {% unless f.path contains '-pre-open' or f.path contains 'recovery_log' or f.path contains '6_month_review' or f.path contains 'archive_index' %}
@@ -39,11 +37,11 @@ title: clawock · daily briefs
 {% endfor %}
 </ul>
 
-## 📈 历史 plan.json (结构化交易计划)
+## 📈 历史 plan.json
 
 Self-learning loop 用，给次日 retrospective 算 trigger / P&L / confidence calibration。
 
-<ul>
+<ul class="brief-list">
 {% for f in sorted %}
   {% if f.path contains '/memory/' and f.extname == '.json' and f.path contains '-plan' %}
   <li>
@@ -53,34 +51,18 @@ Self-learning loop 用，给次日 retrospective 算 trigger / P&L / confidence 
 {% endfor %}
 </ul>
 
-## 🛠 Skill bodies
+## 🛠 Skills
 
-完整 skill 列表见 GitHub repo：[skills/ 目录](https://github.com/KCNyu/clawock/tree/master/skills)
+完整 skill 列表见 GitHub：[skills/ 目录](https://github.com/KCNyu/clawock/tree/master/skills)
 
-主要 skills：
+- [daily-deep-brief](https://github.com/KCNyu/clawock/blob/master/skills/daily-deep-brief/SKILL.md) — 08:00 HKT 全 swarm
+- [hk-stock-analysis](https://github.com/KCNyu/clawock/blob/master/skills/hk-stock-analysis/SKILL.md) — 港股 Mode 1-7
+- [us-stock-analysis](https://github.com/KCNyu/clawock/blob/master/skills/us-stock-analysis/SKILL.md) — 美股 Mode 1-7
+- [portfolio-swarm-review](https://github.com/KCNyu/clawock/blob/master/skills/portfolio-swarm-review/SKILL.md) — 手动深度组合分析
+- [portfolio-risk-review](https://github.com/KCNyu/clawock/blob/master/skills/portfolio-risk-review/SKILL.md) — 风险视角组合 review
+- [openclaw-tune](https://github.com/KCNyu/clawock/blob/master/skills/openclaw-tune/SKILL.md) — openclaw 系统级维护
 
-- [daily-deep-brief](https://github.com/KCNyu/clawock/blob/master/skills/daily-deep-brief/SKILL.md)
-- [hk-stock-analysis](https://github.com/KCNyu/clawock/blob/master/skills/hk-stock-analysis/SKILL.md)
-- [us-stock-analysis](https://github.com/KCNyu/clawock/blob/master/skills/us-stock-analysis/SKILL.md)
-- [portfolio-swarm-review](https://github.com/KCNyu/clawock/blob/master/skills/portfolio-swarm-review/SKILL.md)
-- [portfolio-risk-review](https://github.com/KCNyu/clawock/blob/master/skills/portfolio-risk-review/SKILL.md)
-- [openclaw-tune](https://github.com/KCNyu/clawock/blob/master/skills/openclaw-tune/SKILL.md)
+## 📚 Reference
 
-## 📚 Reference docs
-
-- [SOUL](SOUL.html) — Rick 的人格/思考方式
-- [USER](USER.html) — kcn profile + 偏好
-- [MEMORY](MEMORY.html) — 铁律 + 已知坑
-- [TOOLS](TOOLS.html) — 全部脚本 / fallback / skill 路由 / cron map
-- [INVESTMENT_SOP](INVESTMENT_SOP.html) — 投资问题启动顺序
-- [AGENTS](AGENTS.html) — openclaw 入口
-- [CLAUDE](CLAUDE.html) — Claude Code 入口
-- [IDENTITY](IDENTITY.html) — Rick 是谁
-
----
-
-## Disclaimer
-
-This repo contains real trading positions and analysis. **Not investment advice.**
-All numbers are point-in-time. Past performance does not guarantee future results.
-The model (Rick) is opinionated by design — that doesn't mean it's right.
+- [README](README.html) — 项目总览 + 架构 + cron map
+- [Dashboard](./) — 实时持仓 + 集中度 + retrospective

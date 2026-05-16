@@ -98,6 +98,15 @@ a:focus-visible {
   -webkit-backdrop-filter: blur(12px);
 }
 
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-2) 0%, var(--primary) 35%, var(--cta) 65%, var(--bull) 100%);
+  z-index: 1;
+}
+
 .hero-row {
   display: flex;
   justify-content: space-between;
@@ -796,3 +805,276 @@ code {
   transform: translateY(-1px);
 }
 .quick-link svg { width: 12px; height: 12px; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   Layout extensions for markdown pages (briefs.md, README.md, etc.)
+   Uses _layouts/default.html to wrap markdown in same hero + footer as dashboard.
+   ════════════════════════════════════════════════════════════════════════ */
+
+body.content-page {
+  background: var(--bg);
+}
+
+/* Hero in compact mode (no big stats row on markdown pages) */
+.hero.hero-compact {
+  padding: 16px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(13,18,32,0.96) 0%, rgba(10,14,26,0.92) 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.hero.hero-compact::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-2) 0%, var(--primary) 35%, var(--cta) 65%, var(--bull) 100%);
+  z-index: 1;
+}
+
+.hero.hero-compact .hero-row {
+  align-items: center;
+}
+
+.brand {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.hero-nav {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.hero-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all var(--transition);
+  min-height: 36px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.hero-nav-link:hover {
+  background: var(--panel-2);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.hero-nav-link.active {
+  background: var(--panel);
+  border-color: var(--border-2);
+  color: var(--accent);
+}
+
+.hero-nav-link svg { width: 14px; height: 14px; stroke-width: 2; }
+
+@media (max-width: 700px) {
+  .hero-nav-link span { display: none; }   /* icon-only on phones */
+  .hero-nav-link { padding: 10px 12px; min-width: 44px; justify-content: center; }
+  .hero-nav-link svg { width: 18px; height: 18px; }
+}
+
+/* Markdown content article */
+.page-main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 28px 32px 56px;
+}
+
+.page-article {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px 40px;
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-sans);
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+@media (max-width: 700px) {
+  .page-main { padding: 16px 12px 40px; }
+  .page-article { padding: 22px 18px; border-radius: 12px; }
+}
+
+.page-article h1,
+.page-article h2,
+.page-article h3,
+.page-article h4 {
+  font-family: var(--font-sans);
+  color: var(--text);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 2em 0 0.6em;
+  line-height: 1.25;
+}
+
+.page-article h1 {
+  font-size: clamp(24px, 4vw, 30px);
+  margin-top: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.page-article h1::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 64px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--cta));
+}
+
+.page-article h2 { font-size: clamp(18px, 3vw, 22px); padding-top: 8px; }
+.page-article h3 { font-size: clamp(15px, 2.5vw, 17px); color: var(--accent); }
+.page-article h4 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-top: 1.6em;
+}
+
+.page-article p,
+.page-article li { font-size: 14.5px; }
+.page-article ul, .page-article ol { padding-left: 1.4em; margin: 0.8em 0; }
+.page-article li { margin: 0.35em 0; }
+.page-article li > p { margin: 0.2em 0; }
+
+.page-article a {
+  color: var(--accent);
+  border-bottom: 1px solid rgba(96,165,250,0.3);
+  transition: all var(--transition);
+}
+.page-article a:hover {
+  color: var(--cta);
+  border-bottom-color: var(--cta);
+  text-decoration: none;
+}
+
+.page-article code {
+  background: var(--panel-2);
+  color: var(--text);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-family: var(--font-mono);
+  border: 1px solid var(--border);
+}
+
+.page-article pre {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  overflow-x: auto;
+  font-size: 12.5px;
+  line-height: 1.55;
+  margin: 1em 0;
+}
+.page-article pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+}
+
+.page-article blockquote {
+  border-left: 3px solid var(--cta);
+  padding: 6px 16px;
+  margin: 1em 0;
+  background: rgba(245,158,11,0.06);
+  border-radius: 0 6px 6px 0;
+  color: var(--text-dim);
+}
+.page-article blockquote p:first-child { margin-top: 0; }
+.page-article blockquote p:last-child  { margin-bottom: 0; }
+
+.page-article hr {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 2em 0;
+}
+
+.page-article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 13px;
+  overflow-x: auto;
+  display: block;
+}
+@media (min-width: 700px) {
+  .page-article table { display: table; }
+}
+.page-article th,
+.page-article td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.page-article th {
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  background: var(--panel-2);
+}
+.page-article tbody tr:hover { background: rgba(59,130,246,0.04); }
+
+.page-article img {
+  max-width: 100%;
+  border-radius: 8px;
+  display: block;
+  margin: 1em auto;
+}
+
+.page-article strong { color: var(--text); font-weight: 600; }
+.page-article em { color: var(--cta); font-style: normal; }
+
+/* Briefs listing — list each daily brief as a card */
+.page-article ul li {
+  list-style-type: none;
+  position: relative;
+}
+.page-article ul {
+  padding-left: 0;
+  list-style: none;
+}
+.page-article ul li::before {
+  content: '▸';
+  color: var(--accent);
+  margin-right: 10px;
+  font-size: 0.9em;
+}
+
+/* Override list style for ordered lists to keep numbers */
+.page-article ol {
+  padding-left: 1.4em;
+  list-style: decimal;
+}
+.page-article ol li::before { content: none; }
+.page-article ol li { list-style: decimal; }
+
+/* Dashboard hero already has its own quick-links area; on dashboard.html we
+   render the full tab nav. On content pages we render hero-nav (different style). */
+
