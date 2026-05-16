@@ -1,6 +1,6 @@
 ---
 name: openclaw-tune
-description: Periodic health check and optimization of kcn's openclaw setup. Run this when openclaw version is updated, or every ~2 weeks. Cleans stale state, prunes prompt bloat, validates model fallback chain, and checks workspace doc redundancy. Outputs an actionable report with what was cleaned, what needs review, and what should be left alone.
+description: OpenClaw **system-level** maintenance — cleans sessions/.bak rotation, disk bloat under ~/.openclaw/, validates model fallback chain, audits cron health, prunes short-term-recall noise. Run after `openclaw update` or every 1-2 weeks. Different from **workspace document tune-up** (single-responsibility canonical .md files, token waste scan) which is handled by Claude auto-memory `openclaw-workspace-tuneup` — triggered when user says "优化下 openclaw 的文档/skill/canonical". This skill is for `openclaw` daemon/CLI maintenance, NOT for workspace docs.
 ---
 
 # OpenClaw Tune-Up
