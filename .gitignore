@@ -48,3 +48,6 @@ fix_stock_analyzer.py
 # Runtime state files (cron / heartbeat output, not source data)
 memory/heartbeat-state.json
 memory/last_hk_monitoring.json
+
+# Preflight transient context (regenerated every brief run)
+memory/.tmp/
