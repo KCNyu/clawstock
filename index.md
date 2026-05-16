@@ -57,15 +57,16 @@ Self-learning loop 用，给次日 retrospective 算 trigger / P&L / confidence 
 
 ## 🛠 Skill bodies
 
-<ul>
-{% for f in sorted %}
-  {% if f.path contains '/skills/' and f.name == 'SKILL.md' %}
-  <li>
-    <a href="https://github.com/KCNyu/clawstock/blob/master{{ f.path }}">{{ f.path | replace: '/SKILL.md', '' | replace: '/skills/', '' }}</a>
-  </li>
-  {% endif %}
-{% endfor %}
-</ul>
+完整 skill 列表见 GitHub repo：[skills/ 目录](https://github.com/KCNyu/clawstock/tree/master/skills)
+
+主要 skills：
+
+- [daily-deep-brief](https://github.com/KCNyu/clawstock/blob/master/skills/daily-deep-brief/SKILL.md)
+- [hk-stock-analysis](https://github.com/KCNyu/clawstock/blob/master/skills/hk-stock-analysis/SKILL.md)
+- [us-stock-analysis](https://github.com/KCNyu/clawstock/blob/master/skills/us-stock-analysis/SKILL.md)
+- [portfolio-swarm-review](https://github.com/KCNyu/clawstock/blob/master/skills/portfolio-swarm-review/SKILL.md)
+- [portfolio-risk-review](https://github.com/KCNyu/clawstock/blob/master/skills/portfolio-risk-review/SKILL.md)
+- [openclaw-tune](https://github.com/KCNyu/clawstock/blob/master/skills/openclaw-tune/SKILL.md)
 
 ## 📚 Reference docs
 

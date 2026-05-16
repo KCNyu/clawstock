@@ -19,16 +19,16 @@ exclude:
   - __pycache__/
   - "*.pyc"
   - scripts/
+  - skills/          # SKILL.md 含 {%}/{{}} 字面量给 LLM 用，Jekyll 3.10 没法关 Liquid
   - SESSION_HANDOFF.md
   - DREAMS.md
   - HEARTBEAT.md
   - finance-ai-demo/
   - testgen-go/
 
-# 让 Jekyll 渲染这些目录 + 静态资源
+# 让 Jekyll 渲染 memory（.md 落盘 / .json plan）+ 静态资源 (dashboard)
 include:
   - memory
-  - skills
   - assets
 
 # 关闭 optional_front_matter 插件——避免给 skills/SKILL.md 和 memory/*.md
