@@ -1,0 +1,145 @@
+{
+  "date": "2026-05-18",
+  "generated_at": "2026-05-16T12:30:00+08:00",
+  "note": "2026-05-16 周六手动测试 brief 生成的 plan，作为 2026-05-19 周一 cron 的 retrospective baseline。实际 plan 跨越的交易日是周一 2026-05-18。",
+  "fx_rate_usdhkd": 7.8315,
+  "fx_source": "Frankfurter",
+  "regime": {
+    "us": "trending-up",
+    "hk": "trending-down",
+    "cross_market": "decoupled"
+  },
+  "book": {
+    "usd_total_pnl": -117.0,
+    "hkd_total_pnl": -918.0,
+    "hk_leg_hkd": -4936.0,
+    "us_leg_usd": 513.0,
+    "book_size_usd": 11650.0
+  },
+  "actions": [
+    {
+      "ticker": "ROBN",
+      "bucket": "cut",
+      "size_pct": 50,
+      "size_shares": 20,
+      "trigger_type": "open",
+      "trigger_price": null,
+      "trigger_condition": "周一开盘任意价位",
+      "confidence": 0.82,
+      "rationale": "HOOD Q1 26 earnings miss + crypto rev -47% → ROBN 是 thesis 破不是 decay 问题"
+    },
+    {
+      "ticker": "07226",
+      "bucket": "trim_on_rebound",
+      "size_pct": 30,
+      "size_shares": 1860,
+      "trigger_type": "price_above",
+      "trigger_price": 4.10,
+      "trigger_condition": "反弹至 4.10 (+5%)",
+      "confidence": 0.78,
+      "rationale": "2x 杠杆 + trending down + 已 -11% + 占港股 28.8% 单点风险"
+    },
+    {
+      "ticker": "02208",
+      "bucket": "trim_on_rebound",
+      "size_pct": 30,
+      "size_shares": 120,
+      "trigger_type": "price_above",
+      "trigger_price": 15.5,
+      "trigger_condition": "反弹至 15.5 (+5%)",
+      "confidence": 0.70,
+      "rationale": "A 股版 5/14 主力净流出 -11.47 亿 + 港股连跌；唯一盈利港股退出窗口正在关"
+    },
+    {
+      "ticker": "00100",
+      "bucket": "t_only",
+      "size_pct": 33,
+      "size_shares": 20,
+      "trigger_type": "price_above",
+      "trigger_price": 850.0,
+      "trigger_condition": "反弹至 850+",
+      "confidence": 0.60,
+      "rationale": "thesis 未破但 vol 巨大；60 股占 HK book 60% 集中度过高"
+    },
+    {
+      "ticker": "CRCL",
+      "bucket": "add_only_on_trigger",
+      "size_pct": null,
+      "size_shares": 1,
+      "trigger_type": "price_below",
+      "trigger_price": 108.0,
+      "trigger_condition": "回调至 $105-108 区间",
+      "confidence": 0.75,
+      "rationale": "Q1 净利 +55M 转正实锤未充分定价"
+    },
+    {
+      "ticker": "MSFU",
+      "bucket": "add_only_on_trigger",
+      "size_pct": null,
+      "size_shares": 5,
+      "trigger_type": "price_above",
+      "trigger_price": 30.0,
+      "trigger_condition": "$30+ 突破成本回升时",
+      "confidence": null,
+      "rationale": "MSFT Copilot 收入加速；MSFU 周五 +6.10% 突破"
+    },
+    {
+      "ticker": "RKLB",
+      "bucket": "hold_and_watch",
+      "size_pct": null,
+      "trigger_type": "manual",
+      "trigger_condition": "RSI > 80 / MA20 下穿 MA50 / 财报转弱",
+      "confidence": 0.70
+    },
+    {
+      "ticker": "RKLX",
+      "bucket": "hold_and_watch",
+      "size_pct": null,
+      "trigger_type": "manual",
+      "confidence": 0.70
+    },
+    {
+      "ticker": "SOXL",
+      "bucket": "hold_and_watch",
+      "size_pct": null,
+      "trigger_type": "price_below",
+      "trigger_price": 158.0,
+      "trigger_condition": "跌破 $158 (-4%) 重评止盈",
+      "confidence": 0.65
+    },
+    {
+      "ticker": "PLTU",
+      "bucket": "hold_and_watch",
+      "size_pct": null,
+      "trigger_type": "manual",
+      "confidence": 0.55
+    },
+    {
+      "ticker": "03032",
+      "bucket": "hold_and_watch",
+      "size_pct": null,
+      "trigger_type": "index_breakdown",
+      "trigger_condition": "恒科跌破 4800",
+      "confidence": null
+    },
+    {
+      "ticker": "03033",
+      "bucket": "hold_and_watch",
+      "size_pct": null,
+      "trigger_type": "index_breakdown",
+      "trigger_condition": "恒科跌破 4800",
+      "confidence": null
+    }
+  ],
+  "watch_levels": {
+    "hstech_breakdown": 4800,
+    "soxl_breakdown_usd": 158.0,
+    "book_force_derisk_usd": -300.0
+  },
+  "next_session_checks": [
+    {"when": "周日晚 22:00 HKT", "task": "查 02208 板块最新公告 + 风电政策"},
+    {"when": "周一 09:00 HKT", "task": "看南向资金集合竞价 + 恒科期货 HHI 周日夜盘"},
+    {"when": "周一 09:30 HKT", "task": "07226/00100/02208 按 trigger 价位执行"},
+    {"when": "周一 21:30 HKT", "task": "ROBN 砍仓 50% + CRCL/MSFU 按 trigger 加仓"}
+  ]
+}
