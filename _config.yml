@@ -1,0 +1,48 @@
+title: openstock
+description: kcn 的 openclaw 投资分析 workspace — harness 化 cron + Tier 3 swarm
+theme: jekyll-theme-minimal
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# 排除技术文件 / 内部状态
+exclude:
+  - "*.py"
+  - "*.sh"
+  - "*.json"
+  - "*.lock"
+  - .gitignore
+  - .api_keys
+  - .cache/
+  - data_cache/
+  - venv/
+  - __pycache__/
+  - "*.pyc"
+  - test_*
+  - api_retry_wrapper.py
+  - baidu_search_wrapper.py
+  - SESSION_HANDOFF.md
+  - DREAMS.md
+  - HEARTBEAT.md
+  - fix_stock_analyzer.py
+  - finance-ai-demo/
+  - testgen-go/
+
+# 让 Jekyll 把 memory/ 和 skills/ 当作页面来渲染
+include:
+  - memory
+  - skills
+  - archive
+
+# 默认 layout
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+# Author
+author:
+  name: kcn
+  github: KCNyu
