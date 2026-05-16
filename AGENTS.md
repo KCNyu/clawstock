@@ -56,7 +56,8 @@ Skills live under `skills/<name>/SKILL.md`. The stock-related ones share a routi
 | US ticker question ("analyze RKLB", "compare AAPL vs MSFT") | `us-stock-analysis` |
 | HK ticker question ("分析 00100", "07226 怎么样") | `hk-stock-analysis` |
 | Portfolio question, quick single-pass | `portfolio-risk-review` |
-| Portfolio question, deep multi-agent debate | `portfolio-swarm-review` |
+| Portfolio question, deep multi-agent debate (ad-hoc) | `portfolio-swarm-review` |
+| **Cron 08:00 HKT 盘前深度简报** (auto, weekday) | `daily-deep-brief` |
 | Cron-triggered WeChat briefing (开盘/午盘/收盘) | `{us,hk}-stock-analysis` Mode 6 |
 | Education ("what's MACD") | `trading` |
 

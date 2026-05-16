@@ -74,6 +74,15 @@ python3 analyze_hk_stocks.py --dry-run   # 不写文件
 1. CNBC `cnbc.com/quotes/{TICKER}` — 网页，快速可靠
 2. 东方财富、Finnhub、Yahoo Finance
 
+### 货币 / FX 铁律（2026-05-16 加入）
+
+⚠️ **HKD + USD 不能直接相加**。book total 必须用 FX 换算后再加。
+
+- 工具：`python3 fetch_fx.py --json` → `{"rate": 7.83, "source": "Frankfurter", ...}`
+- 换算：`python3 fetch_fx.py --convert 10000 HKD USD`
+- 输出 book total 必须**两个 view 都给**：USD-base 和 HKD-base，并显式标注 rate + source + timestamp
+- 历史教训：2026-05-16 deep brief 把 -4936 HKD 和 +513 USD 直接相加 → 数字毫无意义
+
 ### 美股基本面 / SEC filings（脚本，2026-05-16 加入）
 
 **`fetch_us_filings.py`** — 直接对接 SEC EDGAR，**全免费、无需 API key**（仅需 User-Agent 标识身份）。覆盖 Financial Datasets 付费档才有的内容：
@@ -125,6 +134,7 @@ python3 analyze_hk_stocks.py --dry-run   # 不写文件
 - **`fetch_us_stocks.py`**：美股多 provider 抓取（7 路 fallback），自动写回 portfolio.json；prev_close 由 Polygon `/prev` 独立获取（带日期戳）
 - **`analyze_us_stocks.py`**：美股完整分析 = 刷价格 + RSI-14/MA20/50 + Finnhub 新闻 + 信号
 - **`fetch_us_filings.py`**：SEC EDGAR 对接 — 10-K/10-Q/8-K filings、XBRL 财务概念、Form 4 insider、13F-HR；无需 API key；Mode 3 fundamental 深挖时用
+- **`fetch_fx.py`**：USDHKD 汇率（Frankfurter → exchangerate.host → Yahoo HKD=X 三路 fallback）；4h 本地缓存；`--convert AMT FROM TO` 直接换算。**HK + US 算 book total 必须先调它**
 - **`analyze_hk_stocks.py`**：港股完整分析 = Tencent→stooq→yfinance fallback + 恒指/恒科 + Finnhub 新闻 + 信号
 - `check_portfolio.sh`：快速查看持仓
 
@@ -140,6 +150,7 @@ python3 analyze_hk_stocks.py --dry-run   # 不写文件
 
 | Job 名 | Schedule | 入口 |
 |---|---|---|
+| 盘前深度简报 | **08:00 HKT 工作日** | `daily-deep-brief` (全 swarm + FX + SEC EDGAR) |
 | 港股开盘报告 | 09:30 HKT 工作日 | `hk-stock-analysis` Mode 6 |
 | 港股午盘报告 | 12:00 HKT 工作日 | `hk-stock-analysis` Mode 6 |
 | 港股午后快报 | 13:30 HKT 工作日 | `hk-stock-analysis` Mode 6 |

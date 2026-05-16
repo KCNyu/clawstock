@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-05-11 14:00 HKT",
+  "indices": {
+    "HSI": 26382.56,
+    "HSI_chg_pct": -0.04,
+    "HSTECH": 5098.08,
+    "HSTECH_chg_pct": -0.09
+  },
+  "prices": {
+    "00100": {"price": 732.0, "prev": 742.5, "chg_pct": -1.41},
+    "02208": {"price": 17.11, "prev": 17.35, "chg_pct": -1.38},
+    "03032": {"price": 5.075, "prev": 5.085, "chg_pct": -0.20},
+    "07226": {"price": 4.13, "prev": 4.142, "chg_pct": -0.29},
+    "03033": {"price": 4.986, "prev": 4.998, "chg_pct": -0.24}
+  }
+}
