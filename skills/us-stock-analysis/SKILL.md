@@ -59,9 +59,11 @@ Pick the smallest mode that answers the question. Default to **Quick Read** unle
 ### Mode 3 — Fundamental Read
 **When:** "Is X overvalued?" / "Analyze Y's business"
 1. Run `analyze_us_stocks.py {TICKER}` for fresh price baseline
-2. Web search for: latest earnings, revenue/EPS trend (3-5 yr), margins, balance sheet, peer multiples
-3. Load `references/fundamental-analysis.md` for framework, `references/financial-metrics.md` for ratio definitions
-4. Output: business overview, financial trends, valuation vs peers/history, key risks, fair value range
+2. Run `python3 fetch_us_filings.py {TICKER}` — pulls SEC EDGAR: latest 10-K/10-Q/8-K + 13 key XBRL concepts (revenue/net income/cash/EPS/assets/equity, 4 most recent periods). **Use this before web search** — primary source, structured, no scraping.
+3. (Optional) `python3 fetch_us_filings.py {TICKER} --form4` if insider activity is material to thesis
+4. Web search only for what SEC EDGAR can't give: peer multiples, analyst consensus, qualitative thesis, sector context
+5. Load `references/fundamental-analysis.md` for framework, `references/financial-metrics.md` for ratio definitions
+6. Output: business overview, financial trends from XBRL, valuation vs peers/history, insider signal, key risks, fair value range
 
 ### Mode 4 — Full Report
 **When:** "Give me a full report on X" / "Should I add X?"

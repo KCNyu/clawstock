@@ -74,6 +74,26 @@ python3 analyze_hk_stocks.py --dry-run   # 不写文件
 1. CNBC `cnbc.com/quotes/{TICKER}` — 网页，快速可靠
 2. 东方财富、Finnhub、Yahoo Finance
 
+### 美股基本面 / SEC filings（脚本，2026-05-16 加入）
+
+**`fetch_us_filings.py`** — 直接对接 SEC EDGAR，**全免费、无需 API key**（仅需 User-Agent 标识身份）。覆盖 Financial Datasets 付费档才有的内容：
+
+| 数据 | endpoint | 用法 |
+|---|---|---|
+| 最近 filings (10-K/10-Q/8-K) | submissions API | `python3 fetch_us_filings.py RKLB` |
+| 指定表型 | submissions filter | `python3 fetch_us_filings.py RKLB --filings 10-K,10-Q` |
+| XBRL 关键财务概念（营收/净利/现金/EPS 等 13 项）| companyfacts API | `python3 fetch_us_filings.py RKLB --financials` |
+| Insider Form 4 | submissions filter | `python3 fetch_us_filings.py RKLB --form4` |
+| 13F-HR（基金持仓） | submissions filter | `python3 fetch_us_filings.py BRK-A --13f` |
+| 机器可读 JSON | 任一模式加 `--json` | `python3 fetch_us_filings.py RKLB --json` |
+
+**注意**：
+- 速率限制 **10 req/sec**（脚本默认 8/sec 留余量）；超量 SEC 会 403
+- `SEC_USER_AGENT` 可放进 `.api_keys`（格式 `Name email@domain`），默认用 openclaw 标识
+- ticker→CIK 映射本地缓存 7 天，免重复抓
+- 非美股票（如港股 09988）无数据 → 返回 "CIK not found"
+- 不替代 `fetch_us_stocks.py` 抓价格 — 这是**纯基本面/filings 补充**
+
 ### 说明
 - 分析持仓前，必须先获取最新价格，**不得直接使用 `portfolio.json` 的缓存价**
 - 如果全部失败，必须明确说明是旧数据
@@ -104,6 +124,7 @@ python3 analyze_hk_stocks.py --dry-run   # 不写文件
 ### 核心（当前在用）
 - **`fetch_us_stocks.py`**：美股多 provider 抓取（7 路 fallback），自动写回 portfolio.json；prev_close 由 Polygon `/prev` 独立获取（带日期戳）
 - **`analyze_us_stocks.py`**：美股完整分析 = 刷价格 + RSI-14/MA20/50 + Finnhub 新闻 + 信号
+- **`fetch_us_filings.py`**：SEC EDGAR 对接 — 10-K/10-Q/8-K filings、XBRL 财务概念、Form 4 insider、13F-HR；无需 API key；Mode 3 fundamental 深挖时用
 - **`analyze_hk_stocks.py`**：港股完整分析 = Tencent→stooq→yfinance fallback + 恒指/恒科 + Finnhub 新闻 + 信号
 - `check_portfolio.sh`：快速查看持仓
 
