@@ -1,9 +1,9 @@
 ---
 layout: default
-title: openstock — daily briefs
+title: clawstock — daily briefs
 ---
 
-# 📊 openstock
+# 📊 clawstock
 
 kcn 的 openclaw 投资分析 workspace — harness 化 cron + Tier 3 swarm。
 完整 README 在 [README.md](README.html)。
@@ -48,7 +48,7 @@ Self-learning loop 用，给次日 retrospective 算 trigger / P&L / confidence 
 {% for f in sorted %}
   {% if f.path contains '/memory/' and f.extname == '.json' and f.path contains '-plan' %}
   <li>
-    <a href="https://github.com/KCNyu/openstock/blob/master{{ f.path }}">{{ f.name }}</a>
+    <a href="https://github.com/KCNyu/clawstock/blob/master{{ f.path }}">{{ f.name }}</a>
   </li>
   {% endif %}
 {% endfor %}

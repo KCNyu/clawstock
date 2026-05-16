@@ -1,6 +1,6 @@
 ---
 name: daily-deep-brief
-description: kcn 每个工作日 08:00 HKT 跑一次的盘前全 swarm 深度分析。harness 化：`brief_preflight.py` 跑所有确定性步骤（刷价 / FX / snapshot / HHI / SEC EDGAR / retrospective），LLM 只做 swarm 创造性（Tier 1/2/3/Judge），`brief_postflight.py` 验证 + commit。**输出**：完整 markdown 落盘 `memory/{date}-pre-open.md` + 结构化 `memory/{date}-plan.json` + 完整版发 WeChat（plugin 16KB 单 chunk 够装；顶部 ≤150 字 TL;DR 给手机第一屏）。**只在每日 8 点 cron 触发时使用；手动深度分析仍走 portfolio-swarm-review。**
+description: kcn 每个工作日 08:00 HKT 跑一次的盘前全 swarm 深度分析。harness 化：`scripts/harness/brief_preflight.py` 跑所有确定性步骤（刷价 / FX / snapshot / HHI / SEC EDGAR / retrospective），LLM 只做 swarm 创造性（Tier 1/2/3/Judge），`scripts/harness/brief_postflight.py` 验证 + commit。**输出**：完整 markdown 落盘 `memory/{date}-pre-open.md` + 结构化 `memory/{date}-plan.json` + 完整版发 WeChat（plugin 16KB 单 chunk 够装；顶部 ≤150 字 TL;DR 给手机第一屏）。**只在每日 8 点 cron 触发时使用；手动深度分析仍走 portfolio-swarm-review。**
 ---
 
 # Daily Deep Brief (08:00 HKT, weekday)
@@ -12,7 +12,7 @@ description: kcn 每个工作日 08:00 HKT 跑一次的盘前全 swarm 深度分
 
 ```
 ┌────────────────────┐     ┌───────────────┐     ┌────────────────────┐
-│ brief_preflight.py │ ──► │ LLM (你 / Rick)│ ──► │ brief_postflight.py│
+│ scripts/harness/brief_preflight.py │ ──► │ LLM (你 / Rick)│ ──► │ brief_postflight.py│
 │  (确定性 + 幂等)   │     │  (Tier 1/2/3) │     │   (验证 + commit)  │
 └────────────────────┘     └───────────────┘     └────────────────────┘
    刷价/FX/snapshot/         读 context.json        校验 markdown +
@@ -28,20 +28,20 @@ description: kcn 每个工作日 08:00 HKT 跑一次的盘前全 swarm 深度分
 ### Step 1: 跑 preflight（一行命令搞定所有确定性活）
 
 ```bash
-python3 /root/.openclaw/workspace/brief_preflight.py
+python3 /root/.openclaw/workspace/scripts/harness/brief_preflight.py
 ```
 
 这一步内部做了：
 
-1. `analyze_us_stocks.py` — US 价格刷新（7-route fallback + RSI/MA）
-2. `analyze_hk_stocks.py` — HK 价格刷新（Tencent → stooq → yfinance + 恒指 + 信号）
-3. `fetch_fx.py --json` — USDHKD 实时汇率（Frankfurter → exchangerate.host → Yahoo）
+1. `scripts/data/analyze_us_stocks.py` — US 价格刷新（7-route fallback + RSI/MA）
+2. `scripts/data/analyze_hk_stocks.py` — HK 价格刷新（Tencent → stooq → yfinance + 恒指 + 信号）
+3. `scripts/data/fetch_fx.py --json` — USDHKD 实时汇率（Frankfurter → exchangerate.host → Yahoo）
 4. `cp portfolio.json memory/snapshots/{date}.json` — 每日快照（longitudinal 基础设施）
    - **为什么**：`portfolio.json` 是滚动覆盖的 ground truth，每次刷价就丢前一刻状态。
      有 snapshot 历史才能做 Rolling P&L 曲线 / Alpha vs benchmark / Drawdown 分析 / Position 变化追溯。
    - ⚠️ **不可补做** — 每过一天少一份永远拿不回来的数据。
 5. **HHI / Top2 集中度算法**（HK + US leg 分开）
-6. **SEC EDGAR fundamentals** — 对每个 `is_leveraged_etf=false` 的 US 单股跑 `fetch_us_filings.py`
+6. **SEC EDGAR fundamentals** — 对每个 `is_leveraged_etf=false` 的 US 单股跑 `scripts/data/fetch_us_filings.py`
    - 杠杆 ETF 检测启发式（name 关键词）：'倍', 'Direxion', 'T-Rex', 'Defiance', 'ProShares',
      '2X Long', '3X Long', 'Daily Target'
    - 当前实际跑 EDGAR 的票：RKLB / CRCL（其他 5 个 US 持仓都是杠杆 ETF）
@@ -256,7 +256,7 @@ postflight 严格 schema 校验：
 ### Step 5: 跑 postflight（验证 + commit）
 
 ```bash
-python3 /root/.openclaw/workspace/brief_postflight.py
+python3 /root/.openclaw/workspace/scripts/harness/brief_postflight.py
 ```
 
 输出 JSON：

@@ -1,4 +1,4 @@
-# openstock
+# clawstock
 
 kcn 的 openclaw 投资分析 workspace —— 通过 [Claude Code](https://claude.com/claude-code) +
 [openclaw](https://openclaw.com) cron 驱动的港股 + 美股 portfolio 分析系统。
@@ -24,15 +24,15 @@ LLM 只做"分析综合"这个不能脚本化的部分。漏快照/HHI/FX/异动
 | 时点 | Job | Mode | Harness 脚本 |
 |---|---|---|---|
 | 03:00 | Memory Dreaming Promotion | (system) | — |
-| 08:00 HKT 工作日 | 📊 盘前深度简报 | daily-deep-brief | `brief_preflight.py` / `brief_postflight.py` |
-| 09:30 HKT 工作日 | 港股开盘报告 | Mode 6 | `report_preflight.py --market hk --phase open` |
-| 09-15:30 每 30 分 HKT | 港股盘中盯盘 | Mode 7 | `intraday_preflight.py --market hk` |
-| 12:00 HKT 工作日 | 港股午盘报告 | Mode 6 | `report_preflight.py --market hk --phase mid` |
-| 13:30 HKT 工作日 | 港股午后快报 | Mode 6 | `report_preflight.py --market hk --phase pm` |
-| 16:00 HKT 工作日 | 港股收盘报告 | Mode 6 | `report_preflight.py --market hk --phase close` |
-| 09:30 ET 工作日 | 美股开盘报告 | Mode 6 | `report_preflight.py --market us --phase open` |
-| 09-15:30 每 30 分 ET | 美股盘中盯盘 | Mode 7 | `intraday_preflight.py --market us` |
-| 16:00 ET 工作日 | 美股收盘报告 | Mode 6 | `report_preflight.py --market us --phase close` |
+| 08:00 HKT 工作日 | 📊 盘前深度简报 | daily-deep-brief | `scripts/harness/brief_preflight.py` / `scripts/harness/brief_postflight.py` |
+| 09:30 HKT 工作日 | 港股开盘报告 | Mode 6 | `scripts/harness/report_preflight.py --market hk --phase open` |
+| 09-15:30 每 30 分 HKT | 港股盘中盯盘 | Mode 7 | `scripts/harness/intraday_preflight.py --market hk` |
+| 12:00 HKT 工作日 | 港股午盘报告 | Mode 6 | `scripts/harness/report_preflight.py --market hk --phase mid` |
+| 13:30 HKT 工作日 | 港股午后快报 | Mode 6 | `scripts/harness/report_preflight.py --market hk --phase pm` |
+| 16:00 HKT 工作日 | 港股收盘报告 | Mode 6 | `scripts/harness/report_preflight.py --market hk --phase close` |
+| 09:30 ET 工作日 | 美股开盘报告 | Mode 6 | `scripts/harness/report_preflight.py --market us --phase open` |
+| 09-15:30 每 30 分 ET | 美股盘中盯盘 | Mode 7 | `scripts/harness/intraday_preflight.py --market us` |
+| 16:00 ET 工作日 | 美股收盘报告 | Mode 6 | `scripts/harness/report_preflight.py --market us --phase close` |
 
 每个 cron 自动发到 WeChat（@tencent-weixin/openclaw-weixin plugin），日报落盘到
 `memory/{YYYY-MM-DD}-pre-open.md`。
@@ -72,19 +72,19 @@ LLM 只做"分析综合"这个不能脚本化的部分。漏快照/HHI/FX/异动
 
 | 脚本 | 用途 |
 |---|---|
-| `analyze_hk_stocks.py` | HK 价格 + 信号（Tencent → stooq → yfinance fallback + 恒指/恒科 + Finnhub 新闻）|
-| `analyze_us_stocks.py` | US 价格 + 信号（7-route fallback + RSI/MA + Finnhub 新闻）|
-| `fetch_fx.py` | USDHKD 实时汇率（Frankfurter → exchangerate.host → Yahoo） |
-| `fetch_us_filings.py` | SEC EDGAR fundamentals（10-K/10-Q/8-K/Form 4/13F/XBRL） |
-| `update_portfolio.py` | 手动调仓后写 portfolio.json |
+| `scripts/data/analyze_hk_stocks.py` | HK 价格 + 信号（Tencent → stooq → yfinance fallback + 恒指/恒科 + Finnhub 新闻）|
+| `scripts/data/analyze_us_stocks.py` | US 价格 + 信号（7-route fallback + RSI/MA + Finnhub 新闻）|
+| `scripts/data/fetch_fx.py` | USDHKD 实时汇率（Frankfurter → exchangerate.host → Yahoo） |
+| `scripts/data/fetch_us_filings.py` | SEC EDGAR fundamentals（10-K/10-Q/8-K/Form 4/13F/XBRL） |
+| `scripts/data/update_portfolio.py` | 手动调仓后写 portfolio.json |
 
 ### Harness 脚本（4 套）
 
 | Pair | 触发自 | 主要工作 |
 |---|---|---|
-| `brief_preflight.py` + `brief_postflight.py` | daily-deep-brief 08:00 cron | FX + snapshot + HHI + EDGAR + retrospective |
-| `report_preflight.py` + `report_postflight.py` | 6 个 Mode 6 briefing cron | 刷价 + 信号 + 异动 + 标题 |
-| `intraday_preflight.py` + `intraday_postflight.py` | 2 个 Mode 7 盯盘 cron | 刷价 + 异动检测 + should_alert 决策 |
+| `scripts/harness/brief_preflight.py` + `scripts/harness/brief_postflight.py` | daily-deep-brief 08:00 cron | FX + snapshot + HHI + EDGAR + retrospective |
+| `scripts/harness/report_preflight.py` + `scripts/harness/report_postflight.py` | 6 个 Mode 6 briefing cron | 刷价 + 信号 + 异动 + 标题 |
+| `scripts/harness/intraday_preflight.py` + `scripts/harness/intraday_postflight.py` | 2 个 Mode 7 盯盘 cron | 刷价 + 异动检测 + should_alert 决策 |
 
 ### Memory（按日组织）
 
@@ -109,7 +109,7 @@ memory/
 ```
 
 历史教训：2026-05-16 那次 brief "合计 -4,423" 直接把 -4936 HKD 和 +513 USD 相加 → 数字毫无意义。
-现在所有 harness 强制走 `fetch_fx.py`。
+现在所有 harness 强制走 `scripts/data/fetch_fx.py`。
 
 ### 集中度 HHI 算法
 

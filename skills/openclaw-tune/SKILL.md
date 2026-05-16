@@ -114,7 +114,7 @@ Red flags:
 
 `~/.openclaw/cron/jobs.json` — check each enabled job's `payload.message`:
 
-- Does it reference scripts that still exist? (e.g. removed `stock_analyzer.py` but cron still calls it)
+- Does it reference scripts that still exist? (e.g. removed `scripts/legacy/stock_analyzer.py` but cron still calls it)
 - Does it reference dead APIs? (e.g. "优先东方财富" but Eastmoney is 502 from this server)
 - Does it hardcode tickers? (should read from `portfolio.json` dynamically)
 - Pattern to use: **script outputs data block → agent layers analysis on top** (情绪面/技术面/操作建议)
@@ -166,7 +166,7 @@ If openclaw introduced a new default model (e.g. M2.8 supersedes M2.7), suggest 
 curl -sf http://127.0.0.1:18789/health && echo " ✓ gateway up"
 
 # Confirm scripts still run
-cd /root/.openclaw/workspace && python3 analyze_hk_stocks.py --no-fetch --no-news --wechat | head -5
+cd /root/.openclaw/workspace && python3 scripts/data/analyze_hk_stocks.py --no-fetch --no-news --wechat | head -5
 
 # Show cleanup summary
 du -sh /tmp/openclaw-cleanup-*/  # what was archived

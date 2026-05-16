@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026/05/16 17:22 HKT",
+  "last_updated": "2026/05/16 22:02 HKT",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -42,7 +42,7 @@
           "current_price": 124.77,
           "today_change_pct": 0.0,
           "pnl_percent": 75.7324,
-          "data_source": "Nasdaq API (stocks) May 16, 2026 05:22 ET",
+          "data_source": "Nasdaq API (stocks) May 16, 2026 10:02 ET",
           "day_high": 124.77,
           "day_low": 124.77,
           "day_open": 124.77,
@@ -65,7 +65,7 @@
           "current_price": 114.0,
           "today_change_pct": 0.0,
           "pnl_percent": 31.0345,
-          "data_source": "Nasdaq API (stocks) May 16, 2026 05:22 ET",
+          "data_source": "Nasdaq API (stocks) May 16, 2026 10:02 ET",
           "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；2026-03-23 卖出3股 @$127，实现盈利 $120；剩余2股长期持有（看好稳定币+agent支付赛道）",
           "day_high": 114.0,
           "day_low": 114.0,
@@ -242,7 +242,7 @@
           "current_price": 35.5,
           "today_change_pct": 0.0,
           "pnl_percent": -13.324,
-          "data_source": "Nasdaq API (etf) May 16, 2026 05:22 ET",
+          "data_source": "Nasdaq API (etf) May 16, 2026 10:02 ET",
           "day_high": 35.5,
           "day_low": 35.5,
           "day_open": 35.5,
@@ -281,7 +281,7 @@
           "current_price": 164.18,
           "today_change_pct": 0.0,
           "pnl_percent": 78.709,
-          "data_source": "Nasdaq API (etf) May 16, 2026 05:22 ET",
+          "data_source": "Nasdaq API (etf) May 16, 2026 10:02 ET",
           "day_high": 164.18,
           "day_low": 164.18,
           "day_open": 164.18,
@@ -321,7 +321,7 @@
           "current_price": 80.85,
           "today_change_pct": 0.0,
           "pnl_percent": 73.1263,
-          "data_source": "Nasdaq API (etf) May 16, 2026 05:22 ET",
+          "data_source": "Nasdaq API (etf) May 16, 2026 10:02 ET",
           "day_high": 80.85,
           "day_low": 80.85,
           "day_open": 80.85,
@@ -360,7 +360,7 @@
           "cost_basis": 23.582500000000003,
           "current_price": 19.45,
           "today_change_pct": -9.0301,
-          "data_source": "Nasdaq API (etf) May 16, 2026 05:22 ET",
+          "data_source": "Nasdaq API (etf) May 16, 2026 10:02 ET",
           "day_high": 19.45,
           "day_low": 19.45,
           "day_open": 19.45,
@@ -424,7 +424,7 @@
           "day_high": 29.24,
           "day_low": 29.24,
           "day_open": 29.24,
-          "data_source": "Nasdaq API (etf) May 16, 2026 05:22 ET",
+          "data_source": "Nasdaq API (etf) May 16, 2026 10:02 ET",
           "bid": 27.76,
           "ask": 27.77,
           "premarket_volume": "378,509.610000",
@@ -473,7 +473,7 @@
           "Nasdaq API (stocks)": 2,
           "Nasdaq API (etf)": 5
         },
-        "updated_at": "2026-05-15 15:30 UTC-04:00",
+        "updated_at": "2026-05-16 10:02 UTC-04:00",
         "note": "Multi-provider fetch. Sources: 2x Nasdaq API (stocks), 5x Nasdaq API (etf)"
       },
       "close_fetch_status": {
@@ -523,7 +523,7 @@
         }
       },
       "last_close_attempted": "May 7, 2026 16:00 ET close",
-      "last_open_attempted": "2026-05-15 15:30 UTC-04:00",
+      "last_open_attempted": "2026-05-16 10:02 UTC-04:00",
       "indices_snapshot": {
         "NDX": {
           "price": null,
@@ -605,7 +605,7 @@
           "Nasdaq API (stocks)": 2,
           "Nasdaq API (etf)": 5
         },
-        "updated_at": "2026-05-16 05:22 UTC-04:00",
+        "updated_at": "2026-05-16 08:21 UTC-04:00",
         "note": "Multi-provider fetch. Sources: 2x Nasdaq API (stocks), 5x Nasdaq API (etf)"
       },
       "last_trade_update": "2026-05-06 22:57 HKT",
@@ -683,7 +683,7 @@
         "note": "Multi-provider fetch. Sources: 2x Nasdaq API (stocks), 5x Nasdaq API (etf)"
       },
       "last_closed_attempted": "2026-05-16 02:44 UTC-04:00",
-      "last_premarket_attempted": "2026-05-16 05:22 UTC-04:00"
+      "last_premarket_attempted": "2026-05-16 08:21 UTC-04:00"
     },
     "hk_stocks": {
       "currency": "HKD",
@@ -697,7 +697,7 @@
           "current_price": 794.0,
           "current_value": 47640.0,
           "pnl_percent": -3.5,
-          "data_source": "Tencent May 16 17:21 HKT",
+          "data_source": "Tencent May 16 22:02 HKT",
           "today_change": -3360.0,
           "today_change_pct": -6.59,
           "pnl_abs": -1729.8,
@@ -745,7 +745,7 @@
           "current_price": 14.73,
           "current_value": 5892.0,
           "pnl_percent": 4.59,
-          "data_source": "Tencent May 16 17:21 HKT",
+          "data_source": "Tencent May 16 22:02 HKT",
           "today_change": -348.0,
           "today_change_pct": -5.58,
           "pnl_abs": 258.4,
@@ -778,7 +778,7 @@
           "current_price": 4.922,
           "current_value": 984.4,
           "pnl_percent": -8.94,
-          "data_source": "Tencent May 16 17:21 HKT",
+          "data_source": "Tencent May 16 22:02 HKT",
           "today_change": -25.6,
           "today_change_pct": -2.53,
           "pnl_abs": -96.6,
@@ -801,7 +801,7 @@
           "current_price": 3.87,
           "current_value": 23994.0,
           "pnl_percent": -11.3,
-          "data_source": "Tencent May 16 17:21 HKT",
+          "data_source": "Tencent May 16 22:02 HKT",
           "trades": [
             {
               "date": "2026-03-24",
@@ -833,7 +833,7 @@
           "current_price": 4.83,
           "current_value": 4830.0,
           "pnl_percent": -6.03,
-          "data_source": "Tencent May 16 17:21 HKT",
+          "data_source": "Tencent May 16 22:02 HKT",
           "today_change": -130.0,
           "today_change_pct": -2.62,
           "pnl_abs": -310.0,

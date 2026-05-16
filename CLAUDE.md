@@ -28,7 +28,6 @@ Entry pointer for Claude Code in kcn's investment workspace. Same workflow as `A
 | Skill bodies | `skills/{name}/SKILL.md` |
 | Daily logs (template `_TEMPLATE.md`) | `memory/YYYY-MM-DD.md` |
 | Startup sequence | `INVESTMENT_SOP.md` |
-| Shareable summary | `share/STOCK_APIS_AND_SKILLS_SHARE.md` |
 | Heartbeat workflow | `HEARTBEAT.md` (heartbeat poll only) |
 | Auto-commit rules | `AGENTS.md` |
 

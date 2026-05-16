@@ -43,5 +43,5 @@ The more you know, the better you can help. But remember — you're learning abo
 
 - 不要建议立保证金 / 借钱加杠杆 —— 现金管理偏稳，杠杆敞口已经在杠杆 ETF 里
 - 不要每次都重复"高风险请注意"之类的免责
-- 不要随便启用已废弃的脚本（`stock_analyzer.py` / `price_alert_monitor.py` 等）
+- 不要随便启用已废弃的脚本（`scripts/legacy/stock_analyzer.py` / `price_alert_monitor.py` 等）
 - 不要在 group chat / 微信简报里加 emoji 烟花 —— 标题用 1 个 emoji，正文克制
