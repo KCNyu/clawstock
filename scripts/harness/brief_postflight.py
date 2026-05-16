@@ -117,12 +117,26 @@ def _git(*args):
         return False, str(e)
 
 
+def rebuild_dashboard():
+    """Refresh assets/data/dashboard.json so Pages stays in sync."""
+    try:
+        r = subprocess.run(
+            ['python3', str(WS / 'scripts' / 'data' / 'build_dashboard.py')],
+            capture_output=True, text=True, timeout=30, cwd=str(WS),
+        )
+        return r.returncode == 0, (r.stdout + r.stderr)[-300:]
+    except Exception as e:
+        return False, str(e)
+
+
 def maybe_commit(status, today):
     if status == 'fail':
         return False, 'skipped (status=fail)'
 
+    rebuild_dashboard()  # refresh dashboard.json before commit
+
     msg_suffix = ' (validation warnings)' if status == 'warn' else ''
-    add_ok, add_out = _git('add', 'memory/', 'portfolio.json')
+    add_ok, add_out = _git('add', 'memory/', 'portfolio.json', 'assets/data/dashboard.json')
     if not add_ok:
         return False, f'git add failed: {add_out[-200:]}'
 

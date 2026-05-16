@@ -6,7 +6,8 @@ title: clawstock — daily briefs
 # 📊 clawstock
 
 kcn 的 openclaw 投资分析 workspace — harness 化 cron + Tier 3 swarm。
-完整 README 在 [README.md](README.html)。
+
+**🎯 [→ 实时 Portfolio Dashboard](dashboard.html)** ｜ 完整 [README](README.html)
 
 ---
 

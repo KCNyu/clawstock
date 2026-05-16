@@ -111,11 +111,22 @@ def _git(*args):
         return False, str(e)
 
 
+def rebuild_dashboard():
+    try:
+        subprocess.run(
+            ['python3', str(WS / 'scripts' / 'data' / 'build_dashboard.py')],
+            capture_output=True, text=True, timeout=30, cwd=str(WS),
+        )
+    except Exception:
+        pass
+
+
 def maybe_commit(status, commit_msg):
     if status == 'fail':
         return False, 'skipped (status=fail)'
+    rebuild_dashboard()
     suffix = ' (validation warnings)' if status == 'warn' else ''
-    ok, _ = _git('add', 'portfolio.json')
+    ok, _ = _git('add', 'portfolio.json', 'assets/data/dashboard.json')
     if not ok:
         return False, 'git add failed'
     ok, out = _git('commit', '-m', f'{commit_msg}{suffix}')

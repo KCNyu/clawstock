@@ -10,7 +10,6 @@ kramdown:
 exclude:
   - "*.py"
   - "*.sh"
-  - "*.json"
   - "*.lock"
   - .gitignore
   - .api_keys
@@ -19,21 +18,18 @@ exclude:
   - venv/
   - __pycache__/
   - "*.pyc"
-  - test_*
-  - api_retry_wrapper.py
-  - baidu_search_wrapper.py
+  - scripts/
   - SESSION_HANDOFF.md
   - DREAMS.md
   - HEARTBEAT.md
-  - fix_stock_analyzer.py
   - finance-ai-demo/
   - testgen-go/
 
-# 让 Jekyll 把 memory/ 和 skills/ 当作页面来渲染
+# 让 Jekyll 渲染这些目录 + 静态资源
 include:
   - memory
   - skills
-  - archive
+  - assets
 
 # 默认 layout
 defaults:

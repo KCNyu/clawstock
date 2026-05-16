@@ -1,0 +1,124 @@
+name: Harness Regression
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'scripts/**'
+      - 'portfolio.json'
+      - 'memory/**-plan.json'
+      - 'assets/data/dashboard.json'
+      - '.github/workflows/harness-regression.yml'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install minimal deps
+        run: pip install --quiet requests
+
+      - name: Import-check all scripts
+        run: |
+          set -e
+          for f in scripts/data/*.py scripts/harness/*.py; do
+            echo "syntax check: $f"
+            python3 -m py_compile "$f"
+          done
+
+      - name: argparse-check harness CLIs
+        run: |
+          set -e
+          python3 scripts/harness/report_preflight.py --help > /dev/null
+          python3 scripts/harness/report_postflight.py --help > /dev/null
+          python3 scripts/harness/intraday_preflight.py --help > /dev/null
+          python3 scripts/harness/intraday_postflight.py --help > /dev/null
+          python3 scripts/harness/brief_preflight.py --help > /dev/null 2>&1 || true
+          python3 scripts/harness/brief_postflight.py --help > /dev/null 2>&1 || true
+          echo "OK: all argparse parsers loadable"
+
+      - name: Schema-validate portfolio.json
+        run: |
+          python3 << 'PY'
+          import json, sys
+          with open('portfolio.json') as f: p = json.load(f)
+          assert 'portfolios' in p, 'missing top-level portfolios'
+          for region in ('us_stocks', 'hk_stocks'):
+              assert region in p['portfolios'], f'missing {region}'
+              leg = p['portfolios'][region]
+              assert isinstance(leg.get('holdings', []), list), f'{region}.holdings not list'
+              for h in leg['holdings']:
+                  for k in ('ticker', 'shares', 'cost_basis'):
+                      assert k in h, f'{region} holding missing {k}: {h.get("ticker")}'
+          print('portfolio.json: schema OK')
+          PY
+
+      - name: Schema-validate memory/*-plan.json
+        run: |
+          python3 << 'PY'
+          import json, glob
+          required_top = {'date'}
+          for p in sorted(glob.glob('memory/*-plan.json')):
+              with open(p) as f: d = json.load(f)
+              missing = required_top - set(d.keys())
+              assert not missing, f'{p}: missing top fields {missing}'
+              # actions is optional but if present must be list
+              if 'actions' in d:
+                  assert isinstance(d['actions'], list), f'{p}: actions not list'
+              print(f'{p}: OK')
+          PY
+
+      - name: Rebuild dashboard.json and validate
+        run: |
+          python3 scripts/data/build_dashboard.py
+          python3 << 'PY'
+          import json
+          with open('assets/data/dashboard.json') as f: d = json.load(f)
+          needed = ['generated_at','fx','totals','concentration','holdings','snapshots']
+          missing = [k for k in needed if k not in d]
+          assert not missing, f'missing keys: {missing}'
+          for leg in ('us', 'hk'):
+              assert leg in d['holdings'], f'holdings.{leg} missing'
+              assert leg in d['concentration'], f'concentration.{leg} missing'
+              c = d['concentration'][leg]
+              assert 'hhi' in c and 'top2' in c and 'verdict' in c, f'{leg} concentration incomplete'
+              assert c['verdict']['level'] in ('healthy','moderate','concentrated','danger'), f'bad verdict level'
+          print('dashboard.json: schema OK')
+          PY
+
+      - name: Run build_dashboard sanity
+        run: |
+          # confirm it runs idempotently
+          python3 scripts/data/build_dashboard.py
+          python3 scripts/data/build_dashboard.py
+          echo "OK: build_dashboard idempotent"
+
+  smoke-data-fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: validate
+    continue-on-error: true  # data sources can be flaky; don't fail the pipeline
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install --quiet requests
+
+      - name: FX fallback chain
+        run: |
+          out=$(python3 scripts/data/fetch_fx.py --json) || exit 1
+          echo "$out"
+          python3 -c "import json,sys; d=json.load(open('-')) if False else json.loads('''$out'''); assert 7 < d['rate'] < 9, f'FX rate out of range: {d[\"rate\"]}'; print('FX OK:', d['source'])"

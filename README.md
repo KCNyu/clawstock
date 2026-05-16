@@ -1,147 +1,275 @@
 # clawstock
 
-kcn 的 openclaw 投资分析 workspace —— 通过 [Claude Code](https://claude.com/claude-code) +
-[openclaw](https://openclaw.com) cron 驱动的港股 + 美股 portfolio 分析系统。
+[![Pages](https://github.com/KCNyu/clawstock/actions/workflows/pages/pages-build-deployment/badge.svg)](https://kcnyu.github.io/clawstock/)
+[![Harness Regression](https://github.com/KCNyu/clawstock/actions/workflows/harness-regression.yml/badge.svg)](https://github.com/KCNyu/clawstock/actions/workflows/harness-regression.yml)
+[![License: Personal](https://img.shields.io/badge/license-personal--use-orange.svg)](#license)
 
-## 架构：Harness 三段式
+> Harness-driven HK + US portfolio analysis workspace.
+> Preflight scripts → LLM swarm → postflight validation, wired into 10 cron jobs that
+> publish daily WeChat briefings and refresh a public dashboard.
 
-所有 stock cron 都走"preflight → LLM → postflight"三段式：
+**🎯 [Live Portfolio Dashboard](https://kcnyu.github.io/clawstock/dashboard.html)** &nbsp;|&nbsp;
+**[Daily Briefs Index](https://kcnyu.github.io/clawstock/)**
+
+---
+
+## Table of Contents
+
+- [What this is](#what-this-is)
+- [Architecture](#architecture)
+- [Cron job map](#cron-job-map)
+- [Repository layout](#repository-layout)
+- [Quickstart](#quickstart)
+- [Iron rules](#iron-rules)
+- [Self-learning loop](#self-learning-loop)
+- [Stack](#stack)
+- [Disclaimer](#disclaimer)
+- [License](#license)
+
+---
+
+## What this is
+
+A personal investment workspace where Claude Code (acting as `Rick`, an opinionated
+portfolio analyst persona) runs on a fixed cron schedule via [openclaw](https://openclaw.com),
+analyses the HK + US legs of a real portfolio, and ships briefings to WeChat plus
+a live web dashboard.
+
+The interesting part is the **harness pattern**: every cron job is split into three
+stages so the LLM cannot quietly skip a step.
 
 ```
 ┌────────────────────┐     ┌────────────────────┐     ┌────────────────────┐
 │   preflight (确定性)│ ──► │   LLM (Rick swarm) │ ──► │  postflight (校验)  │
 └────────────────────┘     └────────────────────┘     └────────────────────┘
-  脚本必跑：刷价/FX/         读 context.json:           段标记/verbatim/
-  HHI/snapshot/EDGAR/         写报告 + plan.json         敷衍词/异动票/长度
-  retrospective              （LLM 只做创造性合成）       pass/warn 自动 commit
+  refresh prices / FX /     read context.json:        section markers /
+  HHI / snapshot / EDGAR /  write report + plan.json  verbatim block /
+  retrospective              (LLM does only synthesis) banned-phrase / length
+                                                       pass/warn auto-commit
 ```
 
-为什么这样分：确定性活（refresh prices、FX 换算、HHI 算法、信号计数）100% 脚本执行，
-LLM 只做"分析综合"这个不能脚本化的部分。漏快照/HHI/FX/异动票/段标记都被 postflight 抓住。
+Deterministic work (refresh prices, FX conversion, HHI computation, signal counting)
+runs 100% in Python. The LLM is allowed only the parts that cannot be scripted:
+combining signals into a written take. Missing a snapshot, forgetting FX, omitting
+a >3% mover — all caught by postflight.
 
-## Cron Job Map（10 个 cron）
+## Architecture
 
-| 时点 | Job | Mode | Harness 脚本 |
-|---|---|---|---|
-| 03:00 | Memory Dreaming Promotion | (system) | — |
-| 08:00 HKT 工作日 | 📊 盘前深度简报 | daily-deep-brief | `scripts/harness/brief_preflight.py` / `scripts/harness/brief_postflight.py` |
-| 09:30 HKT 工作日 | 港股开盘报告 | Mode 6 | `scripts/harness/report_preflight.py --market hk --phase open` |
-| 09-15:30 每 30 分 HKT | 港股盘中盯盘 | Mode 7 | `scripts/harness/intraday_preflight.py --market hk` |
-| 12:00 HKT 工作日 | 港股午盘报告 | Mode 6 | `scripts/harness/report_preflight.py --market hk --phase mid` |
-| 13:30 HKT 工作日 | 港股午后快报 | Mode 6 | `scripts/harness/report_preflight.py --market hk --phase pm` |
-| 16:00 HKT 工作日 | 港股收盘报告 | Mode 6 | `scripts/harness/report_preflight.py --market hk --phase close` |
-| 09:30 ET 工作日 | 美股开盘报告 | Mode 6 | `scripts/harness/report_preflight.py --market us --phase open` |
-| 09-15:30 每 30 分 ET | 美股盘中盯盘 | Mode 7 | `scripts/harness/intraday_preflight.py --market us` |
-| 16:00 ET 工作日 | 美股收盘报告 | Mode 6 | `scripts/harness/report_preflight.py --market us --phase close` |
+Four harness pairs cover the nine stock cron jobs:
 
-每个 cron 自动发到 WeChat（@tencent-weixin/openclaw-weixin plugin），日报落盘到
-`memory/{YYYY-MM-DD}-pre-open.md`。
-
-## 文件地图
-
-### Root markdown（每个 session baseline reads）
-
-| 文件 | 内容 |
-|---|---|
-| `SOUL.md` | Rick 的人格/思考方式 |
-| `IDENTITY.md` | Rick 是谁 |
-| `USER.md` | kcn 是谁 + 偏好 |
-| `MEMORY.md` | 铁律（FX、集中度、老千股）+ 已知坑 |
-| `TOOLS.md` | 全部脚本 / fallback 链 / skill 路由 / cron map |
-| `INVESTMENT_SOP.md` | 投资问题启动顺序 |
-| `AGENTS.md` | openclaw agent 入口 |
-| `CLAUDE.md` | Claude Code 入口（同 AGENTS.md 一份指针） |
-| `HEARTBEAT.md` | Heartbeat poll 工作流 |
-| `DREAMS.md` | 记忆系统的梦境层（write-only） |
-
-### Skill bodies (`skills/{name}/SKILL.md`)
-
-| Skill | 用途 |
-|---|---|
-| `daily-deep-brief` | 08:00 HKT 工作日 cron — 全 swarm 盘前深度分析（Tier 1/2/3/Judge）|
-| `hk-stock-analysis` | 港股 Mode 1-7（手动分析 + 4 个 briefing cron + 1 盯盘 cron） |
-| `us-stock-analysis` | 美股 Mode 1-7（手动分析 + 2 个 briefing cron + 1 盯盘 cron） |
-| `portfolio-swarm-review` | ad-hoc 手动深度组合分析 |
-| `portfolio-risk-review` | 风险视角组合 review |
-| `trading` | 决策类指南 |
-| `openclaw-tune` | openclaw 系统级维护 |
-| `tavily-search` / `scrapling` | 搜索 / 爬虫 |
-| `github` / `flyai` | 工程类 |
-
-### 数据脚本（被 harness 调用）
-
-| 脚本 | 用途 |
-|---|---|
-| `scripts/data/analyze_hk_stocks.py` | HK 价格 + 信号（Tencent → stooq → yfinance fallback + 恒指/恒科 + Finnhub 新闻）|
-| `scripts/data/analyze_us_stocks.py` | US 价格 + 信号（7-route fallback + RSI/MA + Finnhub 新闻）|
-| `scripts/data/fetch_fx.py` | USDHKD 实时汇率（Frankfurter → exchangerate.host → Yahoo） |
-| `scripts/data/fetch_us_filings.py` | SEC EDGAR fundamentals（10-K/10-Q/8-K/Form 4/13F/XBRL） |
-| `scripts/data/update_portfolio.py` | 手动调仓后写 portfolio.json |
-
-### Harness 脚本（4 套）
-
-| Pair | 触发自 | 主要工作 |
+| Pair | Triggers | Job |
 |---|---|---|
-| `scripts/harness/brief_preflight.py` + `scripts/harness/brief_postflight.py` | daily-deep-brief 08:00 cron | FX + snapshot + HHI + EDGAR + retrospective |
-| `scripts/harness/report_preflight.py` + `scripts/harness/report_postflight.py` | 6 个 Mode 6 briefing cron | 刷价 + 信号 + 异动 + 标题 |
-| `scripts/harness/intraday_preflight.py` + `scripts/harness/intraday_postflight.py` | 2 个 Mode 7 盯盘 cron | 刷价 + 异动检测 + should_alert 决策 |
+| `brief_preflight.py` + `brief_postflight.py` | 08:00 HKT weekday daily-deep-brief | FX + snapshot + HHI + EDGAR + retrospective |
+| `report_preflight.py --market {hk\|us} --phase {open\|mid\|pm\|close}` | 6 Mode 6 briefings | Refresh prices + extract signals + anomalies + headline |
+| `intraday_preflight.py --market {hk\|us}` | 2 Mode 7 monitors (every 30 min) | Prices + anomaly detect + should_alert decision |
+| `build_dashboard.py` | runs after every postflight commit | Aggregates portfolio + snapshots + plans → `assets/data/dashboard.json` |
 
-### Memory（按日组织）
+Each postflight self-validates its companion LLM output against a hard contract:
+required section markers, verbatim data block from preflight, banned phrases
+("数据待获取" / "TODO"), length caps, mandatory anomaly mention.
+
+`pass` / `warn` ⇒ auto-commit `portfolio.json` + `assets/data/dashboard.json`.
+`fail` ⇒ no commit; banner prefix on the WeChat message.
+
+## Cron job map
+
+10 scheduled jobs (HKT for HK leg, ET for US leg):
+
+| Time | Job | Mode | Harness |
+|---|---|---|---|
+| 03:00 | Memory Dreaming Promotion | system | — |
+| 08:00 HKT weekday | 📊 Daily deep brief | daily-deep-brief | brief preflight/postflight |
+| 09:30 HKT weekday | HK open report | Mode 6 | `report --market hk --phase open` |
+| 09:00–15:30 every 30 min HKT | HK intraday monitor | Mode 7 | `intraday --market hk` |
+| 12:00 HKT weekday | HK mid-day report | Mode 6 | `report --market hk --phase mid` |
+| 13:30 HKT weekday | HK afternoon update | Mode 6 | `report --market hk --phase pm` |
+| 16:00 HKT weekday | HK close report | Mode 6 | `report --market hk --phase close` |
+| 09:30 ET weekday | US open report | Mode 6 | `report --market us --phase open` |
+| 09:00–15:30 every 30 min ET | US intraday monitor | Mode 7 | `intraday --market us` |
+| 16:00 ET weekday | US close report | Mode 6 | `report --market us --phase close` |
+
+## Repository layout
 
 ```
-memory/
-├── {YYYY-MM-DD}.md                    # 用户手写日常笔记
-├── {YYYY-MM-DD}-pre-open.md          # daily-deep-brief 完整 markdown 报告
-├── {YYYY-MM-DD}-plan.json            # daily-deep-brief 结构化 plan（给次日 retrospective 用）
-├── snapshots/{YYYY-MM-DD}.json       # portfolio.json 每日快照（longitudinal）
-└── .tmp/                              # preflight 临时 context（gitignored）
+clawstock/
+├── README.md                   # this file
+├── dashboard.html              # interactive dashboard (ECharts)
+├── index.md                    # Jekyll Pages landing
+├── _config.yml                 # Jekyll config
+│
+├── SOUL.md / IDENTITY.md       # Rick's persona / disposition
+├── USER.md                     # kcn profile + preferences
+├── MEMORY.md                   # iron rules + known traps
+├── TOOLS.md                    # scripts / fallback chains / skill routing
+├── INVESTMENT_SOP.md           # investment-question startup sequence
+├── AGENTS.md / CLAUDE.md       # entry-point pointers
+│
+├── portfolio.json              # real positions (HK + US)
+├── price_alerts.md             # active manual alerts
+│
+├── scripts/
+│   ├── data/                   # data fetchers (called by harness)
+│   │   ├── analyze_hk_stocks.py
+│   │   ├── analyze_us_stocks.py
+│   │   ├── fetch_us_stocks.py
+│   │   ├── fetch_us_filings.py
+│   │   ├── fetch_fx.py
+│   │   ├── update_portfolio.py
+│   │   └── build_dashboard.py
+│   ├── harness/                # preflight + postflight pairs
+│   │   ├── brief_preflight.py     brief_postflight.py
+│   │   ├── report_preflight.py    report_postflight.py
+│   │   └── intraday_preflight.py  intraday_postflight.py
+│   └── legacy/                 # superseded scripts kept as reference
+│
+├── skills/                     # SKILL.md packages (Claude Code skills)
+│   ├── daily-deep-brief/
+│   ├── hk-stock-analysis/
+│   ├── us-stock-analysis/
+│   ├── portfolio-swarm-review/
+│   ├── portfolio-risk-review/
+│   └── ...
+│
+├── memory/                     # daily logs + plans + snapshots
+│   ├── {YYYY-MM-DD}.md             # handwritten notes
+│   ├── {YYYY-MM-DD}-pre-open.md    # daily deep brief markdown
+│   ├── {YYYY-MM-DD}-plan.json      # structured plan (retrospective input)
+│   └── snapshots/{YYYY-MM-DD}.json # daily portfolio snapshot
+│
+├── assets/                     # static for Pages
+│   ├── dashboard.css
+│   ├── dashboard.js
+│   └── data/dashboard.json     # aggregated by build_dashboard.py
+│
+└── .github/workflows/          # CI: harness regression + Pages auto-build
 ```
 
-## 关键设计点
+## Quickstart
 
-### FX 铁律（HKD + USD 不能直接相加）
+```bash
+# 1. Refresh portfolio prices (US leg, 7-route fallback)
+python3 scripts/data/analyze_us_stocks.py
 
-港股 book 用 HKD，美股 book 用 USD —— **不能直接相加**。所有 book-level 数字必须两个 view 都给：
+# 2. Refresh HK leg (Tencent → stooq → yfinance)
+python3 scripts/data/analyze_hk_stocks.py
+
+# 3. Manually trigger a daily deep brief preflight
+python3 scripts/harness/brief_preflight.py
+
+# 4. Rebuild dashboard data
+python3 scripts/data/build_dashboard.py
+
+# 5. Open the dashboard locally (any static server)
+python3 -m http.server 8080  # then visit http://localhost:8080/dashboard.html
 ```
-真实总浮盈亏: USD${X}  ≈  HKD${Y}   (USDHKD = {rate}, source {src}, fetched {ts})
-  ├─ HK 段：HKD${a}  ≈  USD${a/rate}
-  └─ US 段：USD${b}  ≈  HKD${b*rate}
+
+API keys (Finnhub, Alpha Vantage, Polygon) are read from `.api_keys`
+(gitignored). All scripts work without keys, just with reduced data quality.
+
+## Iron rules
+
+These are the constraints the harness enforces — listed here because they would
+otherwise be invisible to anyone reading the code.
+
+### FX rule (HKD + USD cannot be summed directly)
+
+HK leg is denominated in HKD, US leg in USD. **Never add them directly.** Book-level
+numbers must be presented in both views:
+
+```
+Total P&L: USD${X}  ≈  HKD${Y}     (USDHKD = {rate}, source {src}, fetched {ts})
+  ├─ HK: HKD${a}  ≈  USD${a/rate}
+  └─ US: USD${b}  ≈  HKD${b*rate}
 ```
 
-历史教训：2026-05-16 那次 brief "合计 -4,423" 直接把 -4936 HKD 和 +513 USD 相加 → 数字毫无意义。
-现在所有 harness 强制走 `scripts/data/fetch_fx.py`。
+Historical incident (2026-05-16): a brief reported "合计 -4,423" by directly
+adding -4936 HKD + +513 USD — meaningless. All harness paths now go through
+`fetch_fx.py` and the postflight scans for known bug-pattern strings.
 
-### 集中度 HHI 算法
+### Concentration HHI
 
-每个 leg（HK / US 分开）：
+Per leg (HK and US separately):
 - `weight_i = current_value_i / leg_total_value`
 - `HHI = Σ weight²`
-- `Top2 = 最大两仓 weight 之和`
+- `Top2 = sum of largest two weights`
 
-| HHI | Top 2 | 状态 |
+| HHI | Top 2 | Status |
 |---|---|---|
-| < 0.15 | < 40% | 健康 ✅ |
-| 0.15-0.25 | 40-60% | 偏集中，可接受 |
-| 0.25-0.40 | 60-75% | 集中风险 ⚠️ |
-| > 0.40 | > 75% | 危险集中 🔴 |
+| &lt; 0.15 | &lt; 40% | ✅ healthy |
+| 0.15 – 0.25 | 40 – 60% | ⚠️ moderately concentrated |
+| 0.25 – 0.40 | 60 – 75% | 🟠 concentrated risk |
+| &gt; 0.40 | &gt; 75% | 🔴 dangerously concentrated |
 
-### Self-learning loop（plan.json + retrospective）
+The dashboard renders both legs as dual gauges; the brief postflight requires
+that the LLM's `▎集中度` section quotes the verdict verbatim.
 
-每个 daily-deep-brief 跑完写 `memory/{date}-plan.json` 结构化 plan。次日 brief 自动读
-上次 plan.json，对每个 action 算 trigger 是否触发 + 模拟 P&L + confidence calibration。
+### Leveraged ETF heuristic
 
-设计参考 TradingAgents v0.2.4 的 persistent decision memory。
+Preflight skips SEC EDGAR lookups for tickers whose name contains:
+`倍`, `Direxion`, `T-Rex`, `Defiance`, `ProShares`, `2X Long`, `3X Long`, `Daily Target`.
+For leveraged ETFs, fundamentals are noise — look at underlying instead.
+
+## Self-learning loop
+
+Every daily-deep-brief writes `memory/{date}-plan.json` with structured actions:
+
+```jsonc
+{
+  "date": "2026-05-16",
+  "buckets": {
+    "cut":              [...],
+    "trim_on_rebound":  [...],
+    "hold_and_watch":   [...],
+    "t_only":           [...],
+    "add_only_on_trigger": [...]
+  },
+  "actions": [
+    {
+      "ticker":      "07226",
+      "bucket":      "trim_on_rebound",
+      "trigger_type": "price_above",
+      "trigger":      "trim 1000 shares if price > 4.85",
+      "confidence":   0.62,
+      "simulated_entry_price": 4.49
+    }
+  ],
+  "context": { "hhi_us": 0.21, "hhi_hk": 0.34, "fx": 7.83 }
+}
+```
+
+The next morning's brief reads the prior plan and, for each action, computes:
+1. **Did the trigger fire?** (cross checked against actual price action)
+2. **Simulated P&L** if the action had been executed at the trigger price
+3. **Confidence calibration** — log into rolling stats over time
+
+Design heavily inspired by [TradingAgents v0.2.4](https://github.com/TauricResearch/TradingAgents)'s
+persistent decision memory, but adapted for HK + US dual-leg portfolios.
 
 ## Stack
 
-- [Claude Code](https://claude.com/claude-code) — Anthropic 官方 CLI / agent harness
-- [openclaw](https://openclaw.com) — cron 调度 + 多 channel delivery（WeChat / Telegram / etc）
-- Python 3 — 数据脚本 + harness
+- **[Claude Code](https://claude.com/claude-code)** — Anthropic official CLI, the agent harness
+- **[openclaw](https://openclaw.com)** — cron scheduler + multi-channel delivery (WeChat, Telegram, etc.)
+- **Python 3** — data scripts + harness
+- **[ECharts 5.5](https://echarts.apache.org/)** — interactive dashboard charts
+- **Jekyll + GitHub Pages** — static hosting
 - Public data sources: Tencent / stooq / yfinance / Frankfurter / SEC EDGAR / Finnhub
-- Private: portfolio.json（真实仓位）
+- Private: `portfolio.json` (real positions, committed knowingly to a public repo)
 
 ## Disclaimer
 
-This repo contains real trading positions and analysis. It is for **personal use only** —
-not investment advice, not a recommendation. All numbers are point-in-time and may be
-stale. Past performance does not guarantee future results.
+This repository contains real trading positions and analysis. It is shared publicly
+for personal record-keeping and as a portable workspace, **not as investment advice
+or a recommendation**. Every number is point-in-time and may be stale. Past
+performance does not guarantee future results. The persona (`Rick`) is opinionated
+by design — that doesn't mean it is right.
+
+## License
+
+Personal-use repository. No license granted for derivative trading systems, automated
+copy-trading, or commercial use. Code patterns (harness layout, fallback chain design,
+HHI formulation) may be adapted under any compatible open-source license of your
+choosing if reused independently.
+
+---
+
+*Built and maintained by [Shengyu Li (kcn)](https://github.com/KCNyu) and Rick.*

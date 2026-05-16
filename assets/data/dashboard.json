@@ -1,0 +1,586 @@
+{
+  "generated_at": "2026-05-16T14:10:49.377797Z",
+  "last_updated": "2026/05/16 22:02 HKT",
+  "fx": {
+    "usdhkd": 7.8315,
+    "source": "Frankfurter",
+    "fetched_at": "2026-05-16T10:32:41.457722+00:00"
+  },
+  "totals": {
+    "us": {
+      "value_usd": 3694.25,
+      "cost_usd": 3181.05,
+      "pnl_usd": 513.2,
+      "pnl_pct": 16.133,
+      "today_change_usd": -43.61,
+      "realized_usd": 592.18
+    },
+    "hk": {
+      "value_hkd": 83340.4,
+      "cost_hkd": 88276.24,
+      "pnl_hkd": -4935.84,
+      "pnl_pct": -5.59,
+      "today_change_hkd": -5178.0,
+      "realized_hkd": 7259.16
+    }
+  },
+  "concentration": {
+    "us": {
+      "hhi": 0.1711,
+      "top2": 0.4328,
+      "positions": [
+        {
+          "ticker": "SOXL",
+          "name": "三倍做多半导体ETF-Direxion",
+          "value": 820.9,
+          "weight": 0.2222
+        },
+        {
+          "ticker": "ROBN",
+          "name": "二倍做多HOOD ETF-T-Rex",
+          "value": 778.0,
+          "weight": 0.2106
+        },
+        {
+          "ticker": "RKLB",
+          "name": "Rocket Lab Corp",
+          "value": 623.85,
+          "weight": 0.1689
+        },
+        {
+          "ticker": "MSFU",
+          "name": "二倍做多微软ETF-Direxion",
+          "value": 584.8,
+          "weight": 0.1583
+        },
+        {
+          "ticker": "PLTU",
+          "name": "二倍做多PLTR ETF-Direxion",
+          "value": 497.0,
+          "weight": 0.1345
+        },
+        {
+          "ticker": "CRCL",
+          "name": "Circle Internet Group Inc-A",
+          "value": 228.0,
+          "weight": 0.0617
+        },
+        {
+          "ticker": "RKLX",
+          "name": "Defiance Daily Target 2X Long R",
+          "value": 161.7,
+          "weight": 0.0438
+        }
+      ],
+      "total": 3694.25,
+      "verdict": {
+        "level": "moderate",
+        "label": "偏集中",
+        "color": "#facc15"
+      }
+    },
+    "hk": {
+      "hhi": 0.4181,
+      "top2": 0.8595,
+      "positions": [
+        {
+          "ticker": "00100",
+          "name": "MINIMAX-W",
+          "value": 47640.0,
+          "weight": 0.5716
+        },
+        {
+          "ticker": "07226",
+          "name": "XL二南方恒科",
+          "value": 23994.0,
+          "weight": 0.2879
+        },
+        {
+          "ticker": "02208",
+          "name": "金风科技",
+          "value": 5892.0,
+          "weight": 0.0707
+        },
+        {
+          "ticker": "03033",
+          "name": "南方恒生科技",
+          "value": 4830.0,
+          "weight": 0.058
+        },
+        {
+          "ticker": "03032",
+          "name": "恒生科技ETF",
+          "value": 984.4,
+          "weight": 0.0118
+        }
+      ],
+      "total": 83340.4,
+      "verdict": {
+        "level": "danger",
+        "label": "危险集中",
+        "color": "#ef4444"
+      }
+    }
+  },
+  "holdings": {
+    "us": [
+      {
+        "ticker": "NVDA",
+        "name": "英伟达",
+        "currency": "USD",
+        "shares": 0,
+        "cost_basis": 187,
+        "current_price": 213.0,
+        "current_value": 0,
+        "pnl_abs": 0,
+        "pnl_percent": 13.9,
+        "today_change_pct": -0.21,
+        "is_active": false,
+        "trades_count": 1
+      },
+      {
+        "ticker": "RKLB",
+        "name": "Rocket Lab Corp",
+        "currency": "USD",
+        "shares": 5,
+        "cost_basis": 71,
+        "current_price": 124.77,
+        "current_value": 623.85,
+        "pnl_abs": 268.85,
+        "pnl_percent": 75.73,
+        "today_change_pct": 0,
+        "is_active": true,
+        "trades_count": 0
+      },
+      {
+        "ticker": "CRCL",
+        "name": "Circle Internet Group Inc-A",
+        "currency": "USD",
+        "shares": 2,
+        "cost_basis": 87,
+        "current_price": 114.0,
+        "current_value": 228.0,
+        "pnl_abs": 54.0,
+        "pnl_percent": 31.03,
+        "today_change_pct": 0,
+        "is_active": true,
+        "trades_count": 0
+      },
+      {
+        "ticker": "OKLO",
+        "name": "Oklo Inc-A",
+        "currency": "USD",
+        "shares": 0,
+        "cost_basis": 62.83,
+        "current_price": 72.39,
+        "current_value": 0,
+        "pnl_abs": 0,
+        "pnl_percent": 15.22,
+        "today_change_pct": -1.83,
+        "is_active": false,
+        "trades_count": 1
+      },
+      {
+        "ticker": "QQQ",
+        "name": "纳斯达克100ETF-Invesco",
+        "currency": "USD",
+        "shares": 0,
+        "cost_basis": 622,
+        "current_price": 694.41,
+        "current_value": 0,
+        "pnl_abs": 0,
+        "pnl_percent": 11.64,
+        "today_change_pct": 0.15,
+        "is_active": false,
+        "trades_count": 1
+      },
+      {
+        "ticker": "TCOM",
+        "name": "携程",
+        "currency": "USD",
+        "shares": 0,
+        "cost_basis": 52.74,
+        "current_price": 53.328,
+        "current_value": 0,
+        "pnl_abs": 0,
+        "pnl_percent": 1.11,
+        "today_change_pct": 0.02,
+        "is_active": false,
+        "trades_count": 1
+      },
+      {
+        "ticker": "TQQQ",
+        "name": "三倍做多纳斯达克100ETF-ProShare",
+        "currency": "USD",
+        "shares": 0,
+        "cost_basis": 45.73,
+        "current_price": 71.17,
+        "current_value": 0,
+        "pnl_abs": 0,
+        "pnl_percent": 55.63,
+        "today_change_pct": 0.5,
+        "is_active": false,
+        "trades_count": 1
+      },
+      {
+        "ticker": "HOOD",
+        "name": "Robinhood Markets Inc-A",
+        "currency": "USD",
+        "shares": 0,
+        "cost_basis": 73.5,
+        "current_price": 76.09,
+        "current_value": 0,
+        "pnl_abs": 0,
+        "pnl_percent": 3.52,
+        "today_change_pct": -0.63,
+        "is_active": false,
+        "trades_count": 1
+      },
+      {
+        "ticker": "PLTU",
+        "name": "二倍做多PLTR ETF-Direxion",
+        "currency": "USD",
+        "shares": 14,
+        "cost_basis": 40.9571,
+        "current_price": 35.5,
+        "current_value": 497.0,
+        "pnl_abs": -76.4,
+        "pnl_percent": -13.32,
+        "today_change_pct": 0,
+        "is_active": true,
+        "trades_count": 2
+      },
+      {
+        "ticker": "SOXL",
+        "name": "三倍做多半导体ETF-Direxion",
+        "currency": "USD",
+        "shares": 5,
+        "cost_basis": 91.87,
+        "current_price": 164.18,
+        "current_value": 820.9,
+        "pnl_abs": 361.55,
+        "pnl_percent": 78.71,
+        "today_change_pct": 0,
+        "is_active": true,
+        "trades_count": 2
+      },
+      {
+        "ticker": "RKLX",
+        "name": "Defiance Daily Target 2X Long R",
+        "currency": "USD",
+        "shares": 2,
+        "cost_basis": 46.7,
+        "current_price": 80.85,
+        "current_value": 161.7,
+        "pnl_abs": 68.3,
+        "pnl_percent": 73.13,
+        "today_change_pct": 0,
+        "is_active": true,
+        "trades_count": 2
+      },
+      {
+        "ticker": "ROBN",
+        "name": "二倍做多HOOD ETF-T-Rex",
+        "currency": "USD",
+        "shares": 40,
+        "cost_basis": 23.5825,
+        "current_price": 19.45,
+        "current_value": 778.0,
+        "pnl_abs": -165.3,
+        "pnl_percent": -17.52,
+        "today_change_pct": -9.03,
+        "is_active": true,
+        "trades_count": 3
+      },
+      {
+        "ticker": "MSFU",
+        "name": "二倍做多微软ETF-Direxion",
+        "currency": "USD",
+        "shares": 20,
+        "cost_basis": 29.13,
+        "current_price": 29.24,
+        "current_value": 584.8,
+        "pnl_abs": 2.2,
+        "pnl_percent": 0.38,
+        "today_change_pct": 6.1,
+        "is_active": true,
+        "trades_count": 1
+      }
+    ],
+    "hk": [
+      {
+        "ticker": "00100",
+        "name": "MINIMAX-W",
+        "currency": "HKD",
+        "shares": 60,
+        "cost_basis": 822.83,
+        "current_price": 794.0,
+        "current_value": 47640.0,
+        "pnl_abs": -1729.8,
+        "pnl_percent": -3.5,
+        "today_change_pct": -6.59,
+        "is_active": true,
+        "trades_count": 3
+      },
+      {
+        "ticker": "02208",
+        "name": "金风科技",
+        "currency": "HKD",
+        "shares": 400,
+        "cost_basis": 14.084,
+        "current_price": 14.73,
+        "current_value": 5892.0,
+        "pnl_abs": 258.4,
+        "pnl_percent": 4.59,
+        "today_change_pct": -5.58,
+        "is_active": true,
+        "trades_count": 1
+      },
+      {
+        "ticker": "03032",
+        "name": "恒生科技ETF",
+        "currency": "HKD",
+        "shares": 200,
+        "cost_basis": 5.405,
+        "current_price": 4.922,
+        "current_value": 984.4,
+        "pnl_abs": -96.6,
+        "pnl_percent": -8.94,
+        "today_change_pct": -2.53,
+        "is_active": true,
+        "trades_count": 0
+      },
+      {
+        "ticker": "07226",
+        "name": "XL二南方恒科",
+        "currency": "HKD",
+        "shares": 6200,
+        "cost_basis": 4.3632,
+        "current_price": 3.87,
+        "current_value": 23994.0,
+        "pnl_abs": -3057.84,
+        "pnl_percent": -11.3,
+        "today_change_pct": -5.19,
+        "is_active": true,
+        "trades_count": 1
+      },
+      {
+        "ticker": "03033",
+        "name": "南方恒生科技",
+        "currency": "HKD",
+        "shares": 1000,
+        "cost_basis": 5.14,
+        "current_price": 4.83,
+        "current_value": 4830.0,
+        "pnl_abs": -310.0,
+        "pnl_percent": -6.03,
+        "today_change_pct": -2.62,
+        "is_active": true,
+        "trades_count": 0
+      }
+    ]
+  },
+  "snapshots": [
+    {
+      "date": "2026-05-16",
+      "file": "2026-05-16-saturday-baseline.json",
+      "us_total_value": 3694.25,
+      "us_total_cost": 3181.05,
+      "us_total_pnl": 513.2,
+      "us_today_change": -43.6,
+      "hk_total_value": 83340.4,
+      "hk_total_cost": 88276.24,
+      "hk_total_pnl": -4935.84,
+      "hk_today_change": -5178.0
+    },
+    {
+      "date": "2026-05-16",
+      "file": "2026-05-16.json",
+      "us_total_value": 3694.25,
+      "us_total_cost": 3181.05,
+      "us_total_pnl": 513.2,
+      "us_today_change": -43.61,
+      "hk_total_value": 83340.4,
+      "hk_total_cost": 88276.24,
+      "hk_total_pnl": -4935.84,
+      "hk_today_change": -5178.0
+    }
+  ],
+  "plans_count": 1,
+  "recent_plans": [
+    {
+      "date": "2026-05-18",
+      "file": "2026-05-18-plan.json",
+      "plan": {
+        "date": "2026-05-18",
+        "generated_at": "2026-05-16T12:30:00+08:00",
+        "note": "2026-05-16 周六手动测试 brief 生成的 plan，作为 2026-05-19 周一 cron 的 retrospective baseline。实际 plan 跨越的交易日是周一 2026-05-18。",
+        "fx_rate_usdhkd": 7.8315,
+        "fx_source": "Frankfurter",
+        "regime": {
+          "us": "trending-up",
+          "hk": "trending-down",
+          "cross_market": "decoupled"
+        },
+        "book": {
+          "usd_total_pnl": -117.0,
+          "hkd_total_pnl": -918.0,
+          "hk_leg_hkd": -4936.0,
+          "us_leg_usd": 513.0,
+          "book_size_usd": 11650.0
+        },
+        "actions": [
+          {
+            "ticker": "ROBN",
+            "bucket": "cut",
+            "size_pct": 50,
+            "size_shares": 20,
+            "trigger_type": "open",
+            "trigger_price": null,
+            "trigger_condition": "周一开盘任意价位",
+            "confidence": 0.82,
+            "rationale": "HOOD Q1 26 earnings miss + crypto rev -47% → ROBN 是 thesis 破不是 decay 问题"
+          },
+          {
+            "ticker": "07226",
+            "bucket": "trim_on_rebound",
+            "size_pct": 30,
+            "size_shares": 1860,
+            "trigger_type": "price_above",
+            "trigger_price": 4.1,
+            "trigger_condition": "反弹至 4.10 (+5%)",
+            "confidence": 0.78,
+            "rationale": "2x 杠杆 + trending down + 已 -11% + 占港股 28.8% 单点风险"
+          },
+          {
+            "ticker": "02208",
+            "bucket": "trim_on_rebound",
+            "size_pct": 30,
+            "size_shares": 120,
+            "trigger_type": "price_above",
+            "trigger_price": 15.5,
+            "trigger_condition": "反弹至 15.5 (+5%)",
+            "confidence": 0.7,
+            "rationale": "A 股版 5/14 主力净流出 -11.47 亿 + 港股连跌；唯一盈利港股退出窗口正在关"
+          },
+          {
+            "ticker": "00100",
+            "bucket": "t_only",
+            "size_pct": 33,
+            "size_shares": 20,
+            "trigger_type": "price_above",
+            "trigger_price": 850.0,
+            "trigger_condition": "反弹至 850+",
+            "confidence": 0.6,
+            "rationale": "thesis 未破但 vol 巨大；60 股占 HK book 60% 集中度过高"
+          },
+          {
+            "ticker": "CRCL",
+            "bucket": "add_only_on_trigger",
+            "size_pct": null,
+            "size_shares": 1,
+            "trigger_type": "price_below",
+            "trigger_price": 108.0,
+            "trigger_condition": "回调至 $105-108 区间",
+            "confidence": 0.75,
+            "rationale": "Q1 净利 +55M 转正实锤未充分定价"
+          },
+          {
+            "ticker": "MSFU",
+            "bucket": "add_only_on_trigger",
+            "size_pct": null,
+            "size_shares": 5,
+            "trigger_type": "price_above",
+            "trigger_price": 30.0,
+            "trigger_condition": "$30+ 突破成本回升时",
+            "confidence": null,
+            "rationale": "MSFT Copilot 收入加速；MSFU 周五 +6.10% 突破"
+          },
+          {
+            "ticker": "RKLB",
+            "bucket": "hold_and_watch",
+            "size_pct": null,
+            "trigger_type": "manual",
+            "trigger_condition": "RSI > 80 / MA20 下穿 MA50 / 财报转弱",
+            "confidence": 0.7
+          },
+          {
+            "ticker": "RKLX",
+            "bucket": "hold_and_watch",
+            "size_pct": null,
+            "trigger_type": "manual",
+            "confidence": 0.7
+          },
+          {
+            "ticker": "SOXL",
+            "bucket": "hold_and_watch",
+            "size_pct": null,
+            "trigger_type": "price_below",
+            "trigger_price": 158.0,
+            "trigger_condition": "跌破 $158 (-4%) 重评止盈",
+            "confidence": 0.65
+          },
+          {
+            "ticker": "PLTU",
+            "bucket": "hold_and_watch",
+            "size_pct": null,
+            "trigger_type": "manual",
+            "confidence": 0.55
+          },
+          {
+            "ticker": "03032",
+            "bucket": "hold_and_watch",
+            "size_pct": null,
+            "trigger_type": "index_breakdown",
+            "trigger_condition": "恒科跌破 4800",
+            "confidence": null
+          },
+          {
+            "ticker": "03033",
+            "bucket": "hold_and_watch",
+            "size_pct": null,
+            "trigger_type": "index_breakdown",
+            "trigger_condition": "恒科跌破 4800",
+            "confidence": null
+          }
+        ],
+        "watch_levels": {
+          "hstech_breakdown": 4800,
+          "soxl_breakdown_usd": 158.0,
+          "book_force_derisk_usd": -300.0
+        },
+        "next_session_checks": [
+          {
+            "when": "周日晚 22:00 HKT",
+            "task": "查 02208 板块最新公告 + 风电政策"
+          },
+          {
+            "when": "周一 09:00 HKT",
+            "task": "看南向资金集合竞价 + 恒科期货 HHI 周日夜盘"
+          },
+          {
+            "when": "周一 09:30 HKT",
+            "task": "07226/00100/02208 按 trigger 价位执行"
+          },
+          {
+            "when": "周一 21:30 HKT",
+            "task": "ROBN 砍仓 50% + CRCL/MSFU 按 trigger 加仓"
+          }
+        ]
+      }
+    }
+  ],
+  "indices": {
+    "NDX": {
+      "price": null,
+      "change_pct": null,
+      "source": "unavailable"
+    },
+    "SPX": {
+      "price": 7398.93,
+      "change_pct": null,
+      "source": "Friday May 8 close (web search context)"
+    }
+  },
+  "market_context": {}
+}

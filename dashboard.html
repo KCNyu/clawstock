@@ -1,0 +1,166 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>clawstock — Portfolio Dashboard</title>
+<link rel="stylesheet" href="assets/dashboard.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-row">
+    <div class="brand">
+      <h1>📊 clawstock</h1>
+      <span class="tagline">harness-driven HK + US portfolio · <a href="./">home</a></span>
+    </div>
+    <div class="hero-stats" id="hero-stats">
+      <div class="hero-stat"><span class="label">Total Book</span><span class="value" id="hero-book">—</span></div>
+      <div class="hero-stat"><span class="label">Today P&amp;L</span><span class="value" id="hero-today">—</span></div>
+      <div class="hero-stat"><span class="label">FX USDHKD</span><span class="value" id="hero-fx">—</span></div>
+      <div class="hero-stat"><span class="label">Updated</span><span class="value" id="hero-updated">—</span></div>
+    </div>
+  </div>
+  <nav class="tab-nav">
+    <button class="tab active" data-tab="overview">Overview</button>
+    <button class="tab" data-tab="holdings">Holdings</button>
+    <button class="tab" data-tab="concentration">Concentration</button>
+    <button class="tab" data-tab="history">History</button>
+    <button class="tab" data-tab="plans">Plans &amp; Retrospective</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- Overview tab -->
+<section class="tab-panel active" data-panel="overview">
+  <div class="grid-2col">
+    <div class="card">
+      <h3>🇺🇸 US Leg</h3>
+      <div class="leg-summary" id="us-summary"></div>
+      <div class="chart" id="chart-us-treemap" style="height:340px"></div>
+    </div>
+    <div class="card">
+      <h3>🇭🇰 HK Leg</h3>
+      <div class="leg-summary" id="hk-summary"></div>
+      <div class="chart" id="chart-hk-treemap" style="height:340px"></div>
+    </div>
+  </div>
+  <div class="grid-2col">
+    <div class="card">
+      <h3>Concentration HHI (双 leg 对比)</h3>
+      <div class="chart" id="chart-hhi-gauge" style="height:280px"></div>
+    </div>
+    <div class="card">
+      <h3>Today's Movers (港股 + 美股合并 ≥1.5%)</h3>
+      <div class="chart" id="chart-movers" style="height:280px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Holdings tab -->
+<section class="tab-panel" data-panel="holdings">
+  <div class="card">
+    <h3>All Positions</h3>
+    <div class="table-controls">
+      <label><input type="checkbox" id="filter-active" checked> 只看 shares &gt; 0</label>
+      <label>市场:
+        <select id="filter-market">
+          <option value="all">全部</option>
+          <option value="us">仅 US</option>
+          <option value="hk">仅 HK</option>
+        </select>
+      </label>
+      <span id="holdings-count" class="muted"></span>
+    </div>
+    <table class="holdings-table" id="holdings-table">
+      <thead>
+        <tr>
+          <th data-sort="ticker">Ticker</th>
+          <th data-sort="name">Name</th>
+          <th data-sort="currency">Curr</th>
+          <th data-sort="shares" class="num">Shares</th>
+          <th data-sort="cost_basis" class="num">Cost</th>
+          <th data-sort="current_price" class="num">Price</th>
+          <th data-sort="today_change_pct" class="num">Today %</th>
+          <th data-sort="pnl_percent" class="num">P&amp;L %</th>
+          <th data-sort="pnl_abs" class="num">P&amp;L Abs</th>
+          <th data-sort="current_value" class="num">Value</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Concentration tab -->
+<section class="tab-panel" data-panel="concentration">
+  <div class="card">
+    <h3>HHI Detail</h3>
+    <div class="grid-2col">
+      <div>
+        <h4>🇺🇸 US</h4>
+        <div id="conc-us-detail" class="conc-detail"></div>
+      </div>
+      <div>
+        <h4>🇭🇰 HK</h4>
+        <div id="conc-hk-detail" class="conc-detail"></div>
+      </div>
+    </div>
+    <details class="thresholds">
+      <summary>HHI 阈值表</summary>
+      <table class="threshold-table">
+        <thead><tr><th>HHI</th><th>Top 2</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>&lt; 0.15</td><td>&lt; 40%</td><td><span class="badge healthy">健康</span></td></tr>
+          <tr><td>0.15 – 0.25</td><td>40 – 60%</td><td><span class="badge moderate">偏集中</span></td></tr>
+          <tr><td>0.25 – 0.40</td><td>60 – 75%</td><td><span class="badge concentrated">集中风险</span></td></tr>
+          <tr><td>&gt; 0.40</td><td>&gt; 75%</td><td><span class="badge danger">危险集中</span></td></tr>
+        </tbody>
+      </table>
+    </details>
+  </div>
+</section>
+
+<!-- History tab -->
+<section class="tab-panel" data-panel="history">
+  <div class="card">
+    <h3>Book Value Over Time</h3>
+    <div class="chart" id="chart-history-value" style="height:380px"></div>
+    <p class="muted">数据源：<code>memory/snapshots/{date}.json</code>，由 brief_preflight 每日 08:00 写入。</p>
+  </div>
+  <div class="card">
+    <h3>Daily P&amp;L</h3>
+    <div class="chart" id="chart-history-pnl" style="height:300px"></div>
+  </div>
+</section>
+
+<!-- Plans tab -->
+<section class="tab-panel" data-panel="plans">
+  <div class="card">
+    <h3>Recent Daily Plans</h3>
+    <p class="muted">每个 daily-deep-brief 写入 <code>memory/{date}-plan.json</code>，给次日 retrospective 算 trigger / P&amp;L / confidence。点击展开查看完整 plan。</p>
+    <div id="plans-list"></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>
+    Generated by <a href="https://github.com/KCNyu/clawstock">clawstock</a> ·
+    Data: <a href="assets/data/dashboard.json"><code>assets/data/dashboard.json</code></a> ·
+    Built: <span id="footer-gen">—</span>
+  </p>
+  <p class="disclaimer">
+    <strong>Not investment advice.</strong> Real positions shown. Point-in-time. Past performance ≠ future results.
+  </p>
+</footer>
+
+<script src="assets/dashboard.js"></script>
+</body>
+</html>
