@@ -44,3 +44,7 @@ streaming_notes.md
 streaming_config_guide.md
 setup_openclaw_web.sh
 fix_stock_analyzer.py
+
+# Runtime state files (cron / heartbeat output, not source data)
+memory/heartbeat-state.json
+memory/last_hk_monitoring.json

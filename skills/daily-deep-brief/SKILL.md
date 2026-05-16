@@ -33,6 +33,58 @@ python3 /root/.openclaw/workspace/fetch_us_filings.py {TICKER} --financials --js
 
 XBRL 数据用来对照价格 — 没有这一步 fundamental 分析全是嘴炮。
 
+## Portfolio Snapshot (longitudinal 数据基础设施)
+
+价格刷完后，**必须**把 portfolio.json 快照写到 `memory/snapshots/{YYYY-MM-DD}.json`：
+
+```bash
+cp /root/.openclaw/workspace/portfolio.json \
+   /root/.openclaw/workspace/memory/snapshots/$(date +%Y-%m-%d).json
+```
+
+**为什么**：`portfolio.json` 是滚动覆盖的 ground truth，每次刷价就丢前一刻状态。
+有 snapshot 历史才能做：
+- Rolling P&L 曲线（不只看今日 vs 成本，而是看 path）
+- Alpha vs benchmark（需要至少 5 个 snapshot 算 1 周 alpha）
+- Drawdown 分析（最大回撤路径）
+- Position 变化追溯（手动调仓后 portfolio.json 改了，snapshot 留底）
+
+⚠️ 不可补做 — 每过一天少一份永远拿不回来的数据。
+
+## ⚠️ 集中度铁律（HK book 当前 86% 双仓集中风险）
+
+book 段必须算并显式标注：
+
+### 算法
+
+对每个 leg（HK / US 分开）：
+1. 计算每个 active holding 的 weight = `current_value / leg_total_current_value`
+2. **HHI** = Σ weight² （0-1，越高越集中）
+3. **Top 2 concentration** = 最大两仓 weight 之和
+
+### 解读阈值
+
+| HHI | Top 2 | 状态 |
+|---|---|---|
+| < 0.15 | < 40% | 健康 ✅ |
+| 0.15-0.25 | 40-60% | 偏集中，可接受 |
+| 0.25-0.40 | 60-75% | 集中风险 ⚠️ |
+| > 0.40 | > 75% | 危险集中，单一事件可炸 book 🔴 |
+
+### 输出格式（加在 book 段后）
+
+```
+▎集中度风险 (2026-05-16 实测)
+HK: HHI 0.418 🔴 危险 | 00100 57.2% + 07226 28.8% = Top2 86.0% 
+   → 单一事件风险高（00100 财报雷 / 07226 流动性问题）
+   → 若 00100 或 07226 单日 -15%，HK book 立即 -8.5% 到 -12.9%
+US: HHI 0.171 偏集中 | SOXL 22.2% + ROBN 21.1% = Top2 43.3%
+   → 多仓分散但 SOXL 3x 杠杆 + ROBN 2x 杠杆双高仓需注意
+```
+
+历史教训: 港股 book 双仓集中 86% 是 2026-05-16 之前 brief **漏报的盲点**；
+书面看到 -1% 微亏不慌，集中度看才知道一个雷就能炸。
+
 ## ⚠️ 货币铁律（核心，不能漏）
 
 港币 + 美元 **不能直接相加**。所有 book-level 数字必须二选一：
