@@ -72,45 +72,97 @@ python3 /root/.openclaw/workspace/analyze_hk_stocks.py --no-fetch            # u
 3. 板块代表股的相对强弱
 4. Output: 大势研判 + 板块归因 + 个股带头/拖累
 
-### Mode 7 — Intraday Check-in (cron-driven, every 30 min during trading hours)
+### Mode 7 — Intraday Check-in (cron-driven, every 30 min, harness 化 ✨)
 **When:** 盘中盯盘 cron (`*/30 9-15 * * 1-5`)，比 Mode 6 更轻量、更高频。
 
-Workflow:
-1. `python3 /root/.openclaw/workspace/analyze_hk_stocks.py --wechat`
-2. 脚本输出原样作为消息开头
-3. 追加 `▎我的看法` 段（2-3 行）：
-   - 重点变动：哪只票有信号 / 异常波动 / RSI 极值
-   - 简短判断：今天该看 / 该等 / 该减；不复述脚本里的数字
-4. ≤600 字
-5. 不需要标题（高频推送不加标题，避免微信刷屏）
+**Harness 4-step**：
 
-**和 Mode 6 的区别**：没有 ▎情绪面/▎技术面/▎操作建议 三段分离；没有 ▎风险提示 段；没有 git commit（脚本本身已写 portfolio.json，cron 多次触发不每次都 commit）。
+#### Step 1: 跑 preflight
+```bash
+python3 /root/.openclaw/workspace/intraday_preflight.py --market hk
+```
+跑 `analyze_hk_stocks.py --wechat` + 抽信号 + 异动，输出 `memory/.tmp/intraday-context-hk-latest.json`。
+关键字段：`should_alert` (bool) + `alert_reasons` (异动票/STOP 计数等)。
 
-### Mode 6 — WeChat Briefing (cron-driven)
-**When:** 港股开盘/午盘/收盘 cron 触发，或任何 HK-session 推送。三个 cron job (`港股开盘报告`/`港股午盘报告`/`港股收盘报告`) 全部走这个 mode。
+#### Step 2: 写报告
+- 拷贝 `raw_wechat_block` 到消息开头（verbatim）
+- 加 `▎我的看法` 段（2-3 行）：
+  - 若 `should_alert=true`，**必须**提到 `anomalies` 里至少一个票
+  - 简短判断：今天该看 / 该等 / 该减；不复述脚本里的数字
+- ≤ 600 字软上限
 
-Workflow:
+#### Step 3: 跑 postflight
+```bash
+python3 /root/.openclaw/workspace/intraday_postflight.py --market hk <<< "{报告}"
+```
+校验段标记 + 长度 + 异动票提及。**不 git commit**（高频触发，避免 commit log 刷屏）。
 
-1. `cd /root/.openclaw/workspace && python3 analyze_hk_stocks.py --wechat`
-2. 脚本输出**原样**作为消息开头（事实数据块）
-3. 追加 3 段分析（共 4-6 行）：
-   - `▎情绪面` — Finnhub 新闻 + 今日恒指/恒科表现 → 大盘方向判断
-   - `▎技术面` — 综合脚本里 RSI / 价格位置 → 超买/超卖/突破
-   - `▎操作建议` — 重点关注哪只；如建议交易给出大致价位
-4. 若脚本里 STOP/TRIM 信号 ≥ 2 只 → 追加 `▎风险提示`
-5. 提交：`git -C /root/.openclaw/workspace add portfolio.json && git -C /root/.openclaw/workspace commit -m "portfolio: 港股{开盘/午盘/收盘}价格更新"`
-6. 整条消息 ≤ 800 字
+#### Step 4: 发 WeChat
+拼 `wechat_prefix` + 报告，**无标题**（高频推送避免刷屏）。
 
-**标题模板（按 session 选）：**
-- 开盘（09:30 HKT）：`📊 港股开盘快报｜[今日日期] 09:30`
-- 午盘（12:00 HKT）：`☕ 港股午盘快报｜[今日日期] 12:00`
-- 收盘（16:00 HKT）：`🔔 港股收盘日报｜[今日日期]`
+**和 Mode 6 的区别**：单段 `▎我的看法` 取代三段；无 ▎风险提示；无 git commit。
+
+### Mode 6 — WeChat Briefing (cron-driven, harness 化 ✨)
+**When:** 港股开盘/午盘/午后/收盘 4 个 cron job 全部走这个 mode。
+
+**Harness 4-step**（preflight → LLM → postflight → wechat）：
+
+#### Step 1: 跑 preflight
+```bash
+python3 /root/.openclaw/workspace/report_preflight.py --market hk --phase {open|mid|pm|close}
+```
+内部跑 `analyze_hk_stocks.py --wechat`，抽信号 (WATCH/STOP/TRIM 计数) + 异动 (≥3% 涨跌) + 恒指/恒科方向，输出 `memory/.tmp/report-context-hk-{phase}-{date}.json`。
+
+#### Step 2: 读 context，写报告
+```bash
+cat /root/.openclaw/workspace/memory/.tmp/report-context-hk-{phase}-$(date +%Y-%m-%d).json
+```
+
+context.json 关键字段：
+- `raw_wechat_block` — 脚本数据块，**verbatim 拷贝到消息开头**
+- `title` — WeChat 标题（按 phase 自动选）
+- `signal_count` / `anomalies` / `index_direction` — 用于写分析段
+- `needs_risk_section` — STOP+TRIM ≥ 2 时为 true，必须加 ▎风险提示 段
+- `commit_msg` — postflight 用
+
+报告结构（postflight 会校验）：
+```
+{title}
+
+{raw_wechat_block 原样}
+
+▎情绪面
+{Finnhub 新闻 + 恒指/恒科方向 → 大盘判断（2-3 行）}
+
+▎技术面
+{结合 anomalies + signals → 超买/超卖/突破（2-3 行）}
+
+▎操作建议
+{具体票 + 价位；如 needs_risk_section 加 ▎风险提示}
+```
+
+#### Step 3: 跑 postflight
+```bash
+python3 /root/.openclaw/workspace/report_postflight.py --market hk --phase {phase} <<< "{完整报告文本}"
+```
+返回 JSON 含 `status` (pass/warn/fail) + `wechat_prefix`。pass/warn 自动 `git commit portfolio.json`。
+
+#### Step 4: 发 WeChat
+把 `wechat_prefix` 拼到完整报告前面发送。
+
+**标题模板**（preflight 已生成在 context.json，直接用）：
+- 开盘 09:30 HKT：`📊 港股开盘快报｜{date} 09:30`
+- 午盘 12:00 HKT：`☕ 港股午盘快报｜{date} 12:00`
+- 午后 13:30 HKT：`🌤 港股午后快报｜{date} 13:30`
+- 收盘 16:00 HKT：`🔔 港股收盘日报｜{date}`
 
 **硬性规则**：
-- ⚠️ 数据缺口必须明说，禁止编造
+- ⚠️ 数据缺口必须明说，禁止编造（postflight 会扫敷衍词）
 - **00100 MINIMAX 只有 Tencent 一个源**，失败必须明说"实时价获取失败"
 - 不用 `message` 工具，直接回复文本（cron delivery 包装）
 - 不简单复述数字，必须做模型自己的解读
+- 异动票（anomalies 字段）**必须在报告里被提到**（postflight 强制）
+- 报告长度 ≤ 800 字软上限 / ≤ 1200 字硬上限
 
 ### Mode 5 — Sentiment / 情绪面 Read
 **When:** "市场怎么看 X" / "雪球怎么聊 00100" / "港股情绪" / before sizing

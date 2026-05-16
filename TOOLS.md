@@ -138,9 +138,28 @@ python3 analyze_hk_stocks.py --dry-run   # 不写文件
 - **`analyze_hk_stocks.py`**：港股完整分析 = Tencent→stooq→yfinance fallback + 恒指/恒科 + Finnhub 新闻 + 信号
 - `check_portfolio.sh`：快速查看持仓
 
-### Daily deep brief harness（08:00 HKT cron 专用）
-- **`brief_preflight.py`**：跑所有确定性步骤 — 刷 US/HK 价 + FX + portfolio snapshot + HHI 算法 + SEC EDGAR (仅 `is_leveraged_etf=false` US 单股) + retrospective vs 上次 plan.json。输出 `memory/.tmp/brief-context-{date}.json`。daily-deep-brief skill **Step 1 必跑**
-- **`brief_postflight.py`**：校验 LLM 写的 `memory/{date}-pre-open.md` + `memory/{date}-plan.json`（段标记齐全、plan schema、HHI/FX 提及、HKD+USD bug pattern）；pass/warn 自动 git commit；输出 `wechat_prefix` 给 LLM 拼到 WeChat 前面。daily-deep-brief skill **Step 5 必跑**
+### Cron harness 脚本（preflight + postflight 三明治）
+
+所有 stock cron 都用同一套"preflight (确定性) → LLM (创造性) → postflight (校验)"模式。
+确定性活强制脚本化执行；LLM 只做合成；postflight 自验证 + commit。
+
+**Daily deep brief**（08:00 HKT cron）
+- **`brief_preflight.py`**：刷 US/HK 价 + FX + portfolio snapshot + HHI 算法 + SEC EDGAR (仅 `is_leveraged_etf=false`) + retrospective vs 上次 plan.json。输出 `memory/.tmp/brief-context-{date}.json`
+- **`brief_postflight.py`**：校验 `memory/{date}-pre-open.md` + `memory/{date}-plan.json`（段标记 / plan schema / HHI / FX / HKD+USD bug pattern）；pass/warn 自动 commit
+
+**Mode 6 briefing**（HK 开/午/午后/收盘 + US 开/收盘 — 6 个 cron 共享）
+- **`report_preflight.py --market {hk|us} --phase {open|mid|pm|close}`**：跑 analyze_*.py + 抽信号 (WATCH/STOP/TRIM 计数) + 异动 (≥3% 涨跌) + 指数方向；输出 `memory/.tmp/report-context-{market}-{phase}-{date}.json`，含 `raw_wechat_block`（LLM verbatim 用）+ `title` + `needs_risk_section`
+- **`report_postflight.py --market {hk|us} --phase {phase}`**：校验三段标记 / 原始数据块 verbatim / 异动票必须被提及 / 长度 / 敷衍词；pass/warn 自动 commit portfolio.json
+
+**Mode 7 intraday**（HK + US 盘中盯盘 — 2 个 cron 共享，每 30 分钟）
+- **`intraday_preflight.py --market {hk|us}`**：跑 analyze_*.py + 异动检测 + `should_alert` 决策；输出 `memory/.tmp/intraday-context-{market}-latest.json`
+- **`intraday_postflight.py --market {hk|us}`**：校验 ▎我的看法 / 长度 / should_alert 触发时报告必须提异动票；**不 commit**（高频触发避免 commit log 刷屏）
+
+**共通设计点**：
+- preflight 输出 `raw_wechat_block` 字段，LLM **必须 verbatim 拷贝**（不改时间戳/数字），postflight 用首行匹配验证
+- preflight 输出 `anomalies` 字段，LLM 必须在报告里至少提一个 anomaly 票
+- postflight 输出 `wechat_prefix`（pass=空串，warn=黄 banner，fail=红 banner），LLM 拼到 WeChat 输出前
+- 所有 context.json 都放 `memory/.tmp/`（gitignore 排除）
 
 ### 辅助
 - **Scrapling**：自适应爬虫框架，绕过反爬（Cloudflare 等），支持 JS 渲染。`pip3 install scrapling --break-system-packages`。详见 `skills/scrapling/SKILL.md`

@@ -75,41 +75,88 @@ Pick the smallest mode that answers the question. Default to **Quick Read** unle
 6. Load `references/report-template.md` for structure
 7. Output: executive summary + bull case + bear case + valuation + technical setup + sentiment read + risk + catalyst calendar + concrete entry/exit levels
 
-### Mode 7 — Intraday Check-in (cron-driven, every 30 min during trading hours)
+### Mode 7 — Intraday Check-in (cron-driven, every 30 min, harness 化 ✨)
 **When:** US 盘中盯盘 cron (`*/30 9-15 * * 1-5 America/New_York`)，比 Mode 6 更轻量、更高频。
 
-Workflow:
-1. `cd /root/.openclaw/workspace && python3 analyze_us_stocks.py --wechat`
-2. 脚本输出原样作为消息开头
-3. 追加 `▎我的看法` 段（2-3 行）：
-   - 重点变动：哪只票有信号 / 异常波动 / RSI 极值
-   - 简短判断：今天该看 / 该等 / 该减；不复述数字
-4. ≤600 字
-5. 无标题（高频推送避免微信刷屏）
+**Harness 4-step**：
+
+#### Step 1: preflight
+```bash
+python3 /root/.openclaw/workspace/intraday_preflight.py --market us
+```
+输出 `memory/.tmp/intraday-context-us-latest.json`，关键字段：`should_alert` + `alert_reasons`。
+
+#### Step 2: 写报告
+- 拷贝 `raw_wechat_block` 到消息开头（verbatim）
+- 加 `▎我的看法` 段（2-3 行）：
+  - 若 `should_alert=true`，**必须**提 `anomalies` 中至少一个票
+  - 简短判断；不复述数字
+- ≤ 600 字软上限
+
+#### Step 3: postflight
+```bash
+python3 /root/.openclaw/workspace/intraday_postflight.py --market us <<< "{报告}"
+```
+**不 git commit**（高频触发避免 commit log 刷屏）。
+
+#### Step 4: 发 WeChat
+拼 `wechat_prefix` + 报告，**无标题**。
 
 **和 Mode 6 的区别**：单段 `▎我的看法` 取代三段；无 ▎风险提示；无 git commit。
 
-### Mode 6 — WeChat Briefing (cron-driven)
-**When:** Triggered by cron at US open (or any session timestamp); used by the "美股开盘报告" job and any future US-session pushes.
+### Mode 6 — WeChat Briefing (cron-driven, harness 化 ✨)
+**When:** 美股开盘 / 美股收盘 两个 cron 走这个 mode。
 
-Workflow (must be reproducible from cron without needing additional context):
+**Harness 4-step**：
 
-1. `cd /root/.openclaw/workspace && python3 analyze_us_stocks.py --wechat`
-2. Script prints a pre-formatted block — take it **verbatim** as the message body's facts section
-3. Append 3 commentary lines (4-6 lines total):
-   - `▎情绪面` — synthesize Finnhub news + 纳指 tone, call market direction
-   - `▎技术面` — synthesize script's RSI/MA stance, name overbought/oversold/breakout
-   - `▎操作建议` — name the one ticker to watch; if action suggested, give approximate price
-4. If script flagged STOP/TRIM signals on ≥ 2 holdings, append `▎风险提示`
-5. Commit: `git -C /root/.openclaw/workspace add portfolio.json && git -C /root/.openclaw/workspace commit -m "portfolio: 美股开盘价格更新"`
-6. Total message ≤ 800 字
+#### Step 1: 跑 preflight
+```bash
+python3 /root/.openclaw/workspace/report_preflight.py --market us --phase {open|close}
+```
+跑 `analyze_us_stocks.py --wechat` + 抽信号 + 异动，输出 `memory/.tmp/report-context-us-{phase}-{date}.json`。
 
-**Title template:** `🌅 美股开盘快报｜[今日日期] 21:30 CST`
+#### Step 2: 读 context，写报告
+关键字段：
+- `raw_wechat_block` — 脚本输出，**verbatim 拷贝到消息开头**
+- `title` — 自动选好
+- `signal_count` / `anomalies` — 用于分析段
+- `needs_risk_section` — STOP+TRIM ≥ 2 时为 true
+- `commit_msg` — postflight 用
+
+报告结构（postflight 校验）：
+```
+{title}
+
+{raw_wechat_block 原样}
+
+▎情绪面
+{Finnhub news + 纳指 tone → market direction}
+
+▎技术面
+{RSI / MA stance → overbought/oversold/breakout}
+
+▎操作建议
+{具体票 + 价位；如 needs_risk_section 加 ▎风险提示}
+```
+
+#### Step 3: 跑 postflight
+```bash
+python3 /root/.openclaw/workspace/report_postflight.py --market us --phase {phase} <<< "{报告}"
+```
+pass/warn 自动 `git commit portfolio.json`。
+
+#### Step 4: 发 WeChat（拼 wechat_prefix + 报告）
+
+**Title template**（preflight 已生成）：
+- 开盘 09:30 ET：`🌅 美股开盘快报｜{date} 21:30 CST`
+- 收盘 16:00 ET：`🌙 美股收盘日报｜{date}`
 
 **Hard rules:**
-- ⚠️ data gaps must be stated explicitly, never fabricate
+- ⚠️ data gaps must be stated explicitly, never fabricate (postflight 扫敷衍词)
 - Do not use `message` tool; reply text directly (cron delivery wraps it)
 - No simple number recitation — model must add interpretation
+- 异动票 (anomalies) **必须在报告里提到** (postflight 强制)
+- 报告长度 ≤ 800 字软上限 / ≤ 1200 字硬上限
 
 ### Mode 5 — Sentiment Read
 **When:** "市场情绪怎么样" / "推上怎么说 X" / "Reddit 怎么聊 X" / before a sizing decision
