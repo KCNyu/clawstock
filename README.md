@@ -1,15 +1,15 @@
-# clawstock
+# clawock
 
-[![Pages](https://github.com/KCNyu/clawstock/actions/workflows/pages/pages-build-deployment/badge.svg)](https://kcnyu.github.io/clawstock/)
-[![Harness Regression](https://github.com/KCNyu/clawstock/actions/workflows/harness-regression.yml/badge.svg)](https://github.com/KCNyu/clawstock/actions/workflows/harness-regression.yml)
+[![Pages](https://github.com/KCNyu/clawock/actions/workflows/pages/pages-build-deployment/badge.svg)](https://kcnyu.github.io/clawock/)
+[![Harness Regression](https://github.com/KCNyu/clawock/actions/workflows/harness-regression.yml/badge.svg)](https://github.com/KCNyu/clawock/actions/workflows/harness-regression.yml)
 [![License: Personal](https://img.shields.io/badge/license-personal--use-orange.svg)](#license)
 
 > Harness-driven HK + US portfolio analysis workspace.
 > Preflight scripts → LLM swarm → postflight validation, wired into 10 cron jobs that
 > publish daily WeChat briefings and refresh a public dashboard.
 
-**🎯 [Live Portfolio Dashboard](https://kcnyu.github.io/clawstock/dashboard.html)** &nbsp;|&nbsp;
-**[Daily Briefs Index](https://kcnyu.github.io/clawstock/)**
+**🎯 [Live Portfolio Dashboard](https://kcnyu.github.io/clawock/dashboard.html)** &nbsp;|&nbsp;
+**[Daily Briefs Index](https://kcnyu.github.io/clawock/)**
 
 ---
 
@@ -91,7 +91,7 @@ required section markers, verbatim data block from preflight, banned phrases
 ## Repository layout
 
 ```
-clawstock/
+clawock/
 ├── README.md                   # this file
 ├── dashboard.html              # interactive dashboard (ECharts)
 ├── index.md                    # Jekyll Pages landing

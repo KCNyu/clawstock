@@ -1,9 +1,9 @@
 ---
 layout: default
-title: clawstock — daily briefs
+title: clawock — daily briefs
 ---
 
-# 📊 clawstock
+# 📊 clawock
 
 kcn 的 openclaw 投资分析 workspace — harness 化 cron + Tier 3 swarm。
 
@@ -21,7 +21,7 @@ kcn 的 openclaw 投资分析 workspace — harness 化 cron + Tier 3 swarm。
 {% for f in sorted %}
   {% if f.path contains '/memory/' and f.extname == '.md' and f.path contains '-pre-open' %}
   <li>
-    <a href="https://github.com/KCNyu/clawstock/blob/master{{ f.path }}">{{ f.name | replace: '.md', '' }}</a>
+    <a href="https://github.com/KCNyu/clawock/blob/master{{ f.path }}">{{ f.name | replace: '.md', '' }}</a>
   </li>
   {% endif %}
 {% endfor %}
@@ -34,7 +34,7 @@ kcn 的 openclaw 投资分析 workspace — harness 化 cron + Tier 3 swarm。
   {% if f.path contains '/memory/' and f.extname == '.md' and f.name != '_TEMPLATE.md' %}
     {% unless f.path contains '-pre-open' or f.path contains 'recovery_log' or f.path contains '6_month_review' or f.path contains 'archive_index' %}
   <li>
-    <a href="https://github.com/KCNyu/clawstock/blob/master{{ f.path }}">{{ f.name | replace: '.md', '' }}</a>
+    <a href="https://github.com/KCNyu/clawock/blob/master{{ f.path }}">{{ f.name | replace: '.md', '' }}</a>
   </li>
     {% endunless %}
   {% endif %}
@@ -49,7 +49,7 @@ Self-learning loop 用，给次日 retrospective 算 trigger / P&L / confidence 
 {% for f in sorted %}
   {% if f.path contains '/memory/' and f.extname == '.json' and f.path contains '-plan' %}
   <li>
-    <a href="https://github.com/KCNyu/clawstock/blob/master{{ f.path }}">{{ f.name }}</a>
+    <a href="https://github.com/KCNyu/clawock/blob/master{{ f.path }}">{{ f.name }}</a>
   </li>
   {% endif %}
 {% endfor %}
@@ -57,16 +57,16 @@ Self-learning loop 用，给次日 retrospective 算 trigger / P&L / confidence 
 
 ## 🛠 Skill bodies
 
-完整 skill 列表见 GitHub repo：[skills/ 目录](https://github.com/KCNyu/clawstock/tree/master/skills)
+完整 skill 列表见 GitHub repo：[skills/ 目录](https://github.com/KCNyu/clawock/tree/master/skills)
 
 主要 skills：
 
-- [daily-deep-brief](https://github.com/KCNyu/clawstock/blob/master/skills/daily-deep-brief/SKILL.md)
-- [hk-stock-analysis](https://github.com/KCNyu/clawstock/blob/master/skills/hk-stock-analysis/SKILL.md)
-- [us-stock-analysis](https://github.com/KCNyu/clawstock/blob/master/skills/us-stock-analysis/SKILL.md)
-- [portfolio-swarm-review](https://github.com/KCNyu/clawstock/blob/master/skills/portfolio-swarm-review/SKILL.md)
-- [portfolio-risk-review](https://github.com/KCNyu/clawstock/blob/master/skills/portfolio-risk-review/SKILL.md)
-- [openclaw-tune](https://github.com/KCNyu/clawstock/blob/master/skills/openclaw-tune/SKILL.md)
+- [daily-deep-brief](https://github.com/KCNyu/clawock/blob/master/skills/daily-deep-brief/SKILL.md)
+- [hk-stock-analysis](https://github.com/KCNyu/clawock/blob/master/skills/hk-stock-analysis/SKILL.md)
+- [us-stock-analysis](https://github.com/KCNyu/clawock/blob/master/skills/us-stock-analysis/SKILL.md)
+- [portfolio-swarm-review](https://github.com/KCNyu/clawock/blob/master/skills/portfolio-swarm-review/SKILL.md)
+- [portfolio-risk-review](https://github.com/KCNyu/clawock/blob/master/skills/portfolio-risk-review/SKILL.md)
+- [openclaw-tune](https://github.com/KCNyu/clawock/blob/master/skills/openclaw-tune/SKILL.md)
 
 ## 📚 Reference docs
 
