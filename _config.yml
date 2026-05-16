@@ -31,12 +31,21 @@ include:
   - skills
   - assets
 
-# 默认 layout
+# 默认 layout + 关闭 SKILL.md / memory 的 Liquid 解析
+# (这些文件含 {%}/{{ }} 字面量，给 AI 消费用，不是 Jekyll 模板)
 defaults:
   - scope:
       path: ""
     values:
       layout: default
+  - scope:
+      path: "skills"
+    values:
+      render_with_liquid: false
+  - scope:
+      path: "memory"
+    values:
+      render_with_liquid: false
 
 # Author
 author:
