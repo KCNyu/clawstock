@@ -1,0 +1,222 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="color-scheme" content="dark">
+<title>clawock · Portfolio Dashboard</title>
+<meta name="description" content="Harness-driven HK + US portfolio analysis · real-time positions, concentration risk, daily P&L">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="assets/dashboard.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js" defer></script>
+</head>
+<body>
+
+<!-- Inline SVG icon sprite (Lucide-style, MIT) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-5"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
+    <symbol id="i-table" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 9h18M3 15h18"/><rect x="3" y="3" width="18" height="18" rx="2"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></symbol>
+    <symbol id="i-clipboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
+    <symbol id="i-trending-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+  </defs>
+</svg>
+
+<header class="hero">
+  <div class="hero-row">
+    <div class="brand">
+      <span class="brand-logo"><svg width="18" height="18"><use href="#i-logo"/></svg></span>
+      <div class="brand-text">
+        <h1>clawock</h1>
+        <span class="tagline">harness · HK + US portfolio</span>
+      </div>
+    </div>
+    <div class="hero-stats" id="hero-stats">
+      <div class="hero-stat"><span class="label">Total Book</span><span class="value" id="hero-book">—</span></div>
+      <div class="hero-stat"><span class="label">Today P&amp;L</span><span class="value" id="hero-today">—</span></div>
+      <div class="hero-stat"><span class="label">USDHKD</span><span class="value" id="hero-fx">—</span></div>
+      <div class="hero-stat"><span class="label">Updated</span><span class="value" id="hero-updated">—</span></div>
+    </div>
+  </div>
+  <div class="quick-links">
+    <a class="quick-link" href="briefs.html"><svg><use href="#i-clipboard"/></svg> Daily briefs</a>
+    <a class="quick-link" href="README.html"><svg><use href="#i-book"/></svg> README</a>
+    <a class="quick-link" href="https://github.com/KCNyu/clawock" target="_blank" rel="noopener"><svg><use href="#i-github"/></svg> Source</a>
+  </div>
+  <nav class="tab-nav" role="tablist">
+    <button class="tab active" data-tab="overview" role="tab" aria-selected="true"><svg><use href="#i-grid"/></svg> Overview</button>
+    <button class="tab" data-tab="holdings" role="tab"><svg><use href="#i-table"/></svg> Holdings</button>
+    <button class="tab" data-tab="concentration" role="tab"><svg><use href="#i-target"/></svg> Concentration</button>
+    <button class="tab" data-tab="history" role="tab"><svg><use href="#i-chart"/></svg> History</button>
+    <button class="tab" data-tab="plans" role="tab"><svg><use href="#i-clipboard"/></svg> Plans</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- Overview tab — bento grid -->
+<section class="tab-panel active" data-panel="overview">
+
+  <div class="card kpi-card">
+    <div class="kpi-label">US Book</div>
+    <div class="kpi-value" id="kpi-us-value">—</div>
+    <div class="kpi-sub" id="kpi-us-pnl">—</div>
+  </div>
+  <div class="card kpi-card">
+    <div class="kpi-label">HK Book</div>
+    <div class="kpi-value" id="kpi-hk-value">—</div>
+    <div class="kpi-sub" id="kpi-hk-pnl">—</div>
+  </div>
+  <div class="card kpi-card cta">
+    <div class="kpi-label">Today P&amp;L (USD-base)</div>
+    <div class="kpi-value" id="kpi-today">—</div>
+    <div class="kpi-sub" id="kpi-today-sub">—</div>
+  </div>
+  <div class="card kpi-card">
+    <div class="kpi-label">Concentration (max HHI)</div>
+    <div class="kpi-value" id="kpi-hhi">—</div>
+    <div class="kpi-sub" id="kpi-hhi-sub">—</div>
+  </div>
+
+  <div class="card span-2 tall">
+    <h3><span class="icon"><svg><use href="#i-grid"/></svg></span> US Leg Weights</h3>
+    <div class="leg-summary" id="us-summary"></div>
+    <div class="chart" id="chart-us-treemap" style="height:260px"></div>
+  </div>
+  <div class="card span-2 tall">
+    <h3><span class="icon"><svg><use href="#i-grid"/></svg></span> HK Leg Weights</h3>
+    <div class="leg-summary" id="hk-summary"></div>
+    <div class="chart" id="chart-hk-treemap" style="height:260px"></div>
+  </div>
+
+  <div class="card span-2">
+    <h3><span class="icon"><svg><use href="#i-gauge"/></svg></span> HHI · Concentration Risk</h3>
+    <div class="chart" id="chart-hhi-gauge" style="height:240px"></div>
+  </div>
+  <div class="card span-2">
+    <h3><span class="icon"><svg><use href="#i-trending-up"/></svg></span> Today's Movers (≥1.5%)</h3>
+    <div class="chart" id="chart-movers" style="height:240px"></div>
+  </div>
+
+</section>
+
+<!-- Holdings tab -->
+<section class="tab-panel" data-panel="holdings">
+  <div class="card span-4">
+    <h3><span class="icon"><svg><use href="#i-table"/></svg></span> All Positions <span id="holdings-count" class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">—</span></h3>
+    <div class="table-controls">
+      <label><input type="checkbox" id="filter-active" checked> Only shares &gt; 0</label>
+      <label>Market:
+        <select id="filter-market" aria-label="Filter by market">
+          <option value="all">All</option>
+          <option value="us">US only</option>
+          <option value="hk">HK only</option>
+        </select>
+      </label>
+    </div>
+    <div class="table-wrap">
+      <table class="holdings-table" id="holdings-table">
+        <thead>
+          <tr>
+            <th data-sort="ticker">Ticker</th>
+            <th data-sort="name">Name</th>
+            <th data-sort="currency">Curr</th>
+            <th data-sort="shares" class="num">Shares</th>
+            <th data-sort="cost_basis" class="num">Cost</th>
+            <th data-sort="current_price" class="num">Price</th>
+            <th data-sort="today_change_pct" class="num">Today %</th>
+            <th data-sort="pnl_percent" class="num">P&amp;L %</th>
+            <th data-sort="pnl_abs" class="num">P&amp;L Abs</th>
+            <th data-sort="current_value" class="num">Value</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Concentration tab -->
+<section class="tab-panel" data-panel="concentration">
+  <div class="card span-4">
+    <h3><span class="icon"><svg><use href="#i-target"/></svg></span> HHI Detail · Per Leg</h3>
+    <div class="conc-grid">
+      <div>
+        <h4>US</h4>
+        <div id="conc-us-detail" class="conc-detail"></div>
+      </div>
+      <div>
+        <h4>HK</h4>
+        <div id="conc-hk-detail" class="conc-detail"></div>
+      </div>
+    </div>
+    <details class="thresholds">
+      <summary>HHI thresholds</summary>
+      <table class="threshold-table">
+        <thead><tr><th>HHI</th><th>Top 2</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>&lt; 0.15</td><td>&lt; 40%</td><td><span class="badge healthy">健康</span></td></tr>
+          <tr><td>0.15 – 0.25</td><td>40 – 60%</td><td><span class="badge moderate">偏集中</span></td></tr>
+          <tr><td>0.25 – 0.40</td><td>60 – 75%</td><td><span class="badge concentrated">集中风险</span></td></tr>
+          <tr><td>&gt; 0.40</td><td>&gt; 75%</td><td><span class="badge danger">危险集中</span></td></tr>
+        </tbody>
+      </table>
+    </details>
+  </div>
+</section>
+
+<!-- History tab -->
+<section class="tab-panel" data-panel="history">
+  <div class="card span-4">
+    <h3><span class="icon"><svg><use href="#i-chart"/></svg></span> Book Value Over Time</h3>
+    <div class="chart" id="chart-history-value" style="height:340px"></div>
+    <p class="muted" style="margin: 8px 0 0; font-size: 11px;">数据源：<code>memory/snapshots/{date}.json</code> · brief_preflight 每日 08:00 写入</p>
+  </div>
+  <div class="card span-4">
+    <h3><span class="icon"><svg><use href="#i-trending-up"/></svg></span> Daily P&amp;L</h3>
+    <div class="chart" id="chart-history-pnl" style="height:280px"></div>
+  </div>
+</section>
+
+<!-- Plans tab -->
+<section class="tab-panel" data-panel="plans">
+  <div class="card span-4">
+    <h3><span class="icon"><svg><use href="#i-clipboard"/></svg></span> Recent Daily Plans</h3>
+    <p class="muted" style="margin: 0 0 14px; font-size: 12px;">
+      每个 daily-deep-brief 写入 <code>memory/{date}-plan.json</code> · 次日 retrospective 算 trigger / P&amp;L / confidence。
+      点击展开查看完整 plan。
+    </p>
+    <div id="plans-list"></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>
+    <a href="https://github.com/KCNyu/clawock">clawock</a>
+    · data <a href="assets/data/dashboard.json"><code>dashboard.json</code></a>
+    · built <span id="footer-gen" class="mono">—</span>
+  </p>
+  <p class="disclaimer">
+    Not investment advice. Real positions shown. Point-in-time data. Past performance ≠ future results.
+  </p>
+</footer>
+
+<script src="assets/dashboard.js" defer></script>
+</body>
+</html>

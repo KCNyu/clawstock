@@ -1,13 +1,11 @@
 ---
 layout: default
-title: clawock — daily briefs
+title: clawock · daily briefs
 ---
 
-# 📊 clawock
+# 📊 clawock · Daily Briefs
 
-kcn 的 openclaw 投资分析 workspace — harness 化 cron + Tier 3 swarm。
-
-**🎯 [→ 实时 Portfolio Dashboard](dashboard.html)** ｜ 完整 [README](README.html)
+← [Dashboard](/) ｜ [README](README.html) ｜ [GitHub](https://github.com/KCNyu/clawock)
 
 ---
 

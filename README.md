@@ -8,8 +8,8 @@
 > Preflight scripts → LLM swarm → postflight validation, wired into 10 cron jobs that
 > publish daily WeChat briefings and refresh a public dashboard.
 
-**🎯 [Live Portfolio Dashboard](https://kcnyu.github.io/clawock/dashboard.html)** &nbsp;|&nbsp;
-**[Daily Briefs Index](https://kcnyu.github.io/clawock/)**
+**🎯 [Live Portfolio Dashboard](https://kcnyu.github.io/clawock/)** &nbsp;|&nbsp;
+**[Daily Briefs Index](https://kcnyu.github.io/clawock/briefs.html)**
 
 ---
 
@@ -93,8 +93,8 @@ required section markers, verbatim data block from preflight, banned phrases
 ```
 clawock/
 ├── README.md                   # this file
-├── dashboard.html              # interactive dashboard (ECharts)
-├── index.md                    # Jekyll Pages landing
+├── index.html                  # interactive dashboard (default landing, ECharts)
+├── briefs.md                   # daily briefs index
 ├── _config.yml                 # Jekyll config
 │
 ├── SOUL.md / IDENTITY.md       # Rick's persona / disposition
@@ -160,7 +160,7 @@ python3 scripts/harness/brief_preflight.py
 python3 scripts/data/build_dashboard.py
 
 # 5. Open the dashboard locally (any static server)
-python3 -m http.server 8080  # then visit http://localhost:8080/dashboard.html
+python3 -m http.server 8080  # then visit http://localhost:8080/
 ```
 
 API keys (Finnhub, Alpha Vantage, Polygon) are read from `.api_keys`
