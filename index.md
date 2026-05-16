@@ -21,7 +21,7 @@ kcn 的 openclaw 投资分析 workspace — harness 化 cron + Tier 3 swarm。
 {% for f in sorted %}
   {% if f.path contains '/memory/' and f.extname == '.md' and f.path contains '-pre-open' %}
   <li>
-    <a href="{{ f.path | replace: '.md', '.html' }}">{{ f.name | replace: '.md', '' }}</a>
+    <a href="https://github.com/KCNyu/clawstock/blob/master{{ f.path }}">{{ f.name | replace: '.md', '' }}</a>
   </li>
   {% endif %}
 {% endfor %}
@@ -34,7 +34,7 @@ kcn 的 openclaw 投资分析 workspace — harness 化 cron + Tier 3 swarm。
   {% if f.path contains '/memory/' and f.extname == '.md' and f.name != '_TEMPLATE.md' %}
     {% unless f.path contains '-pre-open' or f.path contains 'recovery_log' or f.path contains '6_month_review' or f.path contains 'archive_index' %}
   <li>
-    <a href="{{ f.path | replace: '.md', '.html' }}">{{ f.name | replace: '.md', '' }}</a>
+    <a href="https://github.com/KCNyu/clawstock/blob/master{{ f.path }}">{{ f.name | replace: '.md', '' }}</a>
   </li>
     {% endunless %}
   {% endif %}
@@ -61,7 +61,7 @@ Self-learning loop 用，给次日 retrospective 算 trigger / P&L / confidence 
 {% for f in sorted %}
   {% if f.path contains '/skills/' and f.name == 'SKILL.md' %}
   <li>
-    <a href="{{ f.path | replace: '.md', '.html' }}">{{ f.path | replace: '/SKILL.md', '' | replace: '/skills/', '' }}</a>
+    <a href="https://github.com/KCNyu/clawstock/blob/master{{ f.path }}">{{ f.path | replace: '/SKILL.md', '' | replace: '/skills/', '' }}</a>
   </li>
   {% endif %}
 {% endfor %}

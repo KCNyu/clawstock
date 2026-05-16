@@ -31,21 +31,18 @@ include:
   - skills
   - assets
 
-# 默认 layout + 关闭 SKILL.md / memory 的 Liquid 解析
-# (这些文件含 {%}/{{ }} 字面量，给 AI 消费用，不是 Jekyll 模板)
+# 关闭 optional_front_matter 插件——避免给 skills/SKILL.md 和 memory/*.md
+# 自动加 front matter 后被 Jekyll 当 page 处理触发 Liquid 报错（含 {%} 字面量）
+# 它们改走 static files 路线，链接到 GitHub 原始视图
+optional_front_matter:
+  enabled: false
+
+# 默认 layout（只对真正的 page 生效，static files 不受影响）
 defaults:
   - scope:
       path: ""
     values:
       layout: default
-  - scope:
-      path: "skills"
-    values:
-      render_with_liquid: false
-  - scope:
-      path: "memory"
-    values:
-      render_with_liquid: false
 
 # Author
 author:
