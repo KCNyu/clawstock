@@ -9,6 +9,11 @@ on:
     - cron: '30 23 * * 1-5'  # weekdays only — sentiment moves on trading days
   workflow_dispatch:
 
+# Serialize with other commit-pushing workflows
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+
 jobs:
   scan:
     runs-on: ubuntu-latest

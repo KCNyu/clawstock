@@ -8,6 +8,11 @@ on:
     - cron: '0 22 * * 5'
   workflow_dispatch:
 
+# Serialize with other commit-pushing workflows
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+
 jobs:
   archive:
     runs-on: ubuntu-latest

@@ -8,6 +8,13 @@ on:
     - cron: '0 6 * * *'
   workflow_dispatch:
 
+# All workflows that commit to master share this lock. Only one runs at a time
+# in this group — no push races, no rebase retries needed in practice (retry kept
+# as belt-and-suspenders for manual / rare cases).
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+
 jobs:
   rebuild:
     runs-on: ubuntu-latest
