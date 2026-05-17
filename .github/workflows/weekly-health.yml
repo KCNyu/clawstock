@@ -52,6 +52,24 @@ jobs:
           print('HK 00700 quote:', q.get('00700', {}).get('price'))
           "
 
+      - name: Peer-map coverage check
+        run: |
+          python3 << 'PY'
+          import json
+          pf = json.load(open('portfolio.json'))
+          peer_map = json.load(open('memory/peer-map.json')).get('holdings', {})
+          missing = []
+          for region in ('hk_stocks', 'us_stocks'):
+              for h in pf['portfolios'][region]['holdings']:
+                  if h.get('shares', 0) > 0 and h['ticker'] not in peer_map:
+                      missing.append(f'{h["ticker"]} ({h.get("name","")[:20]})')
+          if missing:
+              print(f'⚠️ active holdings missing peer-map entry: {missing}')
+              print('→ add to memory/peer-map.json so ▎同行扫描 covers them')
+          else:
+              print(f'✓ all active holdings have peer-map coverage')
+          PY
+
       - name: Plan schema validation
         run: |
           python3 << 'PY'

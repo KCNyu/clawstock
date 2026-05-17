@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# clawock pre-push hook — runs scripts/system_check.py before allowing any push.
+# Critical failure blocks push; warnings shown but push proceeds.
+#
+# Override with: git push --no-verify  (use sparingly)
+
+set -e
+WS="$(git rev-parse --show-toplevel)"
+
+if [ ! -f "$WS/scripts/system_check.py" ]; then
+  # No checker yet — let push through
+  exit 0
+fi
+
+echo "▸ running clawock system_check.py before push…"
+python3 "$WS/scripts/system_check.py"
+RC=$?
+
+if [ "$RC" = "1" ]; then
+  echo
+  echo "🚫 push blocked by clawock system_check (critical failures above)"
+  echo "   fix the issue, OR override with: git push --no-verify"
+  exit 1
+fi
+
+# RC=0 (all OK) or RC=2 (warnings) — allow push
+exit 0

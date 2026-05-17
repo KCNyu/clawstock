@@ -74,7 +74,7 @@ def validate_plan_json(path):
     return issues
 
 
-def validate_markdown(path):
+def validate_markdown(path, context=None):
     if not path.exists():
         return ['pre-open.md 缺失（critical）']
     try:
@@ -96,6 +96,15 @@ def validate_markdown(path):
 
     if 'USDHKD' not in text and 'FX' not in text and '汇率' not in text:
         issues.append('pre-open.md 未提及 FX rate / 汇率')
+
+    # NEW: peer-rotation enforcement — divergence_signal in context must be addressed
+    if context and context.get('peer_scan'):
+        divergence_tickers = [t for t, p in context['peer_scan'].items()
+                              if p.get('divergence_signal')]
+        unaddressed = [t for t in divergence_tickers if t not in text]
+        if unaddressed:
+            issues.append(f'pre-open.md 漏写 divergence 信号 ticker: {unaddressed} '
+                          f'(preflight 标了 {len(divergence_tickers)} 个，markdown 漏 {len(unaddressed)} 个)')
 
     return issues
 
@@ -229,8 +238,17 @@ def main():
     md_path   = WS / 'memory' / f'{today}-pre-open.md'
     plan_path = WS / 'memory' / f'{today}-plan.json'
 
+    # Load preflight context (for cross-validation)
+    ctx_path = WS / 'memory' / '.tmp' / f'brief-context-{today}.json'
+    context = None
+    if ctx_path.exists():
+        try:
+            context = json.loads(ctx_path.read_text())
+        except Exception:
+            pass
+
     issues = []
-    issues += validate_markdown(md_path)
+    issues += validate_markdown(md_path, context=context)
     issues += validate_plan_json(plan_path)
 
     status = categorize(issues)
