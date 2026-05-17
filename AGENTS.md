@@ -50,7 +50,8 @@ After any of the following changes, run a git commit automatically — no need t
 Message style: `<type>: <concise description>`, Chinese is fine.
 **Never commit:** `.api_keys`, `*.png`/`*.jpg`, `.openclaw/`, `.clawhub/`, `memory/.dreams/`, `memory/.tmp/` (all gitignored).
 
-Push: only when explicitly asked. The cron harness commits locally; `git push` is a human action.
+Push: harness postflight now **auto-pushes** after commit (rebase+retry on race). 
+`git push` from chat / Telegram should still ask first — that's intentional human gating.
 
 ## Memory
 

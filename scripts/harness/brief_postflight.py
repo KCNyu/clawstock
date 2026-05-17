@@ -143,7 +143,16 @@ def maybe_commit(status, today):
     commit_ok, commit_out = _git('commit', '-m', f'memory: daily deep brief {today}{msg_suffix}')
     if not commit_ok and 'nothing to commit' in commit_out:
         return True, 'nothing to commit (idempotent)'
-    return commit_ok, commit_out[-200:] if not commit_ok else 'committed'
+    if not commit_ok:
+        return False, commit_out[-200:]
+
+    # Push so Pages picks it up; rebase + retry handles races with GH Action commits
+    for i in range(1, 4):
+        push_ok, push_out = _git('push', 'origin', 'master')
+        if push_ok:
+            return True, 'committed + pushed'
+        _git('pull', '--rebase', 'origin', 'master')
+    return True, f'committed (push failed: {push_out[-150:]})'
 
 
 def main():

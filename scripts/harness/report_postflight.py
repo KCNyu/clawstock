@@ -132,7 +132,16 @@ def maybe_commit(status, commit_msg):
     ok, out = _git('commit', '-m', f'{commit_msg}{suffix}')
     if not ok and 'nothing to commit' in out:
         return True, 'nothing to commit (idempotent)'
-    return ok, ('committed' if ok else out[-200:])
+    if not ok:
+        return False, out[-200:]
+
+    # Push so Pages updates; rebase+retry handles races with GH Action commits
+    for i in range(1, 4):
+        push_ok, push_out = _git('push', 'origin', 'master')
+        if push_ok:
+            return True, 'committed + pushed'
+        _git('pull', '--rebase', 'origin', 'master')
+    return True, f'committed (push failed: {push_out[-150:]})'
 
 
 def main():
