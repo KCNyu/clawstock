@@ -18,9 +18,10 @@ data_cache/
 *.log
 
 # Images / generated output
+# Allow images under docs/ for README screenshots; ignore everywhere else
 *.png
 *.jpg
-!docs/*.png   # allow README/Pages screenshots
+!docs/*.png
 !docs/*.jpg
 *.jpeg
 *.gif
