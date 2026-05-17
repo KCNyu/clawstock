@@ -84,14 +84,14 @@ python3 scripts/data/analyze_hk_stocks.py --dry-run   # 不写文件
 1. CNBC `cnbc.com/quotes/{TICKER}` — 网页，快速可靠
 2. 东方财富、Finnhub、Yahoo Finance
 
-### 货币 / FX 铁律（2026-05-16 加入）
+### 货币 / FX
 
-⚠️ **HKD + USD 不能直接相加**。book total 必须用 FX 换算后再加。
+铁律：**HKD + USD 不能直接相加** — 详见 `MEMORY.md § 数据规则 § 2`。
 
-- 工具：`python3 scripts/data/fetch_fx.py --json` → `{"rate": 7.83, "source": "Frankfurter", ...}`
+工具：
+- `python3 scripts/data/fetch_fx.py --json` → `{"rate": 7.83, "source": "Frankfurter", ...}`
 - 换算：`python3 scripts/data/fetch_fx.py --convert 10000 HKD USD`
-- 输出 book total 必须**两个 view 都给**：USD-base 和 HKD-base，并显式标注 rate + source + timestamp
-- 历史教训：2026-05-16 deep brief 把 -4936 HKD 和 +513 USD 直接相加 → 数字毫无意义
+- fallback：Frankfurter → exchangerate.host → Yahoo HKD=X；4h 本地缓存
 
 ### 美股基本面 / SEC filings（脚本，2026-05-16 加入）
 
@@ -114,14 +114,12 @@ python3 scripts/data/analyze_hk_stocks.py --dry-run   # 不写文件
 - 不替代 `scripts/data/fetch_us_stocks.py` 抓价格 — 这是**纯基本面/filings 补充**
 
 ### 说明
-- 分析持仓前，必须先获取最新价格，**不得直接使用 `portfolio.json` 的缓存价**
-- 如果全部失败，必须明确说明是旧数据
-- ⚠️ **2026-05-11 教训：曾用缓存价（RKLB $110 vs 实时 $118，RKLX $59 vs $73）导致盈利从 +$790 错写成 +$550**
-- ⚠️ **2026-05-12 教训：live-quote API 的 `PreviousClose` 字段在收盘后会被更新成当日收盘价，导致 `prev_close == current_price`，`today_change = 0`，无法回答"今天亏多少"**
-  - 修复：脚本现在额外调用 Polygon `/prev` 历史接口获取带日期戳的前收，回退链：Polygon历史 → API pc字段 → 保留现有（3天内） → 从dp%反推
-  - `prev_close_date` 字段同步写入 portfolio.json，可验证前收来自哪个交易日
-  - 脚本跑完后 `today_change` 字段即可直接使用，无需额外换算
-- 新浪美股接口境外 403，跳过不试
+
+数据/缓存铁律 → 见 `MEMORY.md § 数据规则`。本节只补充 TOOLS-specific 实现细节：
+
+- `prev_close` 由 Polygon `/prev` 历史接口独立获取（带日期戳）。回退链：Polygon历史 → API pc字段 → 保留现有（3天内） → 从dp%反推
+- `prev_close_date` 字段同步写入 portfolio.json，可验证前收来自哪个交易日
+- 脚本跑完后 `today_change` 字段即可直接信任，无需换算
 
 ---
 

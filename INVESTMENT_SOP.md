@@ -35,12 +35,10 @@
 7. 输出分析（按 skill 输出格式）
 8. 重要操作后：更新 `portfolio.json` + 当天 `memory/YYYY-MM-DD.md` + git commit（AGENTS.md 有 auto-commit 规则）
 
-## 数据规则（铁律，跟 MEMORY.md 保持一致）
+## 数据规则
 
-- **禁止用 portfolio.json 的 `current_price` 计算盈亏** —— 那是上次更新的旧值，脚本会覆盖
-- 所有源失败 → 必须说"⚠️ 数据获取失败，以下为旧数据"
-- **00100 MINIMAX 只有 Tencent 一源**，挂了必须明说
-- 新浪 / Sina 美股接口永远跳过（境外 403）
+→ 见 `MEMORY.md § 数据规则` （唯一权威）。SOP 不重复，只提醒：
+**没跑脚本就不要谈盈亏。**
 
 ## 写入规则
 

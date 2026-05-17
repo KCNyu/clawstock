@@ -19,22 +19,27 @@
 
 ---
 
-## ⚠️ 数据规则（铁律）
+## ⚠️ 数据规则（铁律 — 本文件是唯一权威）
 
 **每次问持仓/股价/盈亏，先实时抓取，再回答。**
 
-- **禁止用 portfolio.json 的缓存价**计算盈亏（那是上次更新的旧数据）
-- 用脚本走 fallback 链：
-  - 美股：`python3 scripts/data/analyze_us_stocks.py`（7 路 fallback，含 RSI/MA/新闻/信号）
-  - 港股：`python3 scripts/data/analyze_hk_stocks.py`（Tencent → stooq → yfinance）
-- fallback 链路详情见 `TOOLS.md`
+### 1. 不用缓存价
+- **禁止用 portfolio.json 的 `current_price` 计算盈亏** — 那是上次更新的旧数据
+- 必须先跑 `scripts/data/analyze_{us,hk}_stocks.py`（fallback 链详情见 `TOOLS.md` § 数据源清单）
 - 所有源均失败 → 明确说"数据获取失败，以下为旧数据"，**禁止静默使用**
 - 数据成功后 → 更新 `portfolio.json` + git commit
+- 教训：2026-05-11 用缓存价 RKLB 写成 $110 vs 实时 $118，盈利 +$790 错写成 +$550
 
-**已知陷阱**：
-- ⚠️ **00100 MINIMAX 只有 Tencent 一个源**，新 IPO 其他源都没数据。如果 Tencent 失败必须明说
-- ⚠️ 收盘后 live-quote API 会把 `PreviousClose` 更新为当日收盘价，导致 `prev_close == current_price` → `today_change = 0`。脚本已修（Polygon `/prev` 独立拉前收 + dp% 反推兜底），`today_change` 字段可直接信任
-- ⚠️ 别用缓存价（2026-05-11 教训：RKLB 写成 $110 但实时 $118，盈利从 +$790 错写成 +$550）
+### 2. FX 铁律 — HKD + USD 不能直接相加
+- 港股 book 用 HKD，美股 book 用 USD — **绝不直接相加**
+- 所有 book-level 数字必须**双视角**：USD-base + HKD-base，显式标注 rate / source / fetched_at
+- 工具：`python3 scripts/data/fetch_fx.py --json` （3 路 fallback，4h 缓存）
+- 教训：2026-05-16 deep brief 把 -4936 HKD + +513 USD = -4423 直接相加 → 数字毫无意义
+
+### 3. 已知数据坑
+- **00100 MINIMAX 只有 Tencent 一个源**，新 IPO 其他源没数据；Tencent 失败必须明说
+- 收盘后 live-quote API 会把 `PreviousClose` 更新为当日收盘价，导致 `today_change = 0`；脚本已修（Polygon `/prev` 独立拉前收 + dp% 反推兜底），`today_change` 字段可直接信任
+- 新浪美股接口境外 403，跳过不试
 
 ---
 

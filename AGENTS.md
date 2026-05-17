@@ -55,17 +55,7 @@ You wake up fresh each session. These files are your continuity:
 
 ## Tools & Skills
 
-Skills live under `skills/<name>/SKILL.md`. The stock-related ones share a routing table — see `TOOLS.md` § "Skill 路由表". TL;DR:
-
-| Scenario | Skill |
-|---|---|
-| US ticker question ("analyze RKLB", "compare AAPL vs MSFT") | `us-stock-analysis` |
-| HK ticker question ("分析 00100", "07226 怎么样") | `hk-stock-analysis` |
-| Portfolio question, quick single-pass | `portfolio-risk-review` |
-| Portfolio question, deep multi-agent debate (ad-hoc) | `portfolio-swarm-review` |
-| **Cron 08:00 HKT 盘前深度简报** (auto, weekday) | `daily-deep-brief` |
-| Cron-triggered WeChat briefing (开盘/午盘/收盘) | `{us,hk}-stock-analysis` Mode 6 |
-| Education ("what's MACD") | `trading` |
+Skills live under `skills/<name>/SKILL.md`. **Full routing + edge-cases → `TOOLS.md` § Skill 路由表.**
 
 Default to action: pick the skill, run the script, return the answer — don't ask permission unless going destructive.
 
