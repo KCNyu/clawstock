@@ -1,11 +1,48 @@
 {
-  "generated_at": "2026-05-17T05:16:44.857159+00:00",
-  "vix": null,
-  "treasury_10y": null,
-  "dxy": null,
+  "generated_at": "2026-05-17T07:06:24.157688+00:00",
+  "vix": {
+    "symbol": "^VIX",
+    "price": 18.43,
+    "prev": 17.26,
+    "change_pct": 6.78,
+    "as_of": 1778876101
+  },
+  "treasury_10y": {
+    "symbol": "^TNX",
+    "price": 4.595,
+    "prev": 4.461,
+    "change_pct": 3.0,
+    "as_of": 1778871595,
+    "yield_pct": 0.459
+  },
+  "dxy": {
+    "symbol": "DX-Y.NYB",
+    "price": 99.27,
+    "prev": 99.284,
+    "change_pct": -0.01,
+    "as_of": 1778878799
+  },
   "fear_greed": null,
-  "hsi": null,
+  "hsi": {
+    "symbol": "^HSI",
+    "price": 25962.73,
+    "prev": 26389.0,
+    "change_pct": -1.62,
+    "as_of": 1778832576
+  },
   "hstech": null,
-  "spx": null,
-  "nasdaq": null
+  "spx": {
+    "symbol": "^GSPC",
+    "price": 7408.5,
+    "prev": 7501.24,
+    "change_pct": -1.24,
+    "as_of": 1778877965
+  },
+  "nasdaq": {
+    "symbol": "^IXIC",
+    "price": 26225.145,
+    "prev": 26635.223,
+    "change_pct": -1.54,
+    "as_of": 1778879759
+  }
 }
