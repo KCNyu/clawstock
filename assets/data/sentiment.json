@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-05-17T00:48:22.786000+00:00",
+  "source": "reddit-json-public",
+  "subs": [
+    "wallstreetbets",
+    "stocks",
+    "investing"
+  ],
+  "tickers": [
+    {
+      "ticker": "RKLB",
+      "name": "Rocket Lab Corp",
+      "region": "us_stocks",
+      "reddit_mentions_7d": 0,
+      "top_posts": []
+    },
+    {
+      "ticker": "CRCL",
+      "name": "Circle Internet Group Inc-A",
+      "region": "us_stocks",
+      "reddit_mentions_7d": 0,
+      "top_posts": []
+    },
+    {
+      "ticker": "PLTU",
+      "name": "二倍做多PLTR ETF-Direxion",
+      "region": "us_stocks",
+      "reddit_mentions_7d": 0,
+      "top_posts": []
+    },
+    {
+      "ticker": "SOXL",
+      "name": "三倍做多半导体ETF-Direxion",
+      "region": "us_stocks",
+      "reddit_mentions_7d": 0,
+      "top_posts": []
+    },
+    {
+      "ticker": "RKLX",
+      "name": "Defiance Daily Target 2X Long R",
+      "region": "us_stocks",
+      "reddit_mentions_7d": 0,
+      "top_posts": []
+    },
+    {
+      "ticker": "ROBN",
+      "name": "二倍做多HOOD ETF-T-Rex",
+      "region": "us_stocks",
+      "reddit_mentions_7d": 0,
+      "top_posts": []
+    },
+    {
+      "ticker": "MSFU",
+      "name": "二倍做多微软ETF-Direxion",
+      "region": "us_stocks",
+      "reddit_mentions_7d": 0,
+      "top_posts": []
+    }
+  ]
+}
