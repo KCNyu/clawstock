@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-17T05:15:39.113459+00:00",
+  "generated_at": "2026-05-17T07:08:04.579436+00:00",
   "sources": [
     "reddit-json-public",
     "google-news-rss"
@@ -68,9 +68,9 @@
           "published": "Mon, 11 May 2026 20:35:00 GMT"
         },
         {
-          "title": "Circle Internet Group, Inc. (CRCL) Live Share Price, Invest From India",
-          "source": "INDmoney",
-          "published": "Fri, 15 May 2026 19:59:59 GMT"
+          "title": "Circle Stock (CRCL) Opinions on Crypto Market Bill Senate Vote",
+          "source": "Quiver Quantitative",
+          "published": "Thu, 14 May 2026 17:42:00 GMT"
         },
         {
           "title": "TEAM, CRCL, DDOG Reflect Trending Stocks: Here's Why",
@@ -78,9 +78,9 @@
           "published": "Wed, 13 May 2026 15:30:00 GMT"
         },
         {
-          "title": "CRCL Stock Is Down 67% From Its 52-Week High. Here’s What USDC Expansion Means for Investors",
-          "source": "TIKR.com",
-          "published": "Sat, 02 May 2026 07:00:00 GMT"
+          "title": "CRCL stock swings after Q1 earnings miss, profit squeeze – retail bullish on CLARITY Act markup hopes",
+          "source": "MSN",
+          "published": "Sat, 16 May 2026 05:54:07 GMT"
         }
       ],
       "google_news_zh": []
@@ -258,14 +258,14 @@
           "published": "Thu, 14 May 2026 15:26:02 GMT"
         },
         {
+          "title": "Direxion Daily MSFT Bull 2X Shares (NASDAQ:MSFU) Shares Gap Down - Time to Sell?",
+          "source": "MarketBeat",
+          "published": "Thu, 23 Apr 2026 07:00:00 GMT"
+        },
+        {
           "title": "If Microsoft Is Ready to Rebound, Consider Trading This ETF",
           "source": "etftrends.com",
           "published": "Fri, 27 Mar 2026 07:00:00 GMT"
-        },
-        {
-          "title": "Direxion Daily MSFT Bull 2X Shares (NASDAQ:MSFU) Shares Gap Down - Here's What Happened",
-          "source": "MarketBeat",
-          "published": "Thu, 30 Apr 2026 07:00:00 GMT"
         },
         {
           "title": "MSFU: Get Ready To Pull The Trigger",
@@ -273,9 +273,9 @@
           "published": "Tue, 10 Feb 2026 08:00:00 GMT"
         },
         {
-          "title": "Direxion Daily MSFT Bull 2X Shares (NASDAQ:MSFU) Sees Strong Trading Volume - Time to Buy?",
+          "title": "Direxion Daily MSFT Bull 2X Shares (NASDAQ:MSFU) Shares Gap Down - Here's What Happened",
           "source": "MarketBeat",
-          "published": "Mon, 27 Apr 2026 07:00:00 GMT"
+          "published": "Thu, 30 Apr 2026 07:00:00 GMT"
         },
         {
           "title": "Why It’s Time to Look at This Microsoft ETF",
@@ -359,9 +359,9 @@
           "published": "Mon, 11 May 2026 09:00:01 GMT"
         },
         {
-          "title": "Citi Raises GOLDWIND (02208.HK) TP to HKD20, Bullish on Upcycle",
+          "title": "BofAS Raises GOLDWIND (02208.HK) TP to HKD18.5; 1Q Net Profit Beats",
           "source": "AASTOCKS.com",
-          "published": "Mon, 27 Apr 2026 07:00:00 GMT"
+          "published": "Sun, 26 Apr 2026 07:00:00 GMT"
         },
         {
           "title": "Hong Kong Stock Movement | Goldwind Technology (02208) fell over 4% post-results; net profit attributable to shareholders grew more than 40% year-on-year in the first three quarters.",
@@ -381,11 +381,6 @@
           "published": "Thu, 14 May 2026 03:41:00 GMT"
         },
         {
-          "title": "【大行報告】大摩升金風科技目標價40%",
-          "source": "Yahoo 財經",
-          "published": "Mon, 19 Jan 2026 08:00:00 GMT"
-        },
-        {
           "title": "金風科技(002202)2025年報及2026年一季報點評：風機交付大幅增長 海外業務增長顯著",
           "source": "富途牛牛",
           "published": "Wed, 13 May 2026 00:32:02 GMT"
@@ -396,14 +391,19 @@
           "published": "Sat, 16 May 2026 00:37:56 GMT"
         },
         {
-          "title": "歐盟宣佈對中國清潔能源巨頭金風科技展開反補貼深入調查",
-          "source": "DW.com",
-          "published": "Tue, 03 Feb 2026 08:00:00 GMT"
-        },
-        {
           "title": "全球裝機續壯大 金風科技乘勢上",
           "source": "信報網站",
           "published": "Wed, 06 May 2026 07:00:00 GMT"
+        },
+        {
+          "title": "【大行報告】大摩升金風科技目標價40%",
+          "source": "Yahoo 財經",
+          "published": "Mon, 19 Jan 2026 08:00:00 GMT"
+        },
+        {
+          "title": "金風科技(02208.HK)升近一成 首季淨利潤大增六成",
+          "source": "AASTOCKS.com",
+          "published": "Mon, 27 Apr 2026 01:35:00 GMT"
         }
       ]
     },
@@ -442,6 +442,11 @@
           "published": "Thu, 14 May 2026 15:58:32 GMT"
         },
         {
+          "title": "負面因素已充分計價，南方基金旗下恆生科技ETF南方(520570)進入堅實價值底部區間",
+          "source": "hstong.com",
+          "published": "Fri, 15 May 2026 17:35:20 GMT"
+        },
+        {
           "title": "恒生科技ETF南方(520570)早盤漲近3% 互聯網龍頭一季度業績超預期AI有望驅動恒科指數修復",
           "source": "富途牛牛",
           "published": "Thu, 14 May 2026 02:18:16 GMT"
@@ -460,11 +465,6 @@
           "title": "03067 安碩恒生科技- ETF 詳情 - ETF",
           "source": "etnet 經濟通",
           "published": "Thu, 14 May 2026 07:00:00 GMT"
-        },
-        {
-          "title": "港股科技震盪走強，日韓暴漲后溢出效應或利於南方基金旗下恆生科技ETF南方(520570.SH)重估修復",
-          "source": "hstong.com",
-          "published": "Wed, 13 May 2026 07:00:00 GMT"
         }
       ]
     },
@@ -525,11 +525,6 @@
           "title": "Bearish block trade of CSOP HS TECH(03033) 1.9M shares at $5.14, $9.766M turnover",
           "source": "AASTOCKS.com",
           "published": "Thu, 14 May 2026 01:20:00 GMT"
-        },
-        {
-          "title": "Capital Flows | Northbound funds sold HK stocks worth HKD 17.9 billion, while aggressively buying Tencent shares exceeding HKD 3.6 billion.",
-          "source": "富途牛牛",
-          "published": "Tue, 10 Mar 2026 07:00:00 GMT"
         }
       ],
       "google_news_zh": [
