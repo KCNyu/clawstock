@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-17T06:56:14.065349Z",
+  "generated_at": "2026-05-17T06:56:33.082124Z",
   "last_updated": "2026/05/16 23:37 HKT",
   "fx": {
     "usdhkd": 7.8315,
@@ -427,111 +427,80 @@
       "file": "2026-05-17-plan.json",
       "plan": {
         "date": "2026-05-17",
-        "verdict": "HK leg is max risk (00100+07226 = 85.9% concentration, MINIMAX theme unsupported). US leg ROBN immediate pain. Overall risk should rotate toward HK after MSFU/RKLX profit-taking.",
-        "confidence": "medium",
-        "fx_used": 7.8,
+        "fx_rate_usdhkd": 7.8,
         "fx_source": "HARDCODED_FALLBACK",
+        "regime": {
+          "us": "range-bound",
+          "hk": "trending-down"
+        },
         "book": {
-          "usd_base_total": -119.6,
-          "hkd_base_total": -932.88,
-          "us_leg_usd": 3694.25,
-          "hk_leg_hkd": 83340.4
+          "usd_total_pnl": -119.6,
+          "hkd_total_pnl": -932.88,
+          "hk_leg_hkd": -4935.84,
+          "us_leg_usd": 513.2
         },
-        "concentration": {
-          "hk": {
-            "hhi": 0.418,
-            "top2_pct": 85.9,
-            "verdict": "🔴 危险集中"
-          },
-          "us": {
-            "hhi": 0.171,
-            "top2_pct": 43.3,
-            "verdict": "偏集中"
-          }
-        },
-        "positions": [
+        "actions": [
           {
             "ticker": "ROBN",
-            "action": "STOP",
-            "bucket": "stop_loss",
-            "trigger_type": "price_drop",
-            "confidence": "high",
-            "note": "-17.5% PnL, -9% single day, 40-share position, low liquidity (240k vol/day). Reduce to 20 shares on Monday open."
+            "bucket": "cut",
+            "size_pct": 50,
+            "size_shares": 20,
+            "trigger_type": "open",
+            "trigger_price": null,
+            "trigger_condition": "周一开盘任意价减半至20股",
+            "confidence": 0.82,
+            "rationale": "-17.5% PnL, -9% single day crash, 40-share position in low-liquidity ETF"
           },
           {
             "ticker": "MSFU",
-            "action": "TRIM",
-            "bucket": "trim",
-            "trigger_type": "price_target",
-            "confidence": "high",
-            "note": "+6.1% Friday gain. Post-earnings drift likely. Take partial profit Mon."
+            "bucket": "trim_on_rebound",
+            "size_pct": 50,
+            "size_shares": 10,
+            "trigger_type": "price_above",
+            "trigger_price": 29.5,
+            "trigger_condition": "微软2x升至29.5以上时卖出一半",
+            "confidence": 0.78,
+            "rationale": "+6.1% Friday gain, post-earnings drift complete, take partial profit"
           },
           {
             "ticker": "RKLX",
-            "action": "TRIM",
-            "bucket": "trim",
-            "trigger_type": "price_target",
-            "confidence": "high",
-            "note": "+73% on RKLB 2x. Take partial profit, remaining 2 shares okay to hold."
+            "bucket": "trim_on_rebound",
+            "size_pct": 50,
+            "size_shares": 1,
+            "trigger_type": "price_above",
+            "trigger_price": 82,
+            "trigger_condition": "RKLB 2x升至82以上时卖出一股",
+            "confidence": 0.75,
+            "rationale": "+73% on 2x RKLB leverage, take partial profit leaving 1 share"
           },
           {
             "ticker": "00100",
-            "action": "WATCH",
-            "bucket": "watch",
-            "trigger_type": "price_trigger",
-            "confidence": "medium",
-            "note": "MINIMAX no fundamental anchor. Monday HK open price will set direction. Reduce if < HKD 750."
+            "bucket": "hold_and_watch",
+            "size_pct": 0,
+            "size_shares": 60,
+            "trigger_type": "price_below",
+            "trigger_price": 750,
+            "trigger_condition": "MINIMAX跌破750 HKD则减仓10-20股",
+            "confidence": 0.6,
+            "rationale": "No fundamental anchor, AI theme unsupported, Monday open sets direction"
           },
           {
             "ticker": "07226",
-            "action": "HOLD",
-            "bucket": "hold",
-            "trigger_type": "none",
-            "confidence": "high",
-            "note": "2x HSTECH leveraged ETF with decay risk. Deeply underwater. Wait for HSTECH direction before any action."
+            "bucket": "hold_and_watch",
+            "size_pct": 0,
+            "size_shares": 6200,
+            "trigger_type": "index_breakdown",
+            "trigger_price": null,
+            "trigger_condition": "恒生科技指数若跌破4800则评估是否清仓07226",
+            "confidence": 0.7,
+            "rationale": "2x leveraged ETF decay risk high; deeply underwater, wait for HSTECH direction"
           }
         ],
-        "next_actions": [
-          {
-            "sequence": 1,
-            "market": "HK",
-            "action": "Reduce 00100 if price < HKD 750 on Monday open",
-            "trigger": "price < 750 HKD",
-            "priority": 1
-          },
-          {
-            "sequence": 2,
-            "market": "US",
-            "action": "Reduce ROBN to 20 shares on pre-market Monday",
-            "trigger": "premarket",
-            "priority": 1
-          },
-          {
-            "sequence": 3,
-            "market": "US",
-            "action": "Partial profit-taking MSFU and RKLX on Monday",
-            "trigger": "any price",
-            "priority": 2
-          },
-          {
-            "sequence": 4,
-            "market": "FX",
-            "action": "Re-verify USDHKD rate via fetch_fx.py on Monday morning",
-            "trigger": "Monday open",
-            "priority": 3
-          }
-        ],
-        "retrospective": {
-          "prior_plan_date": null,
-          "actions": [],
-          "note": "first run (no prior plan)"
-        },
-        "data_issues": [
-          "US/HK real-time refresh failed (Sunday holiday)",
-          "FX hardcoded fallback 7.8 - not validated",
-          "SEC EDGAR RKLB/CRCL failed",
-          "Concentration HHI based on last valid portfolio snapshot"
-        ]
+        "watch_levels": {
+          "hstech_breakdown": 4800,
+          "soxl_breakdown_pct": -4,
+          "book_force_derisk_usd": -300
+        }
       }
     },
     {
