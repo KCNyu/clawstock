@@ -20,6 +20,8 @@ data_cache/
 # Images / generated output
 *.png
 *.jpg
+!docs/*.png   # allow README/Pages screenshots
+!docs/*.jpg
 *.jpeg
 *.gif
 *.mp4
