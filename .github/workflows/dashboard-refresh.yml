@@ -43,7 +43,15 @@ jobs:
           git add assets/data/dashboard.json
           if git diff --cached --quiet; then
             echo "no change"
-          else
-            git commit -m "dashboard: scheduled refresh $(date -u +%Y-%m-%dT%H:%MZ)"
-            git push
+            exit 0
           fi
+          git commit -m "dashboard: scheduled refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+          # Concurrent-safe push: rebase on top of any newer remote, retry up to 5×
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push attempt $i lost race, rebasing…"
+            git pull --rebase origin master
+            sleep $((i*2))
+          done
+          echo "push failed after retries"
+          exit 1
