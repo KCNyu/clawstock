@@ -18,7 +18,19 @@
 - Dashboard live: https://kcnyu.github.io/clawock/ — 自动从 `assets/data/dashboard.json` 取数
 - Briefs index: https://kcnyu.github.io/clawock/briefs.html — 自动列 `memory/*-pre-open.md`
 - `_layouts/default.html` + `assets/dashboard.css` 给所有 markdown 页面统一样式；不要再加 jekyll-theme
-- Pages 自动 build on push；GitHub Action `.github/workflows/harness-regression.yml` 跑 schema 校验
+- Pages 自动 build on push
+
+### GitHub Actions 分工
+
+| Workflow | 触发 | 写文件 | 备注 |
+|---|---|---|---|
+| `harness-regression.yml` | push to master | (read-only) | 每次 push 跑 schema/import 校验 |
+| `weekly-health.yml` | 周日 23:00 UTC | (read-only) | 综合健康检查（含公网数据源活体） |
+| `eod-archive.yml` | 周五 22:00 UTC | `memory/archive/eod-history.csv` | 每周持仓快照 audit trail |
+| `sentiment-scan.yml` | 工作日 23:30 UTC | `assets/data/sentiment.json` | Reddit mention 统计 |
+
+**没有 GH Action 写 `assets/data/dashboard.json`** — 那是 openclaw cron 的 postflight 独占。
+其他 GH Action 只写各自专属文件，零冲突面。本地 cron 和 远端 Action 不会撞车。
 
 ## 推荐工作流
 
