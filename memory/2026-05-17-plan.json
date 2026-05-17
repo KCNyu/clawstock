@@ -1,0 +1,78 @@
+{
+  "date": "2026-05-17",
+  "fx_rate_usdhkd": 7.8,
+  "fx_source": "HARDCODED_FALLBACK",
+  "regime": {
+    "us": "range-bound",
+    "hk": "trending-down"
+  },
+  "book": {
+    "usd_total_pnl": -119.6,
+    "hkd_total_pnl": -932.88,
+    "hk_leg_hkd": -4935.84,
+    "us_leg_usd": 513.2
+  },
+  "actions": [
+    {
+      "ticker": "ROBN",
+      "bucket": "cut",
+      "size_pct": 50,
+      "size_shares": 20,
+      "trigger_type": "price_below",
+      "trigger_price": 18.5,
+      "trigger_condition": "周一 HK 09:30 开盘后若 ROBN < $18.5，cut 50% (20股)；若开盘 > $18.5 也减 20 股（derisk 优先）",
+      "confidence": 0.75,
+      "rationale": "HOOD pre-market -9% + ROBN -17.5% 浮亏 = 结构性恶化概率高；ROBN 2x 杠杆放大 crypto rev 萎缩风险；derisk 优先于等反弹"
+    },
+    {
+      "ticker": "00100",
+      "bucket": "trim_on_rebound",
+      "size_pct": 33,
+      "size_shares": 20,
+      "trigger_type": "price_below",
+      "trigger_price": 730.0,
+      "trigger_condition": "周一 HK 09:30 开盘后若 00100 跌破 HK$730，减 20 股；若无此触发且在 $750+ 区间运行，持仓",
+      "confidence": 0.65,
+      "rationale": "-6.6% 日跌幅远超同行智云健康 -0.2%，alpha 在丢失；$700 支撑强（4/27 加仓价）；trigger 过紧则失去做T机会"
+    },
+    {
+      "ticker": "MSFU",
+      "bucket": "hold_and_watch",
+      "size_pct": 0,
+      "size_shares": 0,
+      "trigger_type": "price_above",
+      "trigger_price": 31.0,
+      "trigger_condition": "MSFU 若突破 $31，T-only 持有；跌破 $27.5 则考虑 cut",
+      "confidence": 0.7,
+      "rationale": "MSFT 财报后 +6.1% 动量延续；MSFU 2x 放大上涨；cost basis $29.13 平价，风险有限"
+    },
+    {
+      "ticker": "SOXL",
+      "bucket": "hold_and_watch",
+      "size_pct": 0,
+      "size_shares": 0,
+      "trigger_type": "manual",
+      "trigger_price": null,
+      "trigger_condition": "SOXL 若日间 +5% 且 QQQ 确认反弹，可持有；恒科/HK macro 差时减",
+      "confidence": 0.65,
+      "rationale": "+78.7% 浮盈保护垫厚；3x 半导体杠杆在趋势中放大；HK trending down 不利但 US tech narrative 强"
+    },
+    {
+      "ticker": "07226",
+      "bucket": "t_only",
+      "size_pct": 0,
+      "size_shares": 0,
+      "trigger_type": "index_breakdown",
+      "trigger_price": 4800.0,
+      "trigger_condition": "HSTECH 若跌破 4800 且无反弹迹象，07226 只 T-only（不留隔夜），不买新",
+      "confidence": 0.55,
+      "rationale": "恒科 trending down，2x 杠杆 decay 每日消耗；题材- 自己- 合理持有等轮回，但信心低"
+    }
+  ],
+  "watch_levels": {
+    "hstech_breakdown": 4800,
+    "hk_book_force_derisk_hkd": -6000,
+    "robn_open_price": 18.5,
+    "msfu_target": 31.0
+  }
+}

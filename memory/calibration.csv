@@ -1,0 +1,6 @@
+plan_date,ticker,bucket,trigger_type,trigger_price,confidence,sim_entry_price,outcome,pnl_5d,pnl_30d,updated_at
+2026-05-17,ROBN,cut,price_below,18.5,0.75,,pending,,,2026-05-17T19:30:49.144120
+2026-05-17,00100,trim_on_rebound,price_below,730.0,0.65,,pending,,,2026-05-17T19:30:49.144137
+2026-05-17,MSFU,hold_and_watch,price_above,31.0,0.7,,pending,,,2026-05-17T19:30:49.144141
+2026-05-17,SOXL,hold_and_watch,manual,,0.65,,pending,,,2026-05-17T19:30:49.144144
+2026-05-17,07226,t_only,index_breakdown,4800.0,0.55,,pending,,,2026-05-17T19:30:49.144146

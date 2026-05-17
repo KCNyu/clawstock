@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-17T07:20:29.249439Z",
+  "generated_at": "2026-05-17T11:30:49.231291Z",
   "last_updated": "2026/05/16 23:37 HKT",
   "fx": {
     "usdhkd": 7.8315,
@@ -430,7 +430,7 @@
         "fx_rate_usdhkd": 7.8,
         "fx_source": "HARDCODED_FALLBACK",
         "regime": {
-          "us": "volatile-trending-down",
+          "us": "range-bound",
           "hk": "trending-down"
         },
         "book": {
@@ -445,76 +445,62 @@
             "bucket": "cut",
             "size_pct": 50,
             "size_shares": 20,
-            "trigger_type": "open",
-            "trigger_price": null,
-            "trigger_condition": "周一开盘任意价减20股",
-            "confidence": 0.82,
-            "rationale": "ROBN -9% afterhours + premarket_vol 3.5M 机构出逃；HOOD 原股破 $76 支撑；2x 杠杆下跌趋势中 decay 加速"
+            "trigger_type": "price_below",
+            "trigger_price": 18.5,
+            "trigger_condition": "周一 HK 09:30 开盘后若 ROBN < $18.5，cut 50% (20股)；若开盘 > $18.5 也减 20 股（derisk 优先）",
+            "confidence": 0.75,
+            "rationale": "HOOD pre-market -9% + ROBN -17.5% 浮亏 = 结构性恶化概率高；ROBN 2x 杠杆放大 crypto rev 萎缩风险；derisk 优先于等反弹"
           },
           {
             "ticker": "00100",
             "bucket": "trim_on_rebound",
-            "size_pct": 30,
-            "size_shares": 18,
+            "size_pct": 33,
+            "size_shares": 20,
             "trigger_type": "price_below",
-            "trigger_price": 700,
-            "trigger_condition": "周一低开 700 以下减18股；若开盘在700-720区间持观望",
-            "confidence": 0.72,
-            "rationale": "850→731破位，HHI 0.418 危险集中，恒科下行未止；700 心理支撑若破下看 650"
-          },
-          {
-            "ticker": "SOXL",
-            "bucket": "hold_and_watch",
-            "size_pct": null,
-            "size_shares": null,
-            "trigger_type": "manual",
-            "trigger_price": null,
-            "trigger_condition": "MSFT财报后持有，不追不砍；SOXL日内-4%触发部分止盈",
-            "confidence": 0.7,
-            "rationale": "MSFT Q1 26 revenue $68.9B beat +13% YoY；AI Copilot 渗透率加速；SOX技术面突破；3x 杠杆上行趋势中非线性受益"
+            "trigger_price": 730.0,
+            "trigger_condition": "周一 HK 09:30 开盘后若 00100 跌破 HK$730，减 20 股；若无此触发且在 $750+ 区间运行，持仓",
+            "confidence": 0.65,
+            "rationale": "-6.6% 日跌幅远超同行智云健康 -0.2%，alpha 在丢失；$700 支撑强（4/27 加仓价）；trigger 过紧则失去做T机会"
           },
           {
             "ticker": "MSFU",
             "bucket": "hold_and_watch",
-            "size_pct": null,
-            "size_shares": null,
-            "trigger_type": "manual",
-            "trigger_price": null,
-            "trigger_condition": "持有不追；周一高开低走则止盈部分",
-            "confidence": 0.65,
-            "rationale": "MSFT财报+6.1%动能已部分price-in；bid/ask 27.76/27.77 流动性健康；短线高位震荡"
+            "size_pct": 0,
+            "size_shares": 0,
+            "trigger_type": "price_above",
+            "trigger_price": 31.0,
+            "trigger_condition": "MSFU 若突破 $31，T-only 持有；跌破 $27.5 则考虑 cut",
+            "confidence": 0.7,
+            "rationale": "MSFT 财报后 +6.1% 动量延续；MSFU 2x 放大上涨；cost basis $29.13 平价，风险有限"
           },
           {
-            "ticker": "RKLB",
+            "ticker": "SOXL",
             "bucket": "hold_and_watch",
-            "size_pct": null,
-            "size_shares": null,
+            "size_pct": 0,
+            "size_shares": 0,
             "trigger_type": "manual",
             "trigger_price": null,
-            "trigger_condition": "持有不追加；RSI若破80考虑减半",
-            "confidence": 0.68,
-            "rationale": "PnL +75.7%，RSI偏高但未超；卫星发射节奏健康（2026年5次商业发射）；space infrastructure赛道资本开支抬头；长拿逻辑不变"
+            "trigger_condition": "SOXL 若日间 +5% 且 QQQ 确认反弹，可持有；恒科/HK macro 差时减",
+            "confidence": 0.65,
+            "rationale": "+78.7% 浮盈保护垫厚；3x 半导体杠杆在趋势中放大；HK trending down 不利但 US tech narrative 强"
           },
           {
-            "ticker": "PLTU",
+            "ticker": "07226",
             "bucket": "t_only",
-            "size_pct": null,
-            "size_shares": null,
-            "trigger_type": "manual",
-            "trigger_price": null,
-            "trigger_condition": "换方向（换CRCL或持现金）；不补仓",
-            "confidence": 0.58,
-            "rationale": "PnL -13.3%，PLTR估值高；AI军工叙事撑不住；无明显短期催化"
+            "size_pct": 0,
+            "size_shares": 0,
+            "trigger_type": "index_breakdown",
+            "trigger_price": 4800.0,
+            "trigger_condition": "HSTECH 若跌破 4800 且无反弹迹象，07226 只 T-only（不留隔夜），不买新",
+            "confidence": 0.55,
+            "rationale": "恒科 trending down，2x 杠杆 decay 每日消耗；题材- 自己- 合理持有等轮回，但信心低"
           }
         ],
         "watch_levels": {
           "hstech_breakdown": 4800,
-          "soxl_stop_pct": -4,
-          "book_force_derisk_hkd": -6000
-        },
-        "concentration_hhi": {
-          "hk": 0.418,
-          "us": 0.171
+          "hk_book_force_derisk_hkd": -6000,
+          "robn_open_price": 18.5,
+          "msfu_target": 31.0
         }
       }
     },
