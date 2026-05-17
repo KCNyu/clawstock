@@ -4,6 +4,9 @@
 */
 
 const DATA_URL = 'assets/data/dashboard.json';
+// Cache-bust: Pages CDN caches aggressively. Append minute-bucketed timestamp so
+// returning visitors see fresh data within ~1 min of a new postflight commit.
+const CACHE_BUST = `?v=${Math.floor(Date.now() / 60000)}`;
 
 const C = {
   bull:    '#26a69a',
@@ -69,7 +72,7 @@ let sortBy = { col: 'current_value', dir: 'desc' };
 const charts = {};
 
 async function loadData() {
-  const r = await fetch(DATA_URL, { cache: 'no-store' });
+  const r = await fetch(DATA_URL + CACHE_BUST, { cache: 'no-store' });
   if (!r.ok) throw new Error('Failed to load ' + DATA_URL);
   return await r.json();
 }

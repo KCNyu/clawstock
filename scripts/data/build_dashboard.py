@@ -234,8 +234,8 @@ def main():
         payload = json.dumps(out, ensure_ascii=False)
         size_bytes = len(payload.encode('utf-8'))
 
-    with open(OUT_FILE, 'w', encoding='utf-8') as f:
-        f.write(payload)
+    from safe_io import safe_write_text
+    safe_write_text(str(OUT_FILE), payload)
 
     print(f'✓ wrote {OUT_FILE} ({size_bytes:,} bytes)')
     print(f'  US: {len(us_h)} holdings, {len([h for h in us_h if h["is_active"]])} active, value ${us_conc["total"]:.0f}')

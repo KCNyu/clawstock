@@ -635,9 +635,8 @@ def update_us_portfolio(
     if dry_run:
         print("\n  [dry-run] portfolio.json NOT written.\n")
     else:
-        with open(portfolio_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-            f.write('\n')
+        from safe_io import safe_write_json
+        safe_write_json(portfolio_path, data)
         print(f"\n  ✅ Saved → {portfolio_path}")
 
     print(f"{'═'*62}\n")

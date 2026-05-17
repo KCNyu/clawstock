@@ -345,9 +345,8 @@ def update_hk_portfolio(dry_run: bool = False) -> Dict:
     if dry_run:
         print("  [dry-run] Not written.\n")
     else:
-        with open(PORTFOLIO_PATH, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-            f.write('\n')
+        from safe_io import safe_write_json
+        safe_write_json(PORTFOLIO_PATH, data)
         print(f"  ✅ Saved → {PORTFOLIO_PATH}")
 
     print(f"{'═'*60}\n")
