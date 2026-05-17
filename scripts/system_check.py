@@ -207,25 +207,40 @@ def check_no_leaked_secrets(r):
 
 
 def check_openclaw_doctor(r):
-    """Run openclaw doctor and confirm 0 errors."""
+    """Cheap config-validity check. Full `openclaw doctor` is too slow for hooks,
+    so we just re-validate the JSON config can be parsed + has expected shape."""
+    config = Path('/root/.openclaw/openclaw.json')
+    if not config.exists():
+        r.add('openclaw config', WARNING, 'openclaw.json not found (skipped)')
+        return
     try:
-        rr = subprocess.run(['openclaw', 'doctor'], capture_output=True, text=True, timeout=60)
-        out = rr.stdout + rr.stderr
-        # Look for "Errors: 0" line
-        if 'Errors: 0' in out:
-            r.add('openclaw doctor', OK, 'errors=0')
-        elif 'Errors:' in out:
-            # Extract count
-            import re
-            m = re.search(r'Errors:\s*(\d+)', out)
-            n = int(m.group(1)) if m else '?'
-            r.add('openclaw doctor', CRITICAL, f'errors={n}')
-        else:
-            r.add('openclaw doctor', WARNING, 'could not parse output')
-    except FileNotFoundError:
-        r.add('openclaw doctor', WARNING, 'openclaw CLI not on PATH (skipped)')
+        d = json.loads(config.read_text())
     except Exception as e:
-        r.add('openclaw doctor', WARNING, f'doctor run failed: {e}')
+        r.add('openclaw config', CRITICAL, f'openclaw.json parse fail: {e}')
+        return
+
+    # Sanity checks
+    issues = []
+    if 'agents' not in d:
+        issues.append('missing agents')
+    if 'models' not in d or 'providers' not in d.get('models', {}):
+        issues.append('missing models.providers')
+
+    # Check primary model is in providers
+    primary = d.get('agents', {}).get('defaults', {}).get('model', {}).get('primary', '')
+    if primary and '/' in primary:
+        prov_name = primary.split('/')[0]
+        if prov_name not in d['models']['providers']:
+            issues.append(f'primary provider "{prov_name}" not configured')
+
+    # Check meta
+    if 'meta' not in d:
+        issues.append('missing meta block')
+
+    if issues:
+        r.add('openclaw config', CRITICAL, '; '.join(issues))
+    else:
+        r.add('openclaw config', OK, f'valid; primary={primary}')
 
 
 def check_calibration_csv(r):
