@@ -1,0 +1,72 @@
+name: EOD Market Archive
+
+# Friday 22:00 UTC (= Saturday 06:00 HKT, post-US-close), append week's closing prices
+# for all active tickers to a long-form CSV. This is the audit trail that survives
+# even if portfolio.json gets corrupted — pure read-only historical record.
+on:
+  schedule:
+    - cron: '0 22 * * 5'
+  workflow_dispatch:
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install --quiet requests
+
+      - name: Append week-end snapshot
+        run: |
+          mkdir -p memory/archive
+          python3 << 'PY'
+          import json, csv, os
+          from datetime import date
+
+          p = json.load(open('portfolio.json'))
+          rows = []
+          for region in ('us_stocks', 'hk_stocks'):
+              leg = p['portfolios'].get(region, {})
+              cur = 'USD' if region == 'us_stocks' else 'HKD'
+              for h in leg.get('holdings', []):
+                  if h.get('shares', 0) > 0:
+                      rows.append({
+                          'date': str(date.today()),
+                          'ticker': h['ticker'],
+                          'name': h.get('name',''),
+                          'currency': cur,
+                          'shares': h.get('shares', 0),
+                          'cost_basis': h.get('cost_basis', 0),
+                          'current_price': h.get('current_price', 0),
+                          'pnl_pct': h.get('pnl_percent', 0),
+                          'current_value': h.get('current_value', 0),
+                      })
+
+          fpath = 'memory/archive/eod-history.csv'
+          new = not os.path.exists(fpath)
+          with open(fpath, 'a', newline='', encoding='utf-8') as f:
+              w = csv.DictWriter(f, fieldnames=rows[0].keys())
+              if new: w.writeheader()
+              w.writerows(rows)
+          print(f'appended {len(rows)} rows to {fpath}')
+          PY
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add memory/archive/
+          if git diff --cached --quiet; then
+            echo "no change"
+          else
+            git commit -m "archive: EOD snapshot $(date -u +%Y-W%W)"
+            git push
+          fi

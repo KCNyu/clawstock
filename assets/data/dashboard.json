@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-16T14:10:49.377797Z",
-  "last_updated": "2026/05/16 22:02 HKT",
+  "generated_at": "2026-05-17T00:22:11.885273Z",
+  "last_updated": "2026/05/16 23:37 HKT",
   "fx": {
     "usdhkd": 7.8315,
     "source": "Frankfurter",
-    "fetched_at": "2026-05-16T10:32:41.457722+00:00"
+    "fetched_at": "2026-05-16T15:37:38.799823+00:00"
   },
   "totals": {
     "us": {
@@ -406,6 +406,8 @@
       "hk_today_change": -5178.0
     }
   ],
+  "snapshots_total": 2,
+  "snapshots_embedded_cap": 90,
   "plans_count": 1,
   "recent_plans": [
     {
@@ -570,6 +572,7 @@
       }
     }
   ],
+  "recent_plans_cap": 5,
   "indices": {
     "NDX": {
       "price": null,

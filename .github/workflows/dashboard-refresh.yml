@@ -1,0 +1,49 @@
+name: Dashboard Refresh
+
+# Rebuild + commit dashboard.json once daily at 06:00 UTC (14:00 HKT, between brief and HK open).
+# Catches cases where harness commit didn't fire (failed cron, offline LLM, etc.) so Pages
+# never goes stale beyond ~24h.
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install --quiet requests
+
+      - name: Refresh FX cache (best-effort)
+        continue-on-error: true
+        run: |
+          mkdir -p .cache
+          python3 scripts/data/fetch_fx.py --json > .cache/fx_rate.json || echo "fx fetch failed"
+          cat .cache/fx_rate.json 2>/dev/null || true
+
+      - name: Build dashboard.json
+        run: python3 scripts/data/build_dashboard.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/data/dashboard.json
+          if git diff --cached --quiet; then
+            echo "no change"
+          else
+            git commit -m "dashboard: scheduled refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          fi

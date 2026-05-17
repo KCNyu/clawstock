@@ -18,6 +18,14 @@ WS_ROOT = Path(__file__).resolve().parent.parent.parent
 OUT_DIR = WS_ROOT / 'assets' / 'data'
 OUT_FILE = OUT_DIR / 'dashboard.json'
 
+# ── Anti-bloat caps ──────────────────────────────────────────────────────
+# Dashboard only embeds the most recent snapshots + plan summaries.
+# Older history lives on disk; if dashboard ever needs full history, load lazily.
+MAX_SNAPSHOTS_EMBEDDED = 90        # ≈ 4 months of trading days (kept in dashboard.json)
+MAX_PLANS_EMBEDDED     = 5         # last 5 plans (each can be a few KB)
+MAX_PLAN_BYTES         = 4096      # cap each plan blob to 4KB; if larger, just keep summary
+MAX_OUT_BYTES          = 200_000   # final dashboard.json hard cap (~200KB)
+
 
 def load_json(path):
     try:
@@ -78,8 +86,10 @@ def hhi_verdict(hhi, top2):
 
 
 def load_snapshots():
-    """Returns list of {date, hk_total_hkd, us_total_usd, total_usd_view, total_hkd_view, fx, holdings_snap}."""
+    """Returns recent-N snapshot summaries (NOT full holdings). Capped at MAX_SNAPSHOTS_EMBEDDED."""
     paths = sorted(glob.glob(str(WS_ROOT / 'memory' / 'snapshots' / '*.json')))
+    # Keep only the most recent N — chronological order so dashboard line chart still ascends
+    paths = paths[-MAX_SNAPSHOTS_EMBEDDED:]
     results = []
     for p in paths:
         d = load_json(p)
@@ -108,8 +118,9 @@ def load_snapshots():
 
 
 def load_plans():
-    """Returns list of plan.json files with retrospective data if any."""
+    """Recent-N plan summaries. Large plans get trimmed to bullet list."""
     paths = sorted(glob.glob(str(WS_ROOT / 'memory' / '*-plan.json')))
+    paths = paths[-MAX_PLANS_EMBEDDED:]
     results = []
     for p in paths:
         d = load_json(p)
@@ -117,12 +128,29 @@ def load_plans():
             continue
         fname = os.path.basename(p)
         date = fname.replace('-plan.json', '')
-        results.append({
-            'date': date,
-            'file': fname,
-            'plan': d,
-        })
+        raw = json.dumps(d, ensure_ascii=False)
+        if len(raw.encode('utf-8')) > MAX_PLAN_BYTES:
+            # Plan too big — keep only top-level summary fields (actions count, tldr)
+            actions = d.get('actions') or d.get('plan') or []
+            d = {
+                'date': d.get('date', date),
+                'actions_count': len(actions),
+                'tldr': d.get('summary') or d.get('tldr') or '',
+                'has_retrospective': bool(d.get('retrospective')),
+                'context': d.get('context', {}),
+                'truncated': True,
+                'original_bytes': len(raw),
+            }
+        results.append({'date': date, 'file': fname, 'plan': d})
     return results
+
+
+def total_plans_count():
+    return len(glob.glob(str(WS_ROOT / 'memory' / '*-plan.json')))
+
+
+def total_snapshots_count():
+    return len(glob.glob(str(WS_ROOT / 'memory' / 'snapshots' / '*.json')))
 
 
 def main():
@@ -183,18 +211,37 @@ def main():
             'hk': hk_h,
         },
         'snapshots': snapshots,
-        'plans_count': len(plans),
-        'recent_plans': plans[-10:] if plans else [],
+        'snapshots_total': total_snapshots_count(),
+        'snapshots_embedded_cap': MAX_SNAPSHOTS_EMBEDDED,
+        'plans_count': total_plans_count(),
+        'recent_plans': plans,
+        'recent_plans_cap': MAX_PLANS_EMBEDDED,
         'indices': us_pf.get('indices_snapshot', {}),
         'market_context': portfolio.get('market_context', {}),
     }
 
-    with open(OUT_FILE, 'w', encoding='utf-8') as f:
-        json.dump(out, f, ensure_ascii=False, indent=2)
+    # Serialize with no indentation to save bytes; pretty-print only if under budget
+    payload_min = json.dumps(out, ensure_ascii=False)
+    payload_pretty = json.dumps(out, ensure_ascii=False, indent=2)
+    payload = payload_pretty if len(payload_pretty.encode('utf-8')) <= MAX_OUT_BYTES else payload_min
+    size_bytes = len(payload.encode('utf-8'))
 
-    print(f'✓ wrote {OUT_FILE}')
+    if size_bytes > MAX_OUT_BYTES:
+        # Last resort: drop recent_plans entirely + keep snapshot summaries only
+        print(f'⚠️  payload still {size_bytes} bytes > {MAX_OUT_BYTES} cap — dropping recent_plans', file=sys.stderr)
+        out['recent_plans'] = []
+        out['recent_plans_dropped'] = True
+        payload = json.dumps(out, ensure_ascii=False)
+        size_bytes = len(payload.encode('utf-8'))
+
+    with open(OUT_FILE, 'w', encoding='utf-8') as f:
+        f.write(payload)
+
+    print(f'✓ wrote {OUT_FILE} ({size_bytes:,} bytes)')
     print(f'  US: {len(us_h)} holdings, {len([h for h in us_h if h["is_active"]])} active, value ${us_conc["total"]:.0f}')
     print(f'  HK: {len(hk_h)} holdings, {len([h for h in hk_h if h["is_active"]])} active, value HK${hk_conc["total"]:.0f}')
+    print(f'  Snapshots: {len(snapshots)} embedded / {out["snapshots_total"]} on disk')
+    print(f'  Plans: {len(plans)} embedded / {out["plans_count"]} on disk')
     print(f'  Snapshots: {len(snapshots)} | Plans: {len(plans)}')
     print(f'  FX USDHKD: {fx_cache.get("rate")} ({fx_cache.get("source")})')
     return 0

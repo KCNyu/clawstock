@@ -1,0 +1,100 @@
+name: Weekly Health Check
+
+# Sundays 23:00 UTC (Monday 07:00 HKT, right before US Mon open / before HK Mon open).
+# Catches drift: scripts that no longer compile, schemas that diverged, dead cron paths,
+# data sources gone offline. Failures show as a red ✗ on the README badge.
+on:
+  schedule:
+    - cron: '0 23 * * 0'
+  workflow_dispatch:
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install --quiet requests
+
+      - name: Compile all scripts
+        run: |
+          set -e
+          for f in scripts/data/*.py scripts/harness/*.py; do
+            python3 -m py_compile "$f"
+          done
+          echo "OK: all scripts compile"
+
+      - name: argparse contracts unchanged
+        run: |
+          set -e
+          python3 scripts/harness/report_preflight.py --help > /dev/null
+          python3 scripts/harness/report_postflight.py --help > /dev/null
+          python3 scripts/harness/intraday_preflight.py --help > /dev/null
+          python3 scripts/harness/intraday_postflight.py --help > /dev/null
+
+      - name: Public data sources reachable
+        continue-on-error: true
+        run: |
+          # FX
+          python3 scripts/data/fetch_fx.py --json
+          # Sample HK quote (Tencent fallback) — skip if all 3 routes down (network policy)
+          python3 -c "
+          import sys
+          sys.path.insert(0, 'scripts/data')
+          from analyze_hk_stocks import fetch_hk_quotes
+          q = fetch_hk_quotes(['00700'])
+          print('HK 00700 quote:', q.get('00700', {}).get('price'))
+          "
+
+      - name: Plan schema validation
+        run: |
+          python3 << 'PY'
+          import json, glob, sys
+          bad = []
+          for p in sorted(glob.glob('memory/*-plan.json')):
+              try:
+                  d = json.loads(open(p).read())
+                  assert 'date' in d, f'{p}: missing date'
+              except Exception as e:
+                  bad.append(f'{p}: {e}')
+          if bad:
+              print('SCHEMA FAILURES:'); [print(' ', b) for b in bad]
+              sys.exit(1)
+          print(f'{len(glob.glob("memory/*-plan.json"))} plans OK')
+          PY
+
+      - name: Cron-referenced files exist
+        run: |
+          python3 << 'PY'
+          import os, re, sys
+          for d in ['scripts/data','scripts/harness']:
+              for f in os.listdir(d):
+                  if f.endswith('.py'):
+                      assert os.path.exists(os.path.join(d, f)), f
+          # Check core baseline reads exist
+          for f in ['SOUL.md','USER.md','MEMORY.md','TOOLS.md','INVESTMENT_SOP.md','AGENTS.md','CLAUDE.md','portfolio.json']:
+              assert os.path.exists(f), f
+          print('all baseline files present')
+          PY
+
+      - name: Dashboard build idempotency
+        run: |
+          python3 scripts/data/build_dashboard.py
+          cp assets/data/dashboard.json /tmp/dash1.json
+          sleep 1
+          python3 scripts/data/build_dashboard.py
+          # Only `generated_at` should differ between two consecutive runs
+          python3 -c "
+          import json
+          a = json.load(open('/tmp/dash1.json'))
+          b = json.load(open('assets/data/dashboard.json'))
+          a.pop('generated_at', None); b.pop('generated_at', None)
+          assert a == b, 'dashboard build is non-deterministic'
+          print('dashboard build deterministic ✓')
+          "

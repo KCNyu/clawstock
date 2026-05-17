@@ -1,0 +1,100 @@
+name: Sentiment Scan
+
+# Daily 23:30 UTC (= 07:30 HKT, ~30 min before brief).
+# For each active holding, scan public sources for mention volume / sentiment signals.
+# Pure Reddit JSON (no key needed). Writes assets/data/sentiment.json which dashboard
+# can render in future. Tavily/scrapling are reserved for ad-hoc deeper queries.
+on:
+  schedule:
+    - cron: '30 23 * * 1-5'  # weekdays only — sentiment moves on trading days
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install --quiet requests
+
+      - name: Scan Reddit for active tickers
+        run: |
+          python3 << 'PY'
+          import json, requests, time
+          from datetime import datetime, timezone
+
+          p = json.load(open('portfolio.json'))
+          tickers = []
+          for region in ('us_stocks', 'hk_stocks'):
+              for h in p['portfolios'].get(region, {}).get('holdings', []):
+                  if h.get('shares', 0) > 0:
+                      tickers.append({'ticker': h['ticker'], 'name': h.get('name', ''), 'region': region})
+
+          out = {
+              'generated_at': datetime.now(timezone.utc).isoformat(),
+              'source': 'reddit-json-public',
+              'subs': ['wallstreetbets', 'stocks', 'investing'],
+              'tickers': [],
+          }
+          headers = {'User-Agent': 'clawock-sentiment-scan/1.0 (github.com/KCNyu/clawock)'}
+
+          for t in tickers:
+              tk = t['ticker']
+              # Skip pure-HK tickers (Reddit has near-zero coverage)
+              if t['region'] == 'hk_stocks' and not tk.isalpha():
+                  continue
+              mentions = 0
+              titles = []
+              for sub in out['subs']:
+                  try:
+                      url = f'https://www.reddit.com/r/{sub}/search.json?q={tk}&restrict_sr=1&sort=new&limit=10'
+                      r = requests.get(url, headers=headers, timeout=10)
+                      if r.status_code == 200:
+                          posts = r.json().get('data', {}).get('children', [])
+                          mentions += len(posts)
+                          for post in posts[:3]:
+                              t_data = post.get('data', {})
+                              titles.append({
+                                  'sub': sub,
+                                  'title': t_data.get('title', '')[:200],
+                                  'score': t_data.get('score', 0),
+                                  'num_comments': t_data.get('num_comments', 0),
+                              })
+                      time.sleep(0.5)  # be nice to Reddit
+                  except Exception as e:
+                      print(f'  ⚠️ {tk} @ {sub}: {e}')
+              out['tickers'].append({
+                  'ticker': tk,
+                  'name': t['name'],
+                  'region': t['region'],
+                  'reddit_mentions_7d': mentions,
+                  'top_posts': titles[:6],
+              })
+              print(f'{tk}: {mentions} mentions')
+
+          import os
+          os.makedirs('assets/data', exist_ok=True)
+          with open('assets/data/sentiment.json', 'w', encoding='utf-8') as f:
+              json.dump(out, f, ensure_ascii=False, indent=2)
+          print(f'wrote assets/data/sentiment.json ({len(out["tickers"])} tickers)')
+          PY
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/data/sentiment.json
+          if git diff --cached --quiet; then
+            echo "no change"
+          else
+            git commit -m "sentiment: daily Reddit scan $(date -u +%Y-%m-%d)"
+            git push
+          fi
