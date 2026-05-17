@@ -46,13 +46,19 @@
   --font-sans: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; min-width: 0; }
 
-html, body { margin: 0; padding: 0; }
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;          /* hard guard: nothing can drag the page horizontally */
+  width: 100%;
+}
 
 body {
   font-family: var(--font-sans);
   background: var(--bg);
+  max-width: 100vw;            /* belt and suspenders */
   background-image:
     radial-gradient(circle at 20% 0%, rgba(59,130,246,0.05) 0%, transparent 50%),
     radial-gradient(circle at 80% 100%, rgba(245,158,11,0.04) 0%, transparent 50%);
@@ -292,7 +298,7 @@ main {
   /* Charts smaller on phones */
   .chart#chart-us-treemap,
   .chart#chart-hk-treemap { height: 220px !important; }
-  .chart#chart-hhi-gauge { height: 200px !important; }
+  .chart#chart-hhi-gauge { height: 340px !important; }  /* taller — gauges stack vertically */
   .chart#chart-movers { height: 220px !important; }
   .chart#chart-history-value { height: 280px !important; }
   .chart#chart-history-pnl { height: 240px !important; }
@@ -325,6 +331,8 @@ main {
   padding: 18px 20px;
   box-shadow: var(--shadow-sm);
   transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+  min-width: 0;                /* CSS Grid needs this so internal overflow stays inside */
+  overflow: hidden;            /* clip any rogue child that exceeds card width */
 }
 
 .card:hover {
@@ -505,16 +513,40 @@ main {
 
 .table-wrap {
   overflow-x: auto;
+  overflow-y: visible;
   margin: 0 -20px -18px;
   padding: 0 20px 18px;
+  max-width: calc(100% + 40px); /* never wider than card */
+  -webkit-overflow-scrolling: touch;
 }
+
+/* Subtle scroll indicator on mobile */
+.table-wrap::-webkit-scrollbar { height: 6px; }
+.table-wrap::-webkit-scrollbar-track { background: var(--panel-2); border-radius: 3px; }
+.table-wrap::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+.table-wrap::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
 .holdings-table {
   width: 100%;
+  min-width: 720px;             /* horizontal scroll kicks in below this */
   border-collapse: collapse;
   font-family: var(--font-mono);
   font-feature-settings: 'tnum';
   font-size: 12px;
+}
+
+/* On phones, give sticky col 1 (Ticker) so user can scroll right + still know which row */
+@media (max-width: 700px) {
+  .holdings-table th:first-child,
+  .holdings-table td:first-child {
+    position: sticky;
+    left: 0;
+    background: var(--panel);
+    box-shadow: 1px 0 0 0 var(--border);
+    z-index: 1;
+  }
+  .holdings-table tbody tr:hover td:first-child { background: rgba(59,130,246,0.05); }
+  .holdings-table th:first-child { background: var(--panel); }
 }
 
 .holdings-table th,
@@ -1050,6 +1082,24 @@ body.content-page {
 
 .page-article strong { color: var(--text); font-weight: 600; }
 .page-article em { color: var(--cta); font-style: normal; }
+
+/* Cap emoji size so iOS color-emoji doesn't blow up next to small fonts.
+   Emojis at start of headings get hard-clamped to heading font size. */
+.page-article h1,
+.page-article h2,
+.page-article h3,
+.page-article h4 {
+  font-size-adjust: 0.52;
+}
+.page-article h1::first-letter,
+.page-article h2::first-letter,
+.page-article h3::first-letter {
+  font-size: 1em;
+}
+/* Modern emoji sizing via font feature where supported */
+.page-article {
+  font-variant-emoji: text;
+}
 
 /* Briefs listing — list each daily brief as a card */
 .page-article ul li {

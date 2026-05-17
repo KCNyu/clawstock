@@ -177,41 +177,50 @@ function renderHHIGauge(d) {
   const chart = echarts.init(el, null, { renderer: 'canvas' });
   charts['chart-hhi-gauge'] = chart;
 
+  // Responsive gauge layout: side-by-side on wide, stacked on narrow
+  const w = el.clientWidth;
+  const stacked = w < 380;
+  const radius = stacked ? '55%' : (w < 520 ? '70%' : '85%');
+
   const baseGauge = {
     type: 'gauge',
     min: 0,
     max: 0.6,
-    radius: '85%',
-    progress: { show: true, width: 12, roundCap: true },
+    radius,
+    progress: { show: true, width: 10, roundCap: true },
     axisLine: {
       lineStyle: {
-        width: 12,
+        width: 10,
         color: [[0.25, C.bull], [0.42, C.warn], [0.67, '#fb923c'], [1, C.bear]],
       },
     },
     axisTick: { show: false },
-    splitLine: { length: 6, lineStyle: { color: 'rgba(255,255,255,0.4)', width: 1 } },
-    axisLabel: { color: C.muted, fontSize: 9, fontFamily: 'Fira Code', distance: -26 },
+    splitLine: { length: 5, lineStyle: { color: 'rgba(255,255,255,0.35)', width: 1 } },
+    axisLabel: { color: C.muted, fontSize: 9, fontFamily: 'Fira Code', distance: -22 },
     pointer: { length: '60%', width: 3, itemStyle: { color: C.text } },
     anchor: { show: false },
-    title: { offsetCenter: [0, '32%'], color: C.muted, fontSize: 12, fontFamily: 'Fira Sans' },
+    title: { offsetCenter: [0, '28%'], color: C.muted, fontSize: 11, fontFamily: 'Fira Sans' },
     detail: {
       offsetCenter: [0, '5%'],
       color: C.text,
-      fontSize: 22,
+      fontSize: stacked ? 16 : 20,
       fontWeight: 600,
       fontFamily: 'Fira Code, monospace',
       formatter: v => v.toFixed(3),
     },
   };
 
-  chart.setOption({
-    backgroundColor: 'transparent',
-    series: [
-      { ...baseGauge, center: ['28%', '60%'], data: [{ value: d.concentration.us.hhi, name: 'US HHI' }] },
-      { ...baseGauge, center: ['72%', '60%'], data: [{ value: d.concentration.hk.hhi, name: 'HK HHI' }] },
-    ],
-  });
+  const series = stacked
+    ? [
+        { ...baseGauge, center: ['50%', '28%'], data: [{ value: d.concentration.us.hhi, name: 'US HHI' }] },
+        { ...baseGauge, center: ['50%', '78%'], data: [{ value: d.concentration.hk.hhi, name: 'HK HHI' }] },
+      ]
+    : [
+        { ...baseGauge, center: ['25%', '60%'], data: [{ value: d.concentration.us.hhi, name: 'US HHI' }] },
+        { ...baseGauge, center: ['75%', '60%'], data: [{ value: d.concentration.hk.hhi, name: 'HK HHI' }] },
+      ];
+
+  chart.setOption({ backgroundColor: 'transparent', series });
 }
 
 function renderMovers(d) {

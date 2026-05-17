@@ -8,7 +8,7 @@ description: 全部历史每日深度简报 + 手写笔记 + plan.json
 
 每个工作日 08:00 HKT 自动跑 Tier 1/2/3 + Judge 全 swarm 分析 → markdown 落盘 + WeChat 推送 + dashboard 数据刷新。
 
-## 📊 盘前深度简报 (Daily Deep Brief)
+## Daily Deep Brief · 盘前深度简报
 
 按日期倒序：
 
@@ -23,7 +23,7 @@ description: 全部历史每日深度简报 + 手写笔记 + plan.json
 {% endfor %}
 </ul>
 
-## 📝 Daily Notes (手写笔记)
+## Daily Notes · 手写笔记
 
 <ul class="brief-list">
 {% for f in sorted %}
@@ -37,7 +37,7 @@ description: 全部历史每日深度简报 + 手写笔记 + plan.json
 {% endfor %}
 </ul>
 
-## 📈 历史 plan.json
+## Plan archive · 历史 plan.json
 
 Self-learning loop 用，给次日 retrospective 算 trigger / P&L / confidence calibration。
 
@@ -51,7 +51,7 @@ Self-learning loop 用，给次日 retrospective 算 trigger / P&L / confidence 
 {% endfor %}
 </ul>
 
-## 🛠 Skills
+## Skills
 
 完整 skill 列表见 GitHub：[skills/ 目录](https://github.com/KCNyu/clawock/tree/master/skills)
 
