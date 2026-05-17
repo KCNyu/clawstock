@@ -46,120 +46,20 @@ Two things make it different from a generic "AI trader" demo:
 
 ## 🏗 Architecture
 
-### The harness pipeline
+<div align="center">
+  <img src="docs/architecture.png" alt="clawock harness pipeline" width="100%">
+</div>
 
-```mermaid
-flowchart LR
-    cron([openclaw cron]):::trigger
-    pre[preflight<br/><sub>refresh prices · FX · HHI<br/>snapshot · EDGAR · retrospective</sub>]:::script
-    llm[LLM swarm<br/><sub>Rick persona<br/>read context · write report</sub>]:::llm
-    post[postflight<br/><sub>schema · verbatim block<br/>banned phrases · length</sub>]:::script
-    sinks[(portfolio.json<br/>memory/<br/>dashboard.json)]:::data
-    pages([🌐 GitHub Pages]):::output
-    wechat([📱 WeChat]):::output
+**Deterministic work** (prices · FX · HHI · signals) runs 100 % in Python so the LLM can't skip it.
+The LLM owns only the **synthesis**. Postflight catches missing snapshots, omitted movers, banned phrases.
 
-    cron --> pre
-    pre -->|context.json| llm
-    llm -->|report + plan.json| post
-    post -->|pass · warn| commit{{git commit}}:::ok
-    post -.->|fail| banner[🚨 red banner]:::err
-    commit --> sinks
-    sinks --> pages
-    llm --> wechat
+**LLM fallback** uses the OpenAI completions protocol across all providers. Xiaomi MiMo runs with
+`thinking: disabled` to avoid the `reasoning_content` multi-turn quirk; everyone else is vanilla.
 
-    classDef trigger fill:#1e40af,stroke:#3b82f6,color:#fff
-    classDef script  fill:#243150,stroke:#3b82f6,color:#e8eaf2
-    classDef llm     fill:#7c2d12,stroke:#f59e0b,color:#fff
-    classDef ok      fill:#064e3b,stroke:#26a69a,color:#fff
-    classDef err     fill:#7f1d1d,stroke:#ef5350,color:#fff
-    classDef data    fill:#0b1220,stroke:#60a5fa,color:#e8eaf2
-    classDef output  fill:#1f2937,stroke:#facc15,color:#facc15
-```
-
-> Deterministic work (prices · FX · HHI · signals) runs 100 % in Python so the LLM can't skip it.
-> The LLM owns only the synthesis. Postflight catches missing snapshots, omitted movers, banned phrases.
-
-### LLM fallback chain (`~/.openclaw/openclaw.json`)
-
-```mermaid
-flowchart LR
-    p[MiniMax M2.7<br/><sub>primary</sub>]:::primary
-    f1[Xiaomi MiMo v2.5 Pro<br/><sub>fallback 1</sub>]:::fb1
-    f2[GLM 5.1<br/><sub>fallback 2</sub>]:::fb
-    f3[DeepSeek v4 Pro<br/><sub>fallback 3</sub>]:::fb
-    f4[Claude Sonnet 4.6<br/><sub>fallback 4</sub>]:::fb
-    f5[Claude Haiku 4.5<br/><sub>fallback 5</sub>]:::fb
-    f6[GPT-5.5 proxy<br/><sub>fallback 6</sub>]:::fb
-
-    p -->|fail/timeout| f1
-    f1 -->|fail| f2
-    f2 -->|fail| f3
-    f3 -->|fail| f4
-    f4 -->|fail| f5
-    f5 -->|fail| f6
-
-    classDef primary fill:#26a69a,stroke:#fff,color:#fff,stroke-width:2px
-    classDef fb1     fill:#f59e0b,stroke:#fff,color:#fff
-    classDef fb      fill:#1e40af,stroke:#60a5fa,color:#fff
-```
-
-> All providers speak the OpenAI completions protocol. Xiaomi MiMo runs with
-> `thinking: disabled` to avoid the `reasoning_content` multi-turn quirk.
-
-### Local cron ↔ remote CI
-
-```mermaid
-flowchart TB
-    subgraph local[💻 Local server]
-        oc[openclaw daemon] --> ag[agent session]
-        ag --> w1[(portfolio.json)]
-        ag --> w2[(memory/*)]
-        ag --> w3[(dashboard.json)]
-    end
-
-    subgraph remote[☁️ GitHub clawock repo]
-        ghw1[harness-regression<br/><sub>read-only</sub>]:::ro
-        ghw2[weekly-health<br/><sub>read-only</sub>]:::ro
-        ghw3[eod-archive] --> r1[(eod-history.csv)]
-        ghw4[sentiment-scan] --> r2[(sentiment.json)]
-    end
-
-    local -->|user pushes| remote
-    remote --> pages[🌐 Pages CDN]
-    local -->|cron WeChat| wx[📱 WeChat]
-
-    classDef ro stroke-dasharray:5 5
-```
-
-> Zero conflict: openclaw writes `dashboard.json`; GH Actions write `sentiment.json` and `eod-history.csv` (disjoint).
-> No shared filesystem race.
+**No conflict surface** between cron and CI: openclaw writes `dashboard.json` and `memory/`;
+GitHub Actions write `sentiment.json` and `eod-history.csv` — disjoint sets.
 
 ---
-
-## 📅 Daily trading-day timeline (HKT)
-
-```mermaid
-gantt
-    title Stock cron jobs across a weekday
-    dateFormat HH:mm
-    axisFormat %H:%M
-
-    section System
-    Memory dreaming            :03:00, 5m
-    Daily deep brief (swarm)   :crit, 08:00, 30m
-
-    section HK leg
-    HK open report             :09:30, 10m
-    HK intraday (every 30 min) :active, 09:30, 6h
-    HK mid-day                 :12:00, 10m
-    HK afternoon               :13:30, 10m
-    HK close                   :16:00, 10m
-
-    section US leg (= 21:30+ HKT)
-    US open report             :21:30, 10m
-    US intraday (every 30 min) :active, 21:30, 6h30m
-    US close                   :04:00, 10m
-```
 
 ## ⚙ Cron map (10 jobs · openclaw scheduler)
 
@@ -279,25 +179,12 @@ For leveraged ETFs, fundamentals are noise — look at the underlying instead.
 
 ## 🤖 Self-learning loop
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant T0 as Day N · 08:00 brief
-    participant Plan as plan.json
-    participant T1 as Day N+1 · 08:00 preflight
-    participant Calib as confidence rolling stats
+Day N → Day N+1: every daily-deep-brief commits `memory/{date}-plan.json` with structured actions
+(trigger, confidence, simulated entry). Next morning's preflight reads it back, computes which
+triggers actually fired, simulates the P&L, and logs the outcome to a rolling confidence-calibration
+table that feeds back into the next brief's confidence calls.
 
-    T0->>Plan: write actions[]<br/>(trigger, confidence, sim_entry)
-    Note over T0,Plan: "trim 07226 if price > 4.85, conf=0.62"
-
-    T1->>Plan: read yesterday's plan
-    T1->>T1: for each action:<br/>did trigger fire?<br/>simulated P&L?
-    T1->>Calib: log outcome vs confidence
-    Calib-->>T1: update calibration table
-    T1->>T1: write today's brief with calibrated confidence
-```
-
-Every daily-deep-brief commits `memory/{date}-plan.json`:
+Plan schema (truncated, real one in any `memory/*-plan.json`):
 
 ```jsonc
 {
