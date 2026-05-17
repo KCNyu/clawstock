@@ -73,7 +73,7 @@ python3 /root/.openclaw/workspace/scripts/data/analyze_hk_stocks.py --no-fetch  
 4. Output: 大势研判 + 板块归因 + 个股带头/拖累
 
 ### Mode 7 — Intraday Check-in (cron-driven, every 30 min, harness 化 ✨)
-**When:** 盘中盯盘 cron (`*/30 9-15 * * 1-5`)，比 Mode 6 更轻量、更高频。
+**When:** 盘中盯盘 cron (`*/30 10-11,14-15 * * 1-5 Asia/Shanghai`，共 8 次/天，已错开 09:30/12:00/13:30/16:00 阶段性报告)，比 Mode 6 更轻量、更高频。
 
 **Harness 4-step**：
 

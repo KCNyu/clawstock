@@ -171,7 +171,7 @@ python3 scripts/data/analyze_hk_stocks.py --dry-run   # 不写文件
 - **`scripts/harness/report_preflight.py --market {hk|us} --phase {open|mid|pm|close}`**：跑 analyze_*.py + 抽信号 (WATCH/STOP/TRIM 计数) + 异动 (≥3% 涨跌) + 指数方向；输出 `memory/.tmp/report-context-{market}-{phase}-{date}.json`，含 `raw_wechat_block`（LLM verbatim 用）+ `title` + `needs_risk_section`
 - **`scripts/harness/report_postflight.py --market {hk|us} --phase {phase}`**：校验三段标记 / 原始数据块 verbatim / 异动票必须被提及 / 长度 / 敷衍词；pass/warn 自动 commit portfolio.json
 
-**Mode 7 intraday**（HK + US 盘中盯盘 — 2 个 cron 共享，每 30 分钟）
+**Mode 7 intraday**（HK + US 盘中盯盘 — 2 个 cron 共享，每 30 分钟；HK 8 次/天，US 12 次/天，已错开阶段性报告）
 - **`scripts/harness/intraday_preflight.py --market {hk|us}`**：跑 analyze_*.py + 异动检测 + `should_alert` 决策；输出 `memory/.tmp/intraday-context-{market}-latest.json`
 - **`scripts/harness/intraday_postflight.py --market {hk|us}`**：校验 ▎我的看法 / 长度 / should_alert 触发时报告必须提异动票；**不 commit**（高频触发避免 commit log 刷屏）
 
@@ -193,12 +193,12 @@ python3 scripts/data/analyze_hk_stocks.py --dry-run   # 不写文件
 | Memory Dreaming Promotion | 03:00 daily | (system) | — | — |
 | 📊 盘前深度简报 | **08:00 HKT 工作日** | `daily-deep-brief` (全 swarm + FX + SEC EDGAR) | `brief_preflight.py` | `brief_postflight.py` |
 | 港股开盘报告 | 09:30 HKT 工作日 | Mode 6 | `report_preflight.py --market hk --phase open` | `report_postflight.py --market hk --phase open` |
-| 港股盘中盯盘 | 9-15 每 30 分 HKT 工作日 | Mode 7 | `intraday_preflight.py --market hk` | `intraday_postflight.py --market hk` |
+| 港股盘中盯盘 | 10-11,14-15 每 30 分 HKT 工作日（共 8 次，错开 09:30/12:00/13:30/16:00 报告） | Mode 7 | `intraday_preflight.py --market hk` | `intraday_postflight.py --market hk` |
 | 港股午盘报告 | 12:00 HKT 工作日 | Mode 6 | `report_preflight.py --market hk --phase mid` | `report_postflight.py --market hk --phase mid` |
 | 港股午后快报 | 13:30 HKT 工作日 | Mode 6 | `report_preflight.py --market hk --phase pm` | `report_postflight.py --market hk --phase pm` |
 | 港股收盘报告 | 16:00 HKT 工作日 | Mode 6 | `report_preflight.py --market hk --phase close` | `report_postflight.py --market hk --phase close` |
 | 美股开盘报告 | 09:30 ET 工作日 | Mode 6 | `report_preflight.py --market us --phase open` | `report_postflight.py --market us --phase open` |
-| 美股盘中盯盘 | 9-15 每 30 分 ET 工作日 | Mode 7 | `intraday_preflight.py --market us` | `intraday_postflight.py --market us` |
+| 美股盘中盯盘 | 10-15 每 30 分 ET 工作日（共 12 次，错开 09:30/16:00 报告） | Mode 7 | `intraday_preflight.py --market us` | `intraday_postflight.py --market us` |
 | 美股收盘报告 | 16:00 ET 工作日 | Mode 6 | `report_preflight.py --market us --phase close` | `report_postflight.py --market us --phase close` |
 
 所有 harness preflight/postflight 都在 `scripts/harness/`。Mode 6 / brief 的 postflight 会在 pass/warn 时

@@ -76,7 +76,7 @@ Pick the smallest mode that answers the question. Default to **Quick Read** unle
 7. Output: executive summary + bull case + bear case + valuation + technical setup + sentiment read + risk + catalyst calendar + concrete entry/exit levels
 
 ### Mode 7 — Intraday Check-in (cron-driven, every 30 min, harness 化 ✨)
-**When:** US 盘中盯盘 cron (`*/30 9-15 * * 1-5 America/New_York`)，比 Mode 6 更轻量、更高频。
+**When:** US 盘中盯盘 cron (`*/30 10-15 * * 1-5 America/New_York`，共 12 次/天，已错开 09:30/16:00 阶段性报告)，比 Mode 6 更轻量、更高频。
 
 **Harness 4-step**：
 

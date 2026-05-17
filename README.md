@@ -68,12 +68,12 @@ GitHub Actions write `sentiment.json` and `eod-history.csv` — disjoint sets.
 | **03:00** daily | Memory dreaming promotion | _system_ | — |
 | **08:00 HKT** weekday | 📊 Daily deep brief | `daily-deep-brief` (Tier 1/2/3 + Judge) | `brief_preflight` / `brief_postflight` |
 | **09:30 HKT** weekday | HK open report | Mode 6 | `report_preflight --market hk --phase open` |
-| **09:00–15:30 HKT** every 30 min | HK intraday monitor | Mode 7 | `intraday_preflight --market hk` |
+| **10:00–11:30 + 14:00–15:30 HKT** every 30 min | HK intraday monitor | Mode 7 | `intraday_preflight --market hk` |
 | **12:00 HKT** weekday | HK mid-day | Mode 6 | `--market hk --phase mid` |
 | **13:30 HKT** weekday | HK afternoon | Mode 6 | `--market hk --phase pm` |
 | **16:00 HKT** weekday | HK close | Mode 6 | `--market hk --phase close` |
 | **09:30 ET** weekday | US open | Mode 6 | `--market us --phase open` |
-| **09:00–15:30 ET** every 30 min | US intraday monitor | Mode 7 | `intraday_preflight --market us` |
+| **10:00–15:30 ET** every 30 min | US intraday monitor | Mode 7 | `intraday_preflight --market us` |
 | **16:00 ET** weekday | US close | Mode 6 | `--market us --phase close` |
 
 Plus 4 GitHub Actions for backstop / extras:
