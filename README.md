@@ -18,7 +18,7 @@
   <img src="docs/dashboard-preview.png" alt="clawock dashboard" width="780">
 </a>
 
-<sub>Live ECharts dashboard · auto-refreshed after every cron run · open the link above</sub>
+<sub>Screenshot refreshes weekly via <a href="https://github.com/KCNyu/clawock/actions/workflows/screenshot-refresh.yml">GH Action</a>; data on the live page updates after every cron run.</sub>
 
 </div>
 
@@ -184,6 +184,7 @@ Plus 4 GitHub Actions for backstop / extras:
 | `weekly-health.yml` | Sundays 23:00 UTC | (read-only deeper check) |
 | `eod-archive.yml` | Fridays 22:00 UTC | `memory/archive/eod-history.csv` |
 | `sentiment-scan.yml` | weekdays 23:30 UTC | `assets/data/sentiment.json` |
+| `screenshot-refresh.yml` | Sundays 22:00 UTC | `docs/dashboard-{preview,mobile}.png` |
 
 ---
 

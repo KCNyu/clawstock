@@ -1,0 +1,81 @@
+name: Dashboard Screenshot Refresh
+
+# Re-screenshot the live dashboard each week so README preview never drifts >7 days.
+# Sundays 22:00 UTC (= 06:00 Mon HKT, just before Monday's first cron).
+on:
+  schedule:
+    - cron: '0 22 * * 0'
+  workflow_dispatch:
+
+# Serialize with other commit-pushing workflows
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+
+jobs:
+  shoot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Playwright + Chromium
+        run: |
+          npm install --silent playwright@1.60.0
+          npx playwright install --with-deps chromium
+
+      - name: Capture desktop + mobile
+        run: |
+          mkdir -p docs
+          cat > /tmp/shoot.js << 'JS'
+          const { chromium, devices } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch();
+            // Desktop 1440x900
+            const desk = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+            const dp = await desk.newPage();
+            await dp.goto('https://kcnyu.github.io/clawock/', { waitUntil: 'networkidle', timeout: 45000 });
+            await dp.waitForTimeout(3500);  // let ECharts finish all animations
+            await dp.screenshot({ path: 'docs/dashboard-preview.png', fullPage: false });
+            await desk.close();
+
+            // Mobile iPhone 12
+            const iphone = devices['iPhone 12'];
+            const mob = await browser.newContext({ ...iphone });
+            const mp = await mob.newPage();
+            await mp.goto('https://kcnyu.github.io/clawock/', { waitUntil: 'networkidle', timeout: 45000 });
+            await mp.waitForTimeout(3500);
+            await mp.screenshot({ path: 'docs/dashboard-mobile.png', fullPage: true });
+            await browser.close();
+            console.log('done');
+          })().catch(e => { console.error(e); process.exit(1); });
+          JS
+          node /tmp/shoot.js
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/dashboard-preview.png docs/dashboard-mobile.png
+          if git diff --cached --quiet; then
+            echo "no visual change"
+            exit 0
+          fi
+          git commit -m "docs: weekly dashboard screenshot refresh $(date -u +%Y-%m-%d)"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push attempt $i lost race, rebasing…"
+            git pull --rebase origin master
+            sleep $((i*2))
+          done
+          echo "push failed after retries"
+          exit 1
