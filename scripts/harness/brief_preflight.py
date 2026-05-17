@@ -236,6 +236,260 @@ def compute_retrospective(prior_plan_path, portfolio):
     }
 
 
+def collect_peer_scan(portfolio):
+    """For each active holding with a peer entry in peer-map.json, fetch peer
+    prices and flag divergence (peer up significantly while holding flat/down)."""
+    peer_map_path = WS / 'memory' / 'peer-map.json'
+    if not peer_map_path.exists():
+        return {}
+    try:
+        pmap = json.loads(peer_map_path.read_text()).get('holdings', {})
+    except Exception as e:
+        print(f'   ⚠️  peer-map.json parse failed: {e}')
+        return {}
+
+    # Index holdings by ticker for self-pct lookup
+    h_by_ticker = {}
+    for region in ('hk_stocks', 'us_stocks'):
+        for h in portfolio['portfolios'].get(region, {}).get('holdings', []):
+            if h.get('shares', 0) > 0:
+                h_by_ticker[h['ticker']] = {
+                    'pct_1d': h.get('today_change_pct', 0),
+                    'pnl_pct': h.get('pnl_percent', 0),
+                    'region': region,
+                }
+
+    # Collect all peer tickers we need
+    peer_request = []
+    seen = set()
+    for ticker, info in pmap.items():
+        if ticker not in h_by_ticker:  # holding inactive, skip
+            continue
+        for p in info.get('listed_peers', []):
+            key = (p['ticker'], p['region'])
+            if key not in seen:
+                seen.add(key)
+                peer_request.append({'ticker': p['ticker'], 'region': p['region']})
+
+    if not peer_request:
+        return {}
+
+    # Call fetch_peers.py via subprocess
+    try:
+        import subprocess as sp
+        r = sp.run(
+            ['python3', str(WS / 'scripts' / 'data' / 'fetch_peers.py')],
+            input=json.dumps(peer_request), capture_output=True, text=True, timeout=120,
+        )
+        if r.returncode != 0:
+            print(f'   ⚠️  fetch_peers.py failed: {r.stderr[-100:]}')
+            return {}
+        fetched = json.loads(r.stdout)['peers']
+    except Exception as e:
+        print(f'   ⚠️  peer fetch error: {e}')
+        return {}
+
+    # Build per-holding peer scan
+    scan = {}
+    for ticker, info in pmap.items():
+        if ticker not in h_by_ticker:
+            continue
+        self_pct = h_by_ticker[ticker]['pct_1d'] or 0
+        peer_results = []
+        for p in info.get('listed_peers', []):
+            pdata = fetched.get(p['ticker'], {})
+            if 'price' in pdata:
+                peer_results.append({
+                    'ticker': p['ticker'],
+                    'name': p['name'],
+                    'rel': p['rel'],
+                    'pct_1d': pdata.get('pct_1d'),
+                    'pct_5d': pdata.get('pct_5d'),
+                })
+
+        # Sort by 1d pct desc
+        peer_results.sort(key=lambda x: x.get('pct_1d') or -999, reverse=True)
+
+        # Divergence: best peer outperformed holding by ≥3% today
+        best_peer = peer_results[0] if peer_results else None
+        divergence = None
+        if best_peer and best_peer.get('pct_1d') is not None:
+            diff = best_peer['pct_1d'] - self_pct
+            if diff >= 3.0:
+                divergence = f'{best_peer["ticker"]} {best_peer["name"]} {best_peer["pct_1d"]:+.1f}% vs self {self_pct:+.1f}% (gap {diff:+.1f}pp)'
+
+        scan[ticker] = {
+            'theme':            info.get('theme'),
+            'self_pct_1d':      round(self_pct, 2),
+            'self_pnl_pct':     h_by_ticker[ticker]['pnl_pct'],
+            'listed_peers':     peer_results,
+            'private_peers':    info.get('private_peers', []),
+            'divergence_signal': divergence,
+            'key_news_keywords': info.get('key_news_keywords', []),
+        }
+    return scan
+
+
+def _resolve_pending_outcomes():
+    """Walk calibration.csv; for rows ≥5 days old with outcome=pending, compute
+    actual outcome from snapshot history. Returns updated row count."""
+    calib_path = WS / 'memory' / 'calibration.csv'
+    if not calib_path.exists():
+        return 0
+
+    import csv
+    try:
+        with open(calib_path, encoding='utf-8') as f:
+            rows = list(csv.DictReader(f))
+    except Exception:
+        return 0
+
+    today_iso = datetime.now().strftime('%Y-%m-%d')
+    updated = 0
+    for r in rows:
+        if r.get('outcome') != 'pending':
+            continue
+        try:
+            plan_dt = datetime.strptime(r['plan_date'], '%Y-%m-%d')
+        except Exception:
+            continue
+        days_since = (datetime.now() - plan_dt).days
+        if days_since < 5:
+            continue  # too soon to evaluate
+
+        # Look at portfolio.json's holding for this ticker
+        try:
+            pf = json.loads((WS / 'portfolio.json').read_text())
+        except Exception:
+            continue
+        all_holdings = (pf['portfolios']['hk_stocks']['holdings'] +
+                        pf['portfolios']['us_stocks']['holdings'])
+        h = next((x for x in all_holdings if x['ticker'] == r['ticker']), None)
+        if not h:
+            r['outcome'] = 'unknown'
+            r['updated_at'] = datetime.now().isoformat()
+            updated += 1
+            continue
+
+        # Simulate outcome: did the action "win" 5 days later?
+        # cut / trim: win if current_price < sim_entry_price (sold high)
+        # add_only_on_trigger: win if current_price > sim_entry_price
+        # hold_and_watch / t_only: win if pnl_pct > 0 (price went up after we decided to hold)
+        bucket = r.get('bucket', '')
+        cur = h.get('current_price', 0)
+        try:
+            entry = float(r.get('sim_entry_price') or 0)
+        except Exception:
+            entry = 0
+
+        outcome = 'unknown'
+        pnl_5d = ''
+        if bucket in ('cut', 'trim_on_rebound', 't_only') and entry:
+            pnl_5d_val = (entry - cur) / entry * 100  # positive = sold high, good
+            outcome = 'win' if pnl_5d_val > 0 else 'loss'
+            pnl_5d = round(pnl_5d_val, 2)
+        elif bucket == 'add_only_on_trigger' and entry:
+            pnl_5d_val = (cur - entry) / entry * 100
+            outcome = 'win' if pnl_5d_val > 0 else 'loss'
+            pnl_5d = round(pnl_5d_val, 2)
+        elif bucket == 'hold_and_watch':
+            pnl_5d_val = h.get('today_change_pct', 0)  # rough proxy
+            outcome = 'win' if pnl_5d_val >= 0 else 'loss'
+            pnl_5d = round(pnl_5d_val, 2)
+
+        r['outcome'] = outcome
+        r['pnl_5d'] = pnl_5d
+        r['updated_at'] = datetime.now().isoformat()
+        updated += 1
+
+    if updated:
+        with open(calib_path, 'w', encoding='utf-8', newline='') as f:
+            w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+            w.writeheader()
+            w.writerows(rows)
+
+    return updated
+
+
+def compute_self_calibration():
+    """Read memory/calibration.csv accumulated by past brief postflights;
+    compute Brier score + per-bucket win rate over rolling 30 days."""
+    _resolve_pending_outcomes()  # first try to resolve any old pending rows
+
+    calib_path = WS / 'memory' / 'calibration.csv'
+    if not calib_path.exists():
+        return {'samples': 0, 'note': 'no calibration log yet (first runs)'}
+
+    import csv
+    rows = []
+    try:
+        with open(calib_path, encoding='utf-8') as f:
+            for row in csv.DictReader(f):
+                rows.append(row)
+    except Exception as e:
+        return {'samples': 0, 'note': f'calibration read failed: {e}'}
+
+    # Filter to last 30 days with outcome known
+    cutoff = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+    scored = []
+    for r in rows:
+        if r.get('plan_date', '') < cutoff:
+            continue
+        try:
+            conf = float(r.get('confidence', 0))
+        except Exception:
+            continue
+        outcome = r.get('outcome', '')  # 'win', 'loss', 'pending'
+        if outcome not in ('win', 'loss'):
+            continue
+        actual = 1.0 if outcome == 'win' else 0.0
+        scored.append({
+            'bucket': r.get('bucket', ''),
+            'confidence': conf,
+            'actual':     actual,
+            'brier':      (conf - actual) ** 2,
+        })
+
+    if not scored:
+        return {'samples': len(rows), 'note': f'{len(rows)} plans logged but no outcomes resolved yet'}
+
+    # Brier score
+    brier_30d = sum(r['brier'] for r in scored) / len(scored)
+
+    # Per-bucket
+    buckets = {}
+    for r in scored:
+        b = r['bucket']
+        buckets.setdefault(b, {'n': 0, 'wins': 0, 'conf_sum': 0})
+        buckets[b]['n'] += 1
+        buckets[b]['wins'] += int(r['actual'])
+        buckets[b]['conf_sum'] += r['confidence']
+    per_bucket = {b: {
+        'n': v['n'], 'win_rate': v['wins'] / v['n'],
+        'avg_confidence': v['conf_sum'] / v['n'],
+        'calibration_gap': (v['conf_sum'] / v['n']) - (v['wins'] / v['n']),
+    } for b, v in buckets.items()}
+
+    # Per-confidence-bucket actual win rate
+    conf_buckets = {'50-60': [], '60-70': [], '70-80': [], '80-90': [], '90-100': []}
+    for r in scored:
+        c = r['confidence']
+        for k, lo, hi in [('50-60',0.50,0.60),('60-70',0.60,0.70),('70-80',0.70,0.80),('80-90',0.80,0.90),('90-100',0.90,1.01)]:
+            if lo <= c < hi:
+                conf_buckets[k].append(r['actual'])
+                break
+    conf_table = {k: {'n': len(v), 'actual_win_rate': sum(v)/len(v) if v else None} for k, v in conf_buckets.items()}
+
+    return {
+        'samples': len(scored),
+        'brier_30d': round(brier_30d, 4),
+        'brier_quality': 'good' if brier_30d < 0.20 else ('marginal' if brier_30d < 0.30 else 'poor — confidence is unreliable'),
+        'per_bucket': per_bucket,
+        'per_confidence_band': conf_table,
+        'note': 'lower Brier = better calibrated. < 0.20 good, > 0.30 means model is overconfident',
+    }
+
+
 def main():
     today = datetime.now().strftime('%Y-%m-%d')
     TMP_DIR.mkdir(parents=True, exist_ok=True)
@@ -245,7 +499,7 @@ def main():
     print(f'═════ brief_preflight.py | {today} ═════')
 
     # [1] Refresh prices
-    print('\n[1/7] Refresh US prices')
+    print('\n[1/9] Refresh US prices')
     us_out, us_ok = _run('analyze_us_stocks.py', ['--no-news'])
     if not us_ok:
         issues.append(f'US refresh failed: {us_out[-200:]}')
@@ -253,7 +507,7 @@ def main():
     else:
         print('   ✓ done')
 
-    print('[2/7] Refresh HK prices')
+    print('[2/9] Refresh HK prices')
     hk_out, hk_ok = _run('analyze_hk_stocks.py', ['--no-news'])
     if not hk_ok:
         issues.append(f'HK refresh failed: {hk_out[-200:]}')
@@ -262,14 +516,14 @@ def main():
         print('   ✓ done')
 
     # [3] FX
-    print('[3/7] FX rate')
+    print('[3/9] FX rate')
     fx = fetch_fx_rate()
     if 'error' in fx:
         issues.append(f'FX fallback used: {fx["error"][-200:]}')
     print(f'   USDHKD = {fx["rate"]}  ({fx["source"]})')
 
     # [4] Snapshot
-    print('[4/7] Portfolio snapshot')
+    print('[4/9] Portfolio snapshot')
     portfolio_path = WS / 'portfolio.json'
     snapshot_path  = SNAPSHOT_DIR / f'{today}.json'
     snapshot_path.write_bytes(portfolio_path.read_bytes())
@@ -279,7 +533,7 @@ def main():
     portfolio = json.loads(portfolio_path.read_text())
 
     # [5] Concentration
-    print('[5/7] Concentration')
+    print('[5/9] Concentration')
     hk_conc = compute_concentration(portfolio['portfolios']['hk_stocks']['holdings'])
     us_conc = compute_concentration(portfolio['portfolios']['us_stocks']['holdings'])
     print(f'   HK: HHI={hk_conc.get("hhi"):.3f} {hk_conc.get("verdict")} '
@@ -300,7 +554,7 @@ def main():
     }
 
     # [6] SEC EDGAR
-    print('[6/7] SEC EDGAR US singles')
+    print('[6/9] SEC EDGAR US singles')
     us_fund = collect_us_fundamentals(portfolio)
     for t, data in us_fund.items():
         if 'error' in data:
@@ -311,7 +565,7 @@ def main():
             print(f'   ✓ {t}: {len(kf)} concepts')
 
     # [7] Retrospective
-    print('[7/7] Retrospective')
+    print('[7/9] Retrospective')
     prior_plan = find_prior_plan(today)
     retro = compute_retrospective(prior_plan, portfolio)
     if retro.get('prior_plan_date'):
@@ -326,6 +580,21 @@ def main():
     else:
         print(f'   first run (no prior plan)')
 
+    # [8] Peer scan — for each active holding, fetch peer prices + flag divergence
+    print('[8/9] Peer scan')
+    peer_scan = collect_peer_scan(portfolio)
+    print(f'   {len(peer_scan)} holdings with peer data; {sum(1 for h in peer_scan.values() if h.get("divergence_signal"))} divergence signals')
+
+    # [9] Self-calibration — read past plan outcomes and compute confidence accuracy
+    print('[9/9] Self-calibration')
+    self_calib = compute_self_calibration()
+    if self_calib.get('samples', 0) >= 5:
+        print(f'   Brier (30d): {self_calib["brier_30d"]:.3f}  ({self_calib["samples"]} samples)')
+        for bucket, stats in self_calib.get('per_bucket', {}).items():
+            print(f'   {bucket:24s} n={stats["n"]} win_rate={stats["win_rate"]:.0%}')
+    else:
+        print(f'   not enough data yet (need ≥5 plans, have {self_calib.get("samples", 0)})')
+
     # Write context.json
     context = {
         'generated_at':  datetime.now(timezone(timedelta(hours=8))).isoformat(),
@@ -338,6 +607,8 @@ def main():
         'concentration': {'hk': hk_conc, 'us': us_conc},
         'us_fundamentals': us_fund,
         'retrospective': retro,
+        'peer_scan':     peer_scan,
+        'self_calibration': self_calib,
         'issues':        issues,
     }
     ctx_path = TMP_DIR / f'brief-context-{today}.json'

@@ -36,6 +36,20 @@
 4. **Postflight**：`python3 scripts/harness/{brief|report|intraday}_postflight.py [args]`
    - 校验 → pass / warn 自动 commit；fail 加红 banner
 
+### C+. 自进化机制（daily-deep-brief）
+
+context.json 现在多了两个字段，**必须用上**：
+
+1. **`peer_scan`** — 每个持仓的同题材竞品（listed + private + ETF proxy）
+   - 必须输出 ▎同行扫描 段（表格）
+   - 出现 `divergence_signal` 字段 → Judge 必须考虑 rotation trigger
+   - 不许说 "考虑减仓"，要说 "减 X 股 → 加 Y 股"
+
+2. **`self_calibration`** — 过去 30 天你（这个 brief）的 confidence 准确率
+   - 如果 `samples ≥ 5`：必须输出 ▎Confidence 校准 段
+   - 给 action 的 confidence 字段前，参考过去类似情境实际胜率
+   - 如果 `brier_30d > 0.30` (模型过自信)：本次所有 confidence 自动 -10pp
+
 ### C. 输出约束
 
 - **段标记必须用全角竖线**：`▎情绪面` `▎技术面` `▎操作建议` `▎风险提示` `▎我的看法`

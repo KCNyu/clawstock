@@ -35,6 +35,7 @@ VALID_TRIGGER_TYPES = {
 }
 REQUIRED_MARKDOWN_TOKENS = [
     'Header', 'Tier 1', 'Tier 2', 'Tier 3', 'Judge', 'Confidence', 'Next-Session',
+    '同行扫描',  # NEW: peer rotation section
 ]
 HKD_USD_BUG_PATTERNS = [
     '合计 -4423', '合计 -4,423', '合计 -4423.0',
@@ -129,14 +130,72 @@ def rebuild_dashboard():
         return False, str(e)
 
 
+def log_calibration(today):
+    """Append today's plan actions to memory/calibration.csv (outcome filled in by future preflight)."""
+    import csv
+    plan_path = WS / 'memory' / f'{today}-plan.json'
+    if not plan_path.exists():
+        return
+    try:
+        plan = json.loads(plan_path.read_text())
+    except Exception:
+        return
+    actions = plan.get('actions', [])
+    if not actions:
+        return
+
+    calib_path = WS / 'memory' / 'calibration.csv'
+    new_file = not calib_path.exists()
+    fieldnames = ['plan_date','ticker','bucket','trigger_type','trigger_price',
+                  'confidence','sim_entry_price','outcome','pnl_5d','pnl_30d','updated_at']
+    rows = []
+    if not new_file:
+        try:
+            with open(calib_path, encoding='utf-8') as f:
+                rows = list(csv.DictReader(f))
+        except Exception:
+            rows = []
+
+    # Skip if this plan_date already logged
+    existing = {(r.get('plan_date'), r.get('ticker'), r.get('bucket')) for r in rows}
+    appended = 0
+    for a in actions:
+        key = (today, a.get('ticker'), a.get('bucket'))
+        if key in existing:
+            continue
+        rows.append({
+            'plan_date':       today,
+            'ticker':          a.get('ticker'),
+            'bucket':          a.get('bucket', ''),
+            'trigger_type':    a.get('trigger_type', ''),
+            'trigger_price':   a.get('trigger_price', ''),
+            'confidence':      a.get('confidence', ''),
+            'sim_entry_price': a.get('simulated_entry_price', ''),
+            'outcome':         'pending',  # filled by future preflight retrospective
+            'pnl_5d':          '',
+            'pnl_30d':         '',
+            'updated_at':      datetime.now().isoformat(),
+        })
+        appended += 1
+
+    if appended:
+        with open(calib_path, 'w', encoding='utf-8', newline='') as f:
+            w = csv.DictWriter(f, fieldnames=fieldnames)
+            w.writeheader()
+            w.writerows(rows)
+        print(f'  calibration.csv: +{appended} pending rows ({len(rows)} total)')
+
+
 def maybe_commit(status, today):
     if status == 'fail':
         return False, 'skipped (status=fail)'
 
+    log_calibration(today)   # append today's plan to calibration log (idempotent)
     rebuild_dashboard()  # refresh dashboard.json before commit
 
     msg_suffix = ' (validation warnings)' if status == 'warn' else ''
-    add_ok, add_out = _git('add', 'memory/', 'portfolio.json', 'assets/data/dashboard.json')
+    add_ok, add_out = _git('add', 'memory/', 'portfolio.json', 'assets/data/dashboard.json',
+                            'memory/calibration.csv')
     if not add_ok:
         return False, f'git add failed: {add_out[-200:]}'
 

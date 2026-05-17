@@ -166,6 +166,52 @@ context.json 关键字段：
 评符号：✓=执行准、✗=未触发或反向、⊘=trigger 设了但 plan 本身就是中性。
 机会成本可能为正（trigger 未触发 = 错过 alpha）或负（trigger 未触发 = 躲过损失）。
 
+#### ▎同行扫描 (REQUIRED — postflight 校验)
+
+**preflight 给了 `peer_scan` 字段**，每个持仓有 listed_peers（带 pct_1d / pct_5d）+ private_peers（待 IPO 名单）。
+
+格式：
+
+```
+▎同行扫描
+
+| 持仓 | 主题 | 今日 self | 最强同行 | 差距 | 判断 |
+|---|---|---|---|---|---|
+| 00100 MINIMAX | HK AI 大模型 | -6.6% | 02273 智云健康 -0.2% | +6.4pp | ⚠️ 题材弱但同行更强 — 个股 alpha 在掉 |
+| 07226 2x恒科 | HSTECH 杠杆 | -5.2% | 00700 腾讯 +0.3% | +5.5pp | ⚠️ 杠杆放大 underlying 弱势 — 减仓换 1x |
+| ... | | | | | |
+
+私域同行追踪（仅信息层）：
+- 智谱 Zhipu D 轮估值 220 亿
+- 月之暗面 Kimi 用户数 ...
+```
+
+**判断模板**（必给一个）：
+- 题材+ 自己+ → "alpha 抓住了"
+- 题材+ 自己- → "考虑切换：peer 比我强"
+- 题材- 自己- → "持有合理，等题材轮回"
+- 题材- 自己+ → "稀有，珍惜"
+
+**如果出现 ⚠️ 切换信号 → Tier 3 Judge 给 rotation trigger**（例："00100 反弹至 800 减 20 股，换入 0020 商汤")。
+
+#### ▎Confidence 自校准 (REQUIRED if `self_calibration.samples >= 5`)
+
+context.json 有 `self_calibration` 字段含 Brier 30d + 每个 bucket 实际胜率 + 信心分桶实际率。
+
+格式：
+```
+▎Confidence 校准
+
+过去 30 天 Brier = X.XXX (good/marginal/poor)
+- cut bucket: N 次, win rate Y%, 平均报 confidence Z% → 校准差距 +/- Wpp
+- ...
+
+本次报 confidence 时考虑:
+- 你过去 70-80% 信心实际只赢 X% → 这次类似情境的我会调到 Y%
+```
+
+如果 self_calibration.samples < 5，这段写 "校准窗口未填满（N/5），跳过"。
+
 #### Next-Session Plan（可交易，不是观察清单）
 
 格式：
@@ -192,7 +238,9 @@ context.json 关键字段：
 - `## Tier 1` 大表
 - `## Tier 2` Bull vs Bear
 - `## Tier 3` Aggressive/Conservative/Neutral + Judge
+- `## ▎同行扫描` peer rotation matrix (uses `peer_scan` from context)
 - `## Confidence` 表
+- `## ▎Confidence 校准` self-calibration (uses `self_calibration` from context, if samples ≥ 5)
 - `## Next-Session` plan
 
 必须包含的内容关键词（postflight 检查）：
