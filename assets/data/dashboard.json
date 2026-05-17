@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-17T06:56:33.082124Z",
+  "generated_at": "2026-05-17T07:20:29.249439Z",
   "last_updated": "2026/05/16 23:37 HKT",
   "fx": {
     "usdhkd": 7.8315,
@@ -430,7 +430,7 @@
         "fx_rate_usdhkd": 7.8,
         "fx_source": "HARDCODED_FALLBACK",
         "regime": {
-          "us": "range-bound",
+          "us": "volatile-trending-down",
           "hk": "trending-down"
         },
         "book": {
@@ -447,59 +447,74 @@
             "size_shares": 20,
             "trigger_type": "open",
             "trigger_price": null,
-            "trigger_condition": "周一开盘任意价减半至20股",
+            "trigger_condition": "周一开盘任意价减20股",
             "confidence": 0.82,
-            "rationale": "-17.5% PnL, -9% single day crash, 40-share position in low-liquidity ETF"
-          },
-          {
-            "ticker": "MSFU",
-            "bucket": "trim_on_rebound",
-            "size_pct": 50,
-            "size_shares": 10,
-            "trigger_type": "price_above",
-            "trigger_price": 29.5,
-            "trigger_condition": "微软2x升至29.5以上时卖出一半",
-            "confidence": 0.78,
-            "rationale": "+6.1% Friday gain, post-earnings drift complete, take partial profit"
-          },
-          {
-            "ticker": "RKLX",
-            "bucket": "trim_on_rebound",
-            "size_pct": 50,
-            "size_shares": 1,
-            "trigger_type": "price_above",
-            "trigger_price": 82,
-            "trigger_condition": "RKLB 2x升至82以上时卖出一股",
-            "confidence": 0.75,
-            "rationale": "+73% on 2x RKLB leverage, take partial profit leaving 1 share"
+            "rationale": "ROBN -9% afterhours + premarket_vol 3.5M 机构出逃；HOOD 原股破 $76 支撑；2x 杠杆下跌趋势中 decay 加速"
           },
           {
             "ticker": "00100",
-            "bucket": "hold_and_watch",
-            "size_pct": 0,
-            "size_shares": 60,
+            "bucket": "trim_on_rebound",
+            "size_pct": 30,
+            "size_shares": 18,
             "trigger_type": "price_below",
-            "trigger_price": 750,
-            "trigger_condition": "MINIMAX跌破750 HKD则减仓10-20股",
-            "confidence": 0.6,
-            "rationale": "No fundamental anchor, AI theme unsupported, Monday open sets direction"
+            "trigger_price": 700,
+            "trigger_condition": "周一低开 700 以下减18股；若开盘在700-720区间持观望",
+            "confidence": 0.72,
+            "rationale": "850→731破位，HHI 0.418 危险集中，恒科下行未止；700 心理支撑若破下看 650"
           },
           {
-            "ticker": "07226",
+            "ticker": "SOXL",
             "bucket": "hold_and_watch",
-            "size_pct": 0,
-            "size_shares": 6200,
-            "trigger_type": "index_breakdown",
+            "size_pct": null,
+            "size_shares": null,
+            "trigger_type": "manual",
             "trigger_price": null,
-            "trigger_condition": "恒生科技指数若跌破4800则评估是否清仓07226",
+            "trigger_condition": "MSFT财报后持有，不追不砍；SOXL日内-4%触发部分止盈",
             "confidence": 0.7,
-            "rationale": "2x leveraged ETF decay risk high; deeply underwater, wait for HSTECH direction"
+            "rationale": "MSFT Q1 26 revenue $68.9B beat +13% YoY；AI Copilot 渗透率加速；SOX技术面突破；3x 杠杆上行趋势中非线性受益"
+          },
+          {
+            "ticker": "MSFU",
+            "bucket": "hold_and_watch",
+            "size_pct": null,
+            "size_shares": null,
+            "trigger_type": "manual",
+            "trigger_price": null,
+            "trigger_condition": "持有不追；周一高开低走则止盈部分",
+            "confidence": 0.65,
+            "rationale": "MSFT财报+6.1%动能已部分price-in；bid/ask 27.76/27.77 流动性健康；短线高位震荡"
+          },
+          {
+            "ticker": "RKLB",
+            "bucket": "hold_and_watch",
+            "size_pct": null,
+            "size_shares": null,
+            "trigger_type": "manual",
+            "trigger_price": null,
+            "trigger_condition": "持有不追加；RSI若破80考虑减半",
+            "confidence": 0.68,
+            "rationale": "PnL +75.7%，RSI偏高但未超；卫星发射节奏健康（2026年5次商业发射）；space infrastructure赛道资本开支抬头；长拿逻辑不变"
+          },
+          {
+            "ticker": "PLTU",
+            "bucket": "t_only",
+            "size_pct": null,
+            "size_shares": null,
+            "trigger_type": "manual",
+            "trigger_price": null,
+            "trigger_condition": "换方向（换CRCL或持现金）；不补仓",
+            "confidence": 0.58,
+            "rationale": "PnL -13.3%，PLTR估值高；AI军工叙事撑不住；无明显短期催化"
           }
         ],
         "watch_levels": {
           "hstech_breakdown": 4800,
-          "soxl_breakdown_pct": -4,
-          "book_force_derisk_usd": -300
+          "soxl_stop_pct": -4,
+          "book_force_derisk_hkd": -6000
+        },
+        "concentration_hhi": {
+          "hk": 0.418,
+          "us": 0.171
         }
       }
     },
