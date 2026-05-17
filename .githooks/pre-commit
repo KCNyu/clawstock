@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+# clawock pre-commit hook — enforces harness invariants on EVERY commit
+# (openclaw cron, GH Action, manual user, any source).
+#
+# Activated via:
+#   git config core.hooksPath .githooks
+#
+# Validates only when relevant files are staged — fast no-op otherwise.
+
+set -e
+WS="$(git rev-parse --show-toplevel)"
+cd "$WS"
+
+# Collect staged files
+STAGED=$(git diff --cached --name-only --diff-filter=ACM)
+
+# ──────────────────────────────────────────────────────────────────────────
+# 1. portfolio.json — must be valid JSON + have required structure
+# ──────────────────────────────────────────────────────────────────────────
+if echo "$STAGED" | grep -qE '^portfolio\.json$'; then
+  echo "  ▸ validating portfolio.json…"
+  python3 - <<'PY' || exit 1
+import json, sys
+try:
+    d = json.load(open('portfolio.json'))
+except Exception as e:
+    print(f'    ✗ JSON parse error: {e}', file=sys.stderr)
+    sys.exit(1)
+
+if 'portfolios' not in d:
+    print('    ✗ missing top-level "portfolios" key', file=sys.stderr); sys.exit(1)
+for region in ('us_stocks', 'hk_stocks'):
+    if region not in d['portfolios']:
+        print(f'    ✗ missing portfolios.{region}', file=sys.stderr); sys.exit(1)
+    leg = d['portfolios'][region]
+    if not isinstance(leg.get('holdings'), list):
+        print(f'    ✗ portfolios.{region}.holdings must be a list', file=sys.stderr); sys.exit(1)
+    for h in leg['holdings']:
+        for f in ('ticker', 'shares', 'cost_basis'):
+            if f not in h:
+                print(f'    ✗ {region} holding missing field "{f}": {h.get("ticker")}', file=sys.stderr); sys.exit(1)
+print('    ✓ portfolio.json OK')
+PY
+fi
+
+# ──────────────────────────────────────────────────────────────────────────
+# 2. memory/*-plan.json — schema (date / actions / bucket enum)
+# ──────────────────────────────────────────────────────────────────────────
+PLAN_FILES=$(echo "$STAGED" | grep -E '^memory/.*-plan\.json$' || true)
+if [ -n "$PLAN_FILES" ]; then
+  echo "  ▸ validating staged plan.json files…"
+  python3 - "$PLAN_FILES" <<'PY' || exit 1
+import json, sys, re
+VALID_BUCKETS = {'cut','trim_on_rebound','hold_and_watch','t_only','add_only_on_trigger'}
+VALID_TRIGGERS = {'open','price_above','price_below','index_breakdown','event','manual'}
+files = sys.argv[1].split('\n') if len(sys.argv) > 1 else []
+bad = 0
+for f in files:
+    if not f.strip(): continue
+    try:
+        d = json.loads(open(f).read())
+    except Exception as e:
+        print(f'    ✗ {f}: bad JSON ({e})', file=sys.stderr); bad += 1; continue
+    if 'date' not in d:
+        print(f'    ✗ {f}: missing "date"', file=sys.stderr); bad += 1
+    for action in (d.get('actions') or []):
+        if 'bucket' in action and action['bucket'] not in VALID_BUCKETS:
+            print(f'    ✗ {f}: bad bucket "{action["bucket"]}" (must be one of {VALID_BUCKETS})', file=sys.stderr); bad += 1
+        if 'trigger_type' in action and action['trigger_type'] not in VALID_TRIGGERS:
+            print(f'    ✗ {f}: bad trigger_type "{action["trigger_type"]}"', file=sys.stderr); bad += 1
+        c = action.get('confidence')
+        if c is not None and not (0 <= c <= 1):
+            print(f'    ✗ {f}: confidence={c} outside [0,1]', file=sys.stderr); bad += 1
+print(f'    ✓ {len([f for f in files if f.strip()])} plan(s) OK' if bad == 0 else f'    ✗ {bad} issues', file=sys.stderr if bad else sys.stdout)
+sys.exit(1 if bad else 0)
+PY
+fi
+
+# ──────────────────────────────────────────────────────────────────────────
+# 3. assets/data/dashboard.json — auto-rebuild if portfolio.json staged
+#    (Prevents drift between portfolio + dashboard. Stages the rebuild too.)
+# ──────────────────────────────────────────────────────────────────────────
+if echo "$STAGED" | grep -qE '^portfolio\.json$'; then
+  echo "  ▸ rebuilding dashboard.json (portfolio.json was staged)…"
+  python3 scripts/data/build_dashboard.py > /dev/null
+  git add assets/data/dashboard.json
+fi
+
+# ──────────────────────────────────────────────────────────────────────────
+# 4. No staged secrets (paranoid scan)
+# ──────────────────────────────────────────────────────────────────────────
+SECRETS_HIT=$(git diff --cached -U0 -- ':!*.md' ':!.gitignore' \
+  | grep -E '^\+' \
+  | grep -iE 'sk-[a-zA-Z0-9]{20,}|tp-[a-zA-Z0-9]{20,}|FINNHUB_API_KEY\s*=\s*[a-zA-Z0-9]+|POLYGON_API_KEY\s*=\s*[a-zA-Z0-9]+' \
+  || true)
+if [ -n "$SECRETS_HIT" ]; then
+  echo "  ✗ POSSIBLE SECRET in staged diff:" >&2
+  echo "$SECRETS_HIT" | head -3 >&2
+  echo "  → if this is a false positive, override with: git commit --no-verify" >&2
+  exit 1
+fi
+
+# All checks passed
+exit 0

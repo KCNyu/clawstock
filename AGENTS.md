@@ -18,6 +18,20 @@ Don't ask permission. Just do it.
 
 详见 `USER.md` § 沟通偏好 + § 不要做的事。要点：表格、不 hedging、数据缺口必说、terse 风格、14:00 HKT 也盘中查。
 
+## Git hook (one-time setup per clone)
+
+```bash
+git config core.hooksPath .githooks
+```
+
+`.githooks/pre-commit` enforces on every commit (openclaw cron / GH Action / manual):
+- portfolio.json valid JSON + required structure
+- memory/*-plan.json schema (bucket enum, trigger_type enum, confidence ∈ [0,1])
+- dashboard.json auto-rebuild + re-stage when portfolio.json staged (prevents drift)
+- paranoid scan for leaked API keys (`sk-…`, `tp-…`, `FINNHUB_API_KEY=`, etc.)
+
+Override with `--no-verify` if false positive (rare).
+
 ## Git Auto-Commit Rules
 
 The workspace is a local git repo. **`origin` is the public repo `github.com/KCNyu/clawock`** — the

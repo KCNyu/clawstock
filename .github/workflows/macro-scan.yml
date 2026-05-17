@@ -1,14 +1,12 @@
-name: Sentiment Scan
+name: Macro Scan
 
-# Daily 23:30 UTC (= 07:30 HKT, ~30 min before brief).
-# Per-ticker sentiment from FREE public sources:
-#   • Reddit JSON   (US: wsb / stocks / investing)
-#   • Google News RSS (US: English; HK: 中文 by Chinese name + EN by ticker)
-# Writes assets/data/sentiment.json (consumed by agent Mode 5 + dashboard).
-# Tavily / scrapling reserved for ad-hoc deeper queries.
+# Daily 23:45 UTC (= 07:45 HKT, 15 min before brief).
+# VIX / 10Y yield / DXY / Fear & Greed / major indices snapshot.
+# Free public APIs, no key. Writes assets/data/macro.json — consumed by
+# brief preflight as macro context.
 on:
   schedule:
-    - cron: '30 23 * * 1-5'  # weekdays only — sentiment moves on trading days
+    - cron: '45 23 * * 1-5'
   workflow_dispatch:
 
 # Serialize with other commit-pushing workflows
@@ -19,7 +17,7 @@ concurrency:
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 4
     permissions:
       contents: write
     steps:
@@ -32,24 +30,23 @@ jobs:
 
       - run: pip install --quiet requests
 
-      - name: Scan sentiment (Reddit + Google News)
-        run: python3 scripts/data/fetch_sentiment.py
+      - name: Fetch macro
+        run: python3 scripts/data/fetch_macro.py
 
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/data/sentiment.json
+          git add assets/data/macro.json
           if git diff --cached --quiet; then
             echo "no change"
             exit 0
           fi
-          git commit -m "sentiment: daily Reddit + Google News scan $(date -u +%Y-%m-%d)"
+          git commit -m "macro: daily snapshot $(date -u +%Y-%m-%d)"
           for i in 1 2 3 4 5; do
             if git push; then exit 0; fi
             echo "push attempt $i lost race, rebasing…"
             git pull --rebase origin master
             sleep $((i*2))
           done
-          echo "push failed after retries"
           exit 1
