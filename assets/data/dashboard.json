@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-17T00:22:11.885273Z",
+  "generated_at": "2026-05-17T00:48:21.418445Z",
   "last_updated": "2026/05/16 23:37 HKT",
   "fx": {
     "usdhkd": 7.8315,
     "source": "Frankfurter",
-    "fetched_at": "2026-05-16T15:37:38.799823+00:00"
+    "fetched_at": "2026-05-17T00:48:21.347616+00:00"
   },
   "totals": {
     "us": {
