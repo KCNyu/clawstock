@@ -22,7 +22,7 @@ Side effects:
 import json
 import sys
 import subprocess
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 WS = Path('/root/.openclaw/workspace')
@@ -178,12 +178,22 @@ def log_calibration(today):
         })
         appended += 1
 
-    if appended:
+    # Retention: drop rows older than 365 days (rolling window)
+    cutoff = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
+    before = len(rows)
+    rows = [r for r in rows if r.get('plan_date', '') >= cutoff]
+    dropped = before - len(rows)
+
+    if appended or dropped:
         with open(calib_path, 'w', encoding='utf-8', newline='') as f:
             w = csv.DictWriter(f, fieldnames=fieldnames)
             w.writeheader()
             w.writerows(rows)
-        print(f'  calibration.csv: +{appended} pending rows ({len(rows)} total)')
+        msg = f'  calibration.csv: +{appended} pending rows'
+        if dropped:
+            msg += f', -{dropped} old (>365d)'
+        msg += f' ({len(rows)} total)'
+        print(msg)
 
 
 def maybe_commit(status, today):
