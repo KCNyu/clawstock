@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-18T00:08:36.754987Z",
-  "last_updated": "2026/05/16 23:37 HKT",
+  "generated_at": "2026-05-18T01:30:45.207047Z",
+  "last_updated": "2026/05/18 09:30 HKT",
   "fx": {
     "usdhkd": 7.8315,
     "source": "Frankfurter",
@@ -16,11 +16,11 @@
       "realized_usd": 592.18
     },
     "hk": {
-      "value_hkd": 83340.4,
+      "value_hkd": 81160.8,
       "cost_hkd": 88276.24,
-      "pnl_hkd": -4935.84,
-      "pnl_pct": -5.59,
-      "today_change_hkd": -5178.0,
+      "pnl_hkd": -7115.44,
+      "pnl_pct": -8.06,
+      "today_change_hkd": -2179.6,
       "realized_hkd": 7259.16
     }
   },
@@ -80,41 +80,41 @@
       }
     },
     "hk": {
-      "hhi": 0.4181,
-      "top2": 0.8595,
+      "hhi": 0.4147,
+      "top2": 0.8567,
       "positions": [
         {
           "ticker": "00100",
           "name": "MINIMAX-W",
-          "value": 47640.0,
-          "weight": 0.5716
+          "value": 46080.0,
+          "weight": 0.5678
         },
         {
           "ticker": "07226",
           "name": "XL二南方恒科",
-          "value": 23994.0,
-          "weight": 0.2879
+          "value": 23448.4,
+          "weight": 0.2889
         },
         {
           "ticker": "02208",
           "name": "金风科技",
-          "value": 5892.0,
-          "weight": 0.0707
+          "value": 5884.0,
+          "weight": 0.0725
         },
         {
           "ticker": "03033",
           "name": "南方恒生科技",
-          "value": 4830.0,
-          "weight": 0.058
+          "value": 4776.0,
+          "weight": 0.0588
         },
         {
           "ticker": "03032",
           "name": "恒生科技ETF",
-          "value": 984.4,
-          "weight": 0.0118
+          "value": 972.4,
+          "weight": 0.012
         }
       ],
-      "total": 83340.4,
+      "total": 81160.8,
       "verdict": {
         "level": "danger",
         "label": "危险集中",
@@ -314,11 +314,11 @@
         "currency": "HKD",
         "shares": 60,
         "cost_basis": 822.83,
-        "current_price": 794.0,
-        "current_value": 47640.0,
-        "pnl_abs": -1729.8,
-        "pnl_percent": -3.5,
-        "today_change_pct": -6.59,
+        "current_price": 768.0,
+        "current_value": 46080.0,
+        "pnl_abs": -3289.8,
+        "pnl_percent": -6.66,
+        "today_change_pct": -3.27,
         "is_active": true,
         "trades_count": 3
       },
@@ -328,11 +328,11 @@
         "currency": "HKD",
         "shares": 400,
         "cost_basis": 14.084,
-        "current_price": 14.73,
-        "current_value": 5892.0,
-        "pnl_abs": 258.4,
-        "pnl_percent": 4.59,
-        "today_change_pct": -5.58,
+        "current_price": 14.71,
+        "current_value": 5884.0,
+        "pnl_abs": 250.4,
+        "pnl_percent": 4.44,
+        "today_change_pct": -0.14,
         "is_active": true,
         "trades_count": 1
       },
@@ -342,11 +342,11 @@
         "currency": "HKD",
         "shares": 200,
         "cost_basis": 5.405,
-        "current_price": 4.922,
-        "current_value": 984.4,
-        "pnl_abs": -96.6,
-        "pnl_percent": -8.94,
-        "today_change_pct": -2.53,
+        "current_price": 4.862,
+        "current_value": 972.4,
+        "pnl_abs": -108.6,
+        "pnl_percent": -10.05,
+        "today_change_pct": -1.22,
         "is_active": true,
         "trades_count": 0
       },
@@ -356,11 +356,11 @@
         "currency": "HKD",
         "shares": 6200,
         "cost_basis": 4.3632,
-        "current_price": 3.87,
-        "current_value": 23994.0,
-        "pnl_abs": -3057.84,
-        "pnl_percent": -11.3,
-        "today_change_pct": -5.19,
+        "current_price": 3.782,
+        "current_value": 23448.4,
+        "pnl_abs": -3603.44,
+        "pnl_percent": -13.32,
+        "today_change_pct": -2.27,
         "is_active": true,
         "trades_count": 1
       },
@@ -370,11 +370,11 @@
         "currency": "HKD",
         "shares": 1000,
         "cost_basis": 5.14,
-        "current_price": 4.83,
-        "current_value": 4830.0,
-        "pnl_abs": -310.0,
-        "pnl_percent": -6.03,
-        "today_change_pct": -2.62,
+        "current_price": 4.776,
+        "current_value": 4776.0,
+        "pnl_abs": -364.0,
+        "pnl_percent": -7.08,
+        "today_change_pct": -1.12,
         "is_active": true,
         "trades_count": 0
       }
