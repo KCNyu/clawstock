@@ -80,6 +80,45 @@ def _parse_gtimg(text: str) -> Optional[Dict]:
 
 # ── price fetching ────────────────────────────────────────────────────────────
 
+def _fetch_eastmoney_hk(codes: List[str]) -> Dict[str, Dict]:
+    """Eastmoney push2 batch for HK board (secid prefix 116). Independent of Tencent."""
+    if not codes:
+        return {}
+    secids = ','.join(f"116.{c}" for c in codes)
+    try:
+        r = SESSION.get(
+            'https://push2.eastmoney.com/api/qt/ulist.np/get',
+            params={
+                'fltt': 2, 'invt': 2,
+                'fields': 'f12,f14,f2,f3,f15,f16,f17,f18,f5',
+                'secids': secids,
+                'ut': 'bd1d9ddb04089700cf9c27f6f7426281',
+            },
+            headers={'Referer': 'https://quote.eastmoney.com/'},
+            timeout=TIMEOUT,
+        )
+        r.raise_for_status()
+        out: Dict[str, Dict] = {}
+        for item in (r.json().get('data') or {}).get('diff') or []:
+            t = item.get('f12')
+            c = item.get('f2')
+            if not t or c in (None, '-'):
+                continue
+            c = float(c)
+            pc_raw = item.get('f18')
+            pc = float(pc_raw) if pc_raw not in (None, '-') else c
+            out[t] = {
+                'name': item.get('f14') or t,
+                'c': c, 'pc': pc,
+                'o': float(item.get('f17') or c),
+                'dp': float(item.get('f3') or _pct(c, pc)),
+            }
+        return out
+    except Exception as e:
+        print(f"  ⚠️  Eastmoney HK batch failed: {e}")
+        return {}
+
+
 def _fetch_stooq(code: str) -> Optional[Dict]:
     """Fallback: stooq.com CSV. Returns same-day OHLCV; fails for very new IPOs (e.g. 00100)."""
     try:
@@ -122,10 +161,14 @@ def _fetch_yfinance(code: str) -> Optional[Dict]:
 
 
 def fetch_hk_quotes(codes: List[str]) -> Dict[str, Dict]:
-    """Fetch HK stock prices with full fallback chain: Tencent → Eastmoney → yfinance."""
+    """Fetch HK stock prices: Tencent (primary) → Eastmoney HK (independent cross-check) →
+    stooq → yfinance. When BOTH Tencent and Eastmoney succeed for the same code, cross-check
+    c/pc and warn if divergence > 1% — this is the trip-wire for stale-data drift.
+    """
     results: Dict[str, Dict] = {}
 
     # Tier 1: Tencent gtimg batch
+    tencent: Dict[str, Dict] = {}
     query_codes = [f'r_hk{c}' for c in codes]
     url = f"https://qt.gtimg.cn/q={','.join(query_codes)}"
     try:
@@ -140,38 +183,64 @@ def fetch_hk_quotes(codes: List[str]) -> Dict[str, Dict]:
             code = key_part.replace('v_r_hk', '').replace('v_hk', '')
             parsed = _parse_gtimg(line)
             if parsed and parsed['c'] > 0:
-                parsed['_src'] = 'Tencent'
-                results[code] = parsed
+                tencent[code] = parsed
     except Exception as e:
         print(f"  ⚠️  Tencent batch failed: {e}")
 
     # Tier 1b: Tencent single-code retry (different prefix)
-    missing = [c for c in codes if c not in results]
-    for code in missing:
+    for code in [c for c in codes if c not in tencent]:
         for prefix in ('r_hk', 'hk'):
             try:
                 r = SESSION.get(f"https://qt.gtimg.cn/q={prefix}{code}", timeout=TIMEOUT)
                 r.encoding = 'gbk'
                 parsed = _parse_gtimg(r.text)
                 if parsed and parsed['c'] > 0:
-                    parsed['_src'] = 'Tencent'
-                    results[code] = parsed
+                    tencent[code] = parsed
                     break
             except Exception:
                 continue
 
-    # Tier 2: stooq (works for established HK codes; ~no coverage for IPOs <6mo)
-    missing = [c for c in codes if c not in results]
-    for code in missing:
+    # Tier 2: Eastmoney HK batch — runs alongside Tencent so we can cross-check
+    eastmoney = _fetch_eastmoney_hk(codes)
+
+    # Cross-check + merge: prefer Tencent when both succeed; record divergence
+    for code in codes:
+        tq = tencent.get(code)
+        eq = eastmoney.get(code)
+        if tq and eq:
+            c_div = abs(tq['c'] - eq['c']) / max(tq['c'], 0.001) * 100
+            pc_div = abs(tq['pc'] - eq['pc']) / max(tq['pc'], 0.001) * 100
+            tq['_src'] = 'Tencent+Eastmoney'
+            if c_div > 1.0 or pc_div > 1.0:
+                tq['_divergence'] = {
+                    'tencent': {'c': tq['c'], 'pc': tq['pc']},
+                    'eastmoney': {'c': eq['c'], 'pc': eq['pc']},
+                    'c_div_pct': round(c_div, 2),
+                    'pc_div_pct': round(pc_div, 2),
+                }
+                print(f"  ⚠️  {code} two-source divergence: "
+                      f"Tencent c={tq['c']}/pc={tq['pc']} vs "
+                      f"Eastmoney c={eq['c']}/pc={eq['pc']} "
+                      f"(c {c_div:.2f}% pc {pc_div:.2f}%)")
+            results[code] = tq
+        elif tq:
+            tq['_src'] = 'Tencent'
+            results[code] = tq
+        elif eq:
+            eq['_src'] = 'Eastmoney'
+            results[code] = eq
+            print(f"  [fallback] {code} via Eastmoney HK (Tencent missed)")
+
+    # Tier 3: stooq (only for codes still missing — established HK codes only)
+    for code in [c for c in codes if c not in results]:
         parsed = _fetch_stooq(code)
         if parsed:
             parsed['_src'] = 'stooq'
             results[code] = parsed
-            print(f"  [fallback] {code} via stooq (prev_close ≈ open)")
+            print(f"  [fallback] {code} via stooq (prev_close ≈ open, low confidence)")
 
-    # Tier 3: yfinance as last resort (often rate-limited)
-    missing = [c for c in codes if c not in results]
-    for code in missing:
+    # Tier 4: yfinance as last resort (often rate-limited)
+    for code in [c for c in codes if c not in results]:
         parsed = _fetch_yfinance(code)
         if parsed:
             parsed['_src'] = 'yfinance'

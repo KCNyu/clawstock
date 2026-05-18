@@ -57,13 +57,14 @@ bash check_portfolio.sh
 
 ## 数据源清单（当前约定）
 
-### 港股 fallback 链（脚本实现，2026-05-13 修正）
+### 港股 fallback 链（脚本实现，2026-05-18 加 Eastmoney HK 双源对账）
 1. **腾讯财经** `qt.gtimg.cn/q=r_hkXXXXX` — 主源，覆盖最全
-2. **stooq.com** CSV — 同日 OHLCV，**注意**：新 IPO（如 00100 MINIMAX）无覆盖；prev_close 用 open 近似
-3. **yfinance** — 经常被限速，最后兜底
+2. **东方财富 HK** `push2.eastmoney.com/.../ulist.np/get` (secid prefix 116) — 独立第二源，跟 Tencent **并行抓取**做交叉校验：当两源都成功时，c/pc 偏差 > 1% 会在 `_divergence` 字段标 WARN + stdout 提示，作为 stale-data 漂移的 trip-wire
+3. **stooq.com** CSV — 同日 OHLCV，新 IPO 无覆盖；prev_close 用 open 近似（低置信度）
+4. **yfinance** — 经常被限速，最后兜底
 
-⚠️ **东方财富 `push2.eastmoney.com` 从此服务器 502 不可达，已从链路移除**
-⚠️ **00100 MINIMAX 没有可用 fallback** — Tencent 是唯一来源，必须保持工作
+⚠️ **2026-05-13 → 2026-05-18 期间 Eastmoney HK 曾 502，已恢复并重新接入**
+✓ **00100 MINIMAX** 现在有 Eastmoney 作为第二独立源（之前只有 Tencent 单点）
 
 ### 美股 & 港股脚本（推荐用法）
 
@@ -155,7 +156,7 @@ python3 scripts/data/analyze_hk_stocks.py --dry-run   # 不写文件
 - **`scripts/data/analyze_us_stocks.py`**：美股完整分析 = 刷价格 + RSI-14/MA20/50 + Finnhub 新闻 + 信号
 - **`scripts/data/fetch_us_filings.py`**：SEC EDGAR 对接 — 10-K/10-Q/8-K filings、XBRL 财务概念、Form 4 insider、13F-HR；无需 API key；Mode 3 fundamental 深挖时用
 - **`scripts/data/fetch_fx.py`**：USDHKD 汇率（Frankfurter → exchangerate.host → Yahoo HKD=X 三路 fallback）；4h 本地缓存；`--convert AMT FROM TO` 直接换算。**HK + US 算 book total 必须先调它**
-- **`scripts/data/analyze_hk_stocks.py`**：港股完整分析 = Tencent→stooq→yfinance fallback + 恒指/恒科 + Finnhub 新闻 + 信号
+- **`scripts/data/analyze_hk_stocks.py`**：港股完整分析 = Tencent + Eastmoney HK 双源对账 → stooq → yfinance 兜底 + 恒指/恒科 + Finnhub 新闻 + 信号；c/pc 偏差 > 1% 写入 `_divergence`
 - `check_portfolio.sh`：快速查看持仓
 
 ### Cron harness 脚本（preflight + postflight 三明治）
