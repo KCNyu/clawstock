@@ -7,6 +7,7 @@ Output: assets/data/dashboard.json
 
 Run after each portfolio mutation (cron commit) so Pages stays fresh.
 """
+import csv
 import glob
 import json
 import os
@@ -153,6 +154,528 @@ def total_snapshots_count():
     return len(glob.glob(str(WS_ROOT / 'memory' / 'snapshots' / '*.json')))
 
 
+# ── Dashboard v2 NEW field computers ─────────────────────────────────────
+# Each function MUST swallow internal exceptions and return its empty/null
+# default so a partial failure can't take down the whole dashboard build.
+
+def _pct_change(curr, prev):
+    """(curr - prev) / prev * 100, rounded to 2 decimals; None if prev <= 0 or invalid."""
+    try:
+        if prev is None or curr is None:
+            return None
+        prev = float(prev)
+        if prev == 0:
+            return None
+        return round((float(curr) - prev) / abs(prev) * 100, 2)
+    except Exception:
+        return None
+
+
+def compute_delta(snapshots):
+    """Equity rolling-window % change vs today.
+
+    snapshots is the same list build_dashboard already prepares: ascending date,
+    so today = snapshots[-1], yesterday = snapshots[-2], etc.
+    """
+    empty = {
+        'us': {'today_pct': None, '7d_pct': None, '30d_pct': None},
+        'hk': {'today_pct': None, '7d_pct': None, '30d_pct': None},
+    }
+    try:
+        if not snapshots:
+            return empty
+        n = len(snapshots)
+        today = snapshots[-1]
+
+        def at(offset_back, key):
+            idx = n - 1 - offset_back
+            if idx < 0:
+                return None
+            return snapshots[idx].get(key)
+
+        def region(value_key):
+            today_v = today.get(value_key)
+            return {
+                'today_pct': _pct_change(today_v, at(1, value_key)) if n >= 2 else None,
+                '7d_pct':    _pct_change(today_v, at(7, value_key)) if n >= 8 else None,
+                '30d_pct':   _pct_change(today_v, at(30, value_key)) if n >= 31 else None,
+            }
+        return {
+            'us': region('us_total_value'),
+            'hk': region('hk_total_value'),
+        }
+    except Exception as e:
+        print(f'  warn: compute_delta failed: {e}', file=sys.stderr)
+        return empty
+
+
+def compute_today_movers(us_h, hk_h):
+    """abs(today_change_pct) >= 3.0 holdings across both regions, top 10 by abs."""
+    try:
+        items = []
+        for h in (us_h or []):
+            pct = h.get('today_change_pct')
+            if pct is None:
+                continue
+            if abs(pct) >= 3.0:
+                items.append({
+                    'ticker': h.get('ticker'),
+                    'name': h.get('name', ''),
+                    'region': 'us',
+                    'today_change_pct': round(pct, 2),
+                    'current_price': h.get('current_price'),
+                })
+        for h in (hk_h or []):
+            pct = h.get('today_change_pct')
+            if pct is None:
+                continue
+            if abs(pct) >= 3.0:
+                items.append({
+                    'ticker': h.get('ticker'),
+                    'name': h.get('name', ''),
+                    'region': 'hk',
+                    'today_change_pct': round(pct, 2),
+                    'current_price': h.get('current_price'),
+                })
+        items.sort(key=lambda x: -abs(x['today_change_pct']))
+        return items[:10]
+    except Exception as e:
+        print(f'  warn: compute_today_movers failed: {e}', file=sys.stderr)
+        return []
+
+
+def _latest_brief_context():
+    """Return (path, dict) of newest memory/.tmp/brief-context-*.json by mtime, or (None, None)."""
+    try:
+        paths = glob.glob(str(WS_ROOT / 'memory' / '.tmp' / 'brief-context-*.json'))
+        if not paths:
+            return None, None
+        latest = max(paths, key=os.path.getmtime)
+        return latest, load_json(latest)
+    except Exception as e:
+        print(f'  warn: _latest_brief_context failed: {e}', file=sys.stderr)
+        return None, None
+
+
+# Tickers we treat as leveraged ETFs even when context doesn't tag them.
+_LEVERAGED_TICKERS = {'SOXL', 'TQQQ', 'MSFU', 'PLTU', 'ROBN', 'RKLX', '07226'}
+
+
+def extract_anomalies(brief_ctx, us_h, hk_h):
+    """Risk signals derived from the latest brief-context.
+
+    Recognized types:
+      - rsi_overbought          (rsi >= 70 in any embedded indicator block)
+      - peer_divergence         (divergence_signal present, severity by gap pp)
+      - high_weight_loss        (concentration weight >= 25% AND holding pnl_percent <= -10)
+      - leveraged_etf_stop      (leveraged ticker w/ self_pnl_pct <= -15 OR today_change_pct <= -8)
+      - no_context              (single entry, fallback when no context file found)
+    """
+    try:
+        if not brief_ctx:
+            return [{
+                'type': 'no_context',
+                'ticker': '',
+                'detail': 'no brief-context-*.json found in memory/.tmp/',
+                'severity': 'low',
+            }]
+        out = []
+        holdings_by_ticker = {}
+        for h in (us_h or []):
+            holdings_by_ticker[str(h.get('ticker') or '').upper()] = h
+        for h in (hk_h or []):
+            holdings_by_ticker[str(h.get('ticker') or '')] = h
+
+        peer_scan = brief_ctx.get('peer_scan') or {}
+        if isinstance(peer_scan, dict):
+            peer_items = peer_scan.items()
+        elif isinstance(peer_scan, list):
+            peer_items = [(p.get('ticker'), p) for p in peer_scan]
+        else:
+            peer_items = []
+
+        # peer_divergence anomalies
+        for ticker, v in peer_items:
+            if not isinstance(v, dict):
+                continue
+            sig = v.get('divergence_signal')
+            if not sig:
+                continue
+            self_pct = v.get('self_pct_1d')
+            # Try to extract gap pp from signal string like "... (gap +6.4pp)"
+            gap_pp = None
+            try:
+                if isinstance(sig, str) and 'gap' in sig:
+                    import re
+                    m = re.search(r'gap\s*([+-]?\d+(?:\.\d+)?)\s*pp', sig)
+                    if m:
+                        gap_pp = abs(float(m.group(1)))
+            except Exception:
+                gap_pp = None
+            severity = 'low'
+            if gap_pp is not None:
+                if gap_pp >= 8: severity = 'high'
+                elif gap_pp >= 4: severity = 'medium'
+            out.append({
+                'type': 'peer_divergence',
+                'ticker': str(ticker),
+                'detail': sig if isinstance(sig, str) else f'self {self_pct}% diverges from peers',
+                'severity': severity,
+            })
+
+        # high_weight_loss anomalies (concentration top tickers w/ deep loss)
+        conc = brief_ctx.get('concentration') or {}
+        for region in ('us', 'hk'):
+            region_conc = conc.get(region) or {}
+            weights = region_conc.get('weights') or []
+            for w in weights:
+                tk = str(w.get('ticker') or '')
+                weight_pct = w.get('weight_pct') or 0
+                if weight_pct < 25:
+                    continue
+                h = holdings_by_ticker.get(tk.upper()) or holdings_by_ticker.get(tk)
+                if not h:
+                    continue
+                pnl_pct = h.get('pnl_percent')
+                if pnl_pct is not None and pnl_pct <= -10:
+                    sev = 'high' if (weight_pct >= 40 or pnl_pct <= -20) else 'medium'
+                    out.append({
+                        'type': 'high_weight_loss',
+                        'ticker': tk,
+                        'detail': f'weight {weight_pct:.1f}% + pnl {pnl_pct:.1f}%',
+                        'severity': sev,
+                    })
+
+        # leveraged_etf_stop anomalies
+        for ticker, v in peer_items:
+            tk_str = str(ticker or '').upper()
+            if tk_str not in _LEVERAGED_TICKERS:
+                continue
+            if not isinstance(v, dict):
+                continue
+            self_pnl = v.get('self_pnl_pct')
+            self_today = v.get('self_pct_1d')
+            triggered = False
+            detail_bits = []
+            if isinstance(self_pnl, (int, float)) and self_pnl <= -15:
+                triggered = True
+                detail_bits.append(f'pnl {self_pnl:.1f}%')
+            if isinstance(self_today, (int, float)) and self_today <= -8:
+                triggered = True
+                detail_bits.append(f'today {self_today:.1f}%')
+            if triggered:
+                sev = 'high' if (isinstance(self_pnl, (int, float)) and self_pnl <= -25) else 'medium'
+                out.append({
+                    'type': 'leveraged_etf_stop',
+                    'ticker': str(ticker),
+                    'detail': 'leveraged ETF: ' + ', '.join(detail_bits),
+                    'severity': sev,
+                })
+
+        # rsi_overbought — only fire if brief_ctx carries an rsi block; current
+        # context files don't, but keep the scanner so future preflight runs work.
+        def _scan_rsi(node):
+            if isinstance(node, dict):
+                tk = node.get('ticker') or node.get('symbol')
+                rsi = node.get('rsi') or node.get('rsi_14') or node.get('RSI')
+                if tk and isinstance(rsi, (int, float)) and rsi >= 70:
+                    out.append({
+                        'type': 'rsi_overbought',
+                        'ticker': str(tk),
+                        'detail': f'RSI {rsi:.1f} >= 70',
+                        'severity': 'high' if rsi >= 80 else 'medium',
+                    })
+                for v in node.values():
+                    _scan_rsi(v)
+            elif isinstance(node, list):
+                for it in node:
+                    _scan_rsi(it)
+        try:
+            _scan_rsi(brief_ctx.get('us_fundamentals'))
+            _scan_rsi(brief_ctx.get('indicators'))
+        except Exception:
+            pass
+
+        return out
+    except Exception as e:
+        print(f'  warn: extract_anomalies failed: {e}', file=sys.stderr)
+        return []
+
+
+def extract_peer_divergence(brief_ctx):
+    """List of divergence_signal=true peer scan rows from brief context."""
+    try:
+        if not brief_ctx:
+            return []
+        peer_scan = brief_ctx.get('peer_scan') or {}
+        if isinstance(peer_scan, dict):
+            items = peer_scan.items()
+        elif isinstance(peer_scan, list):
+            items = [(p.get('ticker'), p) for p in peer_scan]
+        else:
+            return []
+        out = []
+        for ticker, v in items:
+            if not isinstance(v, dict):
+                continue
+            if not v.get('divergence_signal'):
+                continue
+            self_pct = v.get('self_pct_1d')
+            best_peer = None
+            best_peer_name = None
+            peer_pct = None
+            best_gap = None
+            for p in (v.get('listed_peers') or []):
+                pp = p.get('pct_1d')
+                if pp is None or self_pct is None:
+                    continue
+                gap = pp - self_pct  # peer beating self → positive
+                if best_gap is None or abs(gap) > abs(best_gap):
+                    best_gap = gap
+                    best_peer = p.get('ticker')
+                    best_peer_name = p.get('name')
+                    peer_pct = pp
+            try:
+                self_pct_v = round(float(self_pct), 2) if self_pct is not None else None
+            except Exception:
+                self_pct_v = None
+            try:
+                peer_pct_v = round(float(peer_pct), 2) if peer_pct is not None else None
+            except Exception:
+                peer_pct_v = None
+            try:
+                div_pp = round(float(best_gap), 2) if best_gap is not None else None
+            except Exception:
+                div_pp = None
+            out.append({
+                'ticker': str(ticker),
+                'self_pct_1d': self_pct_v,
+                'best_peer': best_peer or '',
+                'best_peer_name': best_peer_name or '',
+                'peer_pct_1d': peer_pct_v,
+                'divergence_pp': div_pp,
+            })
+        return out
+    except Exception as e:
+        print(f'  warn: extract_peer_divergence failed: {e}', file=sys.stderr)
+        return []
+
+
+_CALIB_BUCKETS = ['cut', 'trim_on_rebound', 'hold_and_watch', 't_only', 'add_only_on_trigger']
+_CALIB_BANDS = [
+    ('0-50%',  0.0, 0.5),
+    ('50-60%', 0.5, 0.6),
+    ('60-70%', 0.6, 0.7),
+    ('70-80%', 0.7, 0.8),
+    ('80-100%', 0.8, 1.0001),
+]
+
+
+def _read_calibration_rows():
+    """Returns list of dict rows from memory/calibration.csv, or []."""
+    path = WS_ROOT / 'memory' / 'calibration.csv'
+    try:
+        if not path.exists():
+            return []
+        with open(path, encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            return list(reader)
+    except Exception as e:
+        print(f'  warn: _read_calibration_rows failed: {e}', file=sys.stderr)
+        return []
+
+
+def _to_float(s):
+    try:
+        if s is None or s == '':
+            return None
+        return float(s)
+    except Exception:
+        return None
+
+
+def compute_calibration():
+    """Brier + per-band + per-bucket accuracy from calibration.csv (resolved rows only, ≤30d)."""
+    bands_empty = [{'band': b[0], 'n': 0, 'actual_win_rate': 0.0} for b in _CALIB_BANDS]
+    per_bucket_empty = {b: {'n': 0, 'win_rate': 0.0} for b in _CALIB_BUCKETS}
+    empty = {
+        'brier_30d': None,
+        'samples': 0,
+        'bands': bands_empty,
+        'per_bucket': per_bucket_empty,
+    }
+    try:
+        rows = _read_calibration_rows()
+        if not rows:
+            return empty
+        # Resolved = outcome in {win, loss, flat} (skip pending/blank).
+        # 30d window: keep rows whose plan_date is within 30 days of today.
+        today = datetime.utcnow().date()
+        resolved = []
+        for r in rows:
+            outcome = (r.get('outcome') or '').strip().lower()
+            if outcome not in ('win', 'loss', 'flat'):
+                continue
+            try:
+                pd = datetime.strptime(r.get('plan_date', '')[:10], '%Y-%m-%d').date()
+            except Exception:
+                continue
+            if (today - pd).days > 30:
+                continue
+            resolved.append((r, outcome))
+
+        n = len(resolved)
+        if n == 0:
+            return empty
+
+        # Brier: (confidence - actual)^2, actual ∈ {1 for win, 0 for loss/flat}
+        brier_sum = 0.0
+        brier_count = 0
+        for r, outcome in resolved:
+            conf = _to_float(r.get('confidence'))
+            if conf is None:
+                continue
+            actual = 1.0 if outcome == 'win' else 0.0
+            brier_sum += (conf - actual) ** 2
+            brier_count += 1
+        brier_30d = round(brier_sum / brier_count, 4) if (brier_count >= 5) else None
+
+        # Bands
+        bands_out = []
+        for label, lo, hi in _CALIB_BANDS:
+            wins = 0
+            total = 0
+            for r, outcome in resolved:
+                conf = _to_float(r.get('confidence'))
+                if conf is None:
+                    continue
+                if lo <= conf < hi:
+                    total += 1
+                    if outcome == 'win':
+                        wins += 1
+            win_rate = round(wins / total, 4) if total else 0.0
+            bands_out.append({'band': label, 'n': total, 'actual_win_rate': win_rate})
+
+        # Per-bucket
+        per_bucket = {}
+        for b in _CALIB_BUCKETS:
+            wins = 0
+            total = 0
+            for r, outcome in resolved:
+                if (r.get('bucket') or '').strip() == b:
+                    total += 1
+                    if outcome == 'win':
+                        wins += 1
+            win_rate = round(wins / total, 4) if total else 0.0
+            per_bucket[b] = {'n': total, 'win_rate': win_rate}
+
+        return {
+            'brier_30d': brier_30d,
+            'samples': n,
+            'bands': bands_out,
+            'per_bucket': per_bucket,
+        }
+    except Exception as e:
+        print(f'  warn: compute_calibration failed: {e}', file=sys.stderr)
+        return empty
+
+
+def recent_actions_from_csv(limit=20):
+    """Last `limit` rows of calibration.csv, most recent plan_date first."""
+    try:
+        rows = _read_calibration_rows()
+        if not rows:
+            return []
+        # Sort by plan_date desc (string sort works for YYYY-MM-DD); stable for ties.
+        rows.sort(key=lambda r: r.get('plan_date', ''), reverse=True)
+        out = []
+        for r in rows[:limit]:
+            outcome = (r.get('outcome') or '').strip().lower()
+            if outcome not in ('win', 'loss', 'flat', 'pending'):
+                outcome = 'pending'
+            out.append({
+                'date': r.get('plan_date', ''),
+                'ticker': r.get('ticker', ''),
+                'bucket': r.get('bucket', ''),
+                'confidence': _to_float(r.get('confidence')),
+                'trigger_type': r.get('trigger_type', ''),
+                'outcome': outcome,
+                'pnl_5d': _to_float(r.get('pnl_5d')),
+            })
+        return out
+    except Exception as e:
+        print(f'  warn: recent_actions_from_csv failed: {e}', file=sys.stderr)
+        return []
+
+
+def compute_drawdown(snapshots):
+    """30-day rolling drawdown per region.
+
+    `max_pct_30d_*` = most negative ((value_i - peak_so_far) / peak_so_far) across
+    the last min(len, 30) snapshots — i.e. worst peak-to-trough retracement in window.
+    `current_pct_*` = (today - 30d-ago) / 30d-ago * 100  (uses min(29, len-1) offset).
+    """
+    empty = {
+        'max_pct_30d_hk': None,
+        'max_pct_30d_us': None,
+        'current_pct_hk': None,
+        'current_pct_us': None,
+    }
+    try:
+        if not snapshots:
+            return empty
+        n = len(snapshots)
+        window = snapshots[-30:] if n >= 30 else snapshots[:]
+
+        def max_drawdown_pct(key):
+            peak = None
+            worst = None
+            for s in window:
+                v = s.get(key)
+                if v is None:
+                    continue
+                try:
+                    v = float(v)
+                except Exception:
+                    continue
+                if peak is None or v > peak:
+                    peak = v
+                if peak and peak > 0:
+                    dd = (v - peak) / peak * 100
+                    if worst is None or dd < worst:
+                        worst = dd
+            return round(worst, 2) if worst is not None else None
+
+        # current vs 30d-ago using min(29, n-1) offset back from today
+        offset = min(29, n - 1)
+        base_idx = (n - 1) - offset
+        today = snapshots[-1]
+        base = snapshots[base_idx]
+
+        def current_pct(key):
+            t = today.get(key)
+            b = base.get(key)
+            if t is None or b is None:
+                return None
+            try:
+                t = float(t); b = float(b)
+            except Exception:
+                return None
+            if b == 0:
+                return None
+            return round((t - b) / abs(b) * 100, 2)
+
+        return {
+            'max_pct_30d_hk': max_drawdown_pct('hk_total_value'),
+            'max_pct_30d_us': max_drawdown_pct('us_total_value'),
+            'current_pct_hk': current_pct('hk_total_value'),
+            'current_pct_us': current_pct('us_total_value'),
+        }
+    except Exception as e:
+        print(f'  warn: compute_drawdown failed: {e}', file=sys.stderr)
+        return empty
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     portfolio = load_json(WS_ROOT / 'portfolio.json')
@@ -219,6 +742,18 @@ def main():
         'indices': us_pf.get('indices_snapshot', {}),
         'market_context': portfolio.get('market_context', {}),
     }
+
+    # ── Dashboard v2 NEW fields (additive; never replace existing keys) ─
+    brief_ctx_path, brief_ctx = _latest_brief_context()
+    out['delta'] = compute_delta(snapshots)
+    out['today_movers'] = compute_today_movers(us_h, hk_h)
+    out['anomalies'] = extract_anomalies(brief_ctx, us_h, hk_h)
+    out['peer_divergence'] = extract_peer_divergence(brief_ctx)
+    out['calibration'] = compute_calibration()
+    out['recent_plan_actions'] = recent_actions_from_csv(limit=20)
+    out['drawdown'] = compute_drawdown(snapshots)
+    if brief_ctx_path:
+        print(f'  brief-context source: {os.path.basename(brief_ctx_path)}')
 
     # Serialize with no indentation to save bytes; pretty-print only if under budget
     payload_min = json.dumps(out, ensure_ascii=False)

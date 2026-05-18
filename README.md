@@ -94,8 +94,8 @@ Plus 4 GitHub Actions for backstop / extras:
 clawock/
 ├─ index.html  briefs.md  README.md          ← Pages landing + this file
 ├─ assets/                                   ← Pages static
-│  ├─ dashboard.css  dashboard.js
 │  └─ data/dashboard.json    ← built by harness postflight, never hand-edit
+│                              (dashboard CSS/JS are inlined in index.html since v2)
 │
 ├─ portfolio.json                            ← single source of truth (atomic writes)
 ├─ memory/
@@ -106,7 +106,7 @@ clawock/
 │  └─ archive/eod-history.csv   weekly EOD archive (GH Action)
 │
 ├─ scripts/
-│  ├─ data/                     fetchers + dashboard builder + safe_io (atomic writes)
+│  ├─ data/                     fetchers + dashboard builder (v2 schema: delta/anomalies/calibration/peer_divergence/recent_plan_actions/drawdown) + safe_io (atomic writes)
 │  ├─ harness/                  preflight + postflight pairs (6 files, 4 pairs)
 │  └─ legacy/                   superseded scripts kept as reference
 │

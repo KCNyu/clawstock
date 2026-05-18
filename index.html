@@ -6,217 +6,1214 @@ layout: null
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0a0e1a">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0a0e1a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f8fb" media="(prefers-color-scheme: light)">
 <title>clawock · Portfolio Dashboard</title>
-<meta name="description" content="Harness-driven HK + US portfolio analysis · real-time positions, concentration risk, daily P&L">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="description" content="Mobile-first HK + US portfolio dashboard · concentration, calibration, plan outcomes">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="stylesheet" href="assets/dashboard.css">
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js" defer></script>
+<style>
+  /* =========================================================
+     CSS Variables — dark first, light overrides via @media
+     ========================================================= */
+  :root {
+    --bg: #0a0e1a;
+    --bg-2: #111726;
+    --card: #151c2e;
+    --card-2: #1a2238;
+    --border: #232c47;
+    --text: #e6ebf5;
+    --text-dim: #9aa4b8;
+    --text-faint: #6b7691;
+    --accent: #5b8def;
+    --accent-2: #a78bfa;
+    --green: #34d399;
+    --red: #f87171;
+    --amber: #fbbf24;
+    --gray: #6b7691;
+    --tab-active-bg: #1f2942;
+    --table-row-hover: #1d2742;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.25);
+    --radius: 14px;
+    --radius-sm: 8px;
+    --gap: 12px;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f7f8fb;
+      --bg-2: #ffffff;
+      --card: #ffffff;
+      --card-2: #f1f4fa;
+      --border: #e3e8f0;
+      --text: #1a2238;
+      --text-dim: #5a6478;
+      --text-faint: #8b95a8;
+      --accent: #2563eb;
+      --accent-2: #7c3aed;
+      --green: #059669;
+      --red: #dc2626;
+      --amber: #d97706;
+      --gray: #8b95a8;
+      --tab-active-bg: #e8eefb;
+      --table-row-hover: #f4f7fc;
+      --shadow: 0 1px 2px rgba(0,0,0,.05), 0 8px 24px rgba(0,0,0,.06);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { font-family: var(--mono); font-size: 0.9em; }
+
+  /* =========================================================
+     Sticky header + tab bar
+     ========================================================= */
+  .topbar {
+    position: sticky; top: 0; z-index: 30;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 14px 0;
+    padding-top: max(10px, env(safe-area-inset-top));
+  }
+  .topbar-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+  }
+  .brand {
+    display: flex; align-items: baseline; gap: 8px;
+    min-width: 0;
+  }
+  .brand h1 {
+    margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em;
+  }
+  .brand .updated {
+    font-size: 11px; color: var(--text-dim);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .refresh-btn {
+    appearance: none; background: var(--card); color: var(--text);
+    border: 1px solid var(--border); border-radius: 999px;
+    min-height: 36px; min-width: 36px; padding: 0 10px;
+    font-size: 14px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .refresh-btn:active { background: var(--card-2); }
+
+  .tabs {
+    display: flex; gap: 4px; margin-top: 10px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    appearance: none; background: transparent; color: var(--text-dim);
+    border: none; border-bottom: 2px solid transparent;
+    padding: 10px 14px; min-height: 44px;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    white-space: nowrap;
+  }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+
+  /* =========================================================
+     Layout — mobile single column, desktop 3-column
+     ========================================================= */
+  main { padding: 14px; max-width: 1600px; margin: 0 auto; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  @media (min-width: 1024px) {
+    .tabs { display: none; }
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+      gap: 20px;
+      padding: 20px;
+    }
+    .panel { display: block; }
+    .panel > h2 {
+      margin: 0 0 12px;
+      font-size: 13px; font-weight: 600;
+      color: var(--text-dim); text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+  }
+  @media (max-width: 1023px) {
+    .panel > h2 { display: none; }
+  }
+
+  /* =========================================================
+     Card primitives
+     ========================================================= */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: var(--gap);
+    box-shadow: var(--shadow);
+  }
+  .card h3 {
+    margin: 0 0 10px;
+    font-size: 12px; font-weight: 600;
+    color: var(--text-dim); text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .card h3 .badge { float: right; text-transform: none; letter-spacing: 0; }
+
+  /* =========================================================
+     Hero: 总资产卡
+     ========================================================= */
+  .totals-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  .total-leg {
+    background: var(--card-2);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+  }
+  .total-leg .lbl { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
+  .total-leg .val { font-size: 22px; font-weight: 700; margin: 4px 0 2px; font-variant-numeric: tabular-nums; }
+  .total-leg .sub { font-size: 12px; font-variant-numeric: tabular-nums; }
+  .total-combined {
+    margin-top: 10px;
+    background: var(--card-2);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    display: flex; flex-wrap: wrap; gap: 14px;
+  }
+  .total-combined > div { flex: 1 1 130px; min-width: 0; }
+  .total-combined .lbl { font-size: 11px; color: var(--text-dim); }
+  .total-combined .val { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .total-combined .fx { font-size: 11px; color: var(--text-faint); }
+
+  .pos { color: var(--green); }
+  .neg { color: var(--red); }
+  .neutral { color: var(--text-dim); }
+
+  /* Delta table */
+  .delta-table {
+    width: 100%; border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+  .delta-table th, .delta-table td {
+    padding: 8px 6px; text-align: right; font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  .delta-table th:first-child, .delta-table td:first-child {
+    text-align: left; color: var(--text-dim); font-weight: 500;
+  }
+  .delta-table thead th { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+  .delta-table tbody tr:last-child td { border-bottom: none; }
+
+  /* HHI gauges */
+  .hhi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .hhi-card {
+    background: var(--card-2); border-radius: var(--radius-sm);
+    padding: 12px; text-align: center;
+  }
+  .hhi-card .lbl { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
+  .hhi-ring {
+    --pct: 0;
+    --color: var(--accent);
+    width: 84px; height: 84px; margin: 8px auto 6px;
+    border-radius: 50%;
+    background: conic-gradient(var(--color) calc(var(--pct) * 1%), var(--border) 0);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .hhi-ring::before {
+    content: ""; position: absolute; inset: 8px;
+    background: var(--card-2); border-radius: 50%;
+  }
+  .hhi-ring .inner {
+    position: relative; z-index: 1;
+    font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums;
+  }
+  .hhi-card .verdict { font-size: 12px; font-weight: 600; }
+  .hhi-card .top2 { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+  /* Anomalies */
+  .anomaly-list { display: flex; flex-direction: column; gap: 8px; }
+  .anomaly {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px; background: var(--card-2); border-radius: var(--radius-sm);
+    border-left: 3px solid var(--amber);
+  }
+  .anomaly.high { border-left-color: var(--red); }
+  .anomaly.medium { border-left-color: var(--amber); }
+  .anomaly.low { border-left-color: var(--gray); }
+  .anomaly .icon { font-size: 16px; line-height: 1; }
+  .anomaly .body { min-width: 0; flex: 1; }
+  .anomaly .ticker { font-weight: 600; font-family: var(--mono); }
+  .anomaly .detail { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .empty-state { font-size: 12px; color: var(--text-faint); font-style: italic; padding: 6px 0; }
+
+  /* Movers — horizontal scroll cards */
+  .movers-scroll {
+    display: flex; gap: 8px; overflow-x: auto;
+    margin: 0 -14px; padding: 0 14px 4px;
+    scrollbar-width: thin;
+  }
+  .mover-card {
+    flex: 0 0 130px;
+    background: var(--card-2);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    border-top: 3px solid var(--gray);
+  }
+  .mover-card.up { border-top-color: var(--green); }
+  .mover-card.down { border-top-color: var(--red); }
+  .mover-card .tk { font-family: var(--mono); font-weight: 700; font-size: 13px; }
+  .mover-card .nm { font-size: 11px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mover-card .pct { font-size: 18px; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .mover-card .px { font-size: 11px; color: var(--text-faint); font-variant-numeric: tabular-nums; }
+
+  /* Calibration badge */
+  .calib-badge {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px; background: var(--card-2); border-radius: var(--radius-sm);
+  }
+  .calib-badge .brier-val {
+    font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums;
+  }
+  .calib-badge .meta { font-size: 12px; color: var(--text-dim); }
+  .calib-badge .tier {
+    font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 999px;
+    background: var(--card); color: var(--text);
+  }
+  .tier.excellent { background: rgba(52,211,153,.15); color: var(--green); }
+  .tier.good { background: rgba(91,141,239,.15); color: var(--accent); }
+  .tier.fair { background: rgba(251,191,36,.15); color: var(--amber); }
+  .tier.poor { background: rgba(248,113,113,.15); color: var(--red); }
+
+  /* =========================================================
+     Drill: holdings table
+     ========================================================= */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -14px; padding: 0 14px; }
+  .holdings-table {
+    width: 100%; border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    min-width: 640px;
+  }
+  .holdings-table th, .holdings-table td {
+    padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .holdings-table th:first-child, .holdings-table td:first-child,
+  .holdings-table th:nth-child(2), .holdings-table td:nth-child(2) { text-align: left; }
+  .holdings-table thead th {
+    position: sticky; top: 0; background: var(--card);
+    font-size: 11px; color: var(--text-dim); text-transform: uppercase;
+    letter-spacing: 0.05em; cursor: pointer;
+    user-select: none; min-height: 36px;
+  }
+  .holdings-table thead th:hover { color: var(--text); }
+  .holdings-table thead th .arr { color: var(--accent); margin-left: 2px; }
+  .holdings-table tbody tr:hover { background: var(--table-row-hover); }
+  .holdings-table .ticker { font-family: var(--mono); font-weight: 600; }
+  .holdings-table .region-us { color: var(--accent); }
+  .holdings-table .region-hk { color: var(--accent-2); }
+
+  /* Peer divergence */
+  .peer-list { display: flex; flex-direction: column; gap: 8px; }
+  .peer-row {
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+    gap: 8px; padding: 10px; background: var(--card-2); border-radius: var(--radius-sm);
+    font-size: 13px;
+  }
+  .peer-row .self, .peer-row .peer { min-width: 0; }
+  .peer-row .tk { font-family: var(--mono); font-weight: 600; font-size: 13px; }
+  .peer-row .nm { font-size: 11px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .peer-row .pct { font-size: 13px; font-variant-numeric: tabular-nums; }
+  .peer-row .arrow { color: var(--text-faint); font-size: 18px; }
+  .peer-row .div-pp { grid-column: 1 / -1; font-size: 11px; color: var(--text-dim); text-align: center; padding-top: 4px; border-top: 1px dashed var(--border); margin-top: 4px; }
+
+  /* Plan actions */
+  .plan-actions { display: flex; flex-direction: column; gap: 8px; }
+  .plan-action {
+    padding: 10px; background: var(--card-2); border-radius: var(--radius-sm);
+    display: grid; grid-template-columns: auto 1fr auto; gap: 8px 10px;
+    align-items: center;
+    font-size: 13px;
+  }
+  .plan-action .date { font-size: 11px; color: var(--text-faint); font-family: var(--mono); }
+  .plan-action .tk { font-family: var(--mono); font-weight: 600; }
+  .plan-action .meta { font-size: 11px; color: var(--text-dim); }
+  .plan-action .outcome {
+    font-size: 11px; padding: 3px 8px; border-radius: 999px; font-weight: 600;
+  }
+  .outcome.win { background: rgba(52,211,153,.15); color: var(--green); }
+  .outcome.loss { background: rgba(248,113,113,.15); color: var(--red); }
+  .outcome.pending { background: rgba(107,118,145,.15); color: var(--gray); }
+  .outcome.flat { background: rgba(251,191,36,.15); color: var(--amber); }
+
+  /* =========================================================
+     Reflect: charts
+     ========================================================= */
+  .chart-box {
+    width: 100%; min-height: 280px; height: 280px;
+  }
+  @media (min-width: 1024px) {
+    .chart-box { min-height: 360px; height: 360px; }
+  }
+
+  /* Footer */
+  footer {
+    padding: 20px 14px 40px;
+    text-align: center; font-size: 11px; color: var(--text-faint);
+  }
+  footer a { color: var(--text-dim); }
+
+  /* Utility */
+  .mono { font-family: var(--mono); }
+  .right { text-align: right; }
+  .muted { color: var(--text-dim); }
+  .nowrap { white-space: nowrap; }
+</style>
 </head>
 <body>
 
-<!-- Inline SVG icon sprite (Lucide-style, MIT) -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-5"/></symbol>
-    <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
-    <symbol id="i-table" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 9h18M3 15h18"/><rect x="3" y="3" width="18" height="18" rx="2"/></symbol>
-    <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
-    <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></symbol>
-    <symbol id="i-clipboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></symbol>
-    <symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
-    <symbol id="i-trending-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></symbol>
-    <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
-    <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></symbol>
-    <symbol id="i-github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol>
-    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
-  </defs>
-</svg>
-
-<header class="hero">
-  <div class="hero-row">
+<header class="topbar">
+  <div class="topbar-row">
     <div class="brand">
-      <span class="brand-logo"><svg width="18" height="18"><use href="#i-logo"/></svg></span>
-      <div class="brand-text">
-        <h1>clawock</h1>
-        <span class="tagline">harness · HK + US portfolio</span>
-      </div>
+      <h1>clawock</h1>
+      <span class="updated" id="last-updated">—</span>
     </div>
-    <div class="hero-stats" id="hero-stats">
-      <div class="hero-stat"><span class="label">Total Book</span><span class="value" id="hero-book">—</span></div>
-      <div class="hero-stat"><span class="label">Today P&amp;L</span><span class="value" id="hero-today">—</span></div>
-      <div class="hero-stat"><span class="label">USDHKD</span><span class="value" id="hero-fx">—</span></div>
-      <div class="hero-stat"><span class="label">Updated</span><span class="value" id="hero-updated">—</span></div>
-    </div>
+    <button class="refresh-btn" id="refresh-btn" type="button" aria-label="Refresh data">
+      <span aria-hidden="true">&#x21bb;</span>
+      <span>Refresh</span>
+    </button>
   </div>
-  <div class="quick-links">
-    <a class="quick-link" href="briefs.html"><svg><use href="#i-clipboard"/></svg> Daily briefs</a>
-    <a class="quick-link" href="README.html"><svg><use href="#i-book"/></svg> README</a>
-    <a class="quick-link" href="https://github.com/KCNyu/clawock" target="_blank" rel="noopener"><svg><use href="#i-github"/></svg> Source</a>
-  </div>
-  <nav class="tab-nav" role="tablist">
-    <button class="tab active" data-tab="overview" role="tab" aria-selected="true"><svg><use href="#i-grid"/></svg> Overview</button>
-    <button class="tab" data-tab="holdings" role="tab"><svg><use href="#i-table"/></svg> Holdings</button>
-    <button class="tab" data-tab="concentration" role="tab"><svg><use href="#i-target"/></svg> Concentration</button>
-    <button class="tab" data-tab="history" role="tab"><svg><use href="#i-chart"/></svg> History</button>
-    <button class="tab" data-tab="plans" role="tab"><svg><use href="#i-clipboard"/></svg> Plans</button>
+  <nav class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="hero" role="tab" aria-selected="true">Hero</button>
+    <button class="tab-btn" data-tab="drill" role="tab">Drill</button>
+    <button class="tab-btn" data-tab="reflect" role="tab">Reflect</button>
   </nav>
 </header>
 
 <main>
 
-<!-- Overview tab — bento grid -->
-<section class="tab-panel active" data-panel="overview">
+  <!-- ============================================
+       HERO — totals, deltas, HHI, anomalies, movers, calibration
+       ============================================ -->
+  <section class="panel active" data-panel="hero">
+    <h2>Hero</h2>
 
-  <div class="card kpi-card">
-    <div class="kpi-label">US Book</div>
-    <div class="kpi-value" id="kpi-us-value">—</div>
-    <div class="kpi-sub" id="kpi-us-pnl">—</div>
-  </div>
-  <div class="card kpi-card">
-    <div class="kpi-label">HK Book</div>
-    <div class="kpi-value" id="kpi-hk-value">—</div>
-    <div class="kpi-sub" id="kpi-hk-pnl">—</div>
-  </div>
-  <div class="card kpi-card cta">
-    <div class="kpi-label">Today P&amp;L (USD-base)</div>
-    <div class="kpi-value" id="kpi-today">—</div>
-    <div class="kpi-sub" id="kpi-today-sub">—</div>
-  </div>
-  <div class="card kpi-card">
-    <div class="kpi-label">Concentration (max HHI)</div>
-    <div class="kpi-value" id="kpi-hhi">—</div>
-    <div class="kpi-sub" id="kpi-hhi-sub">—</div>
-  </div>
-
-  <div class="card span-2 tall">
-    <h3><span class="icon"><svg><use href="#i-grid"/></svg></span> US Leg Weights</h3>
-    <div class="leg-summary" id="us-summary"></div>
-    <div class="chart" id="chart-us-treemap" style="height:260px"></div>
-  </div>
-  <div class="card span-2 tall">
-    <h3><span class="icon"><svg><use href="#i-grid"/></svg></span> HK Leg Weights</h3>
-    <div class="leg-summary" id="hk-summary"></div>
-    <div class="chart" id="chart-hk-treemap" style="height:260px"></div>
-  </div>
-
-  <div class="card span-2">
-    <h3><span class="icon"><svg><use href="#i-gauge"/></svg></span> HHI · Concentration Risk</h3>
-    <div class="chart" id="chart-hhi-gauge" style="height:240px"></div>
-  </div>
-  <div class="card span-2">
-    <h3><span class="icon"><svg><use href="#i-trending-up"/></svg></span> Today's Movers (≥1.5%)</h3>
-    <div class="chart" id="chart-movers" style="height:240px"></div>
-  </div>
-
-</section>
-
-<!-- Holdings tab -->
-<section class="tab-panel" data-panel="holdings">
-  <div class="card span-4">
-    <h3><span class="icon"><svg><use href="#i-table"/></svg></span> All Positions <span id="holdings-count" class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">—</span></h3>
-    <div class="table-controls">
-      <label><input type="checkbox" id="filter-active" checked> Only shares &gt; 0</label>
-      <label>Market:
-        <select id="filter-market" aria-label="Filter by market">
-          <option value="all">All</option>
-          <option value="us">US only</option>
-          <option value="hk">HK only</option>
-        </select>
-      </label>
+    <div class="card">
+      <h3>Total Book</h3>
+      <div class="totals-grid">
+        <div class="total-leg">
+          <div class="lbl">US</div>
+          <div class="val" id="us-value">—</div>
+          <div class="sub" id="us-pnl">—</div>
+        </div>
+        <div class="total-leg">
+          <div class="lbl">HK</div>
+          <div class="val" id="hk-value">—</div>
+          <div class="sub" id="hk-pnl">—</div>
+        </div>
+      </div>
+      <div class="total-combined">
+        <div>
+          <div class="lbl">合计 (USD-base)</div>
+          <div class="val" id="combined-usd">—</div>
+          <div class="fx" id="fx-rate-usd">—</div>
+        </div>
+        <div>
+          <div class="lbl">合计 (HKD-base)</div>
+          <div class="val" id="combined-hkd">—</div>
+          <div class="fx" id="fx-rate-hkd">—</div>
+        </div>
+      </div>
     </div>
-    <div class="table-wrap">
-      <table class="holdings-table" id="holdings-table">
+
+    <div class="card">
+      <h3>Delta</h3>
+      <table class="delta-table">
         <thead>
-          <tr>
-            <th data-sort="ticker">Ticker</th>
-            <th data-sort="name">Name</th>
-            <th data-sort="currency">Curr</th>
-            <th data-sort="shares" class="num">Shares</th>
-            <th data-sort="cost_basis" class="num">Cost</th>
-            <th data-sort="current_price" class="num">Price</th>
-            <th data-sort="today_change_pct" class="num">Today %</th>
-            <th data-sort="pnl_percent" class="num">P&amp;L %</th>
-            <th data-sort="pnl_abs" class="num">P&amp;L Abs</th>
-            <th data-sort="current_value" class="num">Value</th>
-          </tr>
+          <tr><th>Period</th><th>US</th><th>HK</th></tr>
         </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- Concentration tab -->
-<section class="tab-panel" data-panel="concentration">
-  <div class="card span-4">
-    <h3><span class="icon"><svg><use href="#i-target"/></svg></span> HHI Detail · Per Leg</h3>
-    <div class="conc-grid">
-      <div>
-        <h4>US</h4>
-        <div id="conc-us-detail" class="conc-detail"></div>
-      </div>
-      <div>
-        <h4>HK</h4>
-        <div id="conc-hk-detail" class="conc-detail"></div>
-      </div>
-    </div>
-    <details class="thresholds">
-      <summary>HHI thresholds</summary>
-      <table class="threshold-table">
-        <thead><tr><th>HHI</th><th>Top 2</th><th>状态</th></tr></thead>
-        <tbody>
-          <tr><td>&lt; 0.15</td><td>&lt; 40%</td><td><span class="badge healthy">健康</span></td></tr>
-          <tr><td>0.15 – 0.25</td><td>40 – 60%</td><td><span class="badge moderate">偏集中</span></td></tr>
-          <tr><td>0.25 – 0.40</td><td>60 – 75%</td><td><span class="badge concentrated">集中风险</span></td></tr>
-          <tr><td>&gt; 0.40</td><td>&gt; 75%</td><td><span class="badge danger">危险集中</span></td></tr>
+        <tbody id="delta-tbody">
+          <tr><td colspan="3" class="muted">—</td></tr>
         </tbody>
       </table>
-    </details>
-  </div>
-</section>
+    </div>
 
-<!-- History tab -->
-<section class="tab-panel" data-panel="history">
-  <div class="card span-4">
-    <h3><span class="icon"><svg><use href="#i-chart"/></svg></span> Book Value Over Time</h3>
-    <div class="chart" id="chart-history-value" style="height:340px"></div>
-    <p class="muted" style="margin: 8px 0 0; font-size: 11px;">数据源：<code>memory/snapshots/{date}.json</code> · brief_preflight 每日 08:00 写入</p>
-  </div>
-  <div class="card span-4">
-    <h3><span class="icon"><svg><use href="#i-trending-up"/></svg></span> Daily P&amp;L</h3>
-    <div class="chart" id="chart-history-pnl" style="height:280px"></div>
-  </div>
-</section>
+    <div class="card">
+      <h3>Concentration (HHI)</h3>
+      <div class="hhi-row">
+        <div class="hhi-card" id="hhi-us">
+          <div class="lbl">US</div>
+          <div class="hhi-ring" style="--pct: 0; --color: var(--gray);"><span class="inner">—</span></div>
+          <div class="verdict muted">—</div>
+          <div class="top2">—</div>
+        </div>
+        <div class="hhi-card" id="hhi-hk">
+          <div class="lbl">HK</div>
+          <div class="hhi-ring" style="--pct: 0; --color: var(--gray);"><span class="inner">—</span></div>
+          <div class="verdict muted">—</div>
+          <div class="top2">—</div>
+        </div>
+      </div>
+    </div>
 
-<!-- Plans tab -->
-<section class="tab-panel" data-panel="plans">
-  <div class="card span-4">
-    <h3><span class="icon"><svg><use href="#i-clipboard"/></svg></span> Recent Daily Plans</h3>
-    <p class="muted" style="margin: 0 0 14px; font-size: 12px;">
-      每个 daily-deep-brief 写入 <code>memory/{date}-plan.json</code> · 次日 retrospective 算 trigger / P&amp;L / confidence。
-      点击展开查看完整 plan。
-    </p>
-    <div id="plans-list"></div>
-  </div>
-</section>
+    <div class="card">
+      <h3>Anomalies <span class="badge muted" id="anom-count"></span></h3>
+      <div class="anomaly-list" id="anomaly-list">
+        <div class="empty-state">No anomalies detected.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Today's Movers <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">(≥3%)</span></h3>
+      <div class="movers-scroll" id="movers-scroll">
+        <div class="empty-state">No movers ≥3% today.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Calibration · 30d</h3>
+      <div class="calib-badge" id="calib-badge">
+        <div>
+          <div class="brier-val" id="brier-val">—</div>
+          <div class="meta" id="brier-meta">—</div>
+        </div>
+        <div class="tier" id="brier-tier">—</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       DRILL — holdings, peer divergence, recent actions
+       ============================================ -->
+  <section class="panel" data-panel="drill">
+    <h2>Drill</h2>
+
+    <div class="card">
+      <h3>Holdings <span class="muted" id="holdings-count" style="text-transform:none;letter-spacing:0;font-weight:500"></span></h3>
+      <div class="table-wrap">
+        <table class="holdings-table" id="holdings-table">
+          <thead>
+            <tr>
+              <th data-sort="ticker">Ticker</th>
+              <th data-sort="name">Name</th>
+              <th data-sort="current_value" class="active-sort">Value <span class="arr">&#x25BC;</span></th>
+              <th data-sort="today_change_pct">Today %</th>
+              <th data-sort="pnl_percent">P&amp;L %</th>
+              <th data-sort="pnl_abs">P&amp;L Abs</th>
+            </tr>
+          </thead>
+          <tbody id="holdings-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Peer Divergence</h3>
+      <div class="peer-list" id="peer-list">
+        <div class="empty-state">No peer divergence signals.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Recent Plan Actions <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">(last 5d)</span></h3>
+      <div class="plan-actions" id="plan-actions">
+        <div class="empty-state">No recent plan actions.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       REFLECT — calibration, equity, plan-outcome heatmap
+       ============================================ -->
+  <section class="panel" data-panel="reflect">
+    <h2>Reflect</h2>
+
+    <div class="card">
+      <h3>Calibration Scatter</h3>
+      <div id="chart-calibration" class="chart-box"></div>
+    </div>
+
+    <div class="card">
+      <h3>Book Equity + Drawdown</h3>
+      <div id="chart-equity" class="chart-box"></div>
+    </div>
+
+    <div class="card">
+      <h3>Plan Outcomes Heatmap</h3>
+      <div id="chart-heatmap" class="chart-box"></div>
+    </div>
+  </section>
 
 </main>
 
 <footer>
   <p>
     <a href="https://github.com/KCNyu/clawock">clawock</a>
-    · data <a href="assets/data/dashboard.json"><code>dashboard.json</code></a>
-    · built <span id="footer-gen" class="mono">—</span>
+    · <a href="briefs.html">briefs</a>
+    · <a href="assets/data/dashboard.json"><code>dashboard.json</code></a>
   </p>
-  <p class="disclaimer">
-    Not investment advice. Real positions shown. Point-in-time data. Past performance ≠ future results.
-  </p>
+  <p>Not investment advice · point-in-time · past performance ≠ future results</p>
 </footer>
 
-<script src="assets/dashboard.js" defer></script>
+<script>
+  // =========================================================
+  // Utilities — null-safe formatters
+  // =========================================================
+  const DASH = "—"; // em-dash for missing values
+
+  const fmtMoney = (v, ccy) => {
+    if (v == null || !isFinite(v)) return DASH;
+    const sym = ccy === "USD" ? "$" : ccy === "HKD" ? "HK$" : "";
+    const n = Math.abs(v) >= 1000
+      ? v.toLocaleString("en-US", { maximumFractionDigits: 0 })
+      : v.toLocaleString("en-US", { maximumFractionDigits: 2 });
+    return sym + n;
+  };
+  const fmtPct = (v, digits = 2) => {
+    if (v == null || !isFinite(v)) return DASH;
+    const s = v >= 0 ? "+" : "";
+    return s + v.toFixed(digits) + "%";
+  };
+  const fmtNum = (v, digits = 2) => {
+    if (v == null || !isFinite(v)) return DASH;
+    return v.toFixed(digits);
+  };
+  const pnlClass = (v) => {
+    if (v == null || !isFinite(v)) return "neutral";
+    if (v > 0) return "pos";
+    if (v < 0) return "neg";
+    return "neutral";
+  };
+  const safe = (obj, ...path) => {
+    let cur = obj;
+    for (const k of path) {
+      if (cur == null) return null;
+      cur = cur[k];
+    }
+    return cur == null ? null : cur;
+  };
+
+  // =========================================================
+  // Tab switching (mobile only — desktop shows all 3 columns)
+  // =========================================================
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const t = btn.dataset.tab;
+      document.querySelectorAll(".tab-btn").forEach(b => {
+        b.classList.toggle("active", b === btn);
+        b.setAttribute("aria-selected", b === btn);
+      });
+      document.querySelectorAll(".panel").forEach(p => {
+        p.classList.toggle("active", p.dataset.panel === t);
+      });
+      // resize charts when shown
+      window.dispatchEvent(new Event("resize"));
+    });
+  });
+
+  // =========================================================
+  // Theme detection — for ECharts dark/light
+  // =========================================================
+  const isDark = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const getCSS = (varName) => getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  const chartTextColor = () => getCSS("--text") || (isDark() ? "#e6ebf5" : "#1a2238");
+  const chartGridColor = () => getCSS("--border") || (isDark() ? "#232c47" : "#e3e8f0");
+
+  // =========================================================
+  // State
+  // =========================================================
+  let DATA = null;
+  let holdingsSort = { key: "current_value", dir: "desc" };
+  const charts = { calibration: null, equity: null, heatmap: null };
+
+  // =========================================================
+  // Data load
+  // =========================================================
+  async function loadData() {
+    try {
+      const url = "assets/data/dashboard.json?t=" + Date.now();
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      DATA = await res.json();
+      render();
+    } catch (e) {
+      console.error("Failed to load dashboard.json:", e);
+      document.getElementById("last-updated").textContent = "load failed";
+    }
+  }
+
+  // =========================================================
+  // Render — orchestrates all sections
+  // =========================================================
+  function render() {
+    if (!DATA) return;
+    renderHeader();
+    renderTotals();
+    renderDelta();
+    renderHHI();
+    renderAnomalies();
+    renderMovers();
+    renderCalibBadge();
+    renderHoldings();
+    renderPeers();
+    renderPlanActions();
+    renderCalibChart();
+    renderEquityChart();
+    renderHeatmapChart();
+  }
+
+  function renderHeader() {
+    const t = safe(DATA, "last_updated") || safe(DATA, "generated_at") || DASH;
+    document.getElementById("last-updated").textContent = "· " + t;
+  }
+
+  function renderTotals() {
+    const us = safe(DATA, "totals", "us") || {};
+    const hk = safe(DATA, "totals", "hk") || {};
+    const fx = safe(DATA, "fx", "usdhkd");
+
+    document.getElementById("us-value").textContent = fmtMoney(us.value_usd, "USD");
+    const usPnl = us.pnl_usd;
+    const usPnlPct = us.pnl_pct;
+    const usPnlEl = document.getElementById("us-pnl");
+    usPnlEl.textContent = fmtMoney(usPnl, "USD") + " · " + fmtPct(usPnlPct);
+    usPnlEl.className = "sub " + pnlClass(usPnl);
+
+    document.getElementById("hk-value").textContent = fmtMoney(hk.value_hkd, "HKD");
+    const hkPnl = hk.pnl_hkd;
+    const hkPnlPct = hk.pnl_pct;
+    const hkPnlEl = document.getElementById("hk-pnl");
+    hkPnlEl.textContent = fmtMoney(hkPnl, "HKD") + " · " + fmtPct(hkPnlPct);
+    hkPnlEl.className = "sub " + pnlClass(hkPnl);
+
+    if (fx && us.value_usd != null && hk.value_hkd != null) {
+      const totalUsd = us.value_usd + hk.value_hkd / fx;
+      const totalHkd = us.value_usd * fx + hk.value_hkd;
+      document.getElementById("combined-usd").textContent = fmtMoney(totalUsd, "USD");
+      document.getElementById("combined-hkd").textContent = fmtMoney(totalHkd, "HKD");
+      document.getElementById("fx-rate-usd").textContent = "@ USDHKD " + fmtNum(fx, 4);
+      document.getElementById("fx-rate-hkd").textContent = "@ USDHKD " + fmtNum(fx, 4);
+    } else {
+      document.getElementById("combined-usd").textContent = DASH;
+      document.getElementById("combined-hkd").textContent = DASH;
+    }
+  }
+
+  function renderDelta() {
+    const tbody = document.getElementById("delta-tbody");
+    const d = safe(DATA, "delta");
+    if (!d) {
+      tbody.innerHTML = '<tr><td colspan="3" class="muted">No delta data yet.</td></tr>';
+      return;
+    }
+    const rows = [
+      ["Today", safe(d, "us", "today_pct"), safe(d, "hk", "today_pct")],
+      ["7d", safe(d, "us", "7d_pct"), safe(d, "hk", "7d_pct")],
+      ["30d", safe(d, "us", "30d_pct"), safe(d, "hk", "30d_pct")],
+    ];
+    tbody.innerHTML = rows.map(([label, u, h]) => `
+      <tr>
+        <td>${label}</td>
+        <td class="${pnlClass(u)}">${fmtPct(u)}</td>
+        <td class="${pnlClass(h)}">${fmtPct(h)}</td>
+      </tr>
+    `).join("");
+  }
+
+  function renderHHI() {
+    const us = safe(DATA, "concentration", "us") || {};
+    const hk = safe(DATA, "concentration", "hk") || {};
+    paintHHI("hhi-us", us);
+    paintHHI("hhi-hk", hk);
+  }
+  function paintHHI(id, leg) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const hhi = leg.hhi;
+    const top2 = leg.top2;
+    const verdict = leg.verdict || {};
+    const ring = el.querySelector(".hhi-ring");
+    const inner = el.querySelector(".inner");
+    const verdictEl = el.querySelector(".verdict");
+    const top2El = el.querySelector(".top2");
+    if (hhi != null) {
+      // Map HHI 0-0.5 to 0-100% of ring (0.5 is essentially worst case for diversified)
+      const pct = Math.min(100, Math.max(0, hhi / 0.5 * 100));
+      ring.style.setProperty("--pct", pct.toFixed(1));
+      ring.style.setProperty("--color", verdict.color || "var(--accent)");
+      inner.textContent = hhi.toFixed(3);
+    } else {
+      inner.textContent = DASH;
+    }
+    verdictEl.textContent = verdict.label || DASH;
+    verdictEl.style.color = verdict.color || "var(--text-dim)";
+    top2El.textContent = top2 != null ? "Top 2: " + (top2 * 100).toFixed(1) + "%" : DASH;
+  }
+
+  function renderAnomalies() {
+    const list = safe(DATA, "anomalies") || [];
+    const wrap = document.getElementById("anomaly-list");
+    document.getElementById("anom-count").textContent = list.length ? `(${list.length})` : "";
+    if (!list.length) {
+      wrap.innerHTML = '<div class="empty-state">No anomalies detected.</div>';
+      return;
+    }
+    const ICONS = {
+      rsi_overbought: "🔥",
+      peer_divergence: "↗",
+      high_weight_loss: "❗",
+      leveraged_etf_stop: "🛑",
+    };
+    wrap.innerHTML = list.map(a => {
+      const icon = ICONS[a.type] || "⚠";
+      const sev = a.severity || "medium";
+      return `
+        <div class="anomaly ${sev}">
+          <span class="icon">${icon}</span>
+          <div class="body">
+            <span class="ticker">${a.ticker || DASH}</span>
+            <span class="muted"> · ${a.type || ""}</span>
+            <div class="detail">${a.detail || ""}</div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function renderMovers() {
+    const wrap = document.getElementById("movers-scroll");
+    const movers = (safe(DATA, "today_movers") || []).slice().sort((a, b) =>
+      Math.abs(b.today_change_pct || 0) - Math.abs(a.today_change_pct || 0)
+    );
+    if (!movers.length) {
+      wrap.innerHTML = '<div class="empty-state">No movers ≥3% today.</div>';
+      return;
+    }
+    wrap.innerHTML = movers.map(m => {
+      const p = m.today_change_pct;
+      const dir = p > 0 ? "up" : p < 0 ? "down" : "";
+      const ccy = m.region === "hk" ? "HKD" : "USD";
+      return `
+        <div class="mover-card ${dir}">
+          <div class="tk">${m.ticker || DASH}</div>
+          <div class="nm">${m.name || ""}</div>
+          <div class="pct ${pnlClass(p)}">${fmtPct(p, 2)}</div>
+          <div class="px">${fmtMoney(m.current_price, ccy)}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function renderCalibBadge() {
+    const cal = safe(DATA, "calibration");
+    const brierEl = document.getElementById("brier-val");
+    const metaEl = document.getElementById("brier-meta");
+    const tierEl = document.getElementById("brier-tier");
+    if (!cal || cal.brier_30d == null) {
+      brierEl.textContent = DASH;
+      metaEl.textContent = cal && cal.samples != null
+        ? `n=${cal.samples} · need ≥5 samples`
+        : "No calibration data yet";
+      tierEl.textContent = "n/a";
+      tierEl.className = "tier";
+      return;
+    }
+    const b = cal.brier_30d;
+    brierEl.textContent = b.toFixed(3);
+    metaEl.textContent = `Brier · n=${cal.samples ?? DASH}`;
+    let tier, cls;
+    if (b < 0.15) { tier = "Excellent"; cls = "excellent"; }
+    else if (b < 0.20) { tier = "Good"; cls = "good"; }
+    else if (b < 0.25) { tier = "Fair"; cls = "fair"; }
+    else { tier = "Poor"; cls = "poor"; }
+    tierEl.textContent = tier;
+    tierEl.className = "tier " + cls;
+  }
+
+  // =========================================================
+  // Drill
+  // =========================================================
+  function flatHoldings() {
+    const us = (safe(DATA, "holdings", "us") || []).map(h => ({ ...h, region: "us" }));
+    const hk = (safe(DATA, "holdings", "hk") || []).map(h => ({ ...h, region: "hk" }));
+    return [...us, ...hk].filter(h => h.is_active !== false && (h.shares ?? 0) > 0);
+  }
+
+  function renderHoldings() {
+    const tbody = document.getElementById("holdings-tbody");
+    const data = flatHoldings();
+    document.getElementById("holdings-count").textContent = data.length ? `(${data.length})` : "";
+    const { key, dir } = holdingsSort;
+    data.sort((a, b) => {
+      const av = a[key], bv = b[key];
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      if (typeof av === "string") return dir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
+      return dir === "asc" ? av - bv : bv - av;
+    });
+    tbody.innerHTML = data.map(h => {
+      const ccy = h.region === "hk" ? "HKD" : "USD";
+      return `
+        <tr>
+          <td><span class="ticker region-${h.region}">${h.ticker || DASH}</span></td>
+          <td>${h.name || ""}</td>
+          <td>${fmtMoney(h.current_value, ccy)}</td>
+          <td class="${pnlClass(h.today_change_pct)}">${fmtPct(h.today_change_pct)}</td>
+          <td class="${pnlClass(h.pnl_percent)}">${fmtPct(h.pnl_percent)}</td>
+          <td class="${pnlClass(h.pnl_abs)}">${fmtMoney(h.pnl_abs, ccy)}</td>
+        </tr>
+      `;
+    }).join("");
+
+    // Wire sort headers
+    document.querySelectorAll("#holdings-table thead th").forEach(th => {
+      th.onclick = () => {
+        const k = th.dataset.sort;
+        if (!k) return;
+        if (holdingsSort.key === k) {
+          holdingsSort.dir = holdingsSort.dir === "asc" ? "desc" : "asc";
+        } else {
+          holdingsSort = { key: k, dir: "desc" };
+        }
+        document.querySelectorAll("#holdings-table thead th").forEach(x => {
+          const isActive = x.dataset.sort === holdingsSort.key;
+          x.classList.toggle("active-sort", isActive);
+          let label = x.textContent.replace(/[▲▼]/g, "").trim();
+          if (isActive) {
+            x.innerHTML = label + ' <span class="arr">' + (holdingsSort.dir === "asc" ? "▲" : "▼") + "</span>";
+          } else {
+            x.innerHTML = label;
+          }
+        });
+        renderHoldings();
+      };
+    });
+  }
+
+  function renderPeers() {
+    const list = safe(DATA, "peer_divergence") || [];
+    const wrap = document.getElementById("peer-list");
+    if (!list.length) {
+      wrap.innerHTML = '<div class="empty-state">No peer divergence signals.</div>';
+      return;
+    }
+    wrap.innerHTML = list.map(p => `
+      <div class="peer-row">
+        <div class="self">
+          <div class="tk">${p.ticker || DASH}</div>
+          <div class="pct ${pnlClass(p.self_pct_1d)}">${fmtPct(p.self_pct_1d)}</div>
+        </div>
+        <div class="arrow">↔</div>
+        <div class="peer">
+          <div class="tk">${p.best_peer || DASH}</div>
+          <div class="nm">${p.best_peer_name || ""}</div>
+          <div class="pct ${pnlClass(p.peer_pct_1d)}">${fmtPct(p.peer_pct_1d)}</div>
+        </div>
+        <div class="div-pp">divergence: <span class="${pnlClass(p.divergence_pp)}">${fmtPct(p.divergence_pp, 2)} pp</span></div>
+      </div>
+    `).join("");
+  }
+
+  function renderPlanActions() {
+    const list = (safe(DATA, "recent_plan_actions") || []).slice(0, 8);
+    const wrap = document.getElementById("plan-actions");
+    if (!list.length) {
+      wrap.innerHTML = '<div class="empty-state">No recent plan actions.</div>';
+      return;
+    }
+    wrap.innerHTML = list.map(a => {
+      const oc = a.outcome || "pending";
+      const conf = a.confidence != null ? (a.confidence * 100).toFixed(0) + "%" : DASH;
+      const pnl = a.pnl_5d != null ? fmtPct(a.pnl_5d) : DASH;
+      return `
+        <div class="plan-action">
+          <div>
+            <div class="tk">${a.ticker || DASH}</div>
+            <div class="date">${a.date || ""}</div>
+          </div>
+          <div>
+            <div>${a.bucket || DASH}</div>
+            <div class="meta">conf ${conf} · ${a.trigger_type || DASH} · 5d ${pnl}</div>
+          </div>
+          <div class="outcome ${oc}">${oc}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  // =========================================================
+  // Reflect — ECharts
+  // =========================================================
+  function baseChartOpts() {
+    return {
+      textStyle: { color: chartTextColor(), fontFamily: getCSS("--font") },
+      backgroundColor: "transparent",
+      grid: { left: 50, right: 20, top: 30, bottom: 40, containLabel: true },
+    };
+  }
+
+  function renderCalibChart() {
+    const el = document.getElementById("chart-calibration");
+    if (!el || !window.echarts) return;
+    if (!charts.calibration) charts.calibration = echarts.init(el, null, { renderer: "canvas" });
+    const bands = safe(DATA, "calibration", "bands") || [];
+    // Map band labels to midpoint X
+    const bandMid = {
+      "0-50%": 25, "50-60%": 55, "60-70%": 65, "70-80%": 75, "80-100%": 90,
+    };
+    const points = bands
+      .filter(b => b && b.n > 0 && b.actual_win_rate != null)
+      .map(b => ({
+        value: [bandMid[b.band] ?? 50, b.actual_win_rate * 100, b.n],
+        name: b.band,
+      }));
+    const opt = {
+      ...baseChartOpts(),
+      tooltip: {
+        trigger: "item",
+        formatter: (p) => {
+          const [x, y, n] = p.value;
+          return `${p.name}<br/>predicted ~${x}%<br/>actual <b>${y.toFixed(1)}%</b><br/>n=${n}`;
+        },
+      },
+      xAxis: {
+        name: "Predicted confidence (%)", nameLocation: "middle", nameGap: 28,
+        min: 0, max: 100, type: "value",
+        axisLine: { lineStyle: { color: chartGridColor() } },
+        splitLine: { lineStyle: { color: chartGridColor() } },
+      },
+      yAxis: {
+        name: "Actual win rate (%)", nameLocation: "middle", nameGap: 36,
+        min: 0, max: 100, type: "value",
+        axisLine: { lineStyle: { color: chartGridColor() } },
+        splitLine: { lineStyle: { color: chartGridColor() } },
+      },
+      series: [
+        {
+          name: "Perfect calibration",
+          type: "line",
+          data: [[0, 0], [100, 100]],
+          showSymbol: false,
+          lineStyle: { type: "dashed", color: chartGridColor(), width: 1 },
+          tooltip: { show: false },
+          z: 1,
+        },
+        {
+          name: "Bands",
+          type: "scatter",
+          data: points,
+          symbolSize: (val) => Math.max(10, Math.min(40, Math.sqrt(val[2]) * 8)),
+          itemStyle: { color: getCSS("--accent") || "#5b8def", opacity: 0.85 },
+          label: {
+            show: true, position: "right",
+            formatter: (p) => `n=${p.value[2]}`,
+            color: chartTextColor(), fontSize: 10,
+          },
+          z: 2,
+        },
+      ],
+    };
+    if (!points.length) {
+      opt.graphic = [{
+        type: "text", left: "center", top: "middle",
+        style: { text: "No calibration samples yet", fill: chartTextColor(), fontSize: 13, opacity: 0.5 },
+      }];
+    }
+    charts.calibration.setOption(opt, true);
+  }
+
+  function renderEquityChart() {
+    const el = document.getElementById("chart-equity");
+    if (!el || !window.echarts) return;
+    if (!charts.equity) charts.equity = echarts.init(el, null, { renderer: "canvas" });
+    const snaps = (safe(DATA, "snapshots") || [])
+      .filter(s => s.us_total_value != null || s.hk_total_value != null);
+    // Dedup by date (keep last)
+    const byDate = new Map();
+    snaps.forEach(s => byDate.set(s.date, s));
+    const series = Array.from(byDate.values()).sort((a, b) => a.date.localeCompare(b.date));
+
+    const dates = series.map(s => s.date);
+    const us = series.map(s => s.us_total_value);
+    const hk = series.map(s => s.hk_total_value);
+
+    // Drawdown: running max → (current - max) / max
+    const ddSeries = (arr) => {
+      let mx = -Infinity;
+      return arr.map(v => {
+        if (v == null) return null;
+        if (v > mx) mx = v;
+        return mx > 0 ? ((v - mx) / mx) * 100 : 0;
+      });
+    };
+    const usDD = ddSeries(us);
+    const hkDD = ddSeries(hk);
+
+    const accent = getCSS("--accent") || "#5b8def";
+    const accent2 = getCSS("--accent-2") || "#a78bfa";
+    const red = getCSS("--red") || "#f87171";
+
+    const opt = {
+      ...baseChartOpts(),
+      legend: {
+        data: ["US (USD)", "HK (HKD)", "US drawdown %", "HK drawdown %"],
+        textStyle: { color: chartTextColor() },
+        top: 4,
+      },
+      tooltip: { trigger: "axis", axisPointer: { type: "cross" } },
+      xAxis: {
+        type: "category", data: dates,
+        axisLine: { lineStyle: { color: chartGridColor() } },
+        axisLabel: { color: chartTextColor(), fontSize: 10 },
+      },
+      yAxis: [
+        {
+          type: "value", name: "Value",
+          axisLine: { lineStyle: { color: chartGridColor() } },
+          splitLine: { lineStyle: { color: chartGridColor() } },
+          axisLabel: { color: chartTextColor() },
+        },
+        {
+          type: "value", name: "DD %", max: 0,
+          axisLine: { lineStyle: { color: chartGridColor() } },
+          splitLine: { show: false },
+          axisLabel: { color: chartTextColor(), formatter: "{value}%" },
+        },
+      ],
+      series: [
+        { name: "US (USD)", type: "line", data: us, yAxisIndex: 0, itemStyle: { color: accent }, lineStyle: { width: 2 }, smooth: true, symbol: "circle", symbolSize: 4 },
+        { name: "HK (HKD)", type: "line", data: hk, yAxisIndex: 0, itemStyle: { color: accent2 }, lineStyle: { width: 2 }, smooth: true, symbol: "circle", symbolSize: 4 },
+        { name: "US drawdown %", type: "line", data: usDD, yAxisIndex: 1, areaStyle: { color: red, opacity: 0.1 }, lineStyle: { color: red, opacity: 0.5, width: 1 }, symbol: "none", smooth: true },
+        { name: "HK drawdown %", type: "line", data: hkDD, yAxisIndex: 1, areaStyle: { color: red, opacity: 0.08 }, lineStyle: { color: red, opacity: 0.4, width: 1, type: "dashed" }, symbol: "none", smooth: true },
+      ],
+    };
+    if (!dates.length) {
+      opt.graphic = [{
+        type: "text", left: "center", top: "middle",
+        style: { text: "No snapshot history yet", fill: chartTextColor(), fontSize: 13, opacity: 0.5 },
+      }];
+    }
+    charts.equity.setOption(opt, true);
+  }
+
+  function renderHeatmapChart() {
+    const el = document.getElementById("chart-heatmap");
+    if (!el || !window.echarts) return;
+    if (!charts.heatmap) charts.heatmap = echarts.init(el, null, { renderer: "canvas" });
+    const buckets = ["cut", "trim_on_rebound", "hold_and_watch", "t_only", "add_only_on_trigger"];
+    const outcomes = ["win", "loss", "pending", "flat"];
+    const perBucket = safe(DATA, "calibration", "per_bucket") || {};
+    // We need raw counts; derive from recent_plan_actions
+    const actions = safe(DATA, "recent_plan_actions") || [];
+    const counts = {};
+    buckets.forEach(b => { counts[b] = { win: 0, loss: 0, pending: 0, flat: 0 }; });
+    actions.forEach(a => {
+      const b = a.bucket;
+      const o = a.outcome || "pending";
+      if (counts[b] && counts[b][o] != null) counts[b][o]++;
+    });
+    // Build data: [xIdx, yIdx, value]
+    const data = [];
+    buckets.forEach((b, yi) => {
+      outcomes.forEach((o, xi) => {
+        data.push([xi, yi, counts[b][o]]);
+      });
+    });
+    const maxVal = Math.max(1, ...data.map(d => d[2]));
+
+    const opt = {
+      ...baseChartOpts(),
+      grid: { left: 110, right: 20, top: 30, bottom: 50, containLabel: false },
+      tooltip: {
+        position: "top",
+        formatter: (p) => `${buckets[p.value[1]]} · <b>${outcomes[p.value[0]]}</b><br/>count: ${p.value[2]}`,
+      },
+      xAxis: {
+        type: "category", data: outcomes, position: "bottom",
+        axisLine: { lineStyle: { color: chartGridColor() } },
+        axisLabel: { color: chartTextColor() },
+        splitArea: { show: true },
+      },
+      yAxis: {
+        type: "category", data: buckets, inverse: true,
+        axisLine: { lineStyle: { color: chartGridColor() } },
+        axisLabel: { color: chartTextColor(), fontSize: 10 },
+        splitArea: { show: true },
+      },
+      visualMap: {
+        min: 0, max: maxVal, calculable: false,
+        orient: "horizontal", left: "center", bottom: 0,
+        inRange: { color: [isDark() ? "#1a2238" : "#eef2fa", getCSS("--accent") || "#5b8def"] },
+        textStyle: { color: chartTextColor() },
+        show: true,
+      },
+      series: [{
+        type: "heatmap", data,
+        label: {
+          show: true,
+          formatter: (p) => p.value[2] || "",
+          color: chartTextColor(),
+          fontSize: 11,
+          fontWeight: 600,
+        },
+        emphasis: { itemStyle: { shadowBlur: 8, shadowColor: "rgba(0,0,0,.4)" } },
+      }],
+    };
+    if (!actions.length) {
+      opt.graphic = [{
+        type: "text", left: "center", top: "middle",
+        style: { text: "No plan actions to bucket yet", fill: chartTextColor(), fontSize: 13, opacity: 0.5 },
+      }];
+    }
+    charts.heatmap.setOption(opt, true);
+  }
+
+  // =========================================================
+  // Wire up resize + theme change
+  // =========================================================
+  window.addEventListener("resize", () => {
+    Object.values(charts).forEach(c => c && c.resize());
+  });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    // Re-render charts with new theme colors
+    if (DATA) {
+      renderCalibChart();
+      renderEquityChart();
+      renderHeatmapChart();
+    }
+  });
+
+  document.getElementById("refresh-btn").addEventListener("click", () => loadData());
+
+  // =========================================================
+  // Boot — wait for ECharts to load (it's deferred)
+  // =========================================================
+  function boot() {
+    if (!window.echarts) {
+      setTimeout(boot, 50);
+      return;
+    }
+    loadData();
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+</script>
 </body>
 </html>

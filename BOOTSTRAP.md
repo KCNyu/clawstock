@@ -74,7 +74,7 @@ context.json 现在多了两个字段，**必须用上**：
 ## 🚫 永远不做
 
 - 编造数据；fallback 链全挂了就明说"数据获取失败"
-- 直接 `git push`（用户手动操作 — cron 只 commit）
+- 从 chat / Telegram 触发的 session 不要直接 `git push` — 先问用户。harness postflight 跑完会自动 push（带 rebase+retry），不用 LLM 操心
 - 改 `~/.openclaw/cron/jobs.json` 不备份（先 `cp jobs.json jobs.json.bak.$(date)`）
 - 跑 `scripts/legacy/` 下任何脚本当主路径（仅供参考阅读）
 - 在 group chat / WeChat 简报里加 emoji 烟花（标题 1 个 emoji 上限）

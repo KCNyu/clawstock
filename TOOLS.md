@@ -17,7 +17,7 @@
 - Repo 是 **public**，含真实仓位（用户已知情授权）
 - Dashboard live: https://kcnyu.github.io/clawock/ — 自动从 `assets/data/dashboard.json` 取数
 - Briefs index: https://kcnyu.github.io/clawock/briefs.html — 自动列 `memory/*-pre-open.md`
-- `_layouts/default.html` + `assets/dashboard.css` 给所有 markdown 页面统一样式；不要再加 jekyll-theme
+- `_layouts/default.html` 给 markdown 页面统一样式（briefs.md 等）；dashboard 自身（`index.html`）CSS/JS 全 inline，不依赖 `assets/dashboard.{css,js}`（v2 重构已删）
 - Pages 自动 build on push
 
 ### GitHub Actions 分工
@@ -184,7 +184,7 @@ python3 scripts/data/analyze_hk_stocks.py --dry-run   # 不写文件
 
 ### 辅助
 - **Scrapling**：自适应爬虫框架，绕过反爬（Cloudflare 等），支持 JS 渲染。`pip3 install scrapling --break-system-packages`。详见 `skills/scrapling/SKILL.md`
-- **`scripts/data/build_dashboard.py`**：聚合 `portfolio.json` + `memory/snapshots/` + `memory/*-plan.json` → `assets/data/dashboard.json`。**brief/report postflight 自动调起**，手动也可以跑一次刷新 Pages 数据。
+- **`scripts/data/build_dashboard.py`**：聚合 `portfolio.json` + `memory/snapshots/` + `memory/*-plan.json` + `memory/calibration.csv` + `memory/peer-map.json` + 最近 brief context → `assets/data/dashboard.json`（v2 schema 含 delta / today_movers / anomalies / peer_divergence / calibration / recent_plan_actions / drawdown 7 个新字段）。**brief/report postflight 自动调起**，手动也可以跑一次刷新 Pages 数据。size cap 60KB。
 - **`scripts/data/update_portfolio.py`** / **`update_us_portfolio.js`**：手动调仓后写 portfolio.json 的辅助
 
 ### Cron map（**10 个 job 位于 `~/.openclaw/cron/jobs.json`**）
