@@ -676,6 +676,184 @@ def compute_drawdown(snapshots):
         return empty
 
 
+# ───────────────────────────────────────────────────────────────────────────
+# v2.1: broker-style analytics
+# ───────────────────────────────────────────────────────────────────────────
+
+# Sector / theme map (hardcoded — peer-map.json doesn't carry sector explicitly)
+SECTOR_MAP = {
+    # US
+    'NVDA': 'Semiconductor',  'SOXL': 'Semiconductor ETF',
+    'RKLB': 'Aerospace',      'RKLX': 'Aerospace',
+    'CRCL': 'Crypto / Stablecoin',
+    'OKLO': 'Nuclear / Energy',
+    'QQQ':  'Index ETF',      'TQQQ': 'Index ETF',
+    'TCOM': 'Travel / Online',
+    'HOOD': 'Fintech',        'ROBN': 'Fintech',
+    'PLTU': 'AI / Defense',
+    'MSFU': 'Tech Mega-cap',
+    # HK
+    '00100': 'AI / 大模型',
+    '02208': '新能源',
+    '03032': '恒生科技 ETF', '07226': '恒生科技 ETF',
+    '03033': '恒生科技 ETF',
+    '07709': 'KR ADR (旧仓)', '07747': 'KR ADR (旧仓)',
+}
+
+# 2x/3x leveraged ETF set
+LEVERAGED_TICKERS = {'SOXL', 'TQQQ', 'PLTU', 'RKLX', 'ROBN', 'MSFU', '07226'}
+
+
+def compute_sector_exposure(portfolio):
+    """Group active holdings by sector, with % of region book."""
+    result = {'us': [], 'hk': []}
+    try:
+        for region in ('us_stocks', 'hk_stocks'):
+            r_key = 'us' if region == 'us_stocks' else 'hk'
+            holdings = portfolio['portfolios'][region].get('holdings', [])
+            active = [h for h in holdings if h.get('shares', 0) > 0]
+            total_value = sum(h.get('current_value', 0) or 0 for h in active)
+            if total_value <= 0:
+                continue
+            by_sector = {}
+            for h in active:
+                sec = SECTOR_MAP.get(h['ticker'], 'Other')
+                bucket = by_sector.setdefault(sec, {'value': 0.0, 'tickers': []})
+                bucket['value'] += (h.get('current_value') or 0)
+                bucket['tickers'].append(h['ticker'])
+            for sec, info in by_sector.items():
+                result[r_key].append({
+                    'sector': sec,
+                    'value': round(info['value'], 2),
+                    'pct': round(info['value'] / total_value * 100, 2),
+                    'tickers': info['tickers'],
+                })
+            result[r_key].sort(key=lambda x: x['pct'], reverse=True)
+    except Exception as e:
+        print(f'  warn: compute_sector_exposure failed: {e}', file=sys.stderr)
+    return result
+
+
+def compute_leveraged_etf_exposure(portfolio, fx_rate):
+    """Percent of book in 2x/3x leveraged ETFs, per region + combined (USD-base)."""
+    out = {'us_pct': None, 'hk_pct': None, 'combined_pct': None, 'tickers': []}
+    try:
+        us_active = [h for h in portfolio['portfolios']['us_stocks'].get('holdings', [])
+                     if h.get('shares', 0) > 0]
+        hk_active = [h for h in portfolio['portfolios']['hk_stocks'].get('holdings', [])
+                     if h.get('shares', 0) > 0]
+
+        us_total = sum(h.get('current_value', 0) or 0 for h in us_active)
+        hk_total = sum(h.get('current_value', 0) or 0 for h in hk_active)
+        us_lev   = sum(h.get('current_value', 0) or 0 for h in us_active if h['ticker'] in LEVERAGED_TICKERS)
+        hk_lev   = sum(h.get('current_value', 0) or 0 for h in hk_active if h['ticker'] in LEVERAGED_TICKERS)
+
+        if us_total > 0: out['us_pct'] = round(us_lev / us_total * 100, 2)
+        if hk_total > 0: out['hk_pct'] = round(hk_lev / hk_total * 100, 2)
+
+        if fx_rate and fx_rate > 0 and (us_total + hk_total) > 0:
+            us_usd_total = us_total
+            hk_usd_total = hk_total / fx_rate
+            us_usd_lev   = us_lev
+            hk_usd_lev   = hk_lev / fx_rate
+            combined_total = us_usd_total + hk_usd_total
+            combined_lev   = us_usd_lev   + hk_usd_lev
+            if combined_total > 0:
+                out['combined_pct'] = round(combined_lev / combined_total * 100, 2)
+
+        out['tickers'] = sorted(set(
+            h['ticker'] for h in us_active + hk_active if h['ticker'] in LEVERAGED_TICKERS
+        ))
+    except Exception as e:
+        print(f'  warn: compute_leveraged_etf_exposure failed: {e}', file=sys.stderr)
+    return out
+
+
+def compute_all_time_extremes(portfolio, top_n=3):
+    """Top-N winners + bottom-N losers across all active holdings (by pnl_percent)."""
+    out = {'winners': [], 'losers': []}
+    try:
+        rows = []
+        for region in ('us_stocks', 'hk_stocks'):
+            r_key = 'us' if region == 'us_stocks' else 'hk'
+            for h in portfolio['portfolios'][region].get('holdings', []):
+                if h.get('shares', 0) <= 0:
+                    continue
+                p = h.get('pnl_percent')
+                if p is None:
+                    continue
+                rows.append({
+                    'ticker':      h['ticker'],
+                    'name':        h.get('stock_name') or h.get('name', h['ticker']),
+                    'region':      r_key,
+                    'pnl_percent': round(float(p), 2),
+                    'pnl_abs':     h.get('pnl_abs'),
+                    'current_value': h.get('current_value'),
+                })
+        rows.sort(key=lambda x: x['pnl_percent'], reverse=True)
+        out['winners'] = rows[:top_n]
+        out['losers']  = sorted(rows, key=lambda x: x['pnl_percent'])[:top_n]
+    except Exception as e:
+        print(f'  warn: compute_all_time_extremes failed: {e}', file=sys.stderr)
+    return out
+
+
+def compute_today_ranges(portfolio, top_n=8):
+    """Today's high-low spread as % of current price, sorted desc."""
+    rows = []
+    try:
+        for region in ('us_stocks', 'hk_stocks'):
+            r_key = 'us' if region == 'us_stocks' else 'hk'
+            for h in portfolio['portfolios'][region].get('holdings', []):
+                if h.get('shares', 0) <= 0:
+                    continue
+                hi = h.get('day_high'); lo = h.get('day_low'); cur = h.get('current_price')
+                if hi is None or lo is None or cur is None or cur <= 0:
+                    continue
+                try:
+                    hi = float(hi); lo = float(lo); cur = float(cur)
+                except Exception:
+                    continue
+                if hi == lo:
+                    continue
+                rows.append({
+                    'ticker':    h['ticker'],
+                    'region':    r_key,
+                    'high':      round(hi, 4),
+                    'low':       round(lo, 4),
+                    'current':   round(cur, 4),
+                    'range_pct': round((hi - lo) / cur * 100, 2),
+                })
+    except Exception as e:
+        print(f'  warn: compute_today_ranges failed: {e}', file=sys.stderr)
+    rows.sort(key=lambda x: x['range_pct'], reverse=True)
+    return rows[:top_n]
+
+
+def compute_realized_vs_unrealized(portfolio, fx_rate):
+    """Realized + unrealized split per region + combined (USD-base)."""
+    out = {
+        'us': {'realized': None, 'unrealized': None},
+        'hk': {'realized': None, 'unrealized': None},
+        'combined_usd': {'realized': None, 'unrealized': None},
+    }
+    try:
+        us = portfolio['portfolios']['us_stocks']
+        hk = portfolio['portfolios']['hk_stocks']
+        out['us']['realized']   = us.get('total_realized_pnl') or us.get('realized_pnl') or 0.0
+        out['us']['unrealized'] = us.get('total_pnl') or 0.0
+        out['hk']['realized']   = hk.get('total_realized_pnl') or hk.get('realized_pnl') or 0.0
+        out['hk']['unrealized'] = hk.get('total_pnl') or 0.0
+        if fx_rate and fx_rate > 0:
+            out['combined_usd']['realized'] = round(
+                out['us']['realized'] + out['hk']['realized'] / fx_rate, 2)
+            out['combined_usd']['unrealized'] = round(
+                out['us']['unrealized'] + out['hk']['unrealized'] / fx_rate, 2)
+    except Exception as e:
+        print(f'  warn: compute_realized_vs_unrealized failed: {e}', file=sys.stderr)
+    return out
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     portfolio = load_json(WS_ROOT / 'portfolio.json')
@@ -752,6 +930,13 @@ def main():
     out['calibration'] = compute_calibration()
     out['recent_plan_actions'] = recent_actions_from_csv(limit=20)
     out['drawdown'] = compute_drawdown(snapshots)
+    # v2.1: broker-style analytics
+    fx_rate = (out.get('fx') or {}).get('usdhkd')
+    out['sector_exposure'] = compute_sector_exposure(portfolio)
+    out['leveraged_etf'] = compute_leveraged_etf_exposure(portfolio, fx_rate)
+    out['all_time_extremes'] = compute_all_time_extremes(portfolio, top_n=3)
+    out['today_ranges'] = compute_today_ranges(portfolio, top_n=8)
+    out['realized_vs_unrealized'] = compute_realized_vs_unrealized(portfolio, fx_rate)
     if brief_ctx_path:
         print(f'  brief-context source: {os.path.basename(brief_ctx_path)}')
 

@@ -201,6 +201,46 @@ layout: null
   .neg { color: var(--red); }
   .neutral { color: var(--text-dim); }
 
+  /* Leveraged ETF exposure row */
+  .lev-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .lev-cell {
+    background: var(--card-2); border-radius: var(--radius-sm);
+    padding: 10px 8px; text-align: center; font-variant-numeric: tabular-nums;
+  }
+  .lev-cell .lbl { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+  .lev-cell .val { font-size: 18px; font-weight: 700; }
+  .lev-tickers { margin-top: 8px; font-size: 11px; }
+
+  /* Today's range bars */
+  .range-list { display: flex; flex-direction: column; gap: 8px; }
+  .range-row { display: grid; grid-template-columns: 60px 1fr auto; gap: 8px; align-items: center; font-size: 12px; }
+  .range-row .tk { font-weight: 600; font-family: ui-monospace, "Menlo", monospace; }
+  .range-bar { height: 8px; background: var(--card-2); border-radius: 4px; position: relative; overflow: hidden; }
+  .range-bar > .fill { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, var(--green), var(--red)); opacity: 0.5; }
+  .range-bar > .dot { position: absolute; top: -2px; width: 4px; height: 12px; background: var(--text); border-radius: 2px; }
+  .range-row .val { font-variant-numeric: tabular-nums; color: var(--text-dim); font-size: 11px; min-width: 50px; text-align: right; }
+
+  /* Extremes (winners/losers) */
+  .extremes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .extremes-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 8px; }
+  .extremes-list { display: flex; flex-direction: column; gap: 6px; }
+  .extremes-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 10px; background: var(--card-2); border-radius: var(--radius-sm);
+    font-variant-numeric: tabular-nums; font-size: 13px;
+  }
+  .extremes-row .tk { font-weight: 600; font-family: ui-monospace, "Menlo", monospace; }
+
+  /* Today's P&L cards */
+  .today-pnl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .today-pnl-cell {
+    background: var(--card-2); border-radius: var(--radius-sm);
+    padding: 14px 12px; text-align: center; font-variant-numeric: tabular-nums;
+  }
+  .today-pnl-cell .lbl { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 4px; }
+  .today-pnl-cell .val { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+  .today-pnl-cell .pct { font-size: 12px; margin-top: 2px; }
+
   /* Delta table */
   .delta-table {
     width: 100%; border-collapse: collapse;
@@ -440,6 +480,22 @@ layout: null
     </div>
 
     <div class="card">
+      <h3>Today's P&amp;L</h3>
+      <div class="today-pnl-grid">
+        <div class="today-pnl-cell">
+          <div class="lbl">US</div>
+          <div class="val" id="today-pnl-us">—</div>
+          <div class="pct muted" id="today-pnl-us-pct">—</div>
+        </div>
+        <div class="today-pnl-cell">
+          <div class="lbl">HK</div>
+          <div class="val" id="today-pnl-hk">—</div>
+          <div class="pct muted" id="today-pnl-hk-pct">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
       <h3>Delta</h3>
       <table class="delta-table">
         <thead>
@@ -467,6 +523,25 @@ layout: null
           <div class="top2">—</div>
         </div>
       </div>
+    </div>
+
+    <div class="card">
+      <h3>Leveraged ETF Exposure</h3>
+      <div class="lev-row">
+        <div class="lev-cell">
+          <div class="lbl">US</div>
+          <div class="val" id="lev-us">—</div>
+        </div>
+        <div class="lev-cell">
+          <div class="lbl">HK</div>
+          <div class="val" id="lev-hk">—</div>
+        </div>
+        <div class="lev-cell">
+          <div class="lbl">合计 USD</div>
+          <div class="val" id="lev-combined">—</div>
+        </div>
+      </div>
+      <div class="lev-tickers muted" id="lev-tickers">—</div>
     </div>
 
     <div class="card">
@@ -521,9 +596,28 @@ layout: null
     </div>
 
     <div class="card">
-      <h3>Peer Divergence</h3>
-      <div class="peer-list" id="peer-list">
-        <div class="empty-state">No peer divergence signals.</div>
+      <h3>Sector Exposure</h3>
+      <div id="chart-sector" class="chart-box" style="height:280px"></div>
+    </div>
+
+    <div class="card">
+      <h3>Today's Range <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">(high-low ÷ price)</span></h3>
+      <div class="range-list" id="range-list">
+        <div class="empty-state">No range data yet.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>All-time Winners &amp; Losers</h3>
+      <div class="extremes-grid">
+        <div>
+          <div class="extremes-label">Top 3 winners</div>
+          <div class="extremes-list" id="extremes-winners"><div class="empty-state">—</div></div>
+        </div>
+        <div>
+          <div class="extremes-label">Bottom 3 losers</div>
+          <div class="extremes-list" id="extremes-losers"><div class="empty-state">—</div></div>
+        </div>
       </div>
     </div>
 
@@ -549,6 +643,16 @@ layout: null
     <div class="card">
       <h3>Book Equity + Drawdown</h3>
       <div id="chart-equity" class="chart-box"></div>
+    </div>
+
+    <div class="card">
+      <h3>Realized vs Unrealized P&amp;L</h3>
+      <div id="chart-realized" class="chart-box" style="height:240px"></div>
+    </div>
+
+    <div class="card">
+      <h3>Daily P&amp;L</h3>
+      <div id="chart-daily-pnl" class="chart-box"></div>
     </div>
 
     <div class="card">
@@ -662,16 +766,22 @@ layout: null
     if (!DATA) return;
     renderHeader();
     renderTotals();
+    renderTodayPnl();
     renderDelta();
     renderHHI();
+    renderLeveragedETF();
     renderAnomalies();
     renderMovers();
     renderCalibBadge();
     renderHoldings();
-    renderPeers();
+    renderTodayRange();
+    renderExtremes();
     renderPlanActions();
     renderCalibChart();
+    renderSectorChart();
     renderEquityChart();
+    renderRealizedChart();
+    renderDailyPnlChart();
     renderHeatmapChart();
   }
 
@@ -710,6 +820,26 @@ layout: null
       document.getElementById("combined-usd").textContent = DASH;
       document.getElementById("combined-hkd").textContent = DASH;
     }
+  }
+
+  function renderTodayPnl() {
+    const us = safe(DATA, "totals", "us") || {};
+    const hk = safe(DATA, "totals", "hk") || {};
+    const usChg = us.today_change_usd;
+    const hkChg = hk.today_change_hkd;
+    // pct: today_change / (value - today_change) — approx today's pct vs yesterday
+    const usPct = (us.value_usd != null && usChg != null && (us.value_usd - usChg) > 0)
+                  ? (usChg / (us.value_usd - usChg) * 100) : null;
+    const hkPct = (hk.value_hkd != null && hkChg != null && (hk.value_hkd - hkChg) > 0)
+                  ? (hkChg / (hk.value_hkd - hkChg) * 100) : null;
+    const usEl = document.getElementById("today-pnl-us");
+    const hkEl = document.getElementById("today-pnl-hk");
+    usEl.textContent = fmtMoney(usChg, "USD");
+    usEl.className = "val " + pnlClass(usChg);
+    hkEl.textContent = fmtMoney(hkChg, "HKD");
+    hkEl.className = "val " + pnlClass(hkChg);
+    document.getElementById("today-pnl-us-pct").textContent = usPct != null ? fmtPct(usPct) : DASH;
+    document.getElementById("today-pnl-hk-pct").textContent = hkPct != null ? fmtPct(hkPct) : DASH;
   }
 
   function renderDelta() {
@@ -764,7 +894,8 @@ layout: null
   }
 
   function renderAnomalies() {
-    const list = safe(DATA, "anomalies") || [];
+    // peer_divergence filtered out at UI layer — peer-map.json data quality unverified
+    const list = (safe(DATA, "anomalies") || []).filter(a => a.type !== "peer_divergence");
     const wrap = document.getElementById("anomaly-list");
     document.getElementById("anom-count").textContent = list.length ? `(${list.length})` : "";
     if (!list.length) {
@@ -904,28 +1035,62 @@ layout: null
     });
   }
 
-  function renderPeers() {
-    const list = safe(DATA, "peer_divergence") || [];
-    const wrap = document.getElementById("peer-list");
+  function renderLeveragedETF() {
+    const l = safe(DATA, "leveraged_etf") || {};
+    const colorize = (v) => v == null ? "neutral" : (v >= 50 ? "neg" : (v >= 25 ? "warn-text" : "neutral"));
+    const setNum = (id, v) => {
+      const el = document.getElementById(id);
+      el.textContent = v == null ? DASH : fmtPct(v);
+      el.className = "val " + colorize(v);
+    };
+    setNum("lev-us", l.us_pct);
+    setNum("lev-hk", l.hk_pct);
+    setNum("lev-combined", l.combined_pct);
+    const tk = (l.tickers || []);
+    document.getElementById("lev-tickers").textContent = tk.length ? `2x/3x ETFs: ${tk.join(", ")}` : "—";
+  }
+
+  function renderTodayRange() {
+    const list = safe(DATA, "today_ranges") || [];
+    const wrap = document.getElementById("range-list");
     if (!list.length) {
-      wrap.innerHTML = '<div class="empty-state">No peer divergence signals.</div>';
+      wrap.innerHTML = '<div class="empty-state">No range data yet.</div>';
       return;
     }
-    wrap.innerHTML = list.map(p => `
-      <div class="peer-row">
-        <div class="self">
-          <div class="tk">${p.ticker || DASH}</div>
-          <div class="pct ${pnlClass(p.self_pct_1d)}">${fmtPct(p.self_pct_1d)}</div>
-        </div>
-        <div class="arrow">↔</div>
-        <div class="peer">
-          <div class="tk">${p.best_peer || DASH}</div>
-          <div class="nm">${p.best_peer_name || ""}</div>
-          <div class="pct ${pnlClass(p.peer_pct_1d)}">${fmtPct(p.peer_pct_1d)}</div>
-        </div>
-        <div class="div-pp">divergence: <span class="${pnlClass(p.divergence_pp)}">${fmtPct(p.divergence_pp, 2)} pp</span></div>
-      </div>
-    `).join("");
+    const maxPct = Math.max(1, ...list.map(r => r.range_pct || 0));
+    wrap.innerHTML = list.map(r => {
+      const pctFill = ((r.range_pct || 0) / maxPct) * 100;
+      // dot position: (current - low) / (high - low) * 100
+      const spread = (r.high - r.low) || 1;
+      const dotPct = Math.max(0, Math.min(100, ((r.current - r.low) / spread) * 100));
+      return `
+        <div class="range-row">
+          <div class="tk">${r.ticker}</div>
+          <div class="range-bar">
+            <div class="fill" style="width:${pctFill}%"></div>
+            <div class="dot" style="left:${dotPct}%"></div>
+          </div>
+          <div class="val">${fmtPct(r.range_pct, 1)}</div>
+        </div>`;
+    }).join("");
+  }
+
+  function renderExtremes() {
+    const ext = safe(DATA, "all_time_extremes") || {};
+    const render = (rows, elId) => {
+      const el = document.getElementById(elId);
+      if (!rows || !rows.length) {
+        el.innerHTML = '<div class="empty-state">—</div>';
+        return;
+      }
+      el.innerHTML = rows.map(r => `
+        <div class="extremes-row">
+          <span class="tk">${r.ticker}</span>
+          <span class="${pnlClass(r.pnl_percent)}">${fmtPct(r.pnl_percent, 1)}</span>
+        </div>`).join("");
+    };
+    render(ext.winners, "extremes-winners");
+    render(ext.losers, "extremes-losers");
   }
 
   function renderPlanActions() {
@@ -1051,7 +1216,16 @@ layout: null
     const us = series.map(s => s.us_total_value);
     const hk = series.map(s => s.hk_total_value);
 
-    // Drawdown: running max → (current - max) / max
+    // Normalize to index=100 at start (so US/HK comparable on single axis)
+    const normalize = (arr) => {
+      const base = arr.find(v => v != null && v > 0);
+      if (!base) return arr.map(() => null);
+      return arr.map(v => v == null ? null : (v / base) * 100);
+    };
+    const usIdx = normalize(us);
+    const hkIdx = normalize(hk);
+
+    // Drawdown: running max → (current - max) / max (percent, negative)
     const ddSeries = (arr) => {
       let mx = -Infinity;
       return arr.map(v => {
@@ -1070,11 +1244,20 @@ layout: null
     const opt = {
       ...baseChartOpts(),
       legend: {
-        data: ["US (USD)", "HK (HKD)", "US drawdown %", "HK drawdown %"],
-        textStyle: { color: chartTextColor() },
+        data: ["US idx", "HK idx", "US DD %", "HK DD %"],
+        textStyle: { color: chartTextColor(), fontSize: 11 },
         top: 4,
       },
-      tooltip: { trigger: "axis", axisPointer: { type: "cross" } },
+      tooltip: {
+        trigger: "axis", axisPointer: { type: "cross" },
+        formatter: (params) => {
+          const date = params[0]?.axisValue || "";
+          const lines = params.map(p =>
+            `${p.marker} ${p.seriesName}: ${p.value != null ? p.value.toFixed(2) : "—"}${p.seriesName.includes("DD") ? "%" : ""}`
+          );
+          return [date, ...lines].join("<br>");
+        },
+      },
       xAxis: {
         type: "category", data: dates,
         axisLine: { lineStyle: { color: chartGridColor() } },
@@ -1082,23 +1265,28 @@ layout: null
       },
       yAxis: [
         {
-          type: "value", name: "Value",
+          type: "value", name: "Index (start=100)",
+          nameTextStyle: { color: chartTextColor(), fontSize: 10 },
           axisLine: { lineStyle: { color: chartGridColor() } },
           splitLine: { lineStyle: { color: chartGridColor() } },
-          axisLabel: { color: chartTextColor() },
+          axisLabel: { color: chartTextColor(), fontSize: 10 },
         },
         {
-          type: "value", name: "DD %", max: 0,
+          type: "value", name: "DD %", max: 0, position: "right",
+          nameTextStyle: { color: chartTextColor(), fontSize: 10 },
           axisLine: { lineStyle: { color: chartGridColor() } },
           splitLine: { show: false },
-          axisLabel: { color: chartTextColor(), formatter: "{value}%" },
+          axisLabel: { color: chartTextColor(), fontSize: 10, formatter: "{value}%" },
         },
       ],
       series: [
-        { name: "US (USD)", type: "line", data: us, yAxisIndex: 0, itemStyle: { color: accent }, lineStyle: { width: 2 }, smooth: true, symbol: "circle", symbolSize: 4 },
-        { name: "HK (HKD)", type: "line", data: hk, yAxisIndex: 0, itemStyle: { color: accent2 }, lineStyle: { width: 2 }, smooth: true, symbol: "circle", symbolSize: 4 },
-        { name: "US drawdown %", type: "line", data: usDD, yAxisIndex: 1, areaStyle: { color: red, opacity: 0.1 }, lineStyle: { color: red, opacity: 0.5, width: 1 }, symbol: "none", smooth: true },
-        { name: "HK drawdown %", type: "line", data: hkDD, yAxisIndex: 1, areaStyle: { color: red, opacity: 0.08 }, lineStyle: { color: red, opacity: 0.4, width: 1, type: "dashed" }, symbol: "none", smooth: true },
+        { name: "US idx", type: "line", data: usIdx, yAxisIndex: 0, itemStyle: { color: accent }, lineStyle: { width: 2 }, smooth: true, symbol: "circle", symbolSize: 4,
+          markLine: { silent: true, symbol: ["none","none"],
+            data: [{ name: "Cost basis", yAxis: 100, lineStyle: { color: chartTextColor(), type: "dashed", opacity: 0.4, width: 1 },
+                     label: { formatter: "Cost basis", position: "insideEndTop", color: chartTextColor(), fontSize: 10, opacity: 0.6 } }] } },
+        { name: "HK idx", type: "line", data: hkIdx, yAxisIndex: 0, itemStyle: { color: accent2 }, lineStyle: { width: 2 }, smooth: true, symbol: "circle", symbolSize: 4 },
+        { name: "US DD %", type: "line", data: usDD, yAxisIndex: 1, areaStyle: { color: red, opacity: 0.12 }, lineStyle: { color: red, opacity: 0.5, width: 1 }, symbol: "none", smooth: true },
+        { name: "HK DD %", type: "line", data: hkDD, yAxisIndex: 1, areaStyle: { color: red, opacity: 0.08 }, lineStyle: { color: red, opacity: 0.4, width: 1, type: "dashed" }, symbol: "none", smooth: true },
       ],
     };
     if (!dates.length) {
@@ -1108,6 +1296,160 @@ layout: null
       }];
     }
     charts.equity.setOption(opt, true);
+  }
+
+  function renderDailyPnlChart() {
+    const el = document.getElementById("chart-daily-pnl");
+    if (!el || !window.echarts) return;
+    if (!charts.dailyPnl) charts.dailyPnl = echarts.init(el, null, { renderer: "canvas" });
+
+    const snaps = (safe(DATA, "snapshots") || [])
+      .filter(s => s.us_today_change != null || s.hk_today_change != null);
+    const byDate = new Map();
+    snaps.forEach(s => byDate.set(s.date, s));
+    const series = Array.from(byDate.values()).sort((a, b) => a.date.localeCompare(b.date));
+
+    const dates = series.map(s => s.date);
+    const usPnl = series.map(s => s.us_today_change);
+    const hkPnl = series.map(s => s.hk_today_change);
+
+    const accent = getCSS("--accent") || "#5b8def";
+    const accent2 = getCSS("--accent-2") || "#a78bfa";
+    const green = getCSS("--green") || "#34d399";
+    const red = getCSS("--red") || "#f87171";
+
+    const colorize = (arr, base) => arr.map(v => ({
+      value: v,
+      itemStyle: { color: v == null ? base : (v >= 0 ? green : red), opacity: 0.85 },
+    }));
+
+    const opt = {
+      ...baseChartOpts(),
+      legend: { data: ["US $", "HK HK$"], textStyle: { color: chartTextColor(), fontSize: 11 }, top: 4 },
+      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+      xAxis: {
+        type: "category", data: dates,
+        axisLine: { lineStyle: { color: chartGridColor() } },
+        axisLabel: { color: chartTextColor(), fontSize: 10 },
+      },
+      yAxis: [
+        {
+          type: "value", name: "US $", position: "left",
+          nameTextStyle: { color: chartTextColor(), fontSize: 10 },
+          axisLine: { lineStyle: { color: accent } },
+          splitLine: { lineStyle: { color: chartGridColor() } },
+          axisLabel: { color: chartTextColor(), fontSize: 10 },
+        },
+        {
+          type: "value", name: "HK HK$", position: "right",
+          nameTextStyle: { color: chartTextColor(), fontSize: 10 },
+          axisLine: { lineStyle: { color: accent2 } },
+          splitLine: { show: false },
+          axisLabel: { color: chartTextColor(), fontSize: 10 },
+        },
+      ],
+      series: [
+        { name: "US $", type: "bar", data: colorize(usPnl, accent), yAxisIndex: 0, barGap: "0%", barWidth: "35%" },
+        { name: "HK HK$", type: "bar", data: colorize(hkPnl, accent2), yAxisIndex: 1, barWidth: "35%" },
+      ],
+    };
+    if (!dates.length) {
+      opt.graphic = [{
+        type: "text", left: "center", top: "middle",
+        style: { text: "No daily P&L history yet", fill: chartTextColor(), fontSize: 13, opacity: 0.5 },
+      }];
+    }
+    charts.dailyPnl.setOption(opt, true);
+  }
+
+  function renderSectorChart() {
+    const el = document.getElementById("chart-sector");
+    if (!el || !window.echarts) return;
+    if (!charts.sector) charts.sector = echarts.init(el, null, { renderer: "canvas" });
+
+    const usList = (safe(DATA, "sector_exposure", "us")) || [];
+    const hkList = (safe(DATA, "sector_exposure", "hk")) || [];
+    // Combine into one donut by region tag
+    const combined = [
+      ...usList.map(r => ({ name: `US · ${r.sector}`, value: r.value, _pct: r.pct })),
+      ...hkList.map(r => ({ name: `HK · ${r.sector}`, value: r.value, _pct: r.pct })),
+    ];
+
+    const palette = [
+      getCSS("--accent") || "#5b8def",
+      getCSS("--accent-2") || "#a78bfa",
+      getCSS("--green") || "#34d399",
+      "#f59e0b", "#ec4899", "#22d3ee", "#a3e635", "#fb7185", "#818cf8", "#fbbf24",
+    ];
+
+    const opt = {
+      ...baseChartOpts(),
+      tooltip: {
+        trigger: "item",
+        formatter: (p) => `${p.name}<br>${p.value.toLocaleString()} (${p.data._pct?.toFixed(1)}%)`,
+      },
+      legend: {
+        type: "scroll",
+        orient: window.innerWidth >= 1024 ? "vertical" : "horizontal",
+        right: window.innerWidth >= 1024 ? 8 : "center",
+        top: window.innerWidth >= 1024 ? "center" : "bottom",
+        textStyle: { color: chartTextColor(), fontSize: 10 },
+      },
+      series: [{
+        type: "pie",
+        radius: ["38%", "62%"],
+        center: window.innerWidth >= 1024 ? ["38%", "50%"] : ["50%", "44%"],
+        data: combined,
+        itemStyle: { borderColor: getCSS("--card") || "#1a1f2e", borderWidth: 2 },
+        label: { show: false },
+        emphasis: { label: { show: true, formatter: "{b}\n{d}%", color: chartTextColor(), fontSize: 11 } },
+        color: palette,
+      }],
+    };
+    if (!combined.length) {
+      opt.graphic = [{
+        type: "text", left: "center", top: "middle",
+        style: { text: "No sector data", fill: chartTextColor(), fontSize: 13, opacity: 0.5 },
+      }];
+    }
+    charts.sector.setOption(opt, true);
+  }
+
+  function renderRealizedChart() {
+    const el = document.getElementById("chart-realized");
+    if (!el || !window.echarts) return;
+    if (!charts.realized) charts.realized = echarts.init(el, null, { renderer: "canvas" });
+
+    const r = safe(DATA, "realized_vs_unrealized") || {};
+    const us = r.us || {}; const hk = r.hk || {}; const cb = r.combined_usd || {};
+    const cats = ["US ($)", "HK (HK$)", "Combined ($)"];
+    const realized = [us.realized, hk.realized, cb.realized];
+    const unrealized = [us.unrealized, hk.unrealized, cb.unrealized];
+
+    const green = getCSS("--green") || "#34d399";
+    const accent = getCSS("--accent") || "#5b8def";
+
+    const opt = {
+      ...baseChartOpts(),
+      legend: { data: ["Realized", "Unrealized"], textStyle: { color: chartTextColor(), fontSize: 11 }, top: 4 },
+      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+      xAxis: {
+        type: "category", data: cats,
+        axisLine: { lineStyle: { color: chartGridColor() } },
+        axisLabel: { color: chartTextColor(), fontSize: 10 },
+      },
+      yAxis: {
+        type: "value",
+        axisLine: { lineStyle: { color: chartGridColor() } },
+        splitLine: { lineStyle: { color: chartGridColor() } },
+        axisLabel: { color: chartTextColor(), fontSize: 10 },
+      },
+      series: [
+        { name: "Realized", type: "bar", stack: "pnl", data: realized, itemStyle: { color: green, opacity: 0.85 } },
+        { name: "Unrealized", type: "bar", stack: "pnl", data: unrealized, itemStyle: { color: accent, opacity: 0.85 } },
+      ],
+    };
+    charts.realized.setOption(opt, true);
   }
 
   function renderHeatmapChart() {
@@ -1192,7 +1534,10 @@ layout: null
     // Re-render charts with new theme colors
     if (DATA) {
       renderCalibChart();
+      renderSectorChart();
       renderEquityChart();
+      renderRealizedChart();
+      renderDailyPnlChart();
       renderHeatmapChart();
     }
   });

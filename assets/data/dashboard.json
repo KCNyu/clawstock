@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-18T15:12:39.103925Z",
+  "generated_at": "2026-05-18T15:29:24.234892Z",
   "last_updated": "2026/05/18 23:02 HKT",
   "fx": {
     "usdhkd": 7.8315,
@@ -858,5 +858,209 @@
     "max_pct_30d_us": 0.0,
     "current_pct_hk": 0.0,
     "current_pct_us": 0.0
+  },
+  "sector_exposure": {
+    "us": [
+      {
+        "sector": "Aerospace",
+        "value": 815.75,
+        "pct": 22.38,
+        "tickers": [
+          "RKLB",
+          "RKLX"
+        ]
+      },
+      {
+        "sector": "Fintech",
+        "value": 779.6,
+        "pct": 21.39,
+        "tickers": [
+          "ROBN"
+        ]
+      },
+      {
+        "sector": "Semiconductor ETF",
+        "value": 768.65,
+        "pct": 21.09,
+        "tickers": [
+          "SOXL"
+        ]
+      },
+      {
+        "sector": "Tech Mega-cap",
+        "value": 574.8,
+        "pct": 15.77,
+        "tickers": [
+          "MSFU"
+        ]
+      },
+      {
+        "sector": "AI / Defense",
+        "value": 488.11,
+        "pct": 13.39,
+        "tickers": [
+          "PLTU"
+        ]
+      },
+      {
+        "sector": "Crypto / Stablecoin",
+        "value": 218.04,
+        "pct": 5.98,
+        "tickers": [
+          "CRCL"
+        ]
+      }
+    ],
+    "hk": [
+      {
+        "sector": "AI / 大模型",
+        "value": 48000.0,
+        "pct": 57.95,
+        "tickers": [
+          "00100"
+        ]
+      },
+      {
+        "sector": "恒生科技 ETF",
+        "value": 28752.4,
+        "pct": 34.71,
+        "tickers": [
+          "03032",
+          "07226",
+          "03033"
+        ]
+      },
+      {
+        "sector": "新能源",
+        "value": 6072.0,
+        "pct": 7.33,
+        "tickers": [
+          "02208"
+        ]
+      }
+    ]
+  },
+  "leveraged_etf": {
+    "us_pct": 76.35,
+    "hk_pct": 27.83,
+    "combined_pct": 40.27,
+    "tickers": [
+      "07226",
+      "MSFU",
+      "PLTU",
+      "RKLX",
+      "ROBN",
+      "SOXL"
+    ]
+  },
+  "all_time_extremes": {
+    "winners": [
+      {
+        "ticker": "RKLX",
+        "name": "Defiance Daily Target 2X Long R",
+        "region": "us",
+        "pnl_percent": 83.92,
+        "pnl_abs": 78.38,
+        "current_value": 171.78
+      },
+      {
+        "ticker": "RKLB",
+        "name": "Rocket Lab Corp",
+        "region": "us",
+        "pnl_percent": 81.4,
+        "pnl_abs": 288.97,
+        "current_value": 643.97
+      },
+      {
+        "ticker": "SOXL",
+        "name": "三倍做多半导体ETF-Direxion",
+        "region": "us",
+        "pnl_percent": 67.33,
+        "pnl_abs": 309.3,
+        "current_value": 768.65
+      }
+    ],
+    "losers": [
+      {
+        "ticker": "ROBN",
+        "name": "二倍做多HOOD ETF-T-Rex",
+        "region": "us",
+        "pnl_percent": -17.35,
+        "pnl_abs": -163.7,
+        "current_value": 779.6
+      },
+      {
+        "ticker": "PLTU",
+        "name": "二倍做多PLTR ETF-Direxion",
+        "region": "us",
+        "pnl_percent": -14.87,
+        "pnl_abs": -85.29,
+        "current_value": 488.11
+      },
+      {
+        "ticker": "07226",
+        "name": "XL二南方恒科",
+        "region": "hk",
+        "pnl_percent": -14.79,
+        "pnl_abs": -4000.24,
+        "current_value": 23051.6
+      }
+    ]
+  },
+  "today_ranges": [
+    {
+      "ticker": "02208",
+      "region": "hk",
+      "high": 17.06,
+      "low": 16.62,
+      "current": 15.18,
+      "range_pct": 2.9
+    },
+    {
+      "ticker": "00100",
+      "region": "hk",
+      "high": 744.5,
+      "low": 731.0,
+      "current": 800.0,
+      "range_pct": 1.69
+    },
+    {
+      "ticker": "07226",
+      "region": "hk",
+      "high": 4.192,
+      "low": 4.158,
+      "current": 3.718,
+      "range_pct": 0.91
+    },
+    {
+      "ticker": "03033",
+      "region": "hk",
+      "high": 5.04,
+      "low": 5.005,
+      "current": 4.736,
+      "range_pct": 0.74
+    },
+    {
+      "ticker": "03032",
+      "region": "hk",
+      "high": 5.115,
+      "low": 5.09,
+      "current": 4.824,
+      "range_pct": 0.52
+    }
+  ],
+  "realized_vs_unrealized": {
+    "us": {
+      "realized": 592.18,
+      "unrealized": 463.9
+    },
+    "hk": {
+      "realized": 7259.16,
+      "unrealized": -5451.84
+    },
+    "combined_usd": {
+      "realized": 1519.1,
+      "unrealized": -232.24
+    }
   }
 }
