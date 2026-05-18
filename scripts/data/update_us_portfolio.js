@@ -39,5 +39,7 @@ us.total_pnl_percent = +(totalPnl / totalCost * 100).toFixed(6);
 us.today_total_change = +todayChange.toFixed(2);
 us.last_updated = '2026-04-06 16:00 ET';
 data.last_updated = '2026-04-07 04:00:00 HKT';
-fs.writeFileSync(p, JSON.stringify(data, null, 2) + '\n');
+const tmp = p + '.tmp';
+fs.writeFileSync(tmp, JSON.stringify(data, null, 2) + '\n');
+fs.renameSync(tmp, p);
 console.log(JSON.stringify({ totalValue, totalCost, totalPnl, todayChange }, null, 2));

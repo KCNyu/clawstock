@@ -194,10 +194,14 @@ def log_calibration(today):
     dropped = before - len(rows)
 
     if appended or dropped:
-        with open(calib_path, 'w', encoding='utf-8', newline='') as f:
-            w = csv.DictWriter(f, fieldnames=fieldnames)
-            w.writeheader()
-            w.writerows(rows)
+        import io, sys
+        sys.path.insert(0, str(WS / 'scripts' / 'data'))
+        from safe_io import safe_write_text
+        buf = io.StringIO()
+        w = csv.DictWriter(buf, fieldnames=fieldnames)
+        w.writeheader()
+        w.writerows(rows)
+        safe_write_text(str(calib_path), buf.getvalue())
         msg = f'  calibration.csv: +{appended} pending rows'
         if dropped:
             msg += f', -{dropped} old (>365d)'

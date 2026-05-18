@@ -1,5 +1,10 @@
 import json
+import os
+import sys
 from decimal import Decimal, ROUND_HALF_UP
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from safe_io import safe_write_json
 
 path = '/root/.openclaw/workspace/portfolio.json'
 with open(path, 'r', encoding='utf-8') as f:
@@ -55,6 +60,4 @@ hk['total_pnl_percent'] = r2((total_pnl / total_cost) * 100 if total_cost else 0
 hk['today_total_change'] = r2(today_total_change)
 hk['last_updated'] = '2026-04-07 09:30:00 HKT'
 
-with open(path, 'w', encoding='utf-8') as f:
-    json.dump(data, f, ensure_ascii=False, indent=2)
-    f.write('\n')
+safe_write_json(path, data)
