@@ -59,7 +59,7 @@ jobs:
             console.log('done');
           })().catch(e => { console.error(e); process.exit(1); });
           JS
-          node /tmp/shoot.js
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node /tmp/shoot.js
 
       - name: Commit if changed
         run: |

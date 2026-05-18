@@ -588,7 +588,7 @@ def main():
     # [9] Self-calibration — read past plan outcomes and compute confidence accuracy
     print('[9/9] Self-calibration')
     self_calib = compute_self_calibration()
-    if self_calib.get('samples', 0) >= 5:
+    if self_calib.get('samples', 0) >= 5 and 'brier_30d' in self_calib:
         print(f'   Brier (30d): {self_calib["brier_30d"]:.3f}  ({self_calib["samples"]} samples)')
         for bucket, stats in self_calib.get('per_bucket', {}).items():
             print(f'   {bucket:24s} n={stats["n"]} win_rate={stats["win_rate"]:.0%}')
