@@ -366,20 +366,6 @@ layout: null
   .holdings-table .region-us { color: var(--accent); }
   .holdings-table .region-hk { color: var(--accent-2); }
 
-  /* Peer divergence */
-  .peer-list { display: flex; flex-direction: column; gap: 8px; }
-  .peer-row {
-    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-    gap: 8px; padding: 10px; background: var(--card-2); border-radius: var(--radius-sm);
-    font-size: 13px;
-  }
-  .peer-row .self, .peer-row .peer { min-width: 0; }
-  .peer-row .tk { font-family: var(--mono); font-weight: 600; font-size: 13px; }
-  .peer-row .nm { font-size: 11px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .peer-row .pct { font-size: 13px; font-variant-numeric: tabular-nums; }
-  .peer-row .arrow { color: var(--text-faint); font-size: 18px; }
-  .peer-row .div-pp { grid-column: 1 / -1; font-size: 11px; color: var(--text-dim); text-align: center; padding-top: 4px; border-top: 1px dashed var(--border); margin-top: 4px; }
-
   /* Plan actions */
   .plan-actions { display: flex; flex-direction: column; gap: 8px; }
   .plan-action {

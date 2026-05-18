@@ -106,7 +106,7 @@ clawock/
 │  └─ archive/eod-history.csv   weekly EOD archive (GH Action)
 │
 ├─ scripts/
-│  ├─ data/                     fetchers + dashboard builder (v2 schema: delta/anomalies/calibration/peer_divergence/recent_plan_actions/drawdown) + safe_io (atomic writes)
+│  ├─ data/                     fetchers + dashboard builder (v2.x schema: delta · today_movers · anomalies · calibration · drawdown · sector_exposure · leveraged_etf · all_time_extremes · today_ranges · realized_vs_unrealized + peer_divergence) + safe_io (atomic writes)
 │  ├─ harness/                  preflight + postflight pairs (6 files, 4 pairs)
 │  └─ legacy/                   superseded scripts kept as reference
 │
