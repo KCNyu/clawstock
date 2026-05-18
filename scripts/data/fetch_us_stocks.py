@@ -537,9 +537,13 @@ def update_us_portfolio(
         shrs = holding['shares']
 
         # Resolve prev_close with date-stamping:
-        # 1st choice: Polygon historical (date-stamped, immune to after-hours confusion)
-        # 2nd choice: API's pc field if it differs from c (not the fallback)
-        # 3rd choice: keep existing prev_close if it's fresh and differs from c
+        # 1st: Polygon historical (date-stamped, immune to after-hours confusion)
+        # 2nd: API's pc field if it differs from c (real PreviousClose returned)
+        # 3rd: Reconstruct from API's own reported %change — authoritative for "today"
+        #      (must come BEFORE the keep-existing branch; otherwise a stale prev_close
+        #       set last trading day silently survives into new days when Nasdaq's
+        #       PreviousClose field is missing — see ROBN/MSFU 2026-05-18 bug)
+        # 4th: keep existing prev_close if it's fresh and we have no other source
         if t in prev_closes:
             pc, pc_date = prev_closes[t]
         else:
@@ -549,13 +553,11 @@ def update_us_portfolio(
             api_dp = q.get('dp', 0)
             if api_pc != c:
                 pc, pc_date = api_pc, today_et_date
-            elif existing_pc > 0 and existing_pc != c and existing_pc_date >= three_days_ago:
-                pc, pc_date = existing_pc, existing_pc_date
             elif api_dp and abs(api_dp) > 0.01:
-                # Reconstruct prev_close from API's own reported % change
-                # pc = c / (1 + dp%), avoids 0% when PreviousClose field is missing
                 pc = round(c / (1 + api_dp / 100), 4)
                 pc_date = today_et_date
+            elif existing_pc > 0 and existing_pc != c and existing_pc_date >= three_days_ago:
+                pc, pc_date = existing_pc, existing_pc_date
             else:
                 pc, pc_date = c, today_et_date
 
