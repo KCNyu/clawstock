@@ -526,18 +526,18 @@ layout: null
     </div>
 
     <div class="card">
-      <h3>Leveraged ETF Exposure</h3>
+      <h3>Leveraged ETF Exposure <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(2x/3x ÷ book)</span></h3>
       <div class="lev-row">
         <div class="lev-cell">
-          <div class="lbl">US</div>
+          <div class="lbl">US leg</div>
           <div class="val" id="lev-us">—</div>
         </div>
         <div class="lev-cell">
-          <div class="lbl">HK</div>
+          <div class="lbl">HK leg</div>
           <div class="val" id="lev-hk">—</div>
         </div>
         <div class="lev-cell">
-          <div class="lbl">合计 USD</div>
+          <div class="lbl">Combined</div>
           <div class="val" id="lev-combined">—</div>
         </div>
       </div>
@@ -596,8 +596,8 @@ layout: null
     </div>
 
     <div class="card">
-      <h3>Sector Exposure</h3>
-      <div id="chart-sector" class="chart-box" style="height:280px"></div>
+      <h3>Sector Exposure <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(持仓按板块·含 ETF 与个股)</span></h3>
+      <div id="chart-sector" class="chart-box" style="height:300px"></div>
     </div>
 
     <div class="card">
@@ -1038,9 +1038,11 @@ layout: null
   function renderLeveragedETF() {
     const l = safe(DATA, "leveraged_etf") || {};
     const colorize = (v) => v == null ? "neutral" : (v >= 50 ? "neg" : (v >= 25 ? "warn-text" : "neutral"));
+    // No leading + sign — these are exposure %s, not P&L gains
+    const fmt = (v) => v == null ? DASH : `${v.toFixed(1)}%`;
     const setNum = (id, v) => {
       const el = document.getElementById(id);
-      el.textContent = v == null ? DASH : fmtPct(v);
+      el.textContent = fmt(v);
       el.className = "val " + colorize(v);
     };
     setNum("lev-us", l.us_pct);
@@ -1241,12 +1243,15 @@ layout: null
     const accent2 = getCSS("--accent-2") || "#a78bfa";
     const red = getCSS("--red") || "#f87171";
 
+    const isMobile = window.innerWidth < 1024;
     const opt = {
       ...baseChartOpts(),
+      grid: { left: isMobile ? 50 : 60, right: isMobile ? 12 : 50, top: isMobile ? 28 : 36, bottom: 36 },
       legend: {
-        data: ["US idx", "HK idx", "US DD %", "HK DD %"],
-        textStyle: { color: chartTextColor(), fontSize: 11 },
+        data: isMobile ? ["US idx", "HK idx"] : ["US idx", "HK idx", "US DD %", "HK DD %"],
+        textStyle: { color: chartTextColor(), fontSize: 10 },
         top: 4,
+        itemGap: 8,
       },
       tooltip: {
         trigger: "axis", axisPointer: { type: "cross" },
@@ -1261,9 +1266,17 @@ layout: null
       xAxis: {
         type: "category", data: dates,
         axisLine: { lineStyle: { color: chartGridColor() } },
-        axisLabel: { color: chartTextColor(), fontSize: 10 },
+        axisLabel: { color: chartTextColor(), fontSize: 9, rotate: dates.length > 6 ? 35 : 0 },
       },
-      yAxis: [
+      yAxis: isMobile ? [
+        {
+          type: "value", name: "Idx",
+          nameTextStyle: { color: chartTextColor(), fontSize: 9 },
+          axisLine: { lineStyle: { color: chartGridColor() } },
+          splitLine: { lineStyle: { color: chartGridColor() } },
+          axisLabel: { color: chartTextColor(), fontSize: 9 },
+        },
+      ] : [
         {
           type: "value", name: "Index (start=100)",
           nameTextStyle: { color: chartTextColor(), fontSize: 10 },
@@ -1279,7 +1292,13 @@ layout: null
           axisLabel: { color: chartTextColor(), fontSize: 10, formatter: "{value}%" },
         },
       ],
-      series: [
+      series: isMobile ? [
+        { name: "US idx", type: "line", data: usIdx, yAxisIndex: 0, itemStyle: { color: accent }, lineStyle: { width: 2 }, smooth: true, symbol: "circle", symbolSize: 4,
+          markLine: { silent: true, symbol: ["none","none"],
+            data: [{ yAxis: 100, lineStyle: { color: chartTextColor(), type: "dashed", opacity: 0.4, width: 1 },
+                     label: { formatter: "Cost basis", position: "insideEndTop", color: chartTextColor(), fontSize: 9, opacity: 0.55 } }] } },
+        { name: "HK idx", type: "line", data: hkIdx, yAxisIndex: 0, itemStyle: { color: accent2 }, lineStyle: { width: 2 }, smooth: true, symbol: "circle", symbolSize: 4 },
+      ] : [
         { name: "US idx", type: "line", data: usIdx, yAxisIndex: 0, itemStyle: { color: accent }, lineStyle: { width: 2 }, smooth: true, symbol: "circle", symbolSize: 4,
           markLine: { silent: true, symbol: ["none","none"],
             data: [{ name: "Cost basis", yAxis: 100, lineStyle: { color: chartTextColor(), type: "dashed", opacity: 0.4, width: 1 },
@@ -1309,48 +1328,50 @@ layout: null
     snaps.forEach(s => byDate.set(s.date, s));
     const series = Array.from(byDate.values()).sort((a, b) => a.date.localeCompare(b.date));
 
+    const fx = safe(DATA, "fx", "usdhkd") || 7.83;
     const dates = series.map(s => s.date);
+    // Convert HK changes to USD-equivalent so single-axis is comparable
     const usPnl = series.map(s => s.us_today_change);
-    const hkPnl = series.map(s => s.hk_today_change);
+    const hkPnlUsd = series.map(s => s.hk_today_change == null ? null : s.hk_today_change / fx);
 
     const accent = getCSS("--accent") || "#5b8def";
     const accent2 = getCSS("--accent-2") || "#a78bfa";
     const green = getCSS("--green") || "#34d399";
     const red = getCSS("--red") || "#f87171";
 
-    const colorize = (arr, base) => arr.map(v => ({
-      value: v,
-      itemStyle: { color: v == null ? base : (v >= 0 ? green : red), opacity: 0.85 },
+    const colorize = (arr) => arr.map(v => ({
+      value: v == null ? null : Math.round(v * 100) / 100,
+      itemStyle: { color: v == null ? accent : (v >= 0 ? green : red), opacity: 0.85 },
     }));
 
+    const isMobile = window.innerWidth < 1024;
     const opt = {
       ...baseChartOpts(),
-      legend: { data: ["US $", "HK HK$"], textStyle: { color: chartTextColor(), fontSize: 11 }, top: 4 },
-      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+      grid: { left: isMobile ? 50 : 60, right: 16, top: 28, bottom: 36 },
+      legend: { data: ["US $", "HK (USD-eq)"], textStyle: { color: chartTextColor(), fontSize: 10 }, top: 4, itemGap: 8 },
+      tooltip: {
+        trigger: "axis", axisPointer: { type: "shadow" },
+        formatter: (params) => {
+          const date = params[0]?.axisValue || "";
+          const lines = params.map(p => `${p.marker} ${p.seriesName}: $${p.value != null ? p.value.toFixed(2) : "—"}`);
+          return [date, ...lines].join("<br>");
+        },
+      },
       xAxis: {
         type: "category", data: dates,
         axisLine: { lineStyle: { color: chartGridColor() } },
-        axisLabel: { color: chartTextColor(), fontSize: 10 },
+        axisLabel: { color: chartTextColor(), fontSize: 9, rotate: dates.length > 6 ? 35 : 0 },
       },
-      yAxis: [
-        {
-          type: "value", name: "US $", position: "left",
-          nameTextStyle: { color: chartTextColor(), fontSize: 10 },
-          axisLine: { lineStyle: { color: accent } },
-          splitLine: { lineStyle: { color: chartGridColor() } },
-          axisLabel: { color: chartTextColor(), fontSize: 10 },
-        },
-        {
-          type: "value", name: "HK HK$", position: "right",
-          nameTextStyle: { color: chartTextColor(), fontSize: 10 },
-          axisLine: { lineStyle: { color: accent2 } },
-          splitLine: { show: false },
-          axisLabel: { color: chartTextColor(), fontSize: 10 },
-        },
-      ],
+      yAxis: {
+        type: "value", name: "$ (USD-eq)",
+        nameTextStyle: { color: chartTextColor(), fontSize: 9 },
+        axisLine: { lineStyle: { color: chartGridColor() } },
+        splitLine: { lineStyle: { color: chartGridColor() } },
+        axisLabel: { color: chartTextColor(), fontSize: 9 },
+      },
       series: [
-        { name: "US $", type: "bar", data: colorize(usPnl, accent), yAxisIndex: 0, barGap: "0%", barWidth: "35%" },
-        { name: "HK HK$", type: "bar", data: colorize(hkPnl, accent2), yAxisIndex: 1, barWidth: "35%" },
+        { name: "US $", type: "bar", data: colorize(usPnl), barGap: "0%", barWidth: "35%" },
+        { name: "HK (USD-eq)", type: "bar", data: colorize(hkPnlUsd), barWidth: "35%" },
       ],
     };
     if (!dates.length) {
@@ -1421,17 +1442,30 @@ layout: null
     if (!charts.realized) charts.realized = echarts.init(el, null, { renderer: "canvas" });
 
     const r = safe(DATA, "realized_vs_unrealized") || {};
-    const us = r.us || {}; const hk = r.hk || {}; const cb = r.combined_usd || {};
-    const cats = ["US ($)", "HK (HK$)", "Combined ($)"];
-    const realized = [us.realized, hk.realized, cb.realized];
-    const unrealized = [us.unrealized, hk.unrealized, cb.unrealized];
+    const fx = safe(DATA, "fx", "usdhkd") || 7.83;
+    const isMobile = window.innerWidth < 1024;
+    // Mobile: only 2 cats (US + HK in USD-eq) to avoid clipping
+    // Desktop: 3 cats with native currencies + combined
+    let cats, realized, unrealized;
+    if (isMobile) {
+      const us = r.us || {}; const hk = r.hk || {};
+      cats = ["US", "HK (USD-eq)"];
+      realized = [us.realized, hk.realized != null ? hk.realized / fx : null];
+      unrealized = [us.unrealized, hk.unrealized != null ? hk.unrealized / fx : null];
+    } else {
+      const us = r.us || {}; const hk = r.hk || {}; const cb = r.combined_usd || {};
+      cats = ["US ($)", "HK (HK$)", "Combined ($)"];
+      realized = [us.realized, hk.realized, cb.realized];
+      unrealized = [us.unrealized, hk.unrealized, cb.unrealized];
+    }
 
     const green = getCSS("--green") || "#34d399";
     const accent = getCSS("--accent") || "#5b8def";
 
     const opt = {
       ...baseChartOpts(),
-      legend: { data: ["Realized", "Unrealized"], textStyle: { color: chartTextColor(), fontSize: 11 }, top: 4 },
+      grid: { left: isMobile ? 50 : 60, right: 16, top: 28, bottom: 32 },
+      legend: { data: ["Realized", "Unrealized"], textStyle: { color: chartTextColor(), fontSize: 10 }, top: 4, itemGap: 8 },
       tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
       xAxis: {
         type: "category", data: cats,
@@ -1442,11 +1476,11 @@ layout: null
         type: "value",
         axisLine: { lineStyle: { color: chartGridColor() } },
         splitLine: { lineStyle: { color: chartGridColor() } },
-        axisLabel: { color: chartTextColor(), fontSize: 10 },
+        axisLabel: { color: chartTextColor(), fontSize: 9 },
       },
       series: [
-        { name: "Realized", type: "bar", stack: "pnl", data: realized, itemStyle: { color: green, opacity: 0.85 } },
-        { name: "Unrealized", type: "bar", stack: "pnl", data: unrealized, itemStyle: { color: accent, opacity: 0.85 } },
+        { name: "Realized", type: "bar", stack: "pnl", data: realized, itemStyle: { color: green, opacity: 0.85 }, barWidth: isMobile ? "55%" : "45%" },
+        { name: "Unrealized", type: "bar", stack: "pnl", data: unrealized, itemStyle: { color: accent, opacity: 0.85 }, barWidth: isMobile ? "55%" : "45%" },
       ],
     };
     charts.realized.setOption(opt, true);
