@@ -237,10 +237,31 @@ def maybe_commit(status, today):
     return True, f'committed (push failed: {push_out[-150:]})'
 
 
+def _ensure_jekyll_front_matter(md_path, date):
+    """Prepend Jekyll front matter so Pages can render the brief in-site (not via github.com blob)."""
+    if not md_path.exists():
+        return
+    try:
+        content = md_path.read_text()
+    except Exception:
+        return
+    # Already has valid front matter?
+    if content.startswith('---\n') and 'layout:' in content.split('---', 2)[1][:200]:
+        return
+    # Strip stale empty `---\n\n` if present
+    if content.startswith('---\n\n') and 'layout:' not in content[:200]:
+        content = content[5:].lstrip()
+    fm = f'---\nlayout: default\ntitle: 盘前深度简报 · {date}\n---\n\n'
+    md_path.write_text(fm + content)
+
+
 def main():
     today = datetime.now().strftime('%Y-%m-%d')
     md_path   = WS / 'memory' / f'{today}-pre-open.md'
     plan_path = WS / 'memory' / f'{today}-plan.json'
+
+    # Ensure Jekyll can render this brief as a Pages page (not just GitHub blob jump)
+    _ensure_jekyll_front_matter(md_path, today)
 
     # Load preflight context (for cross-validation)
     ctx_path = WS / 'memory' / '.tmp' / f'brief-context-{today}.json'

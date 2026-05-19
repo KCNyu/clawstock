@@ -10,16 +10,14 @@ description: 全部历史每日深度简报 + 手写笔记 + plan.json
 
 ## Daily Deep Brief · 盘前深度简报
 
-按日期倒序：
+按日期倒序（Pages 站内渲染，不跳 GitHub）：
 
 <ul class="brief-list">
-{% assign sorted = site.static_files | sort: 'path' | reverse %}
-{% for f in sorted %}
-  {% if f.path contains '/memory/' and f.extname == '.md' and f.path contains '-pre-open' %}
+{% assign briefs = site.pages | where_exp: "p", "p.path contains 'memory/'" | where_exp: "p", "p.path contains '-pre-open'" | sort: 'path' | reverse %}
+{% for f in briefs %}
   <li>
-    <a href="https://github.com/KCNyu/clawock/blob/master{{ f.path }}">{{ f.name | replace: '.md', '' | replace: '-pre-open', '' }}</a>
+    <a href="{{ f.url | relative_url }}">{{ f.path | split: '/' | last | replace: '.md', '' | replace: '-pre-open', '' }}</a>
   </li>
-  {% endif %}
 {% endfor %}
 </ul>
 
