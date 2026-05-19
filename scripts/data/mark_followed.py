@@ -117,6 +117,32 @@ def interactive():
         print('  no changes')
 
 
+def auto_detect():
+    """Walk unknown rows, run _detect_followed (git-history shares diff) on each.
+    Mark those that can be auto-determined. Leave the rest (e.g., < 5 days old)."""
+    sys.path.insert(0, os.path.join(WS, 'scripts', 'harness'))
+    from brief_preflight import _detect_followed
+    rows = load_rows()
+    unknown = [r for r in rows if (r.get('followed') or 'unknown').lower() == 'unknown']
+    if not unknown:
+        print('  ✓ no unknown rows to auto-detect')
+        return
+    print(f'  scanning {len(unknown)} unknown rows...')
+    auto_marked = 0
+    for r in unknown:
+        verdict = _detect_followed(r)
+        if verdict in ('true', 'false'):
+            r['followed'] = verdict
+            r['followed_at'] = datetime.now().isoformat() + ' (auto)'
+            auto_marked += 1
+            print(f"    ✓ {r['plan_date']} {r['ticker']:6s} {r['bucket']:18s} → {verdict}")
+    if auto_marked:
+        save_rows(rows)
+        print(f'\n  auto-marked {auto_marked}/{len(unknown)}; {len(unknown)-auto_marked} still unknown (likely < 5d old)')
+    else:
+        print(f'  no rows could be auto-determined (all < 5 days old?)')
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('date', nargs='?', help='YYYY-MM-DD plan_date')
@@ -125,10 +151,13 @@ def main():
     ap.add_argument('--no', action='store_true', help='Mark followed=false (you ignored this plan)')
     ap.add_argument('--stats', action='store_true', help='Show followed-stats summary')
     ap.add_argument('--interactive', '-i', action='store_true', help='Walk unknown rows prompting for each')
+    ap.add_argument('--auto', action='store_true', help='Auto-detect followed from portfolio.json shares diff (≥5d old plans only)')
     args = ap.parse_args()
 
     if args.stats:
         stats()
+    elif args.auto:
+        auto_detect()
     elif args.interactive:
         interactive()
     elif args.date and args.ticker and args.bucket:

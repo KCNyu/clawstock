@@ -330,6 +330,74 @@ def collect_peer_scan(portfolio):
     return scan
 
 
+def _shares_at_date(ticker, date_iso):
+    """Get shares of `ticker` from portfolio.json as committed on/before `date_iso`.
+    Returns int shares, or None if can't determine."""
+    try:
+        r = subprocess.run(
+            ['git', '-C', str(WS), 'log', '--pretty=%H',
+             f'--before={date_iso} 23:59:59', '-1', '--', 'portfolio.json'],
+            capture_output=True, text=True, timeout=10)
+        sha = r.stdout.strip()
+        if not sha:
+            return None
+        r = subprocess.run(['git', '-C', str(WS), 'show', f'{sha}:portfolio.json'],
+                           capture_output=True, text=True, timeout=10)
+        if r.returncode != 0:
+            return None
+        pf = json.loads(r.stdout)
+        for region in ('hk_stocks', 'us_stocks'):
+            for h in pf['portfolios'][region]['holdings']:
+                if h['ticker'] == ticker:
+                    return int(h.get('shares', 0))
+    except Exception:
+        pass
+    return None
+
+
+def _detect_followed(row):
+    """Compare shares on plan_date vs +5d. Return 'true' / 'false' / 'unknown'.
+
+    Bucket → expected delta:
+      cut / trim_on_rebound → shares should DECREASE
+      add_only_on_trigger / add_on_breakout → shares should INCREASE
+      hold_and_watch / watch / t_only → shares should be UNCHANGED
+    """
+    plan_date = row.get('plan_date')
+    ticker = row.get('ticker')
+    bucket = row.get('bucket', '').lower()
+    if not (plan_date and ticker):
+        return 'unknown'
+
+    # Day BEFORE plan_date (last commit before plan was created)
+    try:
+        plan_dt = datetime.strptime(plan_date, '%Y-%m-%d')
+        before_dt = (plan_dt - timedelta(days=1)).strftime('%Y-%m-%d')
+        after_dt = (plan_dt + timedelta(days=5)).strftime('%Y-%m-%d')
+    except Exception:
+        return 'unknown'
+
+    # don't look 5d ahead if it's in the future
+    if datetime.now() < plan_dt + timedelta(days=5):
+        return 'unknown'  # too early; will retry next preflight
+
+    shares_before = _shares_at_date(ticker, before_dt)
+    shares_after  = _shares_at_date(ticker, after_dt)
+    if shares_before is None or shares_after is None:
+        return 'unknown'
+
+    delta = shares_after - shares_before
+
+    # Apply bucket rule
+    if bucket in ('cut', 'trim_on_rebound'):
+        return 'true' if delta < 0 else 'false'
+    if bucket in ('add_only_on_trigger', 'add_on_breakout'):
+        return 'true' if delta > 0 else 'false'
+    if bucket in ('hold_and_watch', 'watch', 't_only'):
+        return 'true' if delta == 0 else 'false'  # you held → followed; you bought/sold → didn't follow plan
+    return 'unknown'  # 未识别 bucket
+
+
 def _resolve_pending_outcomes():
     """Walk calibration.csv; for rows ≥5 days old with outcome=pending, compute
     actual outcome from snapshot history. Returns updated row count."""
@@ -399,6 +467,11 @@ def _resolve_pending_outcomes():
 
         r['outcome'] = outcome
         r['pnl_5d'] = pnl_5d
+        # Auto-detect followed by comparing portfolio.json shares (git history)
+        if (r.get('followed') or 'unknown').lower() == 'unknown':
+            r['followed'] = _detect_followed(r)
+            if r['followed'] in ('true', 'false'):
+                r['followed_at'] = datetime.now().isoformat() + ' (auto)'
         r['updated_at'] = datetime.now().isoformat()
         updated += 1
 
