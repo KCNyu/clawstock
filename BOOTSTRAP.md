@@ -49,6 +49,12 @@ context.json 现在多了两个字段，**必须用上**：
    - 如果 `samples ≥ 5`：必须输出 ▎Confidence 校准 段
    - 给 action 的 confidence 字段前，参考过去类似情境实际胜率
    - 如果 `brier_30d > 0.30` (模型过自信)：本次所有 confidence 自动 -10pp
+   - **calibration 只统计 `followed=true` 的 plan actions**。preflight 跑 `_detect_followed` 用 git history shares diff 自动推断；kcn 也可用 `scripts/data/mark_followed.py` 手动标。
+
+3. **`risk_metrics`** — 当下组合风险量化（β/Vol/Max DD/Sharpe/leverage/margin_at_risk）
+   - 出现 `alerts[]` 数组 → 必须输出 ▎风险警报 段，列举每个 alert.type + detail
+   - alert 类型: high_beta / high_vol / deep_dd / high_leverage / negative_sharpe
+   - 不许只是 "波动较大"，要说 "30d 年化 56.5% > 50% 阈值"，引用具体数值
 
 ### C. 输出约束
 

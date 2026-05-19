@@ -184,7 +184,9 @@ python3 scripts/data/analyze_hk_stocks.py --dry-run   # 不写文件
 
 ### 辅助
 - **Scrapling**：自适应爬虫框架，绕过反爬（Cloudflare 等），支持 JS 渲染。`pip3 install scrapling --break-system-packages`。详见 `skills/scrapling/SKILL.md`
-- **`scripts/data/build_dashboard.py`**：聚合 `portfolio.json` + `memory/snapshots/` + `memory/*-plan.json` + `memory/calibration.csv` + `memory/peer-map.json` + 最近 brief context → `assets/data/dashboard.json`（v2 schema 含 delta / today_movers / anomalies / peer_divergence / calibration / recent_plan_actions / drawdown 7 个新字段）。**brief/report postflight 自动调起**，手动也可以跑一次刷新 Pages 数据。size cap 60KB。
+- **`scripts/data/build_dashboard.py`**：聚合 `portfolio.json` + `memory/snapshots/` + `memory/*-plan.json` + `memory/calibration.csv` + `memory/peer-map.json` + `assets/data/risk.json` + 最近 brief context → `assets/data/dashboard.json`（v2.x schema 含 delta / today_movers / anomalies / peer_divergence / calibration / recent_plan_actions / drawdown / sector_exposure / leveraged_etf / all_time_extremes / today_ranges / realized_vs_unrealized / risk 13 个新字段）。**brief/report postflight 自动调起**，手动也可以跑一次刷新 Pages 数据。size cap 60KB。
+- **`scripts/data/portfolio_risk_metrics.py`**：算 β/Vol/Max DD/Sharpe/margin_at_risk → `assets/data/risk.json`。每日 brief preflight `[10/10]` 自动跑。Yahoo v8 429 限速 → 改用 Tencent gtimg primary + Polygon/AlphaVantage fallback。alert 类型：high_beta(>3) / high_vol(>50%) / deep_dd(<-10%) / high_leverage(>2.0) / negative_sharpe(<0)
+- **`scripts/data/mark_followed.py`**：calibration ground-truth 工具。手动 `mark_followed.py YYYY-MM-DD TICKER BUCKET [--no]` 或 `--auto` 跑 git history shares diff 推断（每日 brief preflight 自动跑同一逻辑）。Brier score 现在**只统计 followed=true** 的 plan actions。
 - **`scripts/data/update_portfolio.py`** / **`update_us_portfolio.js`**：手动调仓后写 portfolio.json 的辅助
 
 ### Cron map（**10 个 job 位于 `~/.openclaw/cron/jobs.json`**）

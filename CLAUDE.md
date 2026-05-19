@@ -37,6 +37,8 @@ Entry pointer for Claude Code in kcn's investment workspace. Same workflow as `A
 | Heartbeat workflow | `HEARTBEAT.md` (heartbeat poll only) |
 | Auto-commit rules | `AGENTS.md` |
 | Pages dashboard input | `assets/data/dashboard.json` (built by `scripts/data/build_dashboard.py`) |
+| Risk metrics snapshot | `assets/data/risk.json` (built by `scripts/data/portfolio_risk_metrics.py`, refreshed daily via brief preflight) |
+| Plan-followed marking | `memory/calibration.csv` `followed` column (auto-detected via git history; manual override via `scripts/data/mark_followed.py`) |
 | Pages landing | `index.html` (dashboard) + `briefs.md` (daily briefs index) |
 
 ## Cron run loop (what openclaw fires)
