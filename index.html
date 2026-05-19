@@ -102,6 +102,7 @@ layout: null
     font-size: 11px; color: var(--text-dim);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  @media (max-width: 480px) { .brand .updated { display: none; } }
   .refresh-btn {
     appearance: none; background: var(--card); color: var(--text);
     border: 1px solid var(--border); border-radius: 999px;
@@ -110,6 +111,15 @@ layout: null
     display: inline-flex; align-items: center; gap: 4px;
   }
   .refresh-btn:active { background: var(--card-2); }
+  .topbar-actions { display: inline-flex; align-items: center; gap: 8px; }
+  .nav-link {
+    color: var(--text-dim); text-decoration: none; font-size: 13px;
+    padding: 6px 10px; border-radius: 6px; transition: background 0.15s, color 0.15s;
+  }
+  .nav-link:hover { color: var(--text); background: var(--card-2); }
+  @media (max-width: 480px) {
+    .nav-link { padding: 6px 6px; font-size: 12px; }
+  }
 
   .tabs {
     display: flex; gap: 4px; margin-top: 10px;
@@ -421,10 +431,14 @@ layout: null
       <h1>clawock</h1>
       <span class="updated" id="last-updated">—</span>
     </div>
-    <button class="refresh-btn" id="refresh-btn" type="button" aria-label="Refresh data">
-      <span aria-hidden="true">&#x21bb;</span>
-      <span>Refresh</span>
-    </button>
+    <div class="topbar-actions">
+      <a class="nav-link" href="briefs.html">Briefs</a>
+      <a class="nav-link" href="https://github.com/KCNyu/clawock" target="_blank" rel="noopener">GitHub</a>
+      <button class="refresh-btn" id="refresh-btn" type="button" aria-label="Refresh data">
+        <span aria-hidden="true">&#x21bb;</span>
+        <span>Refresh</span>
+      </button>
+    </div>
   </div>
   <nav class="tabs" role="tablist">
     <button class="tab-btn active" data-tab="hero" role="tab" aria-selected="true">Hero</button>

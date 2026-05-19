@@ -118,25 +118,8 @@ def categorize(issues):
     return 'warn' if len(issues) <= 4 else 'fail'
 
 
-def _git(*args):
-    try:
-        r = subprocess.run(['git', '-C', str(WS)] + list(args),
-                           capture_output=True, text=True, timeout=30)
-        return r.returncode == 0, (r.stdout + r.stderr).strip()
-    except Exception as e:
-        return False, str(e)
-
-
-def rebuild_dashboard():
-    """Refresh assets/data/dashboard.json so Pages stays in sync."""
-    try:
-        r = subprocess.run(
-            ['python3', str(WS / 'scripts' / 'data' / 'build_dashboard.py')],
-            capture_output=True, text=True, timeout=30, cwd=str(WS),
-        )
-        return r.returncode == 0, (r.stdout + r.stderr)[-300:]
-    except Exception as e:
-        return False, str(e)
+sys.path.insert(0, str(Path(__file__).parent))
+from _harness_common import git_cmd as _git, rebuild_dashboard, push_with_rebase_retry  # noqa: E402
 
 
 def log_calibration(today):
@@ -194,9 +177,8 @@ def log_calibration(today):
     dropped = before - len(rows)
 
     if appended or dropped:
-        import io, sys
-        sys.path.insert(0, str(WS / 'scripts' / 'data'))
-        from safe_io import safe_write_text
+        import io
+        from _harness_common import safe_write_text
         buf = io.StringIO()
         w = csv.DictWriter(buf, fieldnames=fieldnames)
         w.writeheader()
@@ -229,11 +211,9 @@ def maybe_commit(status, today):
         return False, commit_out[-200:]
 
     # Push so Pages picks it up; rebase + retry handles races with GH Action commits
-    for i in range(1, 4):
-        push_ok, push_out = _git('push', 'origin', 'master')
-        if push_ok:
-            return True, 'committed + pushed'
-        _git('pull', '--rebase', 'origin', 'master')
+    push_ok, push_out = push_with_rebase_retry()
+    if push_ok:
+        return True, 'committed + pushed'
     return True, f'committed (push failed: {push_out[-150:]})'
 
 

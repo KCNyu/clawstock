@@ -102,23 +102,8 @@ def categorize(issues):
     return 'warn' if len(issues) <= 3 else 'fail'
 
 
-def _git(*args):
-    try:
-        r = subprocess.run(['git', '-C', str(WS)] + list(args),
-                           capture_output=True, text=True, timeout=30)
-        return r.returncode == 0, (r.stdout + r.stderr).strip()
-    except Exception as e:
-        return False, str(e)
-
-
-def rebuild_dashboard():
-    try:
-        subprocess.run(
-            ['python3', str(WS / 'scripts' / 'data' / 'build_dashboard.py')],
-            capture_output=True, text=True, timeout=30, cwd=str(WS),
-        )
-    except Exception:
-        pass
+sys.path.insert(0, str(Path(__file__).parent))
+from _harness_common import git_cmd as _git, rebuild_dashboard, push_with_rebase_retry  # noqa: E402
 
 
 def maybe_commit(status, commit_msg):
@@ -136,11 +121,9 @@ def maybe_commit(status, commit_msg):
         return False, out[-200:]
 
     # Push so Pages updates; rebase+retry handles races with GH Action commits
-    for i in range(1, 4):
-        push_ok, push_out = _git('push', 'origin', 'master')
-        if push_ok:
-            return True, 'committed + pushed'
-        _git('pull', '--rebase', 'origin', 'master')
+    push_ok, push_out = push_with_rebase_retry()
+    if push_ok:
+        return True, 'committed + pushed'
     return True, f'committed (push failed: {push_out[-150:]})'
 
 

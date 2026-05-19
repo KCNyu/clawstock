@@ -3,55 +3,179 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0a0e1a">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0a0e1a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f8fb" media="(prefers-color-scheme: light)">
 <title>{{ page.title | default: site.title }}</title>
 <meta name="description" content="{{ page.description | default: site.description }}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="{{ '/assets/dashboard.css' | relative_url }}">
+<style>
+  /* Match dashboard v2 design tokens (self-contained, no external CSS) */
+  :root {
+    color-scheme: dark light;
+    --bg: #0a0e1a;
+    --card: #131929;
+    --card-2: #1a2236;
+    --border: #232b40;
+    --text: #e8eaf0;
+    --text-dim: #98a0b4;
+    --accent: #5b8def;
+    --accent-2: #a78bfa;
+    --green: #34d399;
+    --red: #f87171;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f7f8fb;
+      --card: #ffffff;
+      --card-2: #f0f3f9;
+      --border: #e3e7f0;
+      --text: #0f1626;
+      --text-dim: #5b6478;
+      --accent: #3b6cdb;
+      --accent-2: #7c5ce8;
+      --green: #16a34a;
+      --red: #dc2626;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
+    font-size: 15px; line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 40px;
+  }
+
+  /* Sticky topbar — single row, no icon stack */
+  header.topbar {
+    position: sticky; top: 0; z-index: 30;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    backdrop-filter: blur(8px);
+  }
+  .topbar-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; max-width: 980px; margin: 0 auto;
+  }
+  .brand {
+    display: flex; align-items: baseline; gap: 8px; min-width: 0; text-decoration: none;
+  }
+  .brand h1 { margin: 0; font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+  .brand .tag { font-size: 11px; color: var(--text-dim); }
+  .topbar-actions { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .nav-link {
+    color: var(--text-dim); text-decoration: none; font-size: 13px;
+    padding: 6px 10px; border-radius: 6px; transition: background 0.15s, color 0.15s;
+  }
+  .nav-link:hover { color: var(--text); background: var(--card-2); }
+  .nav-link.active { color: var(--accent); background: var(--card-2); }
+  @media (max-width: 480px) {
+    .brand h1 { font-size: 16px; }
+    .brand .tag { display: none; }
+    .nav-link { padding: 5px 7px; font-size: 12px; }
+  }
+
+  /* Article */
+  main {
+    max-width: 760px; margin: 0 auto; padding: 24px 16px;
+  }
+  article {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  @media (max-width: 480px) {
+    main { padding: 16px 12px; }
+    article { padding: 18px; border-radius: var(--radius-sm); }
+  }
+
+  /* Typography for rendered brief content */
+  article h1 { font-size: 22px; margin: 0 0 14px; line-height: 1.3; letter-spacing: -0.01em; }
+  article h2 { font-size: 18px; margin: 22px 0 10px; padding-top: 12px; border-top: 1px solid var(--border); color: var(--accent); }
+  article h2:first-child { padding-top: 0; border-top: none; }
+  article h3 { font-size: 15px; margin: 16px 0 8px; color: var(--text); }
+  article p { margin: 10px 0; }
+  article ul, article ol { margin: 8px 0; padding-left: 22px; }
+  article li { margin: 4px 0; }
+  article code {
+    font-family: var(--mono); font-size: 13px;
+    background: var(--card-2); padding: 1px 5px; border-radius: 4px;
+  }
+  article pre {
+    background: var(--card-2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 12px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.5;
+  }
+  article pre code { background: transparent; padding: 0; }
+  article blockquote {
+    border-left: 3px solid var(--accent); padding: 4px 12px; margin: 12px 0;
+    color: var(--text-dim); background: var(--card-2); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  article a { color: var(--accent); text-decoration: none; }
+  article a:hover { text-decoration: underline; }
+  article table {
+    width: 100%; border-collapse: collapse; margin: 12px 0;
+    font-variant-numeric: tabular-nums; font-size: 13.5px;
+  }
+  article table th, article table td {
+    padding: 7px 10px; border-bottom: 1px solid var(--border); text-align: left;
+  }
+  article table th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); }
+  article hr { border: 0; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  /* Brief-list (for briefs.html index) */
+  .brief-list { list-style: none; padding: 0; margin: 8px 0; }
+  .brief-list li {
+    padding: 10px 14px; background: var(--card-2); border-radius: var(--radius-sm);
+    margin: 6px 0; transition: background 0.12s;
+  }
+  .brief-list li:hover { background: var(--border); }
+  .brief-list a {
+    color: var(--text); text-decoration: none;
+    font-family: var(--mono); font-size: 14px; display: block;
+  }
+
+  footer {
+    max-width: 760px; margin: 32px auto 0; padding: 16px;
+    color: var(--text-dim); font-size: 12px; text-align: center;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--text-dim); text-decoration: none; margin: 0 6px; }
+  footer a:hover { color: var(--text); }
+  footer .disclaimer { margin-top: 8px; font-size: 11px; opacity: 0.7; }
+</style>
 </head>
-<body class="content-page">
+<body>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-5"/></symbol>
-    <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
-    <symbol id="i-clipboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></symbol>
-    <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></symbol>
-    <symbol id="i-github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol>
-  </defs>
-</svg>
-
-<header class="hero hero-compact">
-  <div class="hero-row">
+<header class="topbar">
+  <div class="topbar-row">
     <a class="brand" href="{{ '/' | relative_url }}">
-      <span class="brand-logo"><svg width="18" height="18"><use href="#i-logo"/></svg></span>
-      <div class="brand-text">
-        <h1>clawock</h1>
-        <span class="tagline">harness · HK + US portfolio</span>
-      </div>
+      <h1>clawock</h1>
+      <span class="tag">harness · HK + US portfolio</span>
     </a>
-    <nav class="hero-nav">
-      <a href="{{ '/' | relative_url }}" class="hero-nav-link {% if page.url == '/' or page.url == '/index.html' %}active{% endif %}"><svg><use href="#i-grid"/></svg><span>Dashboard</span></a>
-      <a href="{{ '/briefs.html' | relative_url }}" class="hero-nav-link {% if page.url contains 'briefs' %}active{% endif %}"><svg><use href="#i-clipboard"/></svg><span>Briefs</span></a>
-      <a href="{{ '/README.html' | relative_url }}" class="hero-nav-link {% if page.url contains 'README' %}active{% endif %}"><svg><use href="#i-book"/></svg><span>README</span></a>
-      <a href="https://github.com/KCNyu/clawock" class="hero-nav-link" target="_blank" rel="noopener"><svg><use href="#i-github"/></svg><span>GitHub</span></a>
+    <nav class="topbar-actions">
+      <a class="nav-link {% if page.url == '/' or page.url == '/index.html' %}active{% endif %}" href="{{ '/' | relative_url }}">Dashboard</a>
+      <a class="nav-link {% if page.url contains 'briefs' %}active{% endif %}" href="{{ '/briefs.html' | relative_url }}">Briefs</a>
+      <a class="nav-link {% if page.url contains 'README' %}active{% endif %}" href="{{ '/README.html' | relative_url }}">README</a>
+      <a class="nav-link" href="https://github.com/KCNyu/clawock" target="_blank" rel="noopener">GitHub</a>
     </nav>
   </div>
 </header>
 
-<main class="page-main">
-  <article class="page-article">
+<main>
+  <article>
     {{ content }}
   </article>
 </main>
 
 <footer>
   <p>
-    <a href="https://github.com/KCNyu/clawock">clawock</a>
-    · <a href="{{ '/' | relative_url }}">Dashboard</a>
-    · <a href="{{ '/briefs.html' | relative_url }}">Briefs</a>
+    <a href="https://github.com/KCNyu/clawock">clawock</a> ·
+    <a href="{{ '/' | relative_url }}">Dashboard</a> ·
+    <a href="{{ '/briefs.html' | relative_url }}">Briefs</a>
   </p>
   <p class="disclaimer">
     Not investment advice. Real positions shown. Point-in-time data. Past performance ≠ future results.
