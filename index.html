@@ -344,15 +344,19 @@ layout: null
   .holdings-table {
     width: 100%; border-collapse: collapse;
     font-variant-numeric: tabular-nums;
-    font-size: 13px;
-    min-width: 640px;
+    font-size: 12.5px;
+    min-width: 720px;
   }
   .holdings-table th, .holdings-table td {
-    padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--border);
+    padding: 7px 8px; text-align: right; border-bottom: 1px solid var(--border);
     white-space: nowrap;
   }
+  .holdings-table th.num, .holdings-table td.num { text-align: right; }
   .holdings-table th:first-child, .holdings-table td:first-child,
   .holdings-table th:nth-child(2), .holdings-table td:nth-child(2) { text-align: left; }
+  .holdings-table .name-cell { max-width: 140px; overflow: hidden; text-overflow: ellipsis; color: var(--text-dim); font-size: 11.5px; }
+  .holdings-table .cell-stack { line-height: 1.3; }
+  .holdings-table .cell-sub { font-size: 10.5px; opacity: 0.75; }
   .holdings-table thead th {
     position: sticky; top: 0; background: var(--card);
     font-size: 11px; color: var(--text-dim); text-transform: uppercase;
@@ -570,10 +574,12 @@ layout: null
             <tr>
               <th data-sort="ticker">Ticker</th>
               <th data-sort="name">Name</th>
-              <th data-sort="current_value" class="active-sort">Value <span class="arr">&#x25BC;</span></th>
-              <th data-sort="today_change_pct">Today %</th>
-              <th data-sort="pnl_percent">P&amp;L %</th>
-              <th data-sort="pnl_abs">P&amp;L Abs</th>
+              <th data-sort="shares" class="num">Shares</th>
+              <th data-sort="cost_basis" class="num">Cost</th>
+              <th data-sort="current_price" class="num">Price</th>
+              <th data-sort="current_value" class="num active-sort">Value <span class="arr">&#x25BC;</span></th>
+              <th data-sort="today_change_pct" class="num">Today</th>
+              <th data-sort="pnl_percent" class="num">P&amp;L</th>
             </tr>
           </thead>
           <tbody id="holdings-tbody"></tbody>
@@ -982,16 +988,29 @@ layout: null
       if (typeof av === "string") return dir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
       return dir === "asc" ? av - bv : bv - av;
     });
+    const fmtShares = (n) => n == null || isNaN(n) ? DASH : Number(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
+    const fmtPrice = (n, ccy) => n == null || isNaN(n) || n === 0 ? DASH : fmtMoney(n, ccy);
+    const dualCell = (abs, pct, cls) => `
+      <div class="${cls}">${fmtMoney(abs, ccy)}</div>
+      <div class="cell-sub ${cls}">${fmtPct(pct)}</div>`;
     tbody.innerHTML = data.map(h => {
       const ccy = h.region === "hk" ? "HKD" : "USD";
       return `
         <tr>
           <td><span class="ticker region-${h.region}">${h.ticker || DASH}</span></td>
-          <td>${h.name || ""}</td>
-          <td>${fmtMoney(h.current_value, ccy)}</td>
-          <td class="${pnlClass(h.today_change_pct)}">${fmtPct(h.today_change_pct)}</td>
-          <td class="${pnlClass(h.pnl_percent)}">${fmtPct(h.pnl_percent)}</td>
-          <td class="${pnlClass(h.pnl_abs)}">${fmtMoney(h.pnl_abs, ccy)}</td>
+          <td class="name-cell">${h.name || ""}</td>
+          <td class="num">${fmtShares(h.shares)}</td>
+          <td class="num">${fmtPrice(h.cost_basis, ccy)}</td>
+          <td class="num">${fmtPrice(h.current_price, ccy)}</td>
+          <td class="num">${fmtMoney(h.current_value, ccy)}</td>
+          <td class="num cell-stack">
+            <div class="${pnlClass(h.today_change)}">${fmtMoney(h.today_change, ccy)}</div>
+            <div class="cell-sub ${pnlClass(h.today_change_pct)}">${fmtPct(h.today_change_pct)}</div>
+          </td>
+          <td class="num cell-stack">
+            <div class="${pnlClass(h.pnl_abs)}">${fmtMoney(h.pnl_abs, ccy)}</div>
+            <div class="cell-sub ${pnlClass(h.pnl_percent)}">${fmtPct(h.pnl_percent)}</div>
+          </td>
         </tr>
       `;
     }).join("");

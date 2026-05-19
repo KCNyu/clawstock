@@ -41,15 +41,18 @@ def trim_holding(h, currency):
     """Trim a holding dict to UI-relevant fields."""
     return {
         'ticker': h.get('ticker') or h.get('code'),
-        'name': h.get('name', ''),
+        'name': h.get('name') or h.get('stock_name', ''),
         'currency': currency,
         'shares': h.get('shares', 0),
         'cost_basis': round(h.get('cost_basis') or 0, 4),
         'current_price': round(h.get('current_price') or 0, 4),
         'current_value': round(h.get('current_value') or 0, 2),
+        'today_change': round(h.get('today_change') or 0, 2),
+        'today_change_pct': round(h.get('today_change_pct') or 0, 2),
+        'day_high': round(h.get('day_high') or 0, 4),
+        'day_low': round(h.get('day_low') or 0, 4),
         'pnl_abs': round(h.get('pnl_abs') or 0, 2),
         'pnl_percent': round(h.get('pnl_percent') or 0, 2),
-        'today_change_pct': round(h.get('today_change_pct') or 0, 2),
         'is_active': (h.get('shares') or 0) > 0,
         'trades_count': len(h.get('trades') or []),
     }
