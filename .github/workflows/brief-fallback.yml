@@ -1,0 +1,75 @@
+name: Brief Fallback (Xiaomi)
+
+# 08:05 HKT = 00:05 UTC 工作日, 晚 openclaw 5 分钟兜底
+# 如果今天 git log 已有 'daily deep brief YYYY-MM-DD' commit → skip
+# 否则用 Xiaomi 直跑 brief
+on:
+  schedule:
+    - cron: '5 0 * * 1-5'
+  workflow_dispatch:
+
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+
+jobs:
+  fallback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 10
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install --quiet requests
+
+      - name: Check if openclaw already ran today's brief
+        id: check
+        run: |
+          TODAY=$(TZ=Asia/Hong_Kong date +%Y-%m-%d)
+          echo "TODAY=$TODAY" >> $GITHUB_ENV
+          if git log --since "$TODAY 00:00" --grep "daily deep brief $TODAY" --oneline | grep -q "."; then
+            echo "openclaw cron already produced today's brief — skip fallback"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "no brief found — fallback will run"
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run preflight (collect deterministic data)
+        if: steps.check.outputs.skip != 'true'
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+        run: python3 scripts/harness/brief_preflight.py 2>&1 | tail -50
+
+      - name: Call Xiaomi to generate brief
+        if: steps.check.outputs.skip != 'true'
+        env:
+          XIAOMI_API_KEY: ${{ secrets.XIAOMI_API_KEY }}
+        run: python3 scripts/data/gh_action_brief_fallback.py
+
+      - name: Postflight validation
+        if: steps.check.outputs.skip != 'true'
+        run: python3 scripts/harness/brief_postflight.py 2>&1 | tail -20 || true
+
+      - name: Commit + push
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add memory/ portfolio.json assets/data/ 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "memory: brief-fallback (xiaomi) $TODAY"
+            for i in 1 2 3; do
+              git push && break
+              git pull --rebase origin master
+              sleep $((i*3))
+            done
+          fi

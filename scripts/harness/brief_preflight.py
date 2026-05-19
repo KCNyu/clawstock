@@ -14,7 +14,11 @@ Steps:
   5. Compute USD-base / HKD-base book totals
   6. Pull SEC EDGAR fundamentals for US singles (is_leveraged_etf=false)
   7. Locate prior plan.json + compute retrospective (trigger fired + simulated PnL)
-  8. Write memory/.tmp/brief-context-{date}.json
+  8. Peer scan
+  9. Self-calibration
+ 10. Risk metrics
+ 11. Catalyst calendar (next 14d earnings + FOMC + macro)
+ 12. Write memory/.tmp/brief-context-{date}.json
 
 Output (stdout): step-by-step progress; final summary with issue count.
 Exit: 0 if no issues, 1 if any data leg failed.
@@ -577,7 +581,7 @@ def main():
     print(f'═════ brief_preflight.py | {today} ═════')
 
     # [1] Refresh prices
-    print('\n[1/10] Refresh US prices')
+    print('\n[1/11] Refresh US prices')
     us_out, us_ok = _run('analyze_us_stocks.py', ['--no-news'])
     if not us_ok:
         issues.append(f'US refresh failed: {us_out[-200:]}')
@@ -585,7 +589,7 @@ def main():
     else:
         print('   ✓ done')
 
-    print('[2/10] Refresh HK prices')
+    print('[2/11] Refresh HK prices')
     hk_out, hk_ok = _run('analyze_hk_stocks.py', ['--no-news'])
     if not hk_ok:
         issues.append(f'HK refresh failed: {hk_out[-200:]}')
@@ -594,14 +598,14 @@ def main():
         print('   ✓ done')
 
     # [3] FX
-    print('[3/10] FX rate')
+    print('[3/11] FX rate')
     fx = fetch_fx_rate()
     if 'error' in fx:
         issues.append(f'FX fallback used: {fx["error"][-200:]}')
     print(f'   USDHKD = {fx["rate"]}  ({fx["source"]})')
 
     # [4] Snapshot
-    print('[4/10] Portfolio snapshot')
+    print('[4/11] Portfolio snapshot')
     portfolio_path = WS / 'portfolio.json'
     snapshot_path  = SNAPSHOT_DIR / f'{today}.json'
     snapshot_path.write_bytes(portfolio_path.read_bytes())
@@ -611,7 +615,7 @@ def main():
     portfolio = json.loads(portfolio_path.read_text())
 
     # [5] Concentration
-    print('[5/10] Concentration')
+    print('[5/11] Concentration')
     hk_conc = compute_concentration(portfolio['portfolios']['hk_stocks']['holdings'])
     us_conc = compute_concentration(portfolio['portfolios']['us_stocks']['holdings'])
     print(f'   HK: HHI={hk_conc.get("hhi"):.3f} {hk_conc.get("verdict")} '
@@ -632,7 +636,7 @@ def main():
     }
 
     # [6] SEC EDGAR
-    print('[6/10] SEC EDGAR US singles')
+    print('[6/11] SEC EDGAR US singles')
     us_fund = collect_us_fundamentals(portfolio)
     for t, data in us_fund.items():
         if 'error' in data:
@@ -643,7 +647,7 @@ def main():
             print(f'   ✓ {t}: {len(kf)} concepts')
 
     # [7] Retrospective
-    print('[7/10] Retrospective')
+    print('[7/11] Retrospective')
     prior_plan = find_prior_plan(today)
     retro = compute_retrospective(prior_plan, portfolio)
     if retro.get('prior_plan_date'):
@@ -659,12 +663,12 @@ def main():
         print(f'   first run (no prior plan)')
 
     # [8] Peer scan — for each active holding, fetch peer prices + flag divergence
-    print('[8/10] Peer scan')
+    print('[8/11] Peer scan')
     peer_scan = collect_peer_scan(portfolio)
     print(f'   {len(peer_scan)} holdings with peer data; {sum(1 for h in peer_scan.values() if h.get("divergence_signal"))} divergence signals')
 
     # [9] Self-calibration — read past plan outcomes and compute confidence accuracy
-    print('[9/10] Self-calibration')
+    print('[9/11] Self-calibration')
     self_calib = compute_self_calibration()
     if self_calib.get('samples', 0) >= 5 and 'brier_30d' in self_calib:
         print(f'   Brier (30d): {self_calib["brier_30d"]:.3f}  ({self_calib["samples"]} samples)')
@@ -674,7 +678,7 @@ def main():
         print(f'   not enough data yet (need ≥5 plans, have {self_calib.get("samples", 0)})')
 
     # [10] Risk metrics — Tier 2: β / vol / DD / Sharpe / margin sim
-    print('[10/10] Risk metrics')
+    print('[10/11] Risk metrics')
     risk = {}
     try:
         subprocess.run(['python3', str(WS / 'scripts' / 'data' / 'portfolio_risk_metrics.py')],
@@ -688,6 +692,29 @@ def main():
                 print(f'   ⚠ {a["type"]:18s} ({a["severity"]:6s}) {a["detail"][:80]}')
     except Exception as e:
         print(f'   ⚠ risk metrics failed: {e}')
+
+    # [11] Catalyst calendar — next 14d earnings + FOMC + macro
+    print('[11/11] Fetch catalysts')
+    catalysts = {}
+    try:
+        cat_out, cat_ok = _run('scripts/data/fetch_catalysts.py', ['--json'], timeout=60)
+        if not cat_ok:
+            print(f'   ⚠ catalysts fetch failed: {cat_out[-150:]}')
+            issues.append('catalysts fetch failed')
+        else:
+            catalysts = json.loads(cat_out)
+            summary = catalysts.get('summary', {})
+            print(f'   earnings: {summary.get("earnings_count", 0)}, '
+                  f'FOMC: {summary.get("fomc_in_window", 0)}, '
+                  f'macro: {summary.get("macro_count", 0)}')
+            hi = summary.get('highest_impact_within_7d')
+            if hi:
+                print(f'   highest impact 7d: {hi}')
+            if 'error' in catalysts:
+                print(f'   ⚠ partial errors: {list(catalysts["error"].keys())}')
+    except Exception as e:
+        print(f'   ⚠ catalysts step failed: {e}')
+        issues.append(f'catalysts step exception: {type(e).__name__}')
 
     # Write context.json
     context = {
@@ -704,6 +731,7 @@ def main():
         'peer_scan':     peer_scan,
         'self_calibration': self_calib,
         'risk_metrics':  risk,
+        'catalysts':     catalysts,
         'issues':        issues,
     }
     ctx_path = TMP_DIR / f'brief-context-{today}.json'

@@ -28,6 +28,12 @@
 | `weekly-health.yml` | 周日 23:00 UTC | (read-only) | 综合健康检查（含公网数据源活体） |
 | `eod-archive.yml` | 周五 22:00 UTC | `memory/archive/eod-history.csv` | 每周持仓快照 audit trail |
 | `sentiment-scan.yml` | 工作日 23:30 UTC | `assets/data/sentiment.json` | Reddit mention 统计 |
+| `brief-fallback.yml` | 工作日 00:05 UTC (08:05 HKT) | `memory/{date}-pre-open.md` + `-plan.json` | **Xiaomi LLM** 兜底：openclaw cron 没跑出今日 brief 时接管 |
+| `weekly-review.yml` | 周日 14:00 UTC (Sun 22:00 HKT) | `memory/weekly/{ISO-week}.md` | **Xiaomi LLM** 周复盘 (净值 + plan 兑现 + 风险演变 + 下周关注) |
+| `news-digest.yml` | 工作日 13:00 UTC (21:00 HKT) | `assets/data/us_news_digest.json` | **Xiaomi LLM** 提炼 7 US holding 过去 48h Finnhub news |
+| `cron-health.yml` | 工作日 09:00 UTC (17:00 HKT) | (issue auto-open on miss) | 巡检今日 openclaw cron 漏跑 |
+
+**Xiaomi GH Action 路径**: 需在 repo secrets 配 `XIAOMI_API_KEY` (token-plan-cn endpoint) + 已有 `FINNHUB_API_KEY`。本地 cron 跑 MiniMax primary，远端 GH Action 跑 Xiaomi（fallback 测试 + 兜底）。
 
 **没有 GH Action 写 `assets/data/dashboard.json`** — 那是 openclaw cron 的 postflight 独占。
 其他 GH Action 只写各自专属文件，零冲突面。本地 cron 和 远端 Action 不会撞车。
@@ -187,6 +193,9 @@ python3 scripts/data/analyze_hk_stocks.py --dry-run   # 不写文件
 - **`scripts/data/build_dashboard.py`**：聚合 `portfolio.json` + `memory/snapshots/` + `memory/*-plan.json` + `memory/calibration.csv` + `memory/peer-map.json` + `assets/data/risk.json` + 最近 brief context → `assets/data/dashboard.json`（v2.x schema 含 delta / today_movers / anomalies / peer_divergence / calibration / recent_plan_actions / drawdown / sector_exposure / leveraged_etf / all_time_extremes / today_ranges / realized_vs_unrealized / risk 13 个新字段）。**brief/report postflight 自动调起**，手动也可以跑一次刷新 Pages 数据。size cap 60KB。
 - **`scripts/data/portfolio_risk_metrics.py`**：算 β/Vol/Max DD/Sharpe/margin_at_risk → `assets/data/risk.json`。每日 brief preflight `[10/10]` 自动跑。Yahoo v8 429 限速 → 改用 Tencent gtimg primary + Polygon/AlphaVantage fallback。alert 类型：high_beta(>3) / high_vol(>50%) / deep_dd(<-10%) / high_leverage(>2.0) / negative_sharpe(<0)
 - **`scripts/data/mark_followed.py`**：calibration ground-truth 工具。手动 `mark_followed.py YYYY-MM-DD TICKER BUCKET [--no]` 或 `--auto` 跑 git history shares diff 推断（每日 brief preflight 自动跑同一逻辑）。Brier score 现在**只统计 followed=true** 的 plan actions。
+- **`scripts/data/fetch_catalysts.py`**：未来 14d catalysts → `assets/data/catalysts.json`（7 US holding 财报 Finnhub + 2026 FOMC 硬编码 + 经济日历 NFP/CPI 规则）。brief_preflight `[11/11]` 自动跑。`catalysts.alerts` 触发时 LLM brief 必须 ▎事件日历 段提及。
+- **`scripts/data/xiaomi_llm.py`**：minimal OpenAI-compat client for Xiaomi MiMo v2.5-pro，供 GH Action workflow 直调（绕过 openclaw gateway）。`thinking={'type':'disabled'}` 避 multi-turn 400。retry 3 次 + 429 rate-limit handling。env `XIAOMI_API_KEY`。
+- **`scripts/data/gh_action_*.py`**：3 个 GH Action 入口脚本（brief_fallback / weekly_review / news_digest），都用 xiaomi_llm.chat() 直调小米。
 - **`scripts/data/update_portfolio.py`** / **`update_us_portfolio.js`**：手动调仓后写 portfolio.json 的辅助
 
 ### Cron map（**10 个 job 位于 `~/.openclaw/cron/jobs.json`**）

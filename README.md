@@ -106,7 +106,7 @@ clawock/
 │  └─ archive/eod-history.csv   weekly EOD archive (GH Action)
 │
 ├─ scripts/
-│  ├─ data/                     fetchers + dashboard builder (v2.x schema: delta · today_movers · anomalies · calibration · drawdown · sector_exposure · leveraged_etf · all_time_extremes · today_ranges · realized_vs_unrealized · risk + peer_divergence) + portfolio_risk_metrics.py (β/vol/DD/Sharpe/margin → risk.json) + mark_followed.py (calibration ground-truth) + safe_io (atomic writes)
+│  ├─ data/                     fetchers + dashboard builder (v2.x schema: delta · today_movers · anomalies · calibration · drawdown · sector_exposure · leveraged_etf · all_time_extremes · today_ranges · realized_vs_unrealized · risk · catalysts + peer_divergence) + portfolio_risk_metrics.py + mark_followed.py + fetch_catalysts.py + xiaomi_llm.py + gh_action_* (GH Action Xiaomi-direct entry points) + safe_io (atomic writes)
 │  ├─ harness/                  preflight + postflight pairs (6 files, 4 pairs)
 │  └─ legacy/                   superseded scripts kept as reference
 │

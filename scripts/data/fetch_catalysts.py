@@ -1,0 +1,377 @@
+#!/usr/bin/env python3
+"""
+fetch_catalysts.py — pull the next 14 days of market-moving events for the brief.
+
+Sources:
+  • US holdings earnings — Finnhub /calendar/earnings (single symbol per call).
+    Only queries non-leveraged tickers (leveraged ETFs have no own earnings).
+  • Fed FOMC meetings — hardcoded 2026 schedule (federalreserve.gov fomccalendars),
+    filtered to within window.
+  • Macro events — hardcoded "rule-based" generators:
+      - NFP (first Friday of each month) — most reliable rule
+      - CPI (BLS schedule, hardcoded 2026 release dates)
+      - PCE (last business day + 25d, but we use known BEA schedule)
+      - GDP (advance/2nd/3rd estimates; hardcoded 2026 release dates)
+
+Writes:  assets/data/catalysts.json
+Modes:
+  python3 scripts/data/fetch_catalysts.py            # 14d window, write file + summary
+  python3 scripts/data/fetch_catalysts.py --json     # print final JSON to stdout (no file)
+  python3 scripts/data/fetch_catalysts.py --days 30  # custom lookback window
+"""
+import argparse
+import json
+import os
+import sys
+from datetime import datetime, timezone, timedelta, date
+
+import requests
+
+WS_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+OUT_FILE = os.path.join(WS_ROOT, 'assets', 'data', 'catalysts.json')
+API_KEYS_FILE = os.path.join(WS_ROOT, '.api_keys')
+
+UA = 'clawock-catalysts/1.0 (github.com/KCNyu/clawock)'
+HEADERS = {'User-Agent': UA}
+TIMEOUT = 10
+
+# Active US holdings (synced from portfolio.json on 2026-05-19)
+# Leveraged ETFs don't issue earnings — skip the Finnhub call for them.
+US_TICKERS_ACTIVE = ['RKLB', 'CRCL', 'PLTU', 'SOXL', 'RKLX', 'ROBN', 'MSFU']
+LEVERAGED_ETFS = {'SOXL', 'TQQQ', 'PLTU', 'RKLX', 'ROBN', 'MSFU'}
+
+# 2026 FOMC meeting dates (rate-decision second day)
+# Source: federalreserve.gov/monetarypolicy/fomccalendars.htm
+FOMC_2026 = [
+    {'start': '2026-01-27', 'end': '2026-01-28'},
+    {'start': '2026-03-17', 'end': '2026-03-18'},
+    {'start': '2026-04-28', 'end': '2026-04-29'},
+    {'start': '2026-06-16', 'end': '2026-06-17'},
+    {'start': '2026-07-28', 'end': '2026-07-29'},
+    {'start': '2026-09-15', 'end': '2026-09-16'},
+    {'start': '2026-10-27', 'end': '2026-10-28'},
+    {'start': '2026-12-08', 'end': '2026-12-09'},
+]
+
+# BLS CPI release schedule 2026 (typically 13-15 of each month, 8:30 ET)
+# Source: bls.gov/schedule/news_release/cpi.htm
+CPI_2026 = [
+    '2026-01-14', '2026-02-12', '2026-03-12', '2026-04-15',
+    '2026-05-13', '2026-06-11', '2026-07-15', '2026-08-12',
+    '2026-09-11', '2026-10-15', '2026-11-13', '2026-12-10',
+]
+
+# BEA GDP release schedule 2026 (advance/2nd/3rd estimates per quarter)
+# Source: bea.gov/news/schedule
+GDP_2026 = [
+    {'date': '2026-01-29', 'detail': 'Q4 2025 GDP advance estimate'},
+    {'date': '2026-02-26', 'detail': 'Q4 2025 GDP 2nd estimate'},
+    {'date': '2026-03-26', 'detail': 'Q4 2025 GDP 3rd estimate'},
+    {'date': '2026-04-29', 'detail': 'Q1 2026 GDP advance estimate'},
+    {'date': '2026-05-28', 'detail': 'Q1 2026 GDP 2nd estimate'},
+    {'date': '2026-06-25', 'detail': 'Q1 2026 GDP 3rd estimate'},
+    {'date': '2026-07-30', 'detail': 'Q2 2026 GDP advance estimate'},
+    {'date': '2026-08-27', 'detail': 'Q2 2026 GDP 2nd estimate'},
+    {'date': '2026-09-24', 'detail': 'Q2 2026 GDP 3rd estimate'},
+    {'date': '2026-10-29', 'detail': 'Q3 2026 GDP advance estimate'},
+    {'date': '2026-11-25', 'detail': 'Q3 2026 GDP 2nd estimate'},
+    {'date': '2026-12-22', 'detail': 'Q3 2026 GDP 3rd estimate'},
+]
+
+# BEA PCE release schedule 2026 (~last business day + 25d of month)
+PCE_2026 = [
+    '2026-01-30', '2026-02-27', '2026-03-27', '2026-04-30',
+    '2026-05-29', '2026-06-26', '2026-07-31', '2026-08-28',
+    '2026-09-25', '2026-10-30', '2026-11-25', '2026-12-22',
+]
+
+
+def read_finnhub_key():
+    """Parse .api_keys to find FINNHUB_API_KEY."""
+    try:
+        with open(API_KEYS_FILE, encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith('FINNHUB_API_KEY='):
+                    return line.split('=', 1)[1].strip()
+    except Exception as e:
+        print(f'  warn: read .api_keys failed: {e}', file=sys.stderr)
+    return None
+
+
+def fetch_earnings_for_ticker(ticker, frm, to, api_key):
+    """One Finnhub call. Returns list of earnings dicts (may be empty) or None on error."""
+    if not api_key:
+        return None, 'no FINNHUB_API_KEY'
+    try:
+        url = 'https://finnhub.io/api/v1/calendar/earnings'
+        r = requests.get(
+            url,
+            params={'from': frm, 'to': to, 'symbol': ticker, 'token': api_key},
+            headers=HEADERS, timeout=TIMEOUT,
+        )
+        if r.status_code != 200:
+            return None, f'HTTP {r.status_code}: {r.text[:150]}'
+        j = r.json()
+        rows = j.get('earningsCalendar') or []
+        return rows, None
+    except Exception as e:
+        return None, f'{type(e).__name__}: {e}'
+
+
+def fetch_earnings(window_start, window_end):
+    """Pull earnings for every non-leveraged US active ticker."""
+    api_key = read_finnhub_key()
+    out_rows = []
+    errors = {}
+    queried = []
+    for ticker in US_TICKERS_ACTIVE:
+        if ticker in LEVERAGED_ETFS:
+            continue  # leveraged ETFs don't have own earnings
+        queried.append(ticker)
+        rows, err = fetch_earnings_for_ticker(ticker, window_start, window_end, api_key)
+        if err:
+            errors[ticker] = err
+            continue
+        for r in rows or []:
+            time_str = (r.get('hour') or '').lower()  # 'bmo' / 'amc' / 'dmh' / ''
+            out_rows.append({
+                'ticker':            ticker,
+                'name':              r.get('symbol', ticker),
+                'date':              r.get('date'),
+                'time':              time_str or 'unknown',
+                'eps_estimate':      r.get('epsEstimate'),
+                'eps_actual':        r.get('epsActual'),
+                'revenue_estimate_m': round(r['revenueEstimate'] / 1_000_000, 2)
+                                      if r.get('revenueEstimate') else None,
+                'quarter':           r.get('quarter'),
+                'year':              r.get('year'),
+            })
+    out_rows.sort(key=lambda x: x.get('date') or '')
+    return out_rows, errors, queried
+
+
+def fomc_in_window(window_start, window_end):
+    """Return FOMC entries whose 2nd-day rate decision falls in window."""
+    out = []
+    for m in FOMC_2026:
+        end = m['end']
+        if window_start <= end <= window_end:
+            out.append({
+                'date':   end,
+                'type':   'rate_decision',
+                'detail': f'FOMC {m["start"]} to {m["end"]} meeting; rate decision + Powell presser on {end}',
+            })
+    out.sort(key=lambda x: x['date'])
+    return out
+
+
+def _first_friday(year, month):
+    """First Friday of (year, month) as YYYY-MM-DD string."""
+    d = date(year, month, 1)
+    # weekday(): Monday=0 ... Friday=4 ... Sunday=6
+    offset = (4 - d.weekday()) % 7
+    return (d + timedelta(days=offset)).isoformat()
+
+
+def _month_name(month):
+    return ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][month]
+
+
+def _prior_month_label(date_str):
+    """Given report release YYYY-MM-DD, return the prior month label (e.g. 'May')."""
+    try:
+        d = datetime.strptime(date_str, '%Y-%m-%d').date()
+        prev = (d.replace(day=1) - timedelta(days=1))
+        return _month_name(prev.month)
+    except Exception:
+        return ''
+
+
+def macro_in_window(window_start, window_end):
+    """Compose macro events from rule-generators + hardcoded BLS/BEA schedules."""
+    out = []
+
+    # NFP — first Friday of each month
+    start_dt = datetime.strptime(window_start, '%Y-%m-%d').date()
+    end_dt   = datetime.strptime(window_end,   '%Y-%m-%d').date()
+    # Walk through every month that overlaps window
+    y, m = start_dt.year, start_dt.month
+    while date(y, m, 1) <= end_dt:
+        ff = _first_friday(y, m)
+        if window_start <= ff <= window_end:
+            prior_mo = _month_name((m - 1) or 12)
+            out.append({
+                'date':   ff,
+                'type':   'NFP',
+                'detail': f'{prior_mo} jobs report (Non-Farm Payrolls); BLS 8:30 ET',
+            })
+        # advance month
+        if m == 12:
+            y += 1; m = 1
+        else:
+            m += 1
+
+    # CPI
+    for ds in CPI_2026:
+        if window_start <= ds <= window_end:
+            out.append({
+                'date':   ds,
+                'type':   'CPI',
+                'detail': f'{_prior_month_label(ds)} CPI release (BLS 8:30 ET)',
+            })
+
+    # PCE
+    for ds in PCE_2026:
+        if window_start <= ds <= window_end:
+            out.append({
+                'date':   ds,
+                'type':   'PCE',
+                'detail': f'{_prior_month_label(ds)} PCE price index (BEA, Fed preferred inflation gauge)',
+            })
+
+    # GDP
+    for g in GDP_2026:
+        if window_start <= g['date'] <= window_end:
+            out.append({
+                'date':   g['date'],
+                'type':   'GDP',
+                'detail': g['detail'],
+            })
+
+    out.sort(key=lambda x: x['date'])
+    return out
+
+
+def _highest_impact(catalysts, today_iso):
+    """Pick the highest-impact event within 7d. Priority: FOMC > CPI > NFP > earnings > others."""
+    cutoff = (datetime.strptime(today_iso, '%Y-%m-%d').date() + timedelta(days=7)).isoformat()
+
+    def in_7d(d):
+        return d and today_iso <= d <= cutoff
+
+    for e in catalysts['fomc']:
+        if in_7d(e['date']):
+            return f'FOMC {e["date"]} (rate decision)'
+    cpi_hits = [e for e in catalysts['macro_events']
+                if e['type'] == 'CPI' and in_7d(e['date'])]
+    if cpi_hits:
+        return f'CPI {cpi_hits[0]["date"]}'
+    nfp_hits = [e for e in catalysts['macro_events']
+                if e['type'] == 'NFP' and in_7d(e['date'])]
+    if nfp_hits:
+        return f'NFP {nfp_hits[0]["date"]}'
+    earn_hits = [e for e in catalysts['earnings'] if in_7d(e['date'])]
+    if earn_hits:
+        e = earn_hits[0]
+        return f'{e["ticker"]} earnings {e["date"]} ({e["time"]})'
+    other = [e for e in catalysts['macro_events'] if in_7d(e['date'])]
+    if other:
+        return f'{other[0]["type"]} {other[0]["date"]}'
+    return None
+
+
+def build_catalysts(days):
+    today = datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m-%d')
+    today_dt = datetime.strptime(today, '%Y-%m-%d').date()
+    end_iso = (today_dt + timedelta(days=days)).isoformat()
+
+    errors = {}
+
+    earnings, e_errors, queried = fetch_earnings(today, end_iso)
+    if e_errors:
+        errors['earnings'] = e_errors
+
+    fomc = fomc_in_window(today, end_iso)
+    macro = macro_in_window(today, end_iso)
+
+    catalysts = {
+        'earnings':      earnings,
+        'fomc':          fomc,
+        'macro_events':  macro,
+    }
+    highest = _highest_impact(catalysts, today)
+
+    out = {
+        'generated_at':       datetime.now(timezone(timedelta(hours=8))).isoformat(),
+        'lookback_window_days': days,
+        'window_start':       today,
+        'window_end':         end_iso,
+        'earnings_queried':   queried,
+        'earnings':           earnings,
+        'fomc':               fomc,
+        'macro_events':       macro,
+        'summary': {
+            'earnings_count':           len(earnings),
+            'fomc_in_window':           len(fomc),
+            'macro_count':              len(macro),
+            'highest_impact_within_7d': highest,
+        },
+    }
+    if errors:
+        out['error'] = errors
+    return out
+
+
+def print_summary(out):
+    print(f'=== catalysts ({out["window_start"]} to {out["window_end"]}) ===')
+    print(f'Earnings queried: {", ".join(out["earnings_queried"])}')
+    print(f'Earnings hits:    {len(out["earnings"])}')
+    for e in out['earnings']:
+        eps = e.get('eps_estimate')
+        rev = e.get('revenue_estimate_m')
+        print(f'  {e["date"]}  {e["ticker"]:6s} {e["time"]:4s}  '
+              f'EPS est {eps if eps is not None else "n/a"}  '
+              f'Rev est {f"${rev}M" if rev is not None else "n/a"}')
+    print(f'FOMC in window:   {len(out["fomc"])}')
+    for f in out['fomc']:
+        print(f'  {f["date"]}  {f["detail"]}')
+    print(f'Macro events:     {len(out["macro_events"])}')
+    for m in out['macro_events']:
+        print(f'  {m["date"]}  {m["type"]:5s} {m["detail"][:100]}')
+    print(f'Highest impact within 7d: {out["summary"]["highest_impact_within_7d"] or "(none)"}')
+    if 'error' in out:
+        print(f'\nErrors:')
+        for section, errs in out['error'].items():
+            for k, v in errs.items():
+                print(f'  {section}/{k}: {v}')
+
+
+def main():
+    ap = argparse.ArgumentParser(description='Fetch upcoming catalysts (14d default)')
+    ap.add_argument('--days', type=int, default=14, help='lookback window in days')
+    ap.add_argument('--json', action='store_true',
+                    help='print final JSON to stdout, do not write file')
+    args = ap.parse_args()
+
+    try:
+        out = build_catalysts(args.days)
+    except Exception as e:
+        # last-resort: don't crash preflight
+        out = {
+            'generated_at': datetime.now(timezone(timedelta(hours=8))).isoformat(),
+            'lookback_window_days': args.days,
+            'earnings': [], 'fomc': [], 'macro_events': [],
+            'summary': {
+                'earnings_count': 0, 'fomc_in_window': 0,
+                'macro_count': 0, 'highest_impact_within_7d': None,
+            },
+            'error': {'fatal': f'{type(e).__name__}: {e}'},
+        }
+
+    if args.json:
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 0
+
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from safe_io import safe_write_json
+    os.makedirs(os.path.dirname(OUT_FILE), exist_ok=True)
+    safe_write_json(OUT_FILE, out)
+    print_summary(out)
+    print(f'\nwrote {OUT_FILE} ({os.path.getsize(OUT_FILE):,} bytes)')
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

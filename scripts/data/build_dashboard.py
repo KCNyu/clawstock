@@ -947,6 +947,17 @@ def main():
             out['risk'] = None
     else:
         out['risk'] = None
+
+    # Catalyst calendar (built by scripts/data/fetch_catalysts.py)
+    catalysts_path = WS_ROOT / 'assets' / 'data' / 'catalysts.json'
+    if catalysts_path.exists():
+        try:
+            out['catalysts'] = json.loads(catalysts_path.read_text())
+        except Exception as e:
+            print(f'  warn: catalysts.json parse fail: {e}', file=sys.stderr)
+            out['catalysts'] = None
+    else:
+        out['catalysts'] = None
     out['all_time_extremes'] = compute_all_time_extremes(portfolio, top_n=3)
     out['today_ranges'] = compute_today_ranges(portfolio, top_n=8)
     out['realized_vs_unrealized'] = compute_realized_vs_unrealized(portfolio, fx_rate)

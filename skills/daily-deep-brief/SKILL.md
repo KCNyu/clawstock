@@ -130,6 +130,35 @@ context.json 关键字段：
 
 每个 bucket 内：ticker + 1 行具体理由 + 1 行触发价/条件。
 
+#### Strategy frame menu — Judge 段必须显式选 1-3 个 per action
+
+让 Judge 明示哪个 strategy frame 在驱动每个 action（traceability，错了能反推），从下面 8 个里选：
+
+| Frame | 触发条件举例 |
+|---|---|
+| `momentum` | MA 多头排列 / 量价齐升 / 新高 + 成交放量 |
+| `mean_reversion` | RSI > 75 / < 25 / 偏离布林带 +2σ |
+| `breakout` | 突破前高 / 关键阻力位 + 放量确认 |
+| `relative_strength` | 跑赢/输 benchmark > 3pp（peer 涨自己跌也归此） |
+| `earnings_setup` | 财报前后 5d / 预期 vs 实际 surprise |
+| `sentiment_shift` | F&G 拐点 / 新闻情绪 5d 翻转 / 异常 short interest |
+| `technical_breakdown` | 跌破 200MA / 跳空缺口 / 头肩顶 |
+| `sector_rotation` | 同板块 peer 强自己弱（或反之） |
+
+格式：
+
+```
+▎Judge — strategy frames
+
+| Ticker | Action | Frame | Detail |
+|---|---|---|---|
+| SOXL | trim_on_rebound | technical_breakdown + relative_strength | 跌破 200MA + 跑输 NVDA -8pp |
+| 00100 | hold_and_watch | sentiment_shift | F&G 从 fear 转 neutral |
+| RKLB | cut | mean_reversion | RSI 78 + 浮+82% |
+```
+
+**禁止**：模糊"综合判断"/"基本面看好"。每个 action 必须落到具体 frame + 数值。
+
 #### Confidence calls
 
 每个主要 action 给 0-100% 信心 + 1 行简单理由：
