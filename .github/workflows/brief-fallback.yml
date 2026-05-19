@@ -67,9 +67,5 @@ jobs:
           git add memory/ portfolio.json assets/data/ 2>/dev/null || true
           if ! git diff --cached --quiet; then
             git commit -m "memory: brief-fallback (xiaomi) $TODAY"
-            for i in 1 2 3; do
-              git push && break
-              git pull --rebase origin master
-              sleep $((i*3))
-            done
+            bash scripts/data/safe_push.sh
           fi

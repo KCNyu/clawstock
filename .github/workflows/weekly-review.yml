@@ -6,6 +6,10 @@ on:
     - cron: '0 14 * * 0'
   workflow_dispatch:
 
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+
 jobs:
   review:
     runs-on: ubuntu-latest
@@ -36,9 +40,5 @@ jobs:
           git add memory/weekly/
           if ! git diff --cached --quiet; then
             git commit -m "memory: weekly review (xiaomi) $(date -u +%Y-W%V)"
-            for i in 1 2 3; do
-              git push && break
-              git pull --rebase origin master
-              sleep $((i*3))
-            done
+            bash scripts/data/safe_push.sh
           fi
