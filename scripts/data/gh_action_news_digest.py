@@ -84,7 +84,8 @@ def main():
         f"Raw news (JSON):\n```json\n{json.dumps(raw, ensure_ascii=False)[:25000]}\n```\n"
     )
 
-    digest = chat(system=system, user=user, max_tokens=2000, temperature=0.5)
+    # News digest: short output but enable thinking helps prioritize signal vs noise
+    digest = chat(system=system, user=user, max_tokens=4000, temperature=0.5)
 
     out = {
         'generated_at': datetime.now().isoformat(),

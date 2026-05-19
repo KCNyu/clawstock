@@ -8,15 +8,18 @@ that need to call an LLM directly without going through openclaw gateway.
 Why direct API instead of openclaw:
 - GH Action runners can't reach our local openclaw gateway
 - Self-contained: just needs XIAOMI_API_KEY env var
-- thinking=disabled to avoid multi-turn reasoning_content 400 (same as
-  openclaw 2026.5.18's hard-guard for xiaomi)
+- thinking=enabled by default for GH Action single-turn calls
+  (multi-turn reasoning_content bug only fires with chat history containing
+  prior assistant tool_calls — GH Action calls are pure single-turn so safe).
+  openclaw's primary cron fallback chain still uses thinking=disabled because
+  its multi-turn session protocol requires it.
 
 Usage:
     from xiaomi_llm import chat
     reply = chat(
         system="You are Rick, kcn's stock analyst.",
         user="Write today's pre-open brief based on this context: ...",
-        max_tokens=8000,
+        max_tokens=32000,  # mimo-v2.5-pro maxOutput cap
     )
 """
 import json
@@ -33,9 +36,9 @@ MAX_RETRIES = 3
 
 
 def chat(system: str = '', user: str = '', messages: list = None,
-         max_tokens: int = 8000, temperature: float = 0.7,
+         max_tokens: int = 16000, temperature: float = 0.7,
          model: str = DEFAULT_MODEL, base_url: str = DEFAULT_BASE,
-         api_key: str = None, thinking_disabled: bool = True,
+         api_key: str = None, thinking_disabled: bool = False,
          json_response: bool = False) -> str:
     """Call Xiaomi MiMo. Returns assistant content string (or raises)."""
     api_key = api_key or os.environ.get('XIAOMI_API_KEY')
@@ -56,8 +59,13 @@ def chat(system: str = '', user: str = '', messages: list = None,
         'temperature': temperature,
     }
     if thinking_disabled:
-        # Required for multi-turn — see /root/.claude/projects/-root/memory/openclaw-xiaomi-fallback.md
+        # Multi-turn safe path — required when chat history has prior assistant
+        # tool_calls without reasoning_content (see memory/openclaw-xiaomi-fallback.md)
         body['thinking'] = {'type': 'disabled'}
+    else:
+        # Single-turn: enable thinking for deeper analysis. GH Action calls
+        # are all single-turn so safe.
+        body['thinking'] = {'type': 'enabled'}
     if json_response:
         body['response_format'] = {'type': 'json_object'}
 

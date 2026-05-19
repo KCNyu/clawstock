@@ -38,7 +38,8 @@ def main():
         f"格式: 1) 完整 brief markdown (按 SKILL); 2) 末尾 ```json``` plan.json. 直接出 brief, 不要客套."
     )
 
-    out = chat(system=system, user=user, max_tokens=16000, temperature=0.6)
+    # Use full mimo-v2.5-pro cap (32K) + thinking enabled for brief depth
+    out = chat(system=system, user=user, max_tokens=32000, temperature=0.6)
 
     # Split markdown + plan.json
     if '```json' in out:
