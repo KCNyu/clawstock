@@ -1,0 +1,64 @@
+name: Cron Health Check
+
+# 17:00 HKT = 09:00 UTC 工作日 — 港股收盘后、美股开盘前 一窗口
+# 检查今日 cron 应该跑了几次 vs git log 实际 commit 数
+# 缺漏 → workflow fail（README badge 红 + 邮件通知 GH owner）
+on:
+  schedule:
+    - cron: '0 9 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 100  # 需要看今日 commit history
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build a stub jobs.json mirroring local cron schedule
+        run: |
+          # GH Action 没法访问本机 ~/.openclaw/cron/jobs.json，把 schedule mirror 进来
+          mkdir -p /tmp/openclaw-mock/cron
+          cat > /tmp/openclaw-mock/cron/jobs.json <<'JSON'
+          {
+            "jobs": [
+              {"id":"hk-open","name":"港股开盘报告","schedule":{"expr":"30 9 * * 1-5","tz":"Asia/Shanghai"}},
+              {"id":"hk-mid","name":"港股午盘报告","schedule":{"expr":"0 12 * * 1-5","tz":"Asia/Shanghai"}},
+              {"id":"hk-pm","name":"港股午后快报","schedule":{"expr":"30 13 * * 1-5","tz":"Asia/Shanghai"}},
+              {"id":"hk-close","name":"港股收盘报告","schedule":{"expr":"0 16 * * 1-5","tz":"Asia/Shanghai"}},
+              {"id":"us-open","name":"美股开盘报告","schedule":{"expr":"30 9 * * 1-5","tz":"America/New_York"}},
+              {"id":"us-close","name":"美股收盘报告","schedule":{"expr":"0 16 * * 1-5","tz":"America/New_York"}},
+              {"id":"brief","name":"盘前深度简报","schedule":{"expr":"0 8 * * 1-5","tz":"Asia/Shanghai"}}
+            ]
+          }
+          JSON
+
+      - name: Run cron health check
+        id: health
+        run: |
+          # Patch JOBS_PATH to point at our mock
+          sed -i "s|JOBS_PATH = '/root/.openclaw/cron/jobs.json'|JOBS_PATH = '/tmp/openclaw-mock/cron/jobs.json'|" scripts/data/cron_health_check.py
+          sed -i "s|WS = '/root/.openclaw/workspace'|WS = '.'|" scripts/data/cron_health_check.py
+          python3 scripts/data/cron_health_check.py
+
+      - name: Comment on failure (open issue if not exist)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          # 检查今天是否已经有 issue
+          existing=$(gh issue list --label cron-miss --state open --search "$DATE" --json number --jq '.[0].number' || echo "")
+          if [ -z "$existing" ]; then
+            gh issue create \
+              --title "Cron miss detected $DATE" \
+              --body "EOD 巡检发现今日 cron 有缺漏。看 [Actions run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) 详情。" \
+              --label "cron-miss,P2" || true
+          fi

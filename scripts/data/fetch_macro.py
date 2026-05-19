@@ -7,6 +7,7 @@ Sources (all free, no API key):
   • US Treasury 10Y    — Yahoo v8 (^TNX, divide by 10 for %)
   • USD index (DXY)    — Yahoo v8 (DX-Y.NYB)
   • CNN Fear & Greed   — production-api.cnn.com (public, no key)
+  • Federal Reserve press releases — federalreserve.gov RSS (last 7 days)
 
 Writes: assets/data/macro.json
 """
@@ -83,6 +84,39 @@ def cnn_fear_greed():
         return None
 
 
+def fed_press_releases(days=7):
+    """Federal Reserve press releases RSS — keep last `days` items."""
+    import xml.etree.ElementTree as ET
+    from datetime import timedelta
+    try:
+        r = requests.get('https://www.federalreserve.gov/feeds/press_all.xml',
+                         headers=HEADERS, timeout=TIMEOUT)
+        if r.status_code != 200:
+            return None
+        root = ET.fromstring(r.content)
+        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+        items = []
+        for it in root.findall('.//item'):
+            title = it.findtext('title') or ''
+            date_str = it.findtext('pubDate') or ''
+            link = it.findtext('link') or ''
+            try:
+                from email.utils import parsedate_to_datetime
+                pub = parsedate_to_datetime(date_str)
+                if pub < cutoff:
+                    continue
+                items.append({'date': pub.strftime('%Y-%m-%d'),
+                              'title': title.strip()[:200],
+                              'url': link})
+            except Exception:
+                continue
+        items.sort(key=lambda x: x['date'], reverse=True)
+        return items[:15]
+    except Exception as e:
+        print(f'  ⚠️ Fed RSS: {e}', file=sys.stderr)
+        return None
+
+
 def main():
     out = {
         'generated_at': datetime.now(timezone.utc).isoformat(),
@@ -94,6 +128,7 @@ def main():
         'hstech':         yahoo_quote('^HSTECH'),
         'spx':            yahoo_quote('^GSPC'),
         'nasdaq':         yahoo_quote('^IXIC'),
+        'fed_press':      fed_press_releases(days=7),
     }
 
     # 10Y treasury yield = price / 10
@@ -112,6 +147,10 @@ def main():
         if k == 'generated_at': continue
         if v is None:
             print(f'  {k:14s}  ⚠️ failed')
+        elif k == 'fed_press':
+            print(f'  {k:14s}  {len(v)} press releases (last 7d)')
+            for r in v[:3]:
+                print(f'    [{r["date"]}] {r["title"][:80]}')
         elif k == 'fear_greed':
             print(f'  {k:14s}  {v["score"]} ({v["rating"]})  · prev close {v.get("prev_close")}, 1w {v.get("prev_1_week")}')
         elif k == 'treasury_10y':

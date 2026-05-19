@@ -1,48 +1,53 @@
 {
-  "generated_at": "2026-05-19T01:33:18.807127+00:00",
-  "vix": {
-    "symbol": "^VIX",
-    "price": 17.82,
-    "prev": 18.43,
-    "change_pct": -3.31,
-    "as_of": 1779135301
-  },
-  "treasury_10y": {
-    "symbol": "^TNX",
-    "price": 4.623,
-    "prev": 4.595,
-    "change_pct": 0.61,
-    "as_of": 1779130792,
-    "yield_pct": 0.462
-  },
-  "dxy": {
-    "symbol": "DX-Y.NYB",
-    "price": 99.082,
-    "prev": 99.193,
-    "change_pct": -0.11,
-    "as_of": 1779153796
-  },
+  "generated_at": "2026-05-19T13:42:58.673019+00:00",
+  "vix": null,
+  "treasury_10y": null,
+  "dxy": null,
   "fear_greed": null,
-  "hsi": {
-    "symbol": "^HSI",
-    "price": 25675.18,
-    "prev": 25675.18,
-    "change_pct": 0.0,
-    "as_of": 1779091740
-  },
+  "hsi": null,
   "hstech": null,
-  "spx": {
-    "symbol": "^GSPC",
-    "price": 7403.05,
-    "prev": 7408.5,
-    "change_pct": -0.07,
-    "as_of": 1779136769
-  },
-  "nasdaq": {
-    "symbol": "^IXIC",
-    "price": 26090.734,
-    "prev": 26225.145,
-    "change_pct": -0.51,
-    "as_of": 1779138959
-  }
+  "spx": null,
+  "nasdaq": null,
+  "fed_press": [
+    {
+      "date": "2026-05-15",
+      "title": "Federal Reserve Board names Jerome H. Powell as chair pro tempore; Powell will serve as chair pro tempore until Kevin M. Warsh is sworn in as the new chair",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260515a.htm"
+    },
+    {
+      "date": "2026-05-15",
+      "title": "Federal Reserve Board announces approval of application by the Stephen M. Calk 2025 Trust",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260515a.htm"
+    },
+    {
+      "date": "2026-05-15",
+      "title": "Federal Reserve Board announces it does not object to the conversion of United Texas Bank, of Dallas, Texas, from a bank supervised by the Federal Reserve to a national bank supervised by the Office o",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260515b.htm"
+    },
+    {
+      "date": "2026-05-15",
+      "title": "Federal Reserve Board announces termination of enforcement actions with UBS Group AG, Credit Suisse AG, Credit Suisse Holdings (USA), Inc., and Credit Suisse AG, New York Branch",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260515a.htm"
+    },
+    {
+      "date": "2026-05-14",
+      "title": "Stephen I. Miran submits his resignation as a member of the Federal Reserve Board, effective when or shortly before his successor on the Board is sworn in",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260514b.htm"
+    },
+    {
+      "date": "2026-05-14",
+      "title": "Federal Reserve Board releases results from two surveys of senior financial officers at banks about their views on discount window operating days and their strategies and practices for managing reserv",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260514a.htm"
+    },
+    {
+      "date": "2026-05-13",
+      "title": "Federal Reserve Board issues Economic Well-Being of U.S. Households in 2025 report",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260513a.htm"
+    },
+    {
+      "date": "2026-05-12",
+      "title": "Federal Reserve Board announces termination of enforcement actions with F & M Holding Company, Inc. and Thread Bancorp, Inc.",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260512a.htm"
+    }
+  ]
 }
