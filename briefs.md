@@ -21,6 +21,19 @@ description: 全部历史每日深度简报 + 手写笔记 + plan.json
 {% endfor %}
 </ul>
 
+## Weekly Reviews · Xiaomi 周复盘
+
+由 `.github/workflows/weekly-review.yml` 每周日 22:00 HKT 自动跑（Xiaomi MiMo v2.5-pro · thinking enabled · max 32K）。
+
+<ul class="brief-list">
+{% assign weeklies = site.pages | where_exp: "p", "p.path contains 'memory/weekly/'" | sort: 'path' | reverse %}
+{% for f in weeklies %}
+  <li>
+    <a href="{{ f.url | relative_url }}">{{ f.path | split: '/' | last | replace: '.md', '' }}</a>
+  </li>
+{% endfor %}
+</ul>
+
 ## Daily Notes · 手写笔记
 
 <ul class="brief-list">

@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-19T15:16:08.216385Z",
-  "last_updated": "2026/05/19 23:04 HKT",
+  "generated_at": "2026-05-19T15:32:50.524813Z",
+  "last_updated": "2026/05/19 23:30 HKT",
   "fx": {
     "usdhkd": 7.8306,
     "source": "Frankfurter",
@@ -8,11 +8,11 @@
   },
   "totals": {
     "us": {
-      "value_usd": 3476.63,
+      "value_usd": 3481.09,
       "cost_usd": 3181.05,
-      "pnl_usd": 295.58,
-      "pnl_pct": 9.2919,
-      "today_change_usd": -211.71,
+      "pnl_usd": 300.04,
+      "pnl_pct": 9.4321,
+      "today_change_usd": -207.24,
       "realized_usd": 592.18
     },
     "hk": {
@@ -26,53 +26,53 @@
   },
   "concentration": {
     "us": {
-      "hhi": 0.1684,
-      "top2": 0.4094,
+      "hhi": 0.1687,
+      "top2": 0.4126,
       "positions": [
         {
           "ticker": "SOXL",
           "name": "三倍做多半导体ETF-Direxion",
-          "value": 716.6,
-          "weight": 0.2061
+          "value": 723.1,
+          "weight": 0.2077
         },
         {
           "ticker": "ROBN",
           "name": "二倍做多HOOD ETF-T-Rex",
-          "value": 706.8,
-          "weight": 0.2033
+          "value": 713.2,
+          "weight": 0.2049
         },
         {
           "ticker": "RKLB",
           "name": "Rocket Lab Corp",
-          "value": 595.75,
-          "weight": 0.1714
+          "value": 595.5,
+          "weight": 0.1711
         },
         {
           "ticker": "MSFU",
           "name": "二倍做多微软ETF-Direxion",
-          "value": 586.3,
-          "weight": 0.1686
+          "value": 582.1,
+          "weight": 0.1672
         },
         {
           "ticker": "PLTU",
           "name": "二倍做多PLTR ETF-Direxion",
-          "value": 503.16,
-          "weight": 0.1447
+          "value": 498.26,
+          "weight": 0.1431
         },
         {
           "ticker": "CRCL",
           "name": "Circle Internet Group Inc-A",
-          "value": 222.67,
-          "weight": 0.064
+          "value": 223.76,
+          "weight": 0.0643
         },
         {
           "ticker": "RKLX",
           "name": "Defiance Daily Target 2X Long R",
-          "value": 145.35,
-          "weight": 0.0418
+          "value": 145.17,
+          "weight": 0.0417
         }
       ],
-      "total": 3476.63,
+      "total": 3481.09,
       "verdict": {
         "level": "moderate",
         "label": "偏集中",
@@ -147,14 +147,14 @@
         "currency": "USD",
         "shares": 5,
         "cost_basis": 71,
-        "current_price": 119.15,
-        "current_value": 595.75,
-        "today_change": -60.05,
-        "today_change_pct": -9.16,
-        "day_high": 119.15,
-        "day_low": 119.15,
-        "pnl_abs": 240.75,
-        "pnl_percent": 67.82,
+        "current_price": 119.1,
+        "current_value": 595.5,
+        "today_change": -60.3,
+        "today_change_pct": -9.19,
+        "day_high": 119.1,
+        "day_low": 119.1,
+        "pnl_abs": 240.5,
+        "pnl_percent": 67.75,
         "is_active": true,
         "trades_count": 0
       },
@@ -164,14 +164,14 @@
         "currency": "USD",
         "shares": 2,
         "cost_basis": 87,
-        "current_price": 111.335,
-        "current_value": 222.67,
-        "today_change": -0.11,
-        "today_change_pct": -0.05,
-        "day_high": 111.335,
-        "day_low": 111.335,
-        "pnl_abs": 48.67,
-        "pnl_percent": 27.97,
+        "current_price": 111.88,
+        "current_value": 223.76,
+        "today_change": 0.98,
+        "today_change_pct": 0.44,
+        "day_high": 111.88,
+        "day_low": 111.88,
+        "pnl_abs": 49.76,
+        "pnl_percent": 28.6,
         "is_active": true,
         "trades_count": 0
       },
@@ -266,14 +266,14 @@
         "currency": "USD",
         "shares": 14,
         "cost_basis": 40.9571,
-        "current_price": 35.94,
-        "current_value": 503.16,
-        "today_change": -2.1,
-        "today_change_pct": -0.42,
-        "day_high": 35.94,
-        "day_low": 35.94,
-        "pnl_abs": -70.24,
-        "pnl_percent": -12.25,
+        "current_price": 35.59,
+        "current_value": 498.26,
+        "today_change": -7.0,
+        "today_change_pct": -1.39,
+        "day_high": 35.59,
+        "day_low": 35.59,
+        "pnl_abs": -75.14,
+        "pnl_percent": -13.1,
         "is_active": true,
         "trades_count": 2
       },
@@ -283,14 +283,14 @@
         "currency": "USD",
         "shares": 5,
         "cost_basis": 91.87,
-        "current_price": 143.32,
-        "current_value": 716.6,
-        "today_change": -42.15,
-        "today_change_pct": -5.56,
-        "day_high": 143.32,
-        "day_low": 143.32,
-        "pnl_abs": 257.25,
-        "pnl_percent": 56.0,
+        "current_price": 144.62,
+        "current_value": 723.1,
+        "today_change": -35.65,
+        "today_change_pct": -4.7,
+        "day_high": 144.62,
+        "day_low": 144.62,
+        "pnl_abs": 263.75,
+        "pnl_percent": 57.42,
         "is_active": true,
         "trades_count": 2
       },
@@ -300,14 +300,14 @@
         "currency": "USD",
         "shares": 2,
         "cost_basis": 46.7,
-        "current_price": 72.6751,
-        "current_value": 145.35,
-        "today_change": -32.97,
-        "today_change_pct": -18.49,
-        "day_high": 72.6751,
-        "day_low": 72.6751,
-        "pnl_abs": 51.95,
-        "pnl_percent": 55.62,
+        "current_price": 72.5862,
+        "current_value": 145.17,
+        "today_change": -33.15,
+        "today_change_pct": -18.59,
+        "day_high": 72.5862,
+        "day_low": 72.5862,
+        "pnl_abs": 51.77,
+        "pnl_percent": 55.43,
         "is_active": true,
         "trades_count": 2
       },
@@ -317,14 +317,14 @@
         "currency": "USD",
         "shares": 40,
         "cost_basis": 23.5825,
-        "current_price": 17.67,
-        "current_value": 706.8,
-        "today_change": -71.62,
-        "today_change_pct": -9.2,
-        "day_high": 17.67,
-        "day_low": 17.67,
-        "pnl_abs": -236.5,
-        "pnl_percent": -25.07,
+        "current_price": 17.83,
+        "current_value": 713.2,
+        "today_change": -65.23,
+        "today_change_pct": -8.38,
+        "day_high": 17.83,
+        "day_low": 17.83,
+        "pnl_abs": -230.1,
+        "pnl_percent": -24.39,
         "is_active": true,
         "trades_count": 3
       },
@@ -334,14 +334,14 @@
         "currency": "USD",
         "shares": 20,
         "cost_basis": 29.13,
-        "current_price": 29.315,
-        "current_value": 586.3,
-        "today_change": -2.71,
-        "today_change_pct": -0.46,
-        "day_high": 29.315,
-        "day_low": 29.315,
-        "pnl_abs": 3.7,
-        "pnl_percent": 0.64,
+        "current_price": 29.105,
+        "current_value": 582.1,
+        "today_change": -6.89,
+        "today_change_pct": -1.17,
+        "day_high": 29.105,
+        "day_low": 29.105,
+        "pnl_abs": -0.5,
+        "pnl_percent": -0.09,
         "is_active": true,
         "trades_count": 1
       }
@@ -772,22 +772,22 @@
       "ticker": "RKLX",
       "name": "Defiance Daily Target 2X Long R",
       "region": "us",
-      "today_change_pct": -18.49,
-      "current_price": 72.6751
-    },
-    {
-      "ticker": "ROBN",
-      "name": "二倍做多HOOD ETF-T-Rex",
-      "region": "us",
-      "today_change_pct": -9.2,
-      "current_price": 17.67
+      "today_change_pct": -18.59,
+      "current_price": 72.5862
     },
     {
       "ticker": "RKLB",
       "name": "Rocket Lab Corp",
       "region": "us",
-      "today_change_pct": -9.16,
-      "current_price": 119.15
+      "today_change_pct": -9.19,
+      "current_price": 119.1
+    },
+    {
+      "ticker": "ROBN",
+      "name": "二倍做多HOOD ETF-T-Rex",
+      "region": "us",
+      "today_change_pct": -8.38,
+      "current_price": 17.83
     },
     {
       "ticker": "00100",
@@ -800,8 +800,8 @@
       "ticker": "SOXL",
       "name": "三倍做多半导体ETF-Direxion",
       "region": "us",
-      "today_change_pct": -5.56,
-      "current_price": 143.32
+      "today_change_pct": -4.7,
+      "current_price": 144.62
     }
   ],
   "anomalies": [
@@ -1110,8 +1110,8 @@
     "us": [
       {
         "sector": "Aerospace",
-        "value": 741.1,
-        "pct": 21.32,
+        "value": 740.67,
+        "pct": 21.28,
         "tickers": [
           "RKLB",
           "RKLX"
@@ -1119,40 +1119,40 @@
       },
       {
         "sector": "Semiconductor ETF",
-        "value": 716.6,
-        "pct": 20.61,
+        "value": 723.1,
+        "pct": 20.77,
         "tickers": [
           "SOXL"
         ]
       },
       {
         "sector": "Fintech",
-        "value": 706.8,
-        "pct": 20.33,
+        "value": 713.2,
+        "pct": 20.49,
         "tickers": [
           "ROBN"
         ]
       },
       {
         "sector": "Tech Mega-cap",
-        "value": 586.3,
-        "pct": 16.86,
+        "value": 582.1,
+        "pct": 16.72,
         "tickers": [
           "MSFU"
         ]
       },
       {
         "sector": "AI / Defense",
-        "value": 503.16,
-        "pct": 14.47,
+        "value": 498.26,
+        "pct": 14.31,
         "tickers": [
           "PLTU"
         ]
       },
       {
         "sector": "Crypto / Stablecoin",
-        "value": 222.67,
-        "pct": 6.4,
+        "value": 223.76,
+        "pct": 6.43,
         "tickers": [
           "CRCL"
         ]
@@ -1188,9 +1188,9 @@
     ]
   },
   "leveraged_etf": {
-    "us_pct": 76.46,
+    "us_pct": 76.47,
     "hk_pct": 29.25,
-    "combined_pct": 41.3,
+    "combined_pct": 41.31,
     "tickers": [
       "07226",
       "MSFU",
@@ -1319,31 +1319,676 @@
       "highest_impact_within_7d": null
     }
   },
+  "us_news_digest": {
+    "generated_at": "2026-05-19T15:26:24.764738",
+    "lookback_hours": 48,
+    "tickers": [
+      "RKLB",
+      "CRCL",
+      "PLTU",
+      "SOXL",
+      "RKLX",
+      "ROBN",
+      "MSFU"
+    ],
+    "digest_markdown": "### Top 3-5 移动信号 (跨 ticker 排序)\n- CRCL: HC Wainwright 升级至 Buy 并提高目标价至 $150，CLARITY Act 推进可能巩固其稳定币领先地位 — 正面催化剂，kcn 的持仓可能受益于股价上行。\n- RKLB: 上周被列为大型股赢家，但 SeekingAlpha 建议避免买入，反映市场分歧 — 短期波动风险，kcn 应审慎评估持仓信心。\n- SOXL: 杠杆 ETF 资产达 $337 亿历史高点，但科技板块动量转负 — 市场情绪极端，kcn 需监控杠杆暴露和半导体回调风险。\n\n### Per-ticker 简报 (有新闻才列)\n- CRCL: 分析师升级及 CLARITY Act 利好稳定币业务 — 正面催化，可能驱动股价上涨。\n- RKLB: 列入大涨股但遭负面评价 — 影响中性偏负，关注估值压力。\n- SOXL: 杠杆 ETF 资产创新高叠加科技板块信号负面 — 风险上升，警惕市场波动。\n\n### 风险 watch\n- RKLB: SeekingAlpha 建议不要买入，暗示估值风险。\n- SOXL: 科技板块动量转负，可能冲击半导体 ETF 表现。",
+    "raw_news_counts": {
+      "RKLB": 3,
+      "CRCL": 3,
+      "PLTU": 0,
+      "SOXL": 3,
+      "RKLX": 0,
+      "ROBN": 0,
+      "MSFU": 0
+    }
+  },
+  "sentiment": {
+    "generated_at": "2026-05-19T01:27:23.329101+00:00",
+    "sources": [
+      "reddit-json-public",
+      "google-news-rss"
+    ],
+    "tickers": [
+      {
+        "ticker": "RKLB",
+        "name": "Rocket Lab Corp",
+        "region": "us_stocks",
+        "reddit_mentions_7d": 0,
+        "reddit_posts": [],
+        "google_news_en": [
+          {
+            "title": "Why Rocket Lab Stock Popped Then Dropped",
+            "source": "The Motley Fool",
+            "published": "Mon, 18 May 2026 15:29:00 GMT"
+          },
+          {
+            "title": "Rocket Lab Investment Opportunity | RKLB Stock Analysis 2026 - News and Statistics",
+            "source": "IndexBox",
+            "published": "Mon, 18 May 2026 11:51:00 GMT"
+          },
+          {
+            "title": "Why Rocket Lab (RKLB) Stock Is Trading Up Today",
+            "source": "Yahoo Finance",
+            "published": "Thu, 14 May 2026 08:52:55 GMT"
+          },
+          {
+            "title": "$Rocket Lab (RKLB.US)$ this stock really bout to hit the moon im locking in before it takes off",
+            "source": "Moomoo",
+            "published": "Sun, 17 May 2026 04:59:00 GMT"
+          },
+          {
+            "title": "RKLB Stock Rockets As Wall Street Hikes Price Targets",
+            "source": "timothysykes.com",
+            "published": "Mon, 18 May 2026 13:20:00 GMT"
+          },
+          {
+            "title": "RKLB Stock Price, Quote & Chart | ROCKET LAB CORP (NASDAQ:RKLB)",
+            "source": "ChartMill",
+            "published": "Fri, 15 May 2026 07:00:00 GMT"
+          }
+        ],
+        "google_news_zh": []
+      },
+      {
+        "ticker": "CRCL",
+        "name": "Circle Internet Group Inc-A",
+        "region": "us_stocks",
+        "reddit_mentions_7d": 0,
+        "reddit_posts": [],
+        "google_news_en": [
+          {
+            "title": "Circle Internet Group (CRCL) grants director Craig Broderick 2,018 RSUs",
+            "source": "Stock Titan",
+            "published": "Mon, 18 May 2026 21:15:53 GMT"
+          },
+          {
+            "title": "[Form 4] Circle Internet Group, Inc. Insider Trading Activity",
+            "source": "Stock Titan",
+            "published": "Mon, 18 May 2026 21:14:55 GMT"
+          },
+          {
+            "title": "Circle Internet Group (CRCL) director awarded 2,018 restricted stock units",
+            "source": "Stock Titan",
+            "published": "Mon, 18 May 2026 21:12:28 GMT"
+          },
+          {
+            "title": "$CRCL stock is down 6% today. Here's what we see in our data.",
+            "source": "Quiver Quantitative",
+            "published": "Mon, 18 May 2026 19:24:00 GMT"
+          },
+          {
+            "title": "Circle Shareholders Reaffirm Leadership and Annual Say-on-Pay",
+            "source": "TipRanks",
+            "published": "Mon, 18 May 2026 23:02:51 GMT"
+          },
+          {
+            "title": "Circle Breaks Out, Crypto Stocks Surge Ahead Of Clarity Act Hearing",
+            "source": "Investor's Business Daily",
+            "published": "Mon, 11 May 2026 20:35:00 GMT"
+          }
+        ],
+        "google_news_zh": []
+      },
+      {
+        "ticker": "PLTU",
+        "name": "二倍做多PLTR ETF-Direxion",
+        "region": "us_stocks",
+        "reddit_mentions_7d": 0,
+        "reddit_posts": [],
+        "google_news_en": [
+          {
+            "title": "Direxion Daily PLTR Bull 2X Shares (NASDAQ:PLTU) Shares Gap Up - Here's Why",
+            "source": "MarketBeat",
+            "published": "Fri, 01 May 2026 07:00:00 GMT"
+          },
+          {
+            "title": "How PLTU Group (PLTU) Affects Rotational Strategy Timing",
+            "source": "Stock Traders Daily",
+            "published": "Sat, 09 May 2026 21:04:02 GMT"
+          },
+          {
+            "title": "Diluted shares outstanding of Les Placements de Tunisie-SICAF SA – BVMT:PLTU",
+            "source": "TradingView",
+            "published": "Sun, 10 May 2026 20:59:05 GMT"
+          },
+          {
+            "title": "Palantir Q4 Earnings Beat Spells Opportunity With These ETFs",
+            "source": "etftrends.com",
+            "published": "Wed, 04 Feb 2026 08:00:00 GMT"
+          },
+          {
+            "title": "(PLTU) and the Role of Price-Sensitive Allocations",
+            "source": "Stock Traders Daily",
+            "published": "Tue, 28 Apr 2026 19:56:02 GMT"
+          },
+          {
+            "title": "Les Placements de Tunisie-SICAF SA Statistics – BVMT:PLTU",
+            "source": "TradingView",
+            "published": "Sun, 10 May 2026 20:22:37 GMT"
+          }
+        ],
+        "google_news_zh": []
+      },
+      {
+        "ticker": "SOXL",
+        "name": "三倍做多半导体ETF-Direxion",
+        "region": "us_stocks",
+        "reddit_mentions_7d": 0,
+        "reddit_posts": [],
+        "google_news_en": [
+          {
+            "title": "SOXL Stock Chart | DIREX DAIL SEMI BU 3X ET-USD (NYSEARCA:SOXL)",
+            "source": "ChartMill",
+            "published": "Fri, 15 May 2026 07:00:00 GMT"
+          },
+          {
+            "title": "Direxion Daily Semiconductor Bull 3x Shares ETF (SOXL) Stock Forum and Discussion",
+            "source": "Moomoo",
+            "published": "Sun, 17 May 2026 09:06:45 GMT"
+          },
+          {
+            "title": "SOXL: The Move Isn't Over",
+            "source": "Seeking Alpha",
+            "published": "Tue, 28 Apr 2026 07:00:00 GMT"
+          },
+          {
+            "title": "Up 160% in One Month, This AI ETF Can Still 5X",
+            "source": "24/7 Wall St.",
+            "published": "Tue, 05 May 2026 07:00:00 GMT"
+          },
+          {
+            "title": "SMH vs SOXX vs SOXL: Which Semiconductor ETF to Buy in May 2026",
+            "source": "Gotrade",
+            "published": "Thu, 07 May 2026 07:00:00 GMT"
+          },
+          {
+            "title": "Why Direxion Daily Semiconductor Bull 3X ETF Crashed Today",
+            "source": "Yahoo Finance",
+            "published": "Tue, 12 May 2026 19:02:09 GMT"
+          }
+        ],
+        "google_news_zh": []
+      },
+      {
+        "ticker": "RKLX",
+        "name": "Defiance Daily Target 2X Long R",
+        "region": "us_stocks",
+        "reddit_mentions_7d": 0,
+        "reddit_posts": [],
+        "google_news_en": [
+          {
+            "title": "Liquidity Mapping Around (RKLX) Price Events",
+            "source": "Stock Traders Daily",
+            "published": "Sat, 09 May 2026 23:42:01 GMT"
+          },
+          {
+            "title": "Why (RKLX) Price Action Is Critical for Tactical Trading",
+            "source": "Stock Traders Daily",
+            "published": "Tue, 28 Apr 2026 22:34:02 GMT"
+          },
+          {
+            "title": "5 Best-Performing Leveraged ETFs of Last Week - December 15, 2025",
+            "source": "Zacks Investment Research",
+            "published": "Mon, 15 Dec 2025 08:00:00 GMT"
+          },
+          {
+            "title": "Defiance Launches RKLX and HIMZ: 2X Leveraged ETFs for Rocket Lab and Hims & Hers",
+            "source": "Yahoo Finance",
+            "published": "Wed, 12 Mar 2025 07:00:00 GMT"
+          },
+          {
+            "title": "Defiance Daily Target 2X Long RKLB ETF ETF Price, Holdings, & News (NASDAQ:RKLX)",
+            "source": "MarketBeat",
+            "published": "Tue, 11 Mar 2025 07:00:00 GMT"
+          }
+        ],
+        "google_news_zh": []
+      },
+      {
+        "ticker": "ROBN",
+        "name": "二倍做多HOOD ETF-T-Rex",
+        "region": "us_stocks",
+        "reddit_mentions_7d": 0,
+        "reddit_posts": [],
+        "google_news_en": [
+          {
+            "title": "Understanding Momentum Shifts in (ROBN)",
+            "source": "Stock Traders Daily",
+            "published": "Tue, 28 Apr 2026 22:42:02 GMT"
+          },
+          {
+            "title": "Single, Ready to Mingle: These ETFs Continue to Sprout",
+            "source": "etftrends.com",
+            "published": "Mon, 18 Aug 2025 07:00:00 GMT"
+          },
+          {
+            "title": "Ron Baron’s New ETF Hits Record With Big SpaceX Bet",
+            "source": "Gotrade",
+            "published": "Mon, 26 Jan 2026 08:00:00 GMT"
+          },
+          {
+            "title": "Why (ROBN) Price Action Is Critical for Tactical Trading",
+            "source": "Stock Traders Daily",
+            "published": "Sat, 09 May 2026 23:50:02 GMT"
+          },
+          {
+            "title": "T-Rex 2X Long HOOD Daily Target ETF (NYSE:ROBN)",
+            "source": "intelligentinvestor.com.au",
+            "published": "Sun, 23 Nov 2025 04:43:58 GMT"
+          },
+          {
+            "title": "ROBN Stock Fund Price and Chart — CBOE:ROBN",
+            "source": "TradingView",
+            "published": "Fri, 31 Jan 2025 15:57:58 GMT"
+          }
+        ],
+        "google_news_zh": []
+      },
+      {
+        "ticker": "MSFU",
+        "name": "二倍做多微软ETF-Direxion",
+        "region": "us_stocks",
+        "reddit_mentions_7d": 0,
+        "reddit_posts": [],
+        "google_news_en": [
+          {
+            "title": "(MSFU) and the Role of Price-Sensitive Allocations",
+            "source": "Stock Traders Daily",
+            "published": "Thu, 14 May 2026 15:26:02 GMT"
+          },
+          {
+            "title": "If Microsoft Is Ready to Rebound, Consider Trading This ETF",
+            "source": "etftrends.com",
+            "published": "Fri, 27 Mar 2026 07:00:00 GMT"
+          },
+          {
+            "title": "Direxion Daily MSFT Bull 2X Shares (NASDAQ:MSFU) Shares Gap Down - Here's What Happened",
+            "source": "MarketBeat",
+            "published": "Thu, 30 Apr 2026 07:00:00 GMT"
+          },
+          {
+            "title": "MSFU ETF: Get Ready To Pull The Trigger (NASDAQ:MSFU)",
+            "source": "Seeking Alpha",
+            "published": "Tue, 10 Feb 2026 08:00:00 GMT"
+          },
+          {
+            "title": "MSFU Should I Buy",
+            "source": "Intellectia AI",
+            "published": "Thu, 02 Apr 2026 19:13:01 GMT"
+          },
+          {
+            "title": "Why It’s Time to Look at This Microsoft ETF",
+            "source": "etftrends.com",
+            "published": "Tue, 18 Nov 2025 08:00:00 GMT"
+          }
+        ],
+        "google_news_zh": []
+      },
+      {
+        "ticker": "00100",
+        "name": "MINIMAX-W",
+        "region": "hk_stocks",
+        "reddit_mentions_7d": 0,
+        "reddit_posts": [],
+        "google_news_en": [
+          {
+            "title": "Hong Kong Stock Movement | MINIMAX-W (00100) Surged Over 6% Intraday Again After Morgan Stanley Raised the Company's Target Price to HKD 1,100 Previously",
+            "source": "Moomoo",
+            "published": "Thu, 14 May 2026 06:27:55 GMT"
+          },
+          {
+            "title": "Xie Feng's remarks provided positive momentum for MINIMAX (00100.HK), with its shares surging over 18% during the trading session and its market capitalization exceeding HKD 256.5 billion.",
+            "source": "富途牛牛",
+            "published": "Wed, 13 May 2026 09:05:31 GMT"
+          },
+          {
+            "title": "MiniMax(00100.HK)啟動10x Team計劃 招攬領域人才",
+            "source": "AASTOCKS.com",
+            "published": "Mon, 11 May 2026 03:33:00 GMT"
+          },
+          {
+            "title": "CMSI: CN Large Model Industry Agent Commercialization Unstoppable; KNOWLEDGE ATLAS, MINIMAX-W Initiated at Overweight",
+            "source": "AASTOCKS.com",
+            "published": "Tue, 12 May 2026 02:34:00 GMT"
+          }
+        ],
+        "google_news_zh": [
+          {
+            "title": "MINIMAX-W(00100)出現大手賣出1.12萬股，成交價$810.0，涉資907.2萬",
+            "source": "AASTOCKS.com",
+            "published": "Mon, 18 May 2026 09:06:57 GMT"
+          },
+          {
+            "title": "MINIMAX-W(00100)出現大手賣出1.95萬股，成交價$800.0，涉資1.56千萬",
+            "source": "AASTOCKS.com",
+            "published": "Mon, 18 May 2026 08:08:00 GMT"
+          },
+          {
+            "title": "《大行》摩通：DeepSeek V4具第一方成本優勢智譜(02513.HK)MiniMax(00100.HK)須加強市場定位迎戰",
+            "source": "AASTOCKS.com",
+            "published": "Mon, 18 May 2026 05:51:00 GMT"
+          },
+          {
+            "title": "MINIMAX-W(00100)出現大手賣出4.95萬股，成交價$794.0，涉資3.93千萬",
+            "source": "AASTOCKS.com",
+            "published": "Fri, 15 May 2026 08:09:00 GMT"
+          },
+          {
+            "title": "MINIMAX-W(00100)出現大手賣出3.37萬股，成交價$850.0，涉資2.864千萬",
+            "source": "AASTOCKS.com",
+            "published": "Thu, 14 May 2026 08:09:00 GMT"
+          },
+          {
+            "title": "MINIMAX-W(00100)出現大手賣出6.21萬股，成交價$818.0，涉資5.08千萬",
+            "source": "AASTOCKS.com",
+            "published": "Wed, 13 May 2026 08:08:00 GMT"
+          }
+        ]
+      },
+      {
+        "ticker": "02208",
+        "name": "金风科技",
+        "region": "hk_stocks",
+        "reddit_mentions_7d": 0,
+        "reddit_posts": [],
+        "google_news_en": [
+          {
+            "title": "JPM: Preferred Renewable Energy H Shrs GOLDWIND (02208.HK), GCL TECH (03800.HK) and CGN POWER (01816.HK)",
+            "source": "AASTOCKS.com",
+            "published": "Mon, 18 May 2026 08:13:00 GMT"
+          },
+          {
+            "title": "JPM: Preferred Renewable Energy H Shrs GOLDWIND (02208.HK), GCL TECH (03800.HK) and CGN POWER (01816.HK)",
+            "source": "AASTOCKS.com",
+            "published": "Mon, 18 May 2026 08:13:00 GMT"
+          },
+          {
+            "title": "Hong Kong Stock Movement | Goldwind Technology (02208) fell over 4% post-results; net profit attributable to shareholders grew more than 40% year-on-year in the first three quarters.",
+            "source": "Moomoo",
+            "published": "Sun, 26 Oct 2025 07:00:00 GMT"
+          },
+          {
+            "title": "Bearish block trade of GOLDWIND(02208) 474.4K shares at $16.92, $8.027M turnover",
+            "source": "AASTOCKS.com",
+            "published": "Mon, 11 May 2026 09:00:01 GMT"
+          }
+        ],
+        "google_news_zh": [
+          {
+            "title": "《大行》摩通：可再生能源H股偏好金風(02208.HK)、協鑫(03800.HK)及中廣核電力(01816.HK)",
+            "source": "AASTOCKS.com",
+            "published": "Mon, 18 May 2026 08:13:00 GMT"
+          },
+          {
+            "title": "【大行報告】大摩升金風科技目標價40%",
+            "source": "Yahoo 財經",
+            "published": "Mon, 19 Jan 2026 08:00:00 GMT"
+          },
+          {
+            "title": "財律指揮｜中美科技處處角力 金風科技不只做風電 火箭概念有排炒｜曲鳴",
+            "source": "Yahoo 財經",
+            "published": "Sun, 11 Jan 2026 08:00:00 GMT"
+          },
+          {
+            "title": "《大行》瑞銀升金風科技(02208.HK)目標價至26.9元 評級「買入」",
+            "source": "AASTOCKS.com",
+            "published": "Wed, 01 Apr 2026 07:00:00 GMT"
+          },
+          {
+            "title": "《AI》金風科技(02208.HK)出現「杯柄突破」技術圖表形態",
+            "source": "AASTOCKS.com",
+            "published": "Thu, 14 May 2026 03:41:00 GMT"
+          },
+          {
+            "title": "金風科技(02208.HK)升近一成 首季淨利潤大增六成",
+            "source": "AASTOCKS.com",
+            "published": "Mon, 27 Apr 2026 01:35:00 GMT"
+          }
+        ]
+      },
+      {
+        "ticker": "03032",
+        "name": "恒生科技ETF",
+        "region": "hk_stocks",
+        "reddit_mentions_7d": 0,
+        "reddit_posts": [],
+        "google_news_en": [
+          {
+            "title": "Year-End Review | The Strongest ETF in Hong Kong's 2025 Market Unveiled! Gold Takes the Lead, with Technology and High Dividend Stocks Performing Together",
+            "source": "富途牛牛",
+            "published": "Mon, 29 Dec 2025 08:00:00 GMT"
+          },
+          {
+            "title": "HANG SENG HSCEI COVERED CALL ACTIVE ETF (3519)",
+            "source": "hkex.com.hk",
+            "published": "Fri, 08 May 2026 01:51:10 GMT"
+          },
+          {
+            "title": "HK Stock Concept Tracker | Earnings Reports of Hong Kong Technology Stocks Released, AI Emerges as Core Growth Engine (Includes Relevant Stocks)",
+            "source": "Moomoo",
+            "published": "Wed, 13 May 2026 23:30:16 GMT"
+          },
+          {
+            "title": "HANG SENG TECH INDEX ETF (3032) - price, quote, history",
+            "source": "hkex.com.hk",
+            "published": "Fri, 04 Sep 2020 07:00:00 GMT"
+          }
+        ],
+        "google_news_zh": [
+          {
+            "title": "恒生科技ETF(03032.HK)下跌2.32%，報4.808",
+            "source": "FX168财经",
+            "published": "Mon, 18 May 2026 06:52:14 GMT"
+          },
+          {
+            "title": "03032 恒生科技ＥＴＦ - ETF 詳情 - ETF",
+            "source": "etnet 經濟通",
+            "published": "Fri, 15 May 2026 07:00:00 GMT"
+          },
+          {
+            "title": "恒生科技ＥＴＦ(03032) 交易所買賣基金的交易資料",
+            "source": "信報網站",
+            "published": "Thu, 14 May 2026 15:58:32 GMT"
+          },
+          {
+            "title": "負面因素已充分計價，南方基金旗下恆生科技ETF南方(520570)進入堅實價值底部區間",
+            "source": "hstong.com",
+            "published": "Fri, 15 May 2026 17:35:20 GMT"
+          },
+          {
+            "title": "恒生科技ETF南方(520570)早盤漲近3% 互聯網龍頭一季度業績超預期AI有望驅動恒科指數修復",
+            "source": "富途牛牛",
+            "published": "Thu, 14 May 2026 02:18:16 GMT"
+          },
+          {
+            "title": "熱門科投股投資工具｜比較6款恒生科技指數ETF邊隻好！",
+            "source": "Syfe",
+            "published": "Wed, 10 Sep 2025 07:00:00 GMT"
+          }
+        ]
+      },
+      {
+        "ticker": "07226",
+        "name": "XL二南方恒科",
+        "region": "hk_stocks",
+        "reddit_mentions_7d": 0,
+        "reddit_posts": [],
+        "google_news_en": [
+          {
+            "title": "AASTOCKS Financial News - XL2CSOPHSTECH (07226.HK) / All",
+            "source": "AASTOCKS.com",
+            "published": "Tue, 25 Jul 2023 23:16:11 GMT"
+          }
+        ],
+        "google_news_zh": [
+          {
+            "title": "ＸＬ二南方恆科(07226)股價下跌5.013%，現價港幣$3.676",
+            "source": "AASTOCKS.com",
+            "published": "Mon, 18 May 2026 03:13:00 GMT"
+          },
+          {
+            "title": "07552 ＸＩ二南方恒科- 槓桿及反向產品詳情- ETF",
+            "source": "etnet 經濟通",
+            "published": "Thu, 14 May 2026 07:00:00 GMT"
+          },
+          {
+            "title": "槓桿及反向產品的交易資料",
+            "source": "信報網站",
+            "published": "Mon, 18 May 2026 16:48:08 GMT"
+          },
+          {
+            "title": "周度港股ETF规模变化排行榜（2026年5月第二周）",
+            "source": "FX168财经",
+            "published": "Mon, 18 May 2026 09:20:28 GMT"
+          },
+          {
+            "title": "ＸＬ二南方恆科(07226)出現大手賣出150萬股，成交價$3.796，涉資569.4萬",
+            "source": "AASTOCKS.com",
+            "published": "Mon, 18 May 2026 01:20:00 GMT"
+          },
+          {
+            "title": "ＸＬ二南方恆科(07226)出現大手賣出230萬股，成交價$3.87，涉資890.1萬",
+            "source": "AASTOCKS.com",
+            "published": "Fri, 15 May 2026 08:09:00 GMT"
+          }
+        ]
+      },
+      {
+        "ticker": "03033",
+        "name": "南方恒生科技",
+        "region": "hk_stocks",
+        "reddit_mentions_7d": 0,
+        "reddit_posts": [],
+        "google_news_en": [
+          {
+            "title": "Bearish block trade of CSOP HS TECH(03033) 1.9M shares at $5.14, $9.766M turnover",
+            "source": "AASTOCKS.com",
+            "published": "Thu, 14 May 2026 01:20:00 GMT"
+          },
+          {
+            "title": "G Sachs Lists HK Stocks With Highest Net Buys & Sells by Southbound Funds Last Wk (Table)",
+            "source": "AASTOCKS.com",
+            "published": "Sun, 03 May 2026 07:00:00 GMT"
+          },
+          {
+            "title": "Capital Flows | Northbound investors aggressively purchased Hong Kong stocks exceeding HKD 13.3 billion, increasing positions in Tencent and Alibaba.",
+            "source": "富途牛牛",
+            "published": "Wed, 04 Feb 2026 08:00:00 GMT"
+          }
+        ],
+        "google_news_zh": [
+          {
+            "title": "南方恒生科技(03033.HK)下跌1.66%，報4.750",
+            "source": "FX168财经",
+            "published": "Mon, 18 May 2026 05:41:30 GMT"
+          },
+          {
+            "title": "交易所買賣基金的交易資料",
+            "source": "信報網站",
+            "published": "Mon, 18 May 2026 19:18:18 GMT"
+          },
+          {
+            "title": "03033 南方恒生科技- ETF 詳情 - ETF",
+            "source": "etnet 經濟通",
+            "published": "Fri, 15 May 2026 09:59:00 GMT"
+          },
+          {
+            "title": "負面因素已充分計價，南方基金旗下恆生科技ETF南方(520570)進入堅實價值底部區間",
+            "source": "hstong.com",
+            "published": "Fri, 15 May 2026 17:35:20 GMT"
+          },
+          {
+            "title": "熱門科投股投資工具｜比較6款恒生科技指數ETF邊隻好！",
+            "source": "Syfe",
+            "published": "Wed, 10 Sep 2025 07:00:00 GMT"
+          },
+          {
+            "title": "恒生科技ETF南方(520570)早盤漲近3% 互聯網龍頭一季度業績超預期AI有望驅動恒科指數修復",
+            "source": "富途牛牛",
+            "published": "Thu, 14 May 2026 02:18:16 GMT"
+          }
+        ]
+      }
+    ]
+  },
+  "macro": {
+    "generated_at": "2026-05-19T13:42:58.673019+00:00",
+    "vix": null,
+    "treasury_10y": null,
+    "dxy": null,
+    "fear_greed": null,
+    "hsi": null,
+    "hstech": null,
+    "spx": null,
+    "nasdaq": null,
+    "fed_press": [
+      {
+        "date": "2026-05-15",
+        "title": "Federal Reserve Board names Jerome H. Powell as chair pro tempore; Powell will serve as chair pro tempore until Kevin M. Warsh is sworn in as the new chair",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260515a.htm"
+      },
+      {
+        "date": "2026-05-15",
+        "title": "Federal Reserve Board announces approval of application by the Stephen M. Calk 2025 Trust",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260515a.htm"
+      },
+      {
+        "date": "2026-05-15",
+        "title": "Federal Reserve Board announces it does not object to the conversion of United Texas Bank, of Dallas, Texas, from a bank supervised by the Federal Reserve to a national bank supervised by the Office o",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260515b.htm"
+      },
+      {
+        "date": "2026-05-15",
+        "title": "Federal Reserve Board announces termination of enforcement actions with UBS Group AG, Credit Suisse AG, Credit Suisse Holdings (USA), Inc., and Credit Suisse AG, New York Branch",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260515a.htm"
+      },
+      {
+        "date": "2026-05-14",
+        "title": "Stephen I. Miran submits his resignation as a member of the Federal Reserve Board, effective when or shortly before his successor on the Board is sworn in",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260514b.htm"
+      },
+      {
+        "date": "2026-05-14",
+        "title": "Federal Reserve Board releases results from two surveys of senior financial officers at banks about their views on discount window operating days and their strategies and practices for managing reserv",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260514a.htm"
+      },
+      {
+        "date": "2026-05-13",
+        "title": "Federal Reserve Board issues Economic Well-Being of U.S. Households in 2025 report",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260513a.htm"
+      },
+      {
+        "date": "2026-05-12",
+        "title": "Federal Reserve Board announces termination of enforcement actions with F & M Holding Company, Inc. and Thread Bancorp, Inc.",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260512a.htm"
+      }
+    ]
+  },
   "all_time_extremes": {
     "winners": [
       {
         "ticker": "RKLB",
         "name": "Rocket Lab Corp",
         "region": "us",
-        "pnl_percent": 67.82,
-        "pnl_abs": 240.75,
-        "current_value": 595.75
+        "pnl_percent": 67.75,
+        "pnl_abs": 240.5,
+        "current_value": 595.5
       },
       {
         "ticker": "SOXL",
         "name": "三倍做多半导体ETF-Direxion",
         "region": "us",
-        "pnl_percent": 56.0,
-        "pnl_abs": 257.25,
-        "current_value": 716.6
+        "pnl_percent": 57.42,
+        "pnl_abs": 263.75,
+        "current_value": 723.1
       },
       {
         "ticker": "RKLX",
         "name": "Defiance Daily Target 2X Long R",
         "region": "us",
-        "pnl_percent": 55.62,
-        "pnl_abs": 51.95,
-        "current_value": 145.35
+        "pnl_percent": 55.43,
+        "pnl_abs": 51.77,
+        "current_value": 145.17
       }
     ],
     "losers": [
@@ -1351,9 +1996,9 @@
         "ticker": "ROBN",
         "name": "二倍做多HOOD ETF-T-Rex",
         "region": "us",
-        "pnl_percent": -25.07,
-        "pnl_abs": -236.5,
-        "current_value": 706.8
+        "pnl_percent": -24.39,
+        "pnl_abs": -230.1,
+        "current_value": 713.2
       },
       {
         "ticker": "07226",
@@ -1367,9 +2012,9 @@
         "ticker": "PLTU",
         "name": "二倍做多PLTR ETF-Direxion",
         "region": "us",
-        "pnl_percent": -12.25,
-        "pnl_abs": -70.24,
-        "current_value": 503.16
+        "pnl_percent": -13.1,
+        "pnl_abs": -75.14,
+        "current_value": 498.26
       }
     ]
   },
@@ -1418,7 +2063,7 @@
   "realized_vs_unrealized": {
     "us": {
       "realized": 592.18,
-      "unrealized": 295.58
+      "unrealized": 300.04
     },
     "hk": {
       "realized": 7259.16,
@@ -1426,7 +2071,7 @@
     },
     "combined_usd": {
       "realized": 1519.2,
-      "unrealized": -828.09
+      "unrealized": -823.63
     }
   }
 }

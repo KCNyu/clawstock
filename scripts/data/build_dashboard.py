@@ -948,16 +948,21 @@ def main():
     else:
         out['risk'] = None
 
-    # Catalyst calendar (built by scripts/data/fetch_catalysts.py)
-    catalysts_path = WS_ROOT / 'assets' / 'data' / 'catalysts.json'
-    if catalysts_path.exists():
-        try:
-            out['catalysts'] = json.loads(catalysts_path.read_text())
-        except Exception as e:
-            print(f'  warn: catalysts.json parse fail: {e}', file=sys.stderr)
-            out['catalysts'] = None
-    else:
-        out['catalysts'] = None
+    # Embed GH Action outputs into dashboard.json so the static page can render them
+    def _embed(key, fname):
+        path = WS_ROOT / 'assets' / 'data' / fname
+        if path.exists():
+            try:
+                out[key] = json.loads(path.read_text())
+                return
+            except Exception as e:
+                print(f'  warn: {fname} parse fail: {e}', file=sys.stderr)
+        out[key] = None
+
+    _embed('catalysts', 'catalysts.json')              # fetch_catalysts.py + brief preflight [11/11]
+    _embed('us_news_digest', 'us_news_digest.json')    # GH Action news-digest.yml (xiaomi)
+    _embed('sentiment', 'sentiment.json')              # GH Action sentiment-scan.yml
+    _embed('macro', 'macro.json')                      # GH Action macro-scan.yml
     out['all_time_extremes'] = compute_all_time_extremes(portfolio, top_n=3)
     out['today_ranges'] = compute_today_ranges(portfolio, top_n=8)
     out['realized_vs_unrealized'] = compute_realized_vs_unrealized(portfolio, fx_rate)

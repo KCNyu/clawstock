@@ -211,6 +211,37 @@ layout: null
   .neg { color: var(--red); }
   .neutral { color: var(--text-dim); }
 
+  /* Catalysts list */
+  .catalysts-list { display: flex; flex-direction: column; gap: 6px; max-height: 240px; overflow-y: auto; }
+  .catalyst-row {
+    padding: 8px 10px; background: var(--card-2); border-radius: var(--radius-sm);
+    font-size: 12px; display: grid; grid-template-columns: 70px 80px 1fr; gap: 6px;
+  }
+  .catalyst-row .date { font-family: var(--mono); color: var(--text-dim); }
+  .catalyst-row .ticker { font-family: var(--mono); font-weight: 600; color: var(--accent); }
+  .catalyst-row .detail { color: var(--text); }
+  .catalyst-row.fomc .ticker { color: var(--accent-2); }
+  .catalyst-row.macro .ticker { color: #f59e0b; }
+
+  /* News digest markdown */
+  .news-digest { font-size: 13px; line-height: 1.5; max-height: 360px; overflow-y: auto; }
+  .news-digest h3 { font-size: 13px; color: var(--accent); margin: 12px 0 4px; }
+  .news-digest h3:first-child { margin-top: 0; }
+  .news-digest ul { padding-left: 18px; margin: 4px 0; }
+  .news-digest li { margin: 3px 0; }
+  .news-digest strong { color: var(--text); }
+  .news-digest .digest-meta { color: var(--text-dim); font-size: 11px; margin-bottom: 8px; }
+
+  /* Macro row */
+  .macro-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .macro-cell {
+    background: var(--card-2); border-radius: var(--radius-sm);
+    padding: 10px 8px; text-align: center; font-variant-numeric: tabular-nums;
+  }
+  .macro-cell .lbl { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+  .macro-cell .val { font-size: 17px; font-weight: 700; }
+  .macro-cell .sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
   /* Risk metrics grid */
   .risk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .risk-cell {
@@ -614,6 +645,27 @@ layout: null
     </div>
 
     <div class="card">
+      <h3>Catalysts <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(next 14d)</span></h3>
+      <div class="catalysts-list" id="catalysts-list">
+        <div class="empty-state">No upcoming catalysts.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>US News Digest <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(xiaomi · 48h)</span></h3>
+      <div class="news-digest" id="news-digest">
+        <div class="empty-state">No digest yet.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Macro · Sentiment</h3>
+      <div class="macro-row" id="macro-row">
+        <div class="empty-state">No macro data.</div>
+      </div>
+    </div>
+
+    <div class="card">
       <h3>Calibration · 30d</h3>
       <div class="calib-badge" id="calib-badge">
         <div>
@@ -830,6 +882,9 @@ layout: null
     renderRiskMetrics();
     renderAnomalies();
     renderMovers();
+    renderCatalysts();
+    renderNewsDigest();
+    renderMacro();
     renderCalibBadge();
     renderHoldings();
     renderTodayRange();
@@ -1004,6 +1059,80 @@ layout: null
         </div>
       `;
     }).join("");
+  }
+
+  function renderCatalysts() {
+    const wrap = document.getElementById('catalysts-list');
+    if (!wrap) return;
+    const c = safe(DATA, 'catalysts') || {};
+    const items = [
+      ...(c.earnings || []).map(x => ({...x, _type: 'earnings'})),
+      ...(c.fomc || []).map(x => ({...x, _type: 'fomc'})),
+      ...(c.macro_events || []).map(x => ({...x, _type: 'macro'})),
+    ];
+    if (!items.length) {
+      wrap.innerHTML = '<div class="empty-state">No upcoming catalysts (next 14d).</div>';
+      return;
+    }
+    items.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+    wrap.innerHTML = items.slice(0, 15).map(x => {
+      const tag = x._type === 'earnings' ? (x.ticker || '?') :
+                  x._type === 'fomc' ? 'FOMC' :
+                  (x.type || 'MACRO');
+      const detail = x.detail || x.title || x.time || '—';
+      return `<div class="catalyst-row ${x._type}">
+        <span class="date">${x.date || '—'}</span>
+        <span class="ticker">${tag}</span>
+        <span class="detail">${detail}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function renderNewsDigest() {
+    const wrap = document.getElementById('news-digest');
+    if (!wrap) return;
+    const d = safe(DATA, 'us_news_digest') || {};
+    if (!d.digest_markdown) {
+      wrap.innerHTML = '<div class="empty-state">No digest yet.</div>';
+      return;
+    }
+    // Minimal markdown render: H3 (### → h3), bold (**), bullets (-)
+    let md = d.digest_markdown
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^- (.+)$/gm, '<li>$1</li>');
+    md = md.replace(/(<li>.*?<\/li>(\n<li>.*?<\/li>)*)/gs, '<ul>$1</ul>');
+    md = md.replace(/\n\n/g, '<br>');
+    const meta = d.generated_at ? new Date(d.generated_at).toLocaleString('zh-CN', {hour12: false}) : '—';
+    wrap.innerHTML = `<div class="digest-meta">generated: ${meta}</div>${md}`;
+  }
+
+  function renderMacro() {
+    const wrap = document.getElementById('macro-row');
+    if (!wrap) return;
+    const m = safe(DATA, 'macro') || {};
+    const s = safe(DATA, 'sentiment') || {};
+    const cells = [];
+    const fmt = (v, suffix='') => v == null || isNaN(v) ? DASH : (Number(v).toFixed(2) + suffix);
+
+    if (m.vix?.price != null) cells.push({lbl: 'VIX', val: fmt(m.vix.price), sub: fmtPct(m.vix.change_pct)});
+    if (m.treasury_10y?.yield_pct != null) cells.push({lbl: '10Y Yield', val: fmt(m.treasury_10y.yield_pct, '%'), sub: ''});
+    if (m.dxy?.price != null) cells.push({lbl: 'DXY', val: fmt(m.dxy.price), sub: fmtPct(m.dxy.change_pct)});
+    if (m.fear_greed?.score != null) cells.push({lbl: 'F&G', val: fmt(m.fear_greed.score), sub: m.fear_greed.rating || ''});
+    if (s.reddit_mentions != null) cells.push({lbl: 'Reddit mentions', val: s.reddit_mentions, sub: ''});
+
+    if (m.fed_press?.length) {
+      cells.push({lbl: 'Fed (7d)', val: m.fed_press.length, sub: 'press releases'});
+    }
+
+    if (!cells.length) {
+      wrap.innerHTML = '<div class="empty-state">No macro / sentiment data.</div>';
+      return;
+    }
+    wrap.innerHTML = cells.map(c =>
+      `<div class="macro-cell"><div class="lbl">${c.lbl}</div><div class="val">${c.val}</div>${c.sub ? `<div class="sub">${c.sub}</div>` : ''}</div>`
+    ).join('');
   }
 
   function renderCalibBadge() {
