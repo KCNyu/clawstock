@@ -937,6 +937,16 @@ def main():
     fx_rate = (out.get('fx') or {}).get('usdhkd')
     out['sector_exposure'] = compute_sector_exposure(portfolio)
     out['leveraged_etf'] = compute_leveraged_etf_exposure(portfolio, fx_rate)
+    # Tier 2: pull pre-computed risk metrics (from portfolio_risk_metrics.py)
+    risk_path = WS_ROOT / 'assets' / 'data' / 'risk.json'
+    if risk_path.exists():
+        try:
+            out['risk'] = json.loads(risk_path.read_text())
+        except Exception as e:
+            print(f'  warn: risk.json parse fail: {e}', file=sys.stderr)
+            out['risk'] = None
+    else:
+        out['risk'] = None
     out['all_time_extremes'] = compute_all_time_extremes(portfolio, top_n=3)
     out['today_ranges'] = compute_today_ranges(portfolio, top_n=8)
     out['realized_vs_unrealized'] = compute_realized_vs_unrealized(portfolio, fx_rate)

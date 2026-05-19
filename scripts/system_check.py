@@ -256,8 +256,19 @@ def check_calibration_csv(r):
         return
     if len(rows) > 5000:
         r.add('calibration.csv size', WARNING, f'{len(rows)} rows — retention may not be working')
+        return
+    # Schema check: should have new 'followed' column (Tier 1.1)
+    if rows and 'followed' not in rows[0]:
+        r.add('calibration.csv schema', WARNING, "missing 'followed' column (run a brief or backfill)")
+        return
+    # Count followed status
+    from collections import Counter
+    if rows:
+        c = Counter((row.get('followed') or 'unknown').lower() for row in rows)
+        msg = f'{len(rows)} rows (followed: {c.get("true",0)}t/{c.get("false",0)}f/{c.get("unknown",0)}u)'
+        r.add('calibration.csv', OK, msg)
     else:
-        r.add('calibration.csv', OK, f'{len(rows)} rows')
+        r.add('calibration.csv', OK, '0 rows')
 
 
 def check_cron_paths_exist(r):

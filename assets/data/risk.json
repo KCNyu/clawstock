@@ -1,0 +1,89 @@
+{
+  "generated_at": "2026-05-19T14:32:28.588060+00:00",
+  "as_of": "2026-05-19",
+  "us": {
+    "beta_spx": 4.2709,
+    "vol_30d_annualized": 0.7745,
+    "max_dd_30d": -0.1326,
+    "sharpe_30d": 4.7139,
+    "current_value_usd": 3447.63
+  },
+  "hk": {
+    "beta_hsi": 2.5571,
+    "vol_30d_annualized": 0.7179,
+    "max_dd_30d": -0.1666,
+    "sharpe_30d": -1.6749,
+    "current_value_hkd": 79477.2
+  },
+  "combined": {
+    "vol_30d_annualized": 0.5647,
+    "max_dd_30d": -0.1403,
+    "sharpe_30d": -0.2091
+  },
+  "leveraged_exposure": {
+    "us_leverage_factor_avg": 1.9678,
+    "hk_leverage_factor_avg": 1.2925,
+    "combined_avg": 1.4632,
+    "margin_at_risk_pct": 14.6325
+  },
+  "alerts": [
+    {
+      "type": "high_beta",
+      "severity": "high",
+      "detail": "US β vs S&P 500 = 4.2709 (> 3.0)"
+    },
+    {
+      "type": "high_vol",
+      "severity": "high",
+      "detail": "Combined 30d annualised vol = 56.5% (> 50%)"
+    },
+    {
+      "type": "deep_dd",
+      "severity": "medium",
+      "detail": "Combined 30d max DD = -14.0% (< -10%)"
+    },
+    {
+      "type": "negative_sharpe",
+      "severity": "medium",
+      "detail": "Combined 30d Sharpe = -0.2091 (< 0)"
+    }
+  ],
+  "meta": {
+    "fx_hkd_to_usd_used": 0.128205,
+    "risk_free_annual": 0.045,
+    "window_days": 30,
+    "trading_days_per_year": 252,
+    "benchmark_status": {
+      "^GSPC": true,
+      "^HSI": true
+    },
+    "us_fetch": {
+      "fetched": [
+        "RKLB",
+        "CRCL",
+        "PLTU",
+        "SOXL",
+        "RKLX",
+        "ROBN",
+        "MSFU"
+      ],
+      "failed": [],
+      "n_returns": 30,
+      "dates_first": "2026-04-07",
+      "dates_last": "2026-05-19"
+    },
+    "hk_fetch": {
+      "fetched": [
+        "00100",
+        "02208",
+        "03032",
+        "07226",
+        "03033"
+      ],
+      "failed": [],
+      "n_returns": 30,
+      "dates_first": "2026-04-01",
+      "dates_last": "2026-05-19"
+    }
+  }
+}

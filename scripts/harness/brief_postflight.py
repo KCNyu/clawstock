@@ -139,7 +139,8 @@ def log_calibration(today):
     calib_path = WS / 'memory' / 'calibration.csv'
     new_file = not calib_path.exists()
     fieldnames = ['plan_date','ticker','bucket','trigger_type','trigger_price',
-                  'confidence','sim_entry_price','outcome','pnl_5d','pnl_30d','updated_at']
+                  'confidence','sim_entry_price','outcome','pnl_5d','pnl_30d',
+                  'followed','followed_at','updated_at']
     rows = []
     if not new_file:
         try:
@@ -166,6 +167,8 @@ def log_calibration(today):
             'outcome':         'pending',  # filled by future preflight retrospective
             'pnl_5d':          '',
             'pnl_30d':         '',
+            'followed':        'unknown',  # user marks via scripts/data/mark_followed.py
+            'followed_at':     '',
             'updated_at':      datetime.now().isoformat(),
         })
         appended += 1

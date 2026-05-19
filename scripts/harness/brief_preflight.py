@@ -442,6 +442,11 @@ def compute_self_calibration():
         outcome = r.get('outcome', '')  # 'win', 'loss', 'pending'
         if outcome not in ('win', 'loss'):
             continue
+        # Tier 1.1: only count plans you actually followed
+        # 'unknown' / 'true' / 'false' — only 'true' counted for calibration
+        followed = (r.get('followed') or 'unknown').lower()
+        if followed != 'true':
+            continue
         actual = 1.0 if outcome == 'win' else 0.0
         scored.append({
             'bucket': r.get('bucket', ''),
@@ -499,7 +504,7 @@ def main():
     print(f'═════ brief_preflight.py | {today} ═════')
 
     # [1] Refresh prices
-    print('\n[1/9] Refresh US prices')
+    print('\n[1/10] Refresh US prices')
     us_out, us_ok = _run('analyze_us_stocks.py', ['--no-news'])
     if not us_ok:
         issues.append(f'US refresh failed: {us_out[-200:]}')
@@ -507,7 +512,7 @@ def main():
     else:
         print('   ✓ done')
 
-    print('[2/9] Refresh HK prices')
+    print('[2/10] Refresh HK prices')
     hk_out, hk_ok = _run('analyze_hk_stocks.py', ['--no-news'])
     if not hk_ok:
         issues.append(f'HK refresh failed: {hk_out[-200:]}')
@@ -516,14 +521,14 @@ def main():
         print('   ✓ done')
 
     # [3] FX
-    print('[3/9] FX rate')
+    print('[3/10] FX rate')
     fx = fetch_fx_rate()
     if 'error' in fx:
         issues.append(f'FX fallback used: {fx["error"][-200:]}')
     print(f'   USDHKD = {fx["rate"]}  ({fx["source"]})')
 
     # [4] Snapshot
-    print('[4/9] Portfolio snapshot')
+    print('[4/10] Portfolio snapshot')
     portfolio_path = WS / 'portfolio.json'
     snapshot_path  = SNAPSHOT_DIR / f'{today}.json'
     snapshot_path.write_bytes(portfolio_path.read_bytes())
@@ -533,7 +538,7 @@ def main():
     portfolio = json.loads(portfolio_path.read_text())
 
     # [5] Concentration
-    print('[5/9] Concentration')
+    print('[5/10] Concentration')
     hk_conc = compute_concentration(portfolio['portfolios']['hk_stocks']['holdings'])
     us_conc = compute_concentration(portfolio['portfolios']['us_stocks']['holdings'])
     print(f'   HK: HHI={hk_conc.get("hhi"):.3f} {hk_conc.get("verdict")} '
@@ -554,7 +559,7 @@ def main():
     }
 
     # [6] SEC EDGAR
-    print('[6/9] SEC EDGAR US singles')
+    print('[6/10] SEC EDGAR US singles')
     us_fund = collect_us_fundamentals(portfolio)
     for t, data in us_fund.items():
         if 'error' in data:
@@ -565,7 +570,7 @@ def main():
             print(f'   ✓ {t}: {len(kf)} concepts')
 
     # [7] Retrospective
-    print('[7/9] Retrospective')
+    print('[7/10] Retrospective')
     prior_plan = find_prior_plan(today)
     retro = compute_retrospective(prior_plan, portfolio)
     if retro.get('prior_plan_date'):
@@ -581,12 +586,12 @@ def main():
         print(f'   first run (no prior plan)')
 
     # [8] Peer scan — for each active holding, fetch peer prices + flag divergence
-    print('[8/9] Peer scan')
+    print('[8/10] Peer scan')
     peer_scan = collect_peer_scan(portfolio)
     print(f'   {len(peer_scan)} holdings with peer data; {sum(1 for h in peer_scan.values() if h.get("divergence_signal"))} divergence signals')
 
     # [9] Self-calibration — read past plan outcomes and compute confidence accuracy
-    print('[9/9] Self-calibration')
+    print('[9/10] Self-calibration')
     self_calib = compute_self_calibration()
     if self_calib.get('samples', 0) >= 5 and 'brier_30d' in self_calib:
         print(f'   Brier (30d): {self_calib["brier_30d"]:.3f}  ({self_calib["samples"]} samples)')
@@ -594,6 +599,22 @@ def main():
             print(f'   {bucket:24s} n={stats["n"]} win_rate={stats["win_rate"]:.0%}')
     else:
         print(f'   not enough data yet (need ≥5 plans, have {self_calib.get("samples", 0)})')
+
+    # [10] Risk metrics — Tier 2: β / vol / DD / Sharpe / margin sim
+    print('[10/10] Risk metrics')
+    risk = {}
+    try:
+        subprocess.run(['python3', str(WS / 'scripts' / 'data' / 'portfolio_risk_metrics.py')],
+                       capture_output=True, text=True, timeout=120, check=False)
+        risk_path = WS / 'assets' / 'data' / 'risk.json'
+        if risk_path.exists():
+            risk = json.loads(risk_path.read_text())
+            alerts = risk.get('alerts', [])
+            print(f'   US β={risk.get("us",{}).get("beta_spx","?")}, combined vol={risk.get("combined",{}).get("vol_30d_annualized","?")}, alerts={len(alerts)}')
+            for a in alerts[:5]:
+                print(f'   ⚠ {a["type"]:18s} ({a["severity"]:6s}) {a["detail"][:80]}')
+    except Exception as e:
+        print(f'   ⚠ risk metrics failed: {e}')
 
     # Write context.json
     context = {
@@ -609,6 +630,7 @@ def main():
         'retrospective': retro,
         'peer_scan':     peer_scan,
         'self_calibration': self_calib,
+        'risk_metrics':  risk,
         'issues':        issues,
     }
     ctx_path = TMP_DIR / f'brief-context-{today}.json'

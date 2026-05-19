@@ -211,6 +211,26 @@ layout: null
   .neg { color: var(--red); }
   .neutral { color: var(--text-dim); }
 
+  /* Risk metrics grid */
+  .risk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .risk-cell {
+    background: var(--card-2); border-radius: var(--radius-sm);
+    padding: 10px 8px; text-align: center; font-variant-numeric: tabular-nums;
+  }
+  .risk-cell .lbl { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+  .risk-cell .val { font-size: 18px; font-weight: 700; margin-top: 2px; }
+  .risk-alerts { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .risk-alert {
+    padding: 8px 10px; background: var(--card-2); border-radius: var(--radius-sm);
+    font-size: 12px; display: flex; align-items: center; gap: 6px;
+    border-left: 3px solid var(--red);
+  }
+  .risk-alert.medium { border-left-color: #f59e0b; }
+  .risk-alert .icon { font-size: 14px; }
+  @media (max-width: 480px) {
+    .risk-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
   /* Leveraged ETF exposure row */
   .lev-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .lev-cell {
@@ -549,6 +569,37 @@ layout: null
     </div>
 
     <div class="card">
+      <h3>Risk Metrics <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(30d)</span> <span class="badge muted" id="risk-alert-count"></span></h3>
+      <div class="risk-grid">
+        <div class="risk-cell">
+          <div class="lbl">US β (vs SPX)</div>
+          <div class="val" id="risk-beta-us">—</div>
+        </div>
+        <div class="risk-cell">
+          <div class="lbl">HK β (vs HSI)</div>
+          <div class="val" id="risk-beta-hk">—</div>
+        </div>
+        <div class="risk-cell">
+          <div class="lbl">Vol (combined)</div>
+          <div class="val" id="risk-vol">—</div>
+        </div>
+        <div class="risk-cell">
+          <div class="lbl">Max DD 30d</div>
+          <div class="val" id="risk-dd">—</div>
+        </div>
+        <div class="risk-cell">
+          <div class="lbl">Sharpe</div>
+          <div class="val" id="risk-sharpe">—</div>
+        </div>
+        <div class="risk-cell">
+          <div class="lbl">Margin @ -10%</div>
+          <div class="val" id="risk-margin">—</div>
+        </div>
+      </div>
+      <div class="risk-alerts" id="risk-alerts"></div>
+    </div>
+
+    <div class="card">
       <h3>Anomalies <span class="badge muted" id="anom-count"></span></h3>
       <div class="anomaly-list" id="anomaly-list">
         <div class="empty-state">No anomalies detected.</div>
@@ -776,6 +827,7 @@ layout: null
     renderDelta();
     renderHHI();
     renderLeveragedETF();
+    renderRiskMetrics();
     renderAnomalies();
     renderMovers();
     renderCalibBadge();
@@ -1052,6 +1104,46 @@ layout: null
         renderHoldings();
       };
     });
+  }
+
+  function renderRiskMetrics() {
+    const r = safe(DATA, "risk") || {};
+    const us = r.us || {}, hk = r.hk || {}, combined = r.combined || {}, lev = r.leveraged_exposure || {};
+    const setNum = (id, v, fmt = 'num') => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (v == null || isNaN(v)) { el.textContent = DASH; el.className = "val neutral"; return; }
+      let text;
+      if (fmt === 'pct') text = (v * 100).toFixed(1) + '%';
+      else if (fmt === 'pct_signed') text = (v >= 0 ? '+' : '') + (v * 100).toFixed(1) + '%';
+      else text = v.toFixed(2);
+      el.textContent = text;
+      // Color by sign / threshold
+      let cls = "val";
+      if (id === 'risk-beta-us' || id === 'risk-beta-hk') cls += v > 3 ? ' neg' : (v > 2 ? ' warn-text' : '');
+      else if (id === 'risk-vol') cls += v > 0.5 ? ' neg' : (v > 0.35 ? ' warn-text' : '');
+      else if (id === 'risk-dd') cls += v < -0.1 ? ' neg' : '';
+      else if (id === 'risk-sharpe') cls += v < 0 ? ' neg' : (v > 1 ? ' pos' : '');
+      else if (id === 'risk-margin') cls += v < -10 ? ' neg' : '';
+      el.className = cls;
+    };
+    setNum('risk-beta-us', us.beta_spx);
+    setNum('risk-beta-hk', hk.beta_hsi);
+    setNum('risk-vol', combined.vol_30d_annualized, 'pct');
+    setNum('risk-dd', combined.max_dd_30d, 'pct_signed');
+    setNum('risk-sharpe', combined.sharpe_30d);
+    setNum('risk-margin', lev.margin_at_risk_pct);  // already in pct form
+
+    const alerts = r.alerts || [];
+    document.getElementById('risk-alert-count').textContent = alerts.length ? `(${alerts.length})` : '';
+    const ICONS = { high_beta: '⚡', high_vol: '🌊', deep_dd: '📉', high_leverage: '⚠️', negative_sharpe: '➖' };
+    const html = alerts.map(a =>
+      `<div class="risk-alert ${a.severity || 'high'}">
+         <span class="icon">${ICONS[a.type] || '⚠️'}</span>
+         <div><strong>${a.type}</strong>: ${a.detail || ''}</div>
+       </div>`
+    ).join('');
+    document.getElementById('risk-alerts').innerHTML = html;
   }
 
   function renderLeveragedETF() {
