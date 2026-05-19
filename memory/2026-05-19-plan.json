@@ -1,0 +1,89 @@
+{
+  "date": "2026-05-19",
+  "fx_rate_usdhkd": 7.8,
+  "regime_us": "neutral_soft",
+  "regime_hk": "ai_tech_leading",
+  "concentration": {
+    "hk": {
+      "hhi": 0.422,
+      "top2_pct": 85.8,
+      "verdict": "🔴 危险集中"
+    },
+    "us": {
+      "hhi": 0.169,
+      "top2_pct": 41.7,
+      "verdict": "偏集中"
+    }
+  },
+  "fx": {
+    "rate": 7.8,
+    "source": "HARDCODED_FALLBACK",
+    "note": "⚠️ stale；真实市场或已变动"
+  },
+  "book_usd_total": -194.17,
+  "book_hkd_total": -1514.56,
+  "book_usd_breakdown": {
+    "us_leg": 3685.83,
+    "total_cost_usd": 3181.05,
+    "pnl_usd": 504.78
+  },
+  "book_hkd_breakdown": {
+    "hk_leg": 82824.4,
+    "total_cost_hkd": 88276.24,
+    "pnl_hkd": -5451.84
+  },
+  "actions": [
+    {
+      "ticker": "07226",
+      "bucket": "trim_on_rebound",
+      "trigger_type": "price_above",
+      "trigger_price": 3.72,
+      "trigger_condition": "盘中拉红任意涨幅即减",
+      "size_shares": 2200,
+      "confidence": 0.75,
+      "rationale": "07226 -3.93% vs HSTECH -0.55%，gap 3.4pp，杠杆负β放大；仓位重 6200股，趁反弹减至 4000股"
+    },
+    {
+      "ticker": "00100",
+      "bucket": "hold_and_watch",
+      "trigger_type": "price_above",
+      "trigger_price": 820,
+      "trigger_condition": "若 peer 全面止跌 + 自己站稳 820",
+      "size_shares": 0,
+      "confidence": 0.6,
+      "rationale": "800 心理关口守住 +0.76%，peer 全面下跌中独立行情；等 peer 方向确认后再决策"
+    },
+    {
+      "ticker": "SOXL",
+      "bucket": "add_only_on_trigger",
+      "trigger_type": "price_above",
+      "trigger_price": 158,
+      "trigger_condition": "若 MA20 守住 +纳指期货不破",
+      "size_shares": 1,
+      "confidence": 0.7,
+      "rationale": "SOXL -7.7% 超跌，MA20 附近若企稳可加 1 股；成本 151.56，target 165"
+    },
+    {
+      "ticker": "RKLB",
+      "bucket": "hold_and_watch",
+      "trigger_type": "price_above",
+      "trigger_price": 135,
+      "trigger_condition": "若 PreMarket 继续走强 + 航天催化",
+      "size_shares": 0,
+      "confidence": 0.65,
+      "rationale": "+4.97% 突破，浮盈 +84%；持有不追，等确认"
+    }
+  ],
+  "confidence_buckets": {
+    "high_75pct": ["07226 trim"],
+    "medium_65_70pct": ["SOXL add", "RKLB hold_and_watch"],
+    "low_60pct": ["00100 hold_and_watch"]
+  },
+  "retrospective": {
+    "prior_plan_date": "2026-05-18",
+    "fired": 0,
+    "not_fired": 3,
+    "ambiguous": 0,
+    "note": "3 个 plan 全部未触发；置信度 60-79% 区间命中 0/3；自校准需积累 outcome 数据"
+  }
+}

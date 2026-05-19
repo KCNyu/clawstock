@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-18T20:02:43.771466Z",
+  "generated_at": "2026-05-19T00:05:48.374832Z",
   "last_updated": "2026/05/19 04:00 HKT",
   "fx": {
     "usdhkd": 7.8315,
@@ -428,11 +428,23 @@
       "hk_total_cost": 88276.24,
       "hk_total_pnl": -4935.84,
       "hk_today_change": -5178.0
+    },
+    {
+      "date": "2026-05-19",
+      "file": "2026-05-19.json",
+      "us_total_value": 3685.83,
+      "us_total_cost": 3181.05,
+      "us_total_pnl": 504.78,
+      "us_today_change": -10.46,
+      "hk_total_value": 82824.4,
+      "hk_total_cost": 88276.24,
+      "hk_total_pnl": -5451.84,
+      "hk_today_change": -516.0
     }
   ],
-  "snapshots_total": 4,
+  "snapshots_total": 5,
   "snapshots_embedded_cap": 90,
-  "plans_count": 2,
+  "plans_count": 3,
   "recent_plans": [
     {
       "date": "2026-05-17",
@@ -573,6 +585,106 @@
         ],
         "self_calibration_note": "60-79% conf band 0/3 hit rate; all calls above use conf-5pp effective"
       }
+    },
+    {
+      "date": "2026-05-19",
+      "file": "2026-05-19-plan.json",
+      "plan": {
+        "date": "2026-05-19",
+        "fx_rate_usdhkd": 7.8,
+        "regime_us": "neutral_soft",
+        "regime_hk": "ai_tech_leading",
+        "concentration": {
+          "hk": {
+            "hhi": 0.422,
+            "top2_pct": 85.8,
+            "verdict": "🔴 危险集中"
+          },
+          "us": {
+            "hhi": 0.169,
+            "top2_pct": 41.7,
+            "verdict": "偏集中"
+          }
+        },
+        "fx": {
+          "rate": 7.8,
+          "source": "HARDCODED_FALLBACK",
+          "note": "⚠️ stale；真实市场或已变动"
+        },
+        "book_usd_total": -194.17,
+        "book_hkd_total": -1514.56,
+        "book_usd_breakdown": {
+          "us_leg": 3685.83,
+          "total_cost_usd": 3181.05,
+          "pnl_usd": 504.78
+        },
+        "book_hkd_breakdown": {
+          "hk_leg": 82824.4,
+          "total_cost_hkd": 88276.24,
+          "pnl_hkd": -5451.84
+        },
+        "actions": [
+          {
+            "ticker": "07226",
+            "bucket": "trim_on_rebound",
+            "trigger_type": "price_above",
+            "trigger_price": 3.72,
+            "trigger_condition": "盘中拉红任意涨幅即减",
+            "size_shares": 2200,
+            "confidence": 0.75,
+            "rationale": "07226 -3.93% vs HSTECH -0.55%，gap 3.4pp，杠杆负β放大；仓位重 6200股，趁反弹减至 4000股"
+          },
+          {
+            "ticker": "00100",
+            "bucket": "hold_and_watch",
+            "trigger_type": "price_above",
+            "trigger_price": 820,
+            "trigger_condition": "若 peer 全面止跌 + 自己站稳 820",
+            "size_shares": 0,
+            "confidence": 0.6,
+            "rationale": "800 心理关口守住 +0.76%，peer 全面下跌中独立行情；等 peer 方向确认后再决策"
+          },
+          {
+            "ticker": "SOXL",
+            "bucket": "add_only_on_trigger",
+            "trigger_type": "price_above",
+            "trigger_price": 158,
+            "trigger_condition": "若 MA20 守住 +纳指期货不破",
+            "size_shares": 1,
+            "confidence": 0.7,
+            "rationale": "SOXL -7.7% 超跌，MA20 附近若企稳可加 1 股；成本 151.56，target 165"
+          },
+          {
+            "ticker": "RKLB",
+            "bucket": "hold_and_watch",
+            "trigger_type": "price_above",
+            "trigger_price": 135,
+            "trigger_condition": "若 PreMarket 继续走强 + 航天催化",
+            "size_shares": 0,
+            "confidence": 0.65,
+            "rationale": "+4.97% 突破，浮盈 +84%；持有不追，等确认"
+          }
+        ],
+        "confidence_buckets": {
+          "high_75pct": [
+            "07226 trim"
+          ],
+          "medium_65_70pct": [
+            "SOXL add",
+            "RKLB hold_and_watch"
+          ],
+          "low_60pct": [
+            "00100 hold_and_watch"
+          ]
+        },
+        "retrospective": {
+          "prior_plan_date": "2026-05-18",
+          "fired": 0,
+          "not_fired": 3,
+          "ambiguous": 0,
+          "note": "3 个 plan 全部未触发；置信度 60-79% 区间命中 0/3；自校准需积累 outcome 数据"
+        }
+      }
     }
   ],
   "recent_plans_cap": 5,
@@ -591,12 +703,12 @@
   "market_context": {},
   "delta": {
     "us": {
-      "today_pct": 0.0,
+      "today_pct": -0.23,
       "7d_pct": null,
       "30d_pct": null
     },
     "hk": {
-      "today_pct": 0.0,
+      "today_pct": -0.62,
       "7d_pct": null,
       "30d_pct": null
     }
@@ -641,73 +753,45 @@
   "anomalies": [
     {
       "type": "peer_divergence",
-      "ticker": "00100",
-      "detail": "02273 智云健康 -0.2% vs self -6.6% (gap +6.4pp)",
-      "severity": "medium"
-    },
-    {
-      "type": "peer_divergence",
       "ticker": "07226",
-      "detail": "00700 腾讯控股 +0.3% vs self -5.2% (gap +5.5pp)",
-      "severity": "medium"
+      "detail": "09988 阿里巴巴-W -0.5% vs self -3.9% (gap +3.5pp)",
+      "severity": "low"
     },
     {
       "type": "peer_divergence",
-      "ticker": "02208",
-      "detail": "01798 大唐新能源 -1.2% vs self -5.6% (gap +4.4pp)",
+      "ticker": "SOXL",
+      "detail": "SOXX iShares 半导体 1x +0.0% vs self -7.7% (gap +7.7pp)",
       "severity": "medium"
-    },
-    {
-      "type": "peer_divergence",
-      "ticker": "ROBN",
-      "detail": "HOOD Robinhood (underlying) +0.0% vs self -9.0% (gap +9.0pp)",
-      "severity": "high"
     },
     {
       "type": "high_weight_loss",
       "ticker": "07226",
-      "detail": "weight 28.8% + pnl -14.8%",
+      "detail": "weight 27.8% + pnl -14.8%",
       "severity": "medium"
     },
     {
       "type": "leveraged_etf_stop",
       "ticker": "ROBN",
-      "detail": "leveraged ETF: pnl -17.5%, today -9.0%",
+      "detail": "leveraged ETF: pnl -17.5%",
       "severity": "medium"
     }
   ],
   "peer_divergence": [
     {
-      "ticker": "00100",
-      "self_pct_1d": -6.59,
-      "best_peer": "02469",
-      "best_peer_name": "速腾聚创",
-      "peer_pct_1d": 0.0,
-      "divergence_pp": 6.59
-    },
-    {
       "ticker": "07226",
-      "self_pct_1d": -5.19,
-      "best_peer": "00700",
-      "best_peer_name": "腾讯控股",
-      "peer_pct_1d": 0.33,
-      "divergence_pp": 5.52
+      "self_pct_1d": -3.93,
+      "best_peer": "09988",
+      "best_peer_name": "阿里巴巴-W",
+      "peer_pct_1d": -0.45,
+      "divergence_pp": 3.48
     },
     {
-      "ticker": "02208",
-      "self_pct_1d": -5.58,
-      "best_peer": "01798",
-      "best_peer_name": "大唐新能源",
-      "peer_pct_1d": -1.16,
-      "divergence_pp": 4.42
-    },
-    {
-      "ticker": "ROBN",
-      "self_pct_1d": -9.03,
-      "best_peer": "HOOD",
-      "best_peer_name": "Robinhood (underlying)",
+      "ticker": "SOXL",
+      "self_pct_1d": -7.69,
+      "best_peer": "SOXX",
+      "best_peer_name": "iShares 半导体 1x",
       "peer_pct_1d": 0.0,
-      "divergence_pp": 9.03
+      "divergence_pp": 7.69
     }
   ],
   "calibration": {
@@ -764,6 +848,60 @@
     }
   },
   "recent_plan_actions": [
+    {
+      "date": "2026-05-19",
+      "ticker": "07226",
+      "bucket": "trim_on_rebound",
+      "confidence": 0.75,
+      "trigger_type": "price_above",
+      "outcome": "pending",
+      "pnl_5d": null
+    },
+    {
+      "date": "2026-05-19",
+      "ticker": "00100",
+      "bucket": "watch",
+      "confidence": 0.6,
+      "trigger_type": "price_above",
+      "outcome": "pending",
+      "pnl_5d": null
+    },
+    {
+      "date": "2026-05-19",
+      "ticker": "SOXL",
+      "bucket": "add_only_on_trigger",
+      "confidence": 0.7,
+      "trigger_type": "price_above",
+      "outcome": "pending",
+      "pnl_5d": null
+    },
+    {
+      "date": "2026-05-19",
+      "ticker": "RKLB",
+      "bucket": "watch",
+      "confidence": 0.65,
+      "trigger_type": "price_above",
+      "outcome": "pending",
+      "pnl_5d": null
+    },
+    {
+      "date": "2026-05-19",
+      "ticker": "00100",
+      "bucket": "hold_and_watch",
+      "confidence": 0.6,
+      "trigger_type": "price_above",
+      "outcome": "pending",
+      "pnl_5d": null
+    },
+    {
+      "date": "2026-05-19",
+      "ticker": "RKLB",
+      "bucket": "hold_and_watch",
+      "confidence": 0.65,
+      "trigger_type": "price_above",
+      "outcome": "pending",
+      "pnl_5d": null
+    },
     {
       "date": "2026-05-18",
       "ticker": "00100",
@@ -847,10 +985,10 @@
     }
   ],
   "drawdown": {
-    "max_pct_30d_hk": 0.0,
-    "max_pct_30d_us": 0.0,
-    "current_pct_hk": 0.0,
-    "current_pct_us": 0.0
+    "max_pct_30d_hk": -0.62,
+    "max_pct_30d_us": -0.23,
+    "current_pct_hk": -0.62,
+    "current_pct_us": -0.23
   },
   "sector_exposure": {
     "us": [
