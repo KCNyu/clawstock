@@ -36,7 +36,7 @@ MAX_RETRIES = 3
 
 
 def chat(system: str = '', user: str = '', messages: list = None,
-         max_tokens: int = 16000, temperature: float = 0.7,
+         max_tokens: int = 32000, temperature: float = 0.7,
          model: str = DEFAULT_MODEL, base_url: str = DEFAULT_BASE,
          api_key: str = None, thinking_disabled: bool = False,
          json_response: bool = False) -> str:

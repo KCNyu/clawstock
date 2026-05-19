@@ -87,7 +87,7 @@ def main():
     )
 
     # Weekly review benefits most from thinking + depth (1 turn, complex synthesis)
-    out = chat(system=system, user=user, max_tokens=16000, temperature=0.6)
+    out = chat(system=system, user=user, max_tokens=32000, temperature=0.6)
 
     os.makedirs('memory/weekly', exist_ok=True)
     path = Path(f'memory/weekly/{week_id}.md')

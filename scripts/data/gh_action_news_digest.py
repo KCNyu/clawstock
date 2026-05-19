@@ -85,7 +85,7 @@ def main():
     )
 
     # News digest: short output but enable thinking helps prioritize signal vs noise
-    digest = chat(system=system, user=user, max_tokens=4000, temperature=0.5)
+    digest = chat(system=system, user=user, max_tokens=32000, temperature=0.5)
 
     out = {
         'generated_at': datetime.now().isoformat(),
