@@ -94,8 +94,14 @@ Plus 4 GitHub Actions for backstop / extras:
 clawock/
 ├─ index.html  briefs.md  README.md          ← Pages landing + this file
 ├─ assets/                                   ← Pages static
-│  └─ data/dashboard.json    ← built by harness postflight, never hand-edit
-│                              (dashboard CSS/JS are inlined in index.html since v2)
+│  └─ data/                  built by harness postflight + GH Actions, never hand-edit
+│     ├─ dashboard.json        v2.x schema (CSS/JS inlined in index.html since v2)
+│     ├─ risk.json             β/Vol/DD/Sharpe (portfolio_risk_metrics.py)
+│     ├─ catalysts.json        14d earnings + FOMC + macro (fetch_catalysts.py)
+│     ├─ us_news_digest.json   xiaomi LLM 提炼 (GH Action news-digest.yml)
+│     ├─ macro.json            VIX / DXY / Fed RSS (macro-scan.yml)
+│     ├─ sentiment.json        Reddit mention (sentiment-scan.yml)
+│     └─ fx.json               USDHKD (fetch_fx.py, 4h cache)
 │
 ├─ portfolio.json                            ← single source of truth (atomic writes)
 ├─ memory/

@@ -194,8 +194,9 @@ python3 scripts/data/analyze_hk_stocks.py --dry-run   # 不写文件
 - **`scripts/data/portfolio_risk_metrics.py`**：算 β/Vol/Max DD/Sharpe/margin_at_risk → `assets/data/risk.json`。每日 brief preflight `[10/10]` 自动跑。Yahoo v8 429 限速 → 改用 Tencent gtimg primary + Polygon/AlphaVantage fallback。alert 类型：high_beta(>3) / high_vol(>50%) / deep_dd(<-10%) / high_leverage(>2.0) / negative_sharpe(<0)
 - **`scripts/data/mark_followed.py`**：calibration ground-truth 工具。手动 `mark_followed.py YYYY-MM-DD TICKER BUCKET [--no]` 或 `--auto` 跑 git history shares diff 推断（每日 brief preflight 自动跑同一逻辑）。Brier score 现在**只统计 followed=true** 的 plan actions。
 - **`scripts/data/fetch_catalysts.py`**：未来 14d catalysts → `assets/data/catalysts.json`（7 US holding 财报 Finnhub + 2026 FOMC 硬编码 + 经济日历 NFP/CPI 规则）。brief_preflight `[11/11]` 自动跑。`catalysts.alerts` 触发时 LLM brief 必须 ▎事件日历 段提及。
-- **`scripts/data/xiaomi_llm.py`**：minimal OpenAI-compat client for Xiaomi MiMo v2.5-pro，供 GH Action workflow 直调（绕过 openclaw gateway）。`thinking={'type':'disabled'}` 避 multi-turn 400。retry 3 次 + 429 rate-limit handling。env `XIAOMI_API_KEY`。
+- **`scripts/data/xiaomi_llm.py`**：minimal OpenAI-compat client for Xiaomi MiMo v2.5-pro，供 GH Action workflow 直调（绕过 openclaw gateway）。**单轮调用默认 thinking enabled + max_tokens 32K**（mimo-v2.5-pro 上限）；多轮场景需显式传 `thinking_disabled=True` 避 reasoning_content 400。retry 3 次 + 429 rate-limit handling。env `XIAOMI_API_KEY`。
 - **`scripts/data/gh_action_*.py`**：3 个 GH Action 入口脚本（brief_fallback / weekly_review / news_digest），都用 xiaomi_llm.chat() 直调小米。
+- **`scripts/data/safe_push.sh`**：共享 git push 防 conflict 死循环工具。3 次 retry + 每次 rebase 失败 → `git rebase --abort` + exit 2（不死循环 push）。所有写文件的 GH Action workflow 用 `bash scripts/data/safe_push.sh` 替代原本的 push loop；harness 端 `scripts/harness/_harness_common.push_with_rebase_retry` 也同款逻辑升级。
 - **`scripts/data/update_portfolio.py`** / **`update_us_portfolio.js`**：手动调仓后写 portfolio.json 的辅助
 
 ### Cron map（**10 个 job 位于 `~/.openclaw/cron/jobs.json`**）
