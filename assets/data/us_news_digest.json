@@ -1,22 +1,20 @@
 {
-  "generated_at": "2026-05-19T15:26:24.764738",
+  "generated_at": "2026-05-20T16:21:06.744017",
   "lookback_hours": 48,
   "tickers": [
     "RKLB",
     "CRCL",
     "PLTU",
     "SOXL",
-    "RKLX",
     "ROBN",
     "MSFU"
   ],
-  "digest_markdown": "### Top 3-5 移动信号 (跨 ticker 排序)\n- CRCL: HC Wainwright 升级至 Buy 并提高目标价至 $150，CLARITY Act 推进可能巩固其稳定币领先地位 — 正面催化剂，kcn 的持仓可能受益于股价上行。\n- RKLB: 上周被列为大型股赢家，但 SeekingAlpha 建议避免买入，反映市场分歧 — 短期波动风险，kcn 应审慎评估持仓信心。\n- SOXL: 杠杆 ETF 资产达 $337 亿历史高点，但科技板块动量转负 — 市场情绪极端，kcn 需监控杠杆暴露和半导体回调风险。\n\n### Per-ticker 简报 (有新闻才列)\n- CRCL: 分析师升级及 CLARITY Act 利好稳定币业务 — 正面催化，可能驱动股价上涨。\n- RKLB: 列入大涨股但遭负面评价 — 影响中性偏负，关注估值压力。\n- SOXL: 杠杆 ETF 资产创新高叠加科技板块信号负面 — 风险上升，警惕市场波动。\n\n### 风险 watch\n- RKLB: SeekingAlpha 建议不要买入，暗示估值风险。\n- SOXL: 科技板块动量转负，可能冲击半导体 ETF 表现。",
+  "digest_markdown": "### Top 3 移动信号\n- **CRCL**: HC Wainwright 将评级从 Neutral 升级至 Buy，目标价从 $85 大幅上调至 $150；Morgan Stanley 维持 Equal-Weight 但上调目标价至 $106。**Implication**: 机构共识转向乐观，且《CLARITY Act》立法进展可能为 CRCL 创造稳定币领域的长期优势，构成买入催化。\n- **SOXL**: BofA 技术策略师指出 VanEck 半导体 ETF 的周线 RSI 达到历史最高超买水平，历史类似信号平均导致 44% 的回调，耗时约 73 周触底。**Implication**: 杠杆半导体 ETF 面临显著的技术性回调风险，需密切关注仓位风险。\n- **RKLB**: SpaceX IPO 预期推动太空主题 ETF 和个股关注度回升，板块情绪回暖。**Implication**: 作为商业航天概念股，可能受益于板块资金流入和情绪改善，但需注意缺乏公司自身催化剂。\n\n### Per-ticker 简报\n- **CRCL**: 两家投行（HC Wainwright, Morgan Stanley）集体上调目标价，叠加稳定币监管法案（CLARITY Act）推进的潜在利好，短期和长期前景均获正面提振。\n- **SOXL**: 半导体板块技术指标触及极端超买，历史数据显示后续回调幅度深且时间长，杠杆产品波动风险加剧。\n\n### 风险 watch\n- **SOXL**: 《芯片股刚触及创纪录超买水平：历史表明后果很严重》一文明确指出了基于 RSI 的技术性崩盘风险，是当前最明确的短期警示信号。",
   "raw_news_counts": {
-    "RKLB": 3,
-    "CRCL": 3,
+    "RKLB": 5,
+    "CRCL": 5,
     "PLTU": 0,
-    "SOXL": 3,
-    "RKLX": 0,
+    "SOXL": 5,
     "ROBN": 0,
     "MSFU": 0
   }
