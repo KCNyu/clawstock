@@ -27,7 +27,71 @@ TIMEOUT = 10
 
 
 def yahoo_quote(symbol):
-    """Latest + previous close for any Yahoo ticker."""
+    """Latest + previous close. Tries Stooq → Tencent gtimg → Yahoo (last resort).
+
+    GH Action IPs are throttled by Yahoo so Stooq + Tencent are primary.
+    """
+    # 1) Stooq (free, no key, works for SPX/NDX/HSI)
+    stooq_map = {
+        '^GSPC': '^spx', '^IXIC': '^ndx', '^HSI': '^hsi',
+        '^DJI':  '^dji', '^HSTECH': '^hstech',
+    }
+    stq_sym = stooq_map.get(symbol)
+    if stq_sym:
+        try:
+            r = requests.get(
+                f'https://stooq.com/q/l/?s={stq_sym}&f=sd2t2ohlcv&h&e=csv',
+                headers=HEADERS, timeout=TIMEOUT,
+            )
+            if r.status_code == 200 and 'N/D' not in r.text:
+                # CSV: Symbol,Date,Time,Open,High,Low,Close,Volume
+                parts = r.text.strip().split('\n')[-1].split(',')
+                if len(parts) >= 7:
+                    open_p = float(parts[3])
+                    close = float(parts[6])
+                    chg = ((close - open_p) / open_p * 100) if open_p else 0
+                    return {
+                        'symbol': symbol, 'price': round(close, 4),
+                        'prev': round(open_p, 4),  # rough proxy: today open
+                        'change_pct': round(chg, 2),
+                        'source': 'stooq',
+                    }
+        except Exception:
+            pass
+
+    # 2) Tencent gtimg (free, no key, works for DJI/IXIC/HSI/HSTECH)
+    tencent_map = {
+        '^GSPC': None,  # Tencent doesn't have SPX
+        '^IXIC': 'r_usIXIC', '^DJI': 'r_usDJI',
+        '^HSI': 'r_hkHSI', '^HSTECH': 'r_hkHSTECH',
+    }
+    tc_sym = tencent_map.get(symbol)
+    if tc_sym:
+        try:
+            r = requests.get(f'https://qt.gtimg.cn/q={tc_sym}',
+                             headers=HEADERS, timeout=TIMEOUT)
+            r.encoding = 'gbk'
+            # Parse: v_r_usDJI="...~price~...~prev~...~chg~chg_pct~..."
+            text = r.text
+            if '="' in text:
+                inner = text.split('="', 1)[1].rstrip('";\n')
+                parts = inner.split('~')
+                if len(parts) > 32:
+                    price = float(parts[3]) if parts[3] else None
+                    prev = float(parts[4]) if parts[4] else None
+                    # parts[31] = change, parts[32] = change_pct
+                    if price:
+                        chg_pct = float(parts[32]) if parts[32] else 0
+                        return {
+                            'symbol': symbol, 'price': round(price, 4),
+                            'prev': round(prev, 4) if prev else None,
+                            'change_pct': round(chg_pct, 2),
+                            'source': 'tencent',
+                        }
+        except Exception:
+            pass
+
+    # 3) Yahoo last resort (likely 429 from GH Action IP)
     try:
         r = requests.get(
             f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}',
@@ -48,21 +112,34 @@ def yahoo_quote(symbol):
             'prev':   round(prev or price, 4),
             'change_pct': round(chg, 2),
             'as_of': meta.get('regularMarketTime'),
+            'source': 'yahoo',
         }
     except Exception as e:
-        print(f'  ⚠️ yahoo {symbol}: {e}', file=sys.stderr)
+        print(f'  ⚠️ {symbol} 全源失败: {e}', file=sys.stderr)
         return None
 
 
 def cnn_fear_greed():
-    """CNN Fear & Greed index — public production API."""
+    """CNN Fear & Greed — uses production-API endpoint. CNN 418 bot-blocks
+    default UA; use a full browser UA + Origin header to get through.
+    """
+    full_browser_ua = (
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 '
+        '(KHTML, like Gecko) Version/17.0 Safari/605.1.15'
+    )
     try:
         r = requests.get(
             'https://production.dataviz.cnn.io/index/fearandgreed/graphdata',
-            headers={**HEADERS, 'Accept': 'application/json'},
+            headers={
+                'User-Agent': full_browser_ua,
+                'Accept': 'application/json, text/plain, */*',
+                'Origin': 'https://www.cnn.com',
+                'Referer': 'https://www.cnn.com/',
+            },
             timeout=TIMEOUT,
         )
         if r.status_code != 200:
+            print(f'  ⚠️ CNN F&G: HTTP {r.status_code}', file=sys.stderr)
             return None
         j = r.json()
         cur = (j.get('fear_and_greed') or {})
@@ -74,7 +151,7 @@ def cnn_fear_greed():
         prev_1w    = cur.get('previous_1_week')
         return {
             'score':       round(score, 1),
-            'rating':      rating,         # 'extreme fear' | 'fear' | 'neutral' | 'greed' | 'extreme greed'
+            'rating':      rating,
             'prev_close':  round(prev_close, 1) if prev_close else None,
             'prev_1_week': round(prev_1w, 1) if prev_1w else None,
             'as_of':       cur.get('timestamp'),
