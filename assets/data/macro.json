@@ -1,13 +1,65 @@
 {
-  "generated_at": "2026-05-19T13:42:58.673019+00:00",
-  "vix": null,
-  "treasury_10y": null,
-  "dxy": null,
-  "fear_greed": null,
-  "hsi": null,
-  "hstech": null,
-  "spx": null,
-  "nasdaq": null,
+  "generated_at": "2026-05-20T01:34:52.738437+00:00",
+  "vix": {
+    "symbol": "^VIX",
+    "price": 18.06,
+    "prev": 17.82,
+    "change_pct": 1.35,
+    "as_of": 1779221701,
+    "source": "yahoo"
+  },
+  "treasury_10y": {
+    "symbol": "^TNX",
+    "price": 4.667,
+    "prev": 4.623,
+    "change_pct": 0.95,
+    "as_of": 1779217194,
+    "source": "yahoo",
+    "yield_pct": 0.467
+  },
+  "dxy": {
+    "symbol": "DX-Y.NYB",
+    "price": 99.371,
+    "prev": 99.327,
+    "change_pct": 0.04,
+    "as_of": 1779240290,
+    "source": "yahoo"
+  },
+  "fear_greed": {
+    "score": 60.4,
+    "rating": "greed",
+    "prev_close": 62.8,
+    "prev_1_week": 65.1,
+    "as_of": "2026-05-19T23:59:44+00:00"
+  },
+  "hsi": {
+    "symbol": "^HSI",
+    "price": 25623.83,
+    "prev": 25797.85,
+    "change_pct": -0.67,
+    "source": "stooq"
+  },
+  "hstech": {
+    "symbol": "^HSTECH",
+    "price": 4832.94,
+    "prev": 4857.46,
+    "change_pct": -0.5,
+    "source": "tencent"
+  },
+  "spx": {
+    "symbol": "^GSPC",
+    "price": 7353.61,
+    "prev": 7375.75,
+    "change_pct": -0.3,
+    "source": "stooq"
+  },
+  "nasdaq": {
+    "symbol": "^IXIC",
+    "price": 28818.84,
+    "prev": 28795.02,
+    "change_pct": 0.08,
+    "source": "stooq"
+  },
   "fed_press": [
     {
       "date": "2026-05-15",
@@ -43,11 +95,6 @@
       "date": "2026-05-13",
       "title": "Federal Reserve Board issues Economic Well-Being of U.S. Households in 2025 report",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260513a.htm"
-    },
-    {
-      "date": "2026-05-12",
-      "title": "Federal Reserve Board announces termination of enforcement actions with F & M Holding Company, Inc. and Thread Bancorp, Inc.",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260512a.htm"
     }
   ]
 }
