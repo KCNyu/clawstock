@@ -88,6 +88,7 @@ python3 /root/.openclaw/workspace/scripts/harness/intraday_preflight.py --market
 
 #### Step 2: 写报告
 - 拷贝 `raw_wechat_block` 到消息开头（verbatim）
+  - 注：intraday 的 holdings 已经是 **markdown 表格**（5 列：代码/现价/今日/浮盈%/RSI，右对齐数字），WeChat 移动端会渲染成真表格；其他段（信号 / 亏损统计 / 新闻）保持 ASCII
 - 加 `▎我的看法` 段（2-3 行）：
   - 若 `should_alert=true`，**必须**提 `anomalies` 中至少一个票
   - 简短判断；不复述数字
@@ -102,7 +103,7 @@ python3 /root/.openclaw/workspace/scripts/harness/intraday_postflight.py --marke
 #### Step 4: 发 WeChat
 拼 `wechat_prefix` + 报告，**无标题**。
 
-**和 Mode 6 的区别**：单段 `▎我的看法` 取代三段；无 ▎风险提示；无 git commit。
+**和 Mode 6 的区别**：单段 `▎我的看法` 取代三段；无 ▎风险提示；无 git commit；holdings 用 markdown 表格（Mode 6 briefing 仍 ASCII）。
 
 ### Mode 6 — WeChat Briefing (cron-driven, harness 化 ✨)
 **When:** 美股开盘 / 美股收盘 两个 cron 走这个 mode。

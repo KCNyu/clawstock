@@ -525,8 +525,12 @@ def print_report(data: Dict, news_map: Optional[Dict[str, List]] = None):
 
 # ── WeChat-friendly report (mobile/chat format) ───────────────────────────────
 
-def print_wechat_report(data: Dict, news_map: Optional[Dict[str, List]] = None):
-    """Compact mobile-friendly format for WeChat/Telegram delivery."""
+def print_wechat_report(data: Dict, news_map: Optional[Dict[str, List]] = None, md_table: bool = False):
+    """Compact mobile-friendly format for WeChat/Telegram delivery.
+
+    md_table=True: holdings rendered as markdown table (intraday cron via
+    `--md-table`); briefings keep ASCII single-column form.
+    """
     hkt_tz  = timezone(timedelta(hours=8))
     now_hkt = datetime.now(hkt_tz)
 
@@ -565,15 +569,29 @@ def print_wechat_report(data: Dict, news_map: Optional[Dict[str, List]] = None):
 
     # Holdings list
     lines.append('')
-    for h in active:
-        code  = h['ticker']
-        name  = h.get('stock_name', code).replace('-W', '')[:5]
-        price = h.get('current_price', 0)
-        dp    = h.get('today_change_pct', 0)
-        pnl_p = h.get('pnl_percent', 0)
-        arrow = '▲' if dp >= 0 else '▼'
-        pnl_emoji = '🟢' if pnl_p >= 0 else '🔴'
-        lines.append(f"{pnl_emoji} {code} {name}  {price:.3f}  {arrow}{abs(dp):.1f}%  浮{pnl_p:+.1f}%")
+    if md_table:
+        # Mobile-aligned markdown table (4 cols, drop name to keep narrow)
+        lines.append('| 代码  |       现价 |   今日 |  浮盈% |')
+        lines.append('|:------|-----------:|-------:|-------:|')
+        for h in active:
+            code  = h['ticker']
+            price = h.get('current_price', 0)
+            dp    = h.get('today_change_pct', 0)
+            pnl_p = h.get('pnl_percent', 0)
+            price_s = f"HK${price:,.3f}"
+            today   = f"{dp:+.1f}%"
+            pnlp    = f"{pnl_p:+.1f}%"
+            lines.append(f"| {code:<5} | {price_s:>10} | {today:>6} | {pnlp:>6} |")
+    else:
+        for h in active:
+            code  = h['ticker']
+            name  = h.get('stock_name', code).replace('-W', '')[:5]
+            price = h.get('current_price', 0)
+            dp    = h.get('today_change_pct', 0)
+            pnl_p = h.get('pnl_percent', 0)
+            arrow = '▲' if dp >= 0 else '▼'
+            pnl_emoji = '🟢' if pnl_p >= 0 else '🔴'
+            lines.append(f"{pnl_emoji} {code} {name}  {price:.3f}  {arrow}{abs(dp):.1f}%  浮{pnl_p:+.1f}%")
 
     # Actionable signals only (skip plain HOLD)
     alerts: List[str] = []
@@ -624,6 +642,7 @@ if __name__ == '__main__':
     dry_run  = '--dry-run'  in sys.argv
     no_news  = '--no-news'  in sys.argv
     wechat   = '--wechat'   in sys.argv
+    md_table = '--md-table' in sys.argv
 
     if no_fetch:
         with open(PORTFOLIO_PATH, encoding='utf-8') as f:
@@ -659,6 +678,6 @@ if __name__ == '__main__':
             print("  [新闻] 未找到 FINNHUB_API_KEY，跳过新闻")
 
     if wechat:
-        print_wechat_report(data, news_map)
+        print_wechat_report(data, news_map, md_table=md_table)
     else:
         print_report(data, news_map)

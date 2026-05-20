@@ -327,8 +327,13 @@ def print_report(data: Dict, analyses: List[Dict]):
 
 # ── WeChat-friendly report ───────────────────────────────────────────────────
 
-def print_wechat_report(data: Dict, analyses: List[Dict]):
-    """Compact mobile-friendly US report for WeChat/Telegram delivery."""
+def print_wechat_report(data: Dict, analyses: List[Dict], md_table: bool = False):
+    """Compact mobile-friendly US report for WeChat/Telegram delivery.
+
+    When md_table=True, the holdings block is emitted as a markdown table
+    (mobile-aligned via :---: markers + padded cells). Used by intraday
+    cron via `--md-table`; briefings keep the ASCII single-column form.
+    """
     us    = data['portfolios']['us_stocks']
     now   = datetime.now(ET_TZ)
 
@@ -352,16 +357,32 @@ def print_wechat_report(data: Dict, analyses: List[Dict]):
 
     # Holdings
     lines.append('')
-    for a in analyses:
-        h     = a['holding']
-        tech  = a['tech']
-        dp    = h.get('today_change_pct', 0)
-        pnl_p = h.get('pnl_percent', 0)
-        rsi   = tech.get('rsi14')
-        arr   = '▲' if dp >= 0 else '▼'
-        emo   = '🟢' if pnl_p >= 0 else '🔴'
-        rsi_s = f" RSI{rsi:.0f}" if rsi else ''
-        lines.append(f"{emo} {h['ticker']:<5} ${h['current_price']:.2f}  {arr}{abs(dp):.1f}%  浮{pnl_p:+.1f}%{rsi_s}")
+    if md_table:
+        # Mobile-aligned markdown table (5 cols, padded source for raw-view too)
+        lines.append('| 代码 |    现价 |   今日 |  浮盈% | RSI |')
+        lines.append('|:-----|--------:|-------:|-------:|----:|')
+        for a in analyses:
+            h     = a['holding']
+            tech  = a['tech']
+            dp    = h.get('today_change_pct', 0)
+            pnl_p = h.get('pnl_percent', 0)
+            rsi   = tech.get('rsi14')
+            price = f"${h['current_price']:,.2f}"
+            today = f"{dp:+.1f}%"
+            pnlp  = f"{pnl_p:+.1f}%"
+            rsi_c = f"{rsi:.0f}" if rsi else '—'
+            lines.append(f"| {h['ticker']:<4} | {price:>7} | {today:>6} | {pnlp:>6} | {rsi_c:>3} |")
+    else:
+        for a in analyses:
+            h     = a['holding']
+            tech  = a['tech']
+            dp    = h.get('today_change_pct', 0)
+            pnl_p = h.get('pnl_percent', 0)
+            rsi   = tech.get('rsi14')
+            arr   = '▲' if dp >= 0 else '▼'
+            emo   = '🟢' if pnl_p >= 0 else '🔴'
+            rsi_s = f" RSI{rsi:.0f}" if rsi else ''
+            lines.append(f"{emo} {h['ticker']:<5} ${h['current_price']:.2f}  {arr}{abs(dp):.1f}%  浮{pnl_p:+.1f}%{rsi_s}")
 
     # Actionable signals only (BUY / WATCH / TRIM / STOP-LOSS)
     alerts = []
@@ -413,6 +434,7 @@ def run_analysis(fetch: bool = True, include_news: bool = True):
     no_fetch = '--no-fetch' in sys.argv
     no_news  = '--no-news'  in sys.argv
     wechat   = '--wechat'   in sys.argv
+    md_table = '--md-table' in sys.argv
     if not fetch:   no_fetch = True
     if not include_news: no_news = True
 
@@ -474,7 +496,7 @@ def run_analysis(fetch: bool = True, include_news: bool = True):
         print()
 
     if wechat:
-        print_wechat_report(data, analyses)
+        print_wechat_report(data, analyses, md_table=md_table)
     else:
         print_report(data, analyses)
     return analyses

@@ -34,7 +34,7 @@ def run_analyze(market):
     script = DATA_DIR / f'analyze_{market}_stocks.py'
     try:
         r = subprocess.run(
-            ['python3', str(script), '--wechat'],
+            ['python3', str(script), '--wechat', '--md-table'],
             capture_output=True, text=True, timeout=120,
         )
         return r.returncode, r.stdout, r.stderr
@@ -69,25 +69,36 @@ def parse_signals(stdout):
 
 
 def parse_anomalies(stdout):
+    """Parse markdown holdings table rows (--md-table form) and flag ≥3% moves.
+
+    Row shape (US): `| RKLB | $125.59 | -1.4% | +76.9% | 70 |`
+    Row shape (HK): `| 00700 | HK$3.230 | -1.2% | +5.3% |`
+    Cell[1] = ticker, cell[3] = today change (signed %).
+    Header / separator rows are filtered (代码 / `:---`).
+    """
     anomalies = []
-    head_re = re.compile(r'^[🟢🔴]\s+(\S+)')
-    move_re = re.compile(r'([▲▼])([\d\.]+)%')
+    pct_re = re.compile(r'([+\-])([\d\.]+)%')
     for line in stdout.splitlines():
         s = line.strip()
-        head = head_re.match(s)
-        if not head:
+        if not s.startswith('|') or not s.endswith('|'):
             continue
-        ticker = head.group(1)
-        move = move_re.search(s)
-        if not move:
+        cells = [c.strip() for c in s.strip('|').split('|')]
+        if len(cells) < 4:
             continue
-        arrow, pct_str = move.groups()
+        ticker = cells[0]
+        if ticker == '代码' or ticker.startswith(':'):  # header / separator
+            continue
+        today = cells[2]
+        m = pct_re.search(today)
+        if not m:
+            continue
+        sign, pct_str = m.groups()
         pct = float(pct_str)
         if pct < 3.0:
             continue
         anomalies.append({
             'ticker':   ticker,
-            'move_pct': (1 if arrow == '▲' else -1) * pct,
+            'move_pct': (1 if sign == '+' else -1) * pct,
             'severity': 'high' if pct >= 5 else 'medium',
         })
     return anomalies
