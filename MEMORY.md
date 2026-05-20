@@ -86,3 +86,10 @@
 ## 持仓数据
 - **单一来源：`portfolio.json`**，不在此维护副本
 - ticker 列表：`memory/current-portfolio-summary.md`（提高检索命中）
+
+## Promoted From Short-Term Memory (2026-05-20)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-12.md:10:13 -->
+- | 代码 | 名称 | 收盘价 | 今日涨跌 | 浮动盈亏 | |------|------|--------|----------|----------| | 00100 | MINIMAX-W | 690.0 | -6.38% | -7,969.8 HKD | | 02208 | 金风科技 | 16.78 | -0.83% | +1,078.4 HKD | [score=0.873 recalls=0 avg=0.620 source=memory/2026-05-12.md:10-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-12.md:14:16 -->
+- | 03032 | 恒生科技ETF | 5.060 | -0.59% | -69 HKD | | 07226 | XL二南方恒科 | 4.104 | -1.11% | -1,606.9 HKD | | 03033 | 南方恒生科技 | 4.970 | -0.56% | -170 HKD | [score=0.873 recalls=0 avg=0.620 source=memory/2026-05-12.md:14-16]

@@ -1,51 +1,46 @@
 {
-  "generated_at": "2026-05-19T15:15:14.604115+00:00",
-  "as_of": "2026-05-19",
+  "generated_at": "2026-05-20T00:03:33.828582+00:00",
+  "as_of": "2026-05-20",
   "us": {
-    "beta_spx": 4.2444,
-    "vol_30d_annualized": 0.7685,
-    "max_dd_30d": -0.1308,
-    "sharpe_30d": 4.9463,
-    "current_value_usd": 3476.63
+    "beta_spx": 4.2206,
+    "vol_30d_annualized": 0.7688,
+    "max_dd_30d": -0.1302,
+    "sharpe_30d": 5.3156,
+    "current_value_usd": 3578.99
   },
   "hk": {
     "beta_hsi": 2.5571,
-    "vol_30d_annualized": 0.7179,
-    "max_dd_30d": -0.1666,
-    "sharpe_30d": -1.6749,
-    "current_value_hkd": 79477.2
+    "vol_30d_annualized": 0.718,
+    "max_dd_30d": -0.1667,
+    "sharpe_30d": -1.6754,
+    "current_value_hkd": 79553.6
   },
   "combined": {
-    "vol_30d_annualized": 0.5628,
-    "max_dd_30d": -0.1399,
-    "sharpe_30d": -0.1263
+    "vol_30d_annualized": 0.56,
+    "max_dd_30d": -0.1397,
+    "sharpe_30d": 0.0568
   },
   "leveraged_exposure": {
-    "us_leverage_factor_avg": 1.9707,
-    "hk_leverage_factor_avg": 1.2925,
-    "combined_avg": 1.4651,
-    "margin_at_risk_pct": 14.6506
+    "us_leverage_factor_avg": 1.9724,
+    "hk_leverage_factor_avg": 1.2924,
+    "combined_avg": 1.469,
+    "margin_at_risk_pct": 14.6904
   },
   "alerts": [
     {
       "type": "high_beta",
       "severity": "high",
-      "detail": "US β vs S&P 500 = 4.2444 (> 3.0)"
+      "detail": "US β vs S&P 500 = 4.2206 (> 3.0)"
     },
     {
       "type": "high_vol",
       "severity": "high",
-      "detail": "Combined 30d annualised vol = 56.3% (> 50%)"
+      "detail": "Combined 30d annualised vol = 56.0% (> 50%)"
     },
     {
       "type": "deep_dd",
       "severity": "medium",
       "detail": "Combined 30d max DD = -14.0% (< -10%)"
-    },
-    {
-      "type": "negative_sharpe",
-      "severity": "medium",
-      "detail": "Combined 30d Sharpe = -0.1263 (< 0)"
     }
   ],
   "meta": {
