@@ -211,7 +211,8 @@ python3 scripts/data/analyze_hk_stocks.py --dry-run   # 不写文件
 | 港股午后快报 | 13:30 HKT 工作日 | Mode 6 | `report_preflight.py --market hk --phase pm` | `report_postflight.py --market hk --phase pm` |
 | 港股收盘报告 | 16:00 HKT 工作日 | Mode 6 | `report_preflight.py --market hk --phase close` | `report_postflight.py --market hk --phase close` |
 | 美股开盘报告 | **21:30 HKT** 工作日 (= 09:30 ET EDT, **HKT 表达式绕过 daemon ET tz bug**) | Mode 6 | `report_preflight.py --market us --phase open` | `report_postflight.py --market us --phase open` |
-| 美股盘中盯盘 | **DISABLED** (2026-05-20，ET tz bug 导致 HKT 08:00-11:30 错误触发跟 brief 抢 session) | Mode 7 | — | — |
+| 美股盘中盯盘 (evening) | **22:00-23:30 HKT** 工作日 (= ET 10:00-11:30 EDT, 拆分跨日 part 1) | Mode 7 | `intraday_preflight.py --market us` | `intraday_postflight.py --market us` |
+| 美股盘中盯盘-overnight | **00:00-03:30 HKT 次日** DOW 2-6 (= ET 12:00-15:30 EDT, 拆分跨日 part 2) | Mode 7 | 同上 | 同上 |
 | 美股收盘报告 | **04:00 HKT 次日** 工作日 DOW 2-6 (= 16:00 ET EDT, 同上) | Mode 6 | `report_preflight.py --market us --phase close` | `report_postflight.py --market us --phase close` |
 
 所有 harness preflight/postflight 都在 `scripts/harness/`。Mode 6 / brief 的 postflight 会在 pass/warn 时
