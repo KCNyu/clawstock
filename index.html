@@ -1086,6 +1086,15 @@ layout: null
         <span class="detail">${detail}</span>
       </div>`;
     }).join('');
+
+    // 如果只有 macro_events 没 earnings / fomc, 提示用户
+    const c2 = safe(DATA, 'catalysts') || {};
+    if ((c2.summary?.earnings_count || 0) === 0 && (c2.summary?.fomc_in_window || 0) === 0) {
+      const hint = document.createElement('div');
+      hint.style.cssText = 'margin-top:6px;font-size:10.5px;color:var(--text-dim);text-align:center;';
+      hint.textContent = 'No earnings / FOMC in 14d window; only macro events surfaced';
+      wrap.appendChild(hint);
+    }
   }
 
   function renderNewsDigest() {
@@ -1120,19 +1129,37 @@ layout: null
     if (m.treasury_10y?.yield_pct != null) cells.push({lbl: '10Y Yield', val: fmt(m.treasury_10y.yield_pct, '%'), sub: ''});
     if (m.dxy?.price != null) cells.push({lbl: 'DXY', val: fmt(m.dxy.price), sub: fmtPct(m.dxy.change_pct)});
     if (m.fear_greed?.score != null) cells.push({lbl: 'F&G', val: fmt(m.fear_greed.score), sub: m.fear_greed.rating || ''});
-    if (s.reddit_mentions != null) cells.push({lbl: 'Reddit mentions', val: s.reddit_mentions, sub: ''});
+
+    // Sentiment: reddit_mentions_7d aggregated across tickers + google news count
+    if (s.tickers && Array.isArray(s.tickers)) {
+      const totalReddit = s.tickers.reduce((sum, t) => sum + (t.reddit_mentions_7d || 0), 0);
+      const totalNews = s.tickers.reduce((sum, t) => sum + ((t.google_news_en || []).length + (t.google_news_zh || []).length), 0);
+      if (totalReddit > 0) cells.push({lbl: 'Reddit 7d', val: totalReddit, sub: 'mentions'});
+      if (totalNews > 0) cells.push({lbl: 'News 7d', val: totalNews, sub: 'articles'});
+    }
 
     if (m.fed_press?.length) {
       cells.push({lbl: 'Fed (7d)', val: m.fed_press.length, sub: 'press releases'});
     }
 
     if (!cells.length) {
-      wrap.innerHTML = '<div class="empty-state">No macro / sentiment data.</div>';
-      return;
+      wrap.innerHTML = '<div class="empty-state">Macro feed stale (Yahoo rate-limited). Awaiting next macro-scan cron.</div>';
+    } else {
+      wrap.innerHTML = cells.map(c =>
+        `<div class="macro-cell"><div class="lbl">${c.lbl}</div><div class="val">${c.val}</div>${c.sub ? `<div class="sub">${c.sub}</div>` : ''}</div>`
+      ).join('');
     }
-    wrap.innerHTML = cells.map(c =>
-      `<div class="macro-cell"><div class="lbl">${c.lbl}</div><div class="val">${c.val}</div>${c.sub ? `<div class="sub">${c.sub}</div>` : ''}</div>`
-    ).join('');
+
+    // Fed press 显示最新一条标题 (可点击)
+    if (m.fed_press?.length) {
+      const latest = m.fed_press[0];
+      const fedDiv = document.createElement('div');
+      fedDiv.className = 'fed-latest';
+      fedDiv.style.cssText = 'margin-top:8px;padding:8px 10px;background:var(--card-2);border-radius:var(--radius-sm);font-size:11.5px;border-left:3px solid var(--accent-2);';
+      fedDiv.innerHTML = `<div style="color:var(--text-dim);font-size:10px;">Latest Fed press · ${latest.date}</div>
+        <a href="${latest.url}" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;display:block;margin-top:2px;">${latest.title.substring(0, 140)}</a>`;
+      wrap.appendChild(fedDiv);
+    }
   }
 
   function renderCalibBadge() {
