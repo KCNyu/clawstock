@@ -604,6 +604,7 @@ def recent_actions_from_csv(limit=20):
                 'trigger_type': r.get('trigger_type', ''),
                 'outcome': outcome,
                 'pnl_5d': _to_float(r.get('pnl_5d')),
+                'followed': (r.get('followed') or 'unknown').strip().lower(),
             })
         return out
     except Exception as e:
