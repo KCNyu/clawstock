@@ -122,6 +122,24 @@ sys.path.insert(0, str(Path(__file__).parent))
 from _harness_common import git_cmd as _git, rebuild_dashboard, push_with_rebase_retry  # noqa: E402
 
 
+def _current_price_for(ticker):
+    """Look up the freshest current_price for ticker in portfolio.json.
+    Used as fallback `sim_entry_price` when LLM forgot to set
+    `simulated_entry_price` on the plan action — without it the future
+    outcome resolver can't compute cut/trim/add win/loss (see
+    brief_preflight._resolve_pending_outcomes)."""
+    try:
+        pf = json.loads((WS / 'portfolio.json').read_text())
+    except Exception:
+        return ''
+    for region in ('us_stocks', 'hk_stocks'):
+        for h in pf['portfolios'].get(region, {}).get('holdings', []) or []:
+            if h.get('ticker') == ticker:
+                cp = h.get('current_price')
+                return cp if cp not in (None, 0) else ''
+    return ''
+
+
 def log_calibration(today):
     """Append today's plan actions to memory/calibration.csv (outcome filled in by future preflight)."""
     import csv
@@ -156,6 +174,8 @@ def log_calibration(today):
         key = (today, a.get('ticker'), a.get('bucket'))
         if key in existing:
             continue
+        # Fallback: pull current_price from portfolio.json when plan didn't carry one
+        sim_entry = a.get('simulated_entry_price') or a.get('trigger_price') or _current_price_for(a.get('ticker'))
         rows.append({
             'plan_date':       today,
             'ticker':          a.get('ticker'),
@@ -163,7 +183,7 @@ def log_calibration(today):
             'trigger_type':    a.get('trigger_type', ''),
             'trigger_price':   a.get('trigger_price', ''),
             'confidence':      a.get('confidence', ''),
-            'sim_entry_price': a.get('simulated_entry_price', ''),
+            'sim_entry_price': sim_entry,
             'outcome':         'pending',  # filled by future preflight retrospective
             'pnl_5d':          '',
             'pnl_30d':         '',

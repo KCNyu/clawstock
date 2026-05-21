@@ -359,13 +359,17 @@ def _shares_at_date(ticker, date_iso):
     return None
 
 
-def _detect_followed(row):
-    """Compare shares on plan_date vs +5d. Return 'true' / 'false' / 'unknown'.
+def _detect_followed(row, min_window_days=None):
+    """Compare shares on plan_date vs T+N. Return 'true' / 'false' / 'unknown'.
 
     Bucket → expected delta:
       cut / trim_on_rebound → shares should DECREASE
       add_only_on_trigger / add_on_breakout → shares should INCREASE
       hold_and_watch / watch / t_only → shares should be UNCHANGED
+
+    min_window_days defaults to bucket-specific:
+      hold_and_watch / watch / t_only → T+1 (held by next day = followed)
+      cut / trim / add → T+2 (give user a working day to actually trade)
     """
     plan_date = row.get('plan_date')
     ticker = row.get('ticker')
@@ -373,16 +377,19 @@ def _detect_followed(row):
     if not (plan_date and ticker):
         return 'unknown'
 
+    if min_window_days is None:
+        min_window_days = 1 if bucket in ('hold_and_watch', 'watch', 't_only') else 2
+
     # Day BEFORE plan_date (last commit before plan was created)
     try:
         plan_dt = datetime.strptime(plan_date, '%Y-%m-%d')
         before_dt = (plan_dt - timedelta(days=1)).strftime('%Y-%m-%d')
-        after_dt = (plan_dt + timedelta(days=5)).strftime('%Y-%m-%d')
+        after_dt = (plan_dt + timedelta(days=min_window_days)).strftime('%Y-%m-%d')
     except Exception:
         return 'unknown'
 
-    # don't look 5d ahead if it's in the future
-    if datetime.now() < plan_dt + timedelta(days=5):
+    # don't look ahead if window end is in the future
+    if datetime.now() < plan_dt + timedelta(days=min_window_days):
         return 'unknown'  # too early; will retry next preflight
 
     shares_before = _shares_at_date(ticker, before_dt)
@@ -400,6 +407,48 @@ def _detect_followed(row):
     if bucket in ('hold_and_watch', 'watch', 't_only'):
         return 'true' if delta == 0 else 'false'  # you held → followed; you bought/sold → didn't follow plan
     return 'unknown'  # 未识别 bucket
+
+
+def _resolve_pending_followed():
+    """Scan calibration.csv for rows with followed='unknown' and try to auto-detect
+    via shares diff in git history. Runs every preflight — does NOT wait for the
+    5-day outcome window. Returns updated row count.
+
+    Separated from _resolve_pending_outcomes because:
+    - followed answer often known within T+1 (hold_and_watch) or T+2 (trade buckets)
+    - outcome resolution requires T+5 for price-move statistical significance
+    - Previously these were coupled, so followed stayed 'unknown' for 5 days even
+      when the answer was already determinable from portfolio.json shares diff.
+    """
+    calib_path = WS / 'memory' / 'calibration.csv'
+    if not calib_path.exists():
+        return 0
+
+    import csv
+    try:
+        with open(calib_path, encoding='utf-8') as f:
+            rows = list(csv.DictReader(f))
+    except Exception:
+        return 0
+
+    updated = 0
+    for r in rows:
+        if (r.get('followed') or 'unknown').lower() != 'unknown':
+            continue
+        verdict = _detect_followed(r)
+        if verdict in ('true', 'false'):
+            r['followed']    = verdict
+            r['followed_at'] = datetime.now().isoformat() + ' (auto)'
+            r['updated_at']  = datetime.now().isoformat()
+            updated += 1
+
+    if updated and rows:
+        with open(calib_path, 'w', encoding='utf-8', newline='') as f:
+            w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+            w.writeheader()
+            w.writerows(rows)
+
+    return updated
 
 
 def _resolve_pending_outcomes():
@@ -491,7 +540,8 @@ def _resolve_pending_outcomes():
 def compute_self_calibration():
     """Read memory/calibration.csv accumulated by past brief postflights;
     compute Brier score + per-bucket win rate over rolling 30 days."""
-    _resolve_pending_outcomes()  # first try to resolve any old pending rows
+    _resolve_pending_followed()  # T+1/T+2 followed detection (cheap, every run)
+    _resolve_pending_outcomes()  # T+5 outcome resolution (statistical window)
 
     calib_path = WS / 'memory' / 'calibration.csv'
     if not calib_path.exists():
