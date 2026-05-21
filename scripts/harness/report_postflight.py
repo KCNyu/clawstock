@@ -10,9 +10,7 @@ Usage: read the briefing text from stdin (preferred for cron),
 Validates:
   1. ▎情绪面 / ▎技术面 / ▎操作建议 三段标记齐全
   2. 若 preflight needs_risk_section=true, 必须有 ▎风险提示 段
-  3. 总长度 ≤ soft (warn) / ≤ hard (fail) — per-market:
-       HK: 800 / 1200    (current)
-       US: 1200 / 1500   (US needs more breadth: 7 holdings + macro + Fed press)
+  3. 总长度 ≤ 1200 字 (warn) / ≤ 1500 字 (fail) — HK + US 统一（2026-05-21 起）
   4. 必须以 raw_wechat_block 开头（脚本数据块 verbatim，禁止编造）
   5. 如果 preflight 有 anomalies，报告必须提到至少一个 anomaly 票
   6. 没有"等待数据/数据待获取"等敷衍词
@@ -39,9 +37,9 @@ TMP = WS / 'memory' / '.tmp'
 REQUIRED_SECTIONS = ['▎情绪面', '▎技术面', '▎操作建议']
 FORBIDDEN_PHRASES = ['数据待获取', '等待数据', '数据缺失（占位）', 'TODO', 'TBD']
 
-# Per-market char limits (US needs more breadth: 7 holdings + macro + Fed)
+# Char limits — HK + US 统一 1200/1500（2026-05-21 起，与 Mode 7 intraday 对齐）
 CHAR_LIMITS = {
-    'hk': {'soft': 800,  'hard': 1200},
+    'hk': {'soft': 1200, 'hard': 1500},
     'us': {'soft': 1200, 'hard': 1500},
 }
 

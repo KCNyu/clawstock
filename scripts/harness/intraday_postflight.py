@@ -7,8 +7,8 @@ Validates the LLM-generated intraday check-in.
 Usage: pipe brief text via stdin, or --text-file PATH.
 
 Validates:
-  1. ▎我的看法 段必须存在
-  2. 总长度 ≤ 600 字 (warn), ≤ 1000 字 (fail)
+  1. ▎我的看法 段必须存在 + 段内容 ≥ 60 字（防敷衍 1 句话）
+  2. 总长度 ≤ 1200 字 (warn), ≤ 1500 字 (fail) — 与 Mode 6 US 对齐
   3. 必须以 raw_wechat_block 开头 (verbatim)
   4. 若 preflight should_alert=true：报告必须提到至少一个异动票或 alert_reason
   5. 无敷衍 phrases
@@ -65,10 +65,10 @@ def validate(text, ctx):
             )
 
     n = len(text)
-    if n > 1000:
-        issues.append(f'报告长度 {n} 字 > 1000 上限')
-    elif n > 600:
-        issues.append(f'报告长度 {n} 字 > 600 软上限 (warn)')
+    if n > 1500:
+        issues.append(f'报告长度 {n} 字 > 1500 上限')
+    elif n > 1200:
+        issues.append(f'报告长度 {n} 字 > 1200 软上限 (warn)')
 
     if ctx.get('should_alert'):
         anomaly_tickers = [a['ticker'] for a in ctx.get('anomalies', [])]

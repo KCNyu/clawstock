@@ -93,7 +93,7 @@ python3 /root/.openclaw/workspace/scripts/harness/intraday_preflight.py --market
   - 若 `should_alert=true`，**必须**提到 `anomalies` 里至少一个票
   - 必须包含：今天该看/该等/该减 + 引用至少 1 个具体数字（票现价 / 异动幅度 / 信号）
   - 禁止"无异动，观望"这种敷衍 1 句话
-- ≤ 600 字软上限
+- ≤ 1200 字软上限 / ≤ 1500 字硬上限
 
 #### Step 3: 跑 postflight
 ```bash
@@ -166,7 +166,7 @@ python3 /root/.openclaw/workspace/scripts/harness/report_postflight.py --market 
 - 不用 `message` 工具，直接回复文本（cron delivery 包装）
 - 不简单复述数字，必须做模型自己的解读
 - 异动票（anomalies 字段）**必须在报告里被提到**（postflight 强制）
-- 报告长度 ≤ 800 字软上限 / ≤ 1200 字硬上限
+- 报告长度 ≤ 1200 字软上限 / ≤ 1500 字硬上限
 
 ### Mode 5 — Sentiment / 情绪面 Read
 **When:** "市场怎么看 X" / "雪球怎么聊 00100" / "港股情绪" / before sizing
