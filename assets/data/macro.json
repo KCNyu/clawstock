@@ -1,44 +1,76 @@
 {
-  "generated_at": "2026-05-20T01:26:22.964817+00:00",
-  "vix": null,
-  "treasury_10y": null,
-  "dxy": null,
+  "generated_at": "2026-05-21T01:33:29.211263+00:00",
+  "vix": {
+    "symbol": "^VIX",
+    "price": 17.44,
+    "prev": 18.06,
+    "change_pct": -3.43,
+    "as_of": 1779308101,
+    "source": "yahoo"
+  },
+  "treasury_10y": {
+    "symbol": "^TNX",
+    "price": 4.572,
+    "prev": 4.667,
+    "change_pct": -2.04,
+    "as_of": 1779303595,
+    "source": "yahoo",
+    "yield_pct": 0.457
+  },
+  "dxy": {
+    "symbol": "DX-Y.NYB",
+    "price": 99.074,
+    "prev": 99.092,
+    "change_pct": -0.02,
+    "as_of": 1779326607,
+    "source": "yahoo"
+  },
   "fear_greed": {
-    "score": 60.4,
+    "score": 60.9,
     "rating": "greed",
-    "prev_close": 62.8,
-    "prev_1_week": 65.1,
-    "as_of": "2026-05-19T23:59:44+00:00"
+    "prev_close": 60.4,
+    "prev_1_week": 64.0,
+    "as_of": "2026-05-20T23:59:47+00:00"
   },
   "hsi": {
     "symbol": "^HSI",
-    "price": 25709.62,
-    "prev": 25797.85,
-    "change_pct": -0.34,
+    "price": 25714.68,
+    "prev": 25651.12,
+    "change_pct": 0.25,
     "source": "stooq"
   },
   "hstech": {
     "symbol": "^HSTECH",
-    "price": 4840.61,
-    "prev": 4857.46,
-    "change_pct": -0.35,
+    "price": 4905.19,
+    "prev": 4873.82,
+    "change_pct": 0.64,
     "source": "tencent"
   },
   "spx": {
     "symbol": "^GSPC",
-    "price": 7353.61,
-    "prev": 7375.75,
-    "change_pct": -0.3,
+    "price": 7433.0,
+    "prev": 7369.2,
+    "change_pct": 0.87,
     "source": "stooq"
   },
   "nasdaq": {
     "symbol": "^IXIC",
-    "price": 28818.84,
-    "prev": 28795.02,
-    "change_pct": 0.08,
+    "price": 29297.7,
+    "prev": 29006.57,
+    "change_pct": 1.0,
     "source": "stooq"
   },
   "fed_press": [
+    {
+      "date": "2026-05-20",
+      "title": "Federal Reserve Board requests public comment on a proposal to establish a \"payment account,\" which legally eligible financial institutions could use for the specific purpose of clearing and settling ",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260520a.htm"
+    },
+    {
+      "date": "2026-05-20",
+      "title": "Minutes of the Federal Open Market Committee, April 28-29, 2026",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260520a.htm"
+    },
     {
       "date": "2026-05-15",
       "title": "Federal Reserve Board names Jerome H. Powell as chair pro tempore; Powell will serve as chair pro tempore until Kevin M. Warsh is sworn in as the new chair",
@@ -68,11 +100,6 @@
       "date": "2026-05-14",
       "title": "Federal Reserve Board releases results from two surveys of senior financial officers at banks about their views on discount window operating days and their strategies and practices for managing reserv",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260514a.htm"
-    },
-    {
-      "date": "2026-05-13",
-      "title": "Federal Reserve Board issues Economic Well-Being of U.S. Households in 2025 report",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260513a.htm"
     }
   ]
 }
