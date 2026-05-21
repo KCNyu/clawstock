@@ -808,17 +808,13 @@ layout: null
     <h2>Reflect</h2>
 
     <div class="card">
-      <h3>Performance · Snapshot</h3>
+      <h3>Track Record <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(USD-eq · 全期)</span></h3>
+      <p class="chart-hint">Hero 看当下 snapshot；Reflect 看历史表现。这一栏只显示 Hero 没有的 perf 指标。</p>
       <div class="kpi-grid">
         <div class="kpi-cell">
-          <div class="lbl">总资产 (USD-eq)</div>
-          <div class="val" id="kpi-book">—</div>
-          <div class="sub" id="kpi-book-delta">—</div>
-        </div>
-        <div class="kpi-cell">
-          <div class="lbl">今日 P&amp;L</div>
-          <div class="val" id="kpi-today">—</div>
-          <div class="sub" id="kpi-today-pct">—</div>
+          <div class="lbl">总回报率</div>
+          <div class="val" id="kpi-totalret">—</div>
+          <div class="sub" id="kpi-totalret-abs">浮 + 已实现</div>
         </div>
         <div class="kpi-cell">
           <div class="lbl">已实现 (合计)</div>
@@ -826,19 +822,24 @@ layout: null
           <div class="sub muted">USD-eq cumulative</div>
         </div>
         <div class="kpi-cell">
-          <div class="lbl">浮动 P&amp;L</div>
-          <div class="val" id="kpi-unrealized">—</div>
-          <div class="sub" id="kpi-unrealized-pct">—</div>
+          <div class="lbl">Win Days</div>
+          <div class="val" id="kpi-windays">—</div>
+          <div class="sub" id="kpi-windays-sub">—</div>
         </div>
         <div class="kpi-cell">
-          <div class="lbl">Max DD (30d)</div>
+          <div class="lbl">最佳日</div>
+          <div class="val" id="kpi-bestday">—</div>
+          <div class="sub" id="kpi-bestday-date">—</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="lbl">最差日</div>
+          <div class="val" id="kpi-worstday">—</div>
+          <div class="sub" id="kpi-worstday-date">—</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="lbl">峰值回撤</div>
           <div class="val" id="kpi-maxdd">—</div>
-          <div class="sub muted">combined</div>
-        </div>
-        <div class="kpi-cell">
-          <div class="lbl">Sharpe (30d)</div>
-          <div class="val" id="kpi-sharpe">—</div>
-          <div class="sub muted">combined</div>
+          <div class="sub muted">all-time from peak</div>
         </div>
       </div>
     </div>
@@ -1522,68 +1523,91 @@ layout: null
 
   function renderReflectKpi() {
     const fx = safe(DATA, "fx", "usdhkd") || 7.83;
-    const us = safe(DATA, "totals", "us") || {};
-    const hk = safe(DATA, "totals", "hk") || {};
     const rv = safe(DATA, "realized_vs_unrealized") || {};
-    const risk = safe(DATA, "risk") || {};
 
-    const usVal = us.value_usd;
-    const hkValHk = hk.value_hkd;
-    const bookUsd = (usVal != null ? usVal : 0) + (hkValHk != null ? hkValHk / fx : 0);
-
-    const usCost = us.cost_usd;
-    const hkCostHk = hk.cost_hkd;
-    const costUsd = (usCost != null ? usCost : 0) + (hkCostHk != null ? hkCostHk / fx : 0);
-    const bookDelta = bookUsd - costUsd;
-    const bookDeltaPct = costUsd ? (bookDelta / costUsd) * 100 : null;
-
-    const usToday = us.today_change_usd;
-    const hkTodayHk = hk.today_change_hkd;
-    const todayUsd = (usToday != null ? usToday : 0) + (hkTodayHk != null ? hkTodayHk / fx : 0);
-    const todayPct = bookUsd ? (todayUsd / (bookUsd - todayUsd)) * 100 : null;
-
-    const realizedUsd = safe(rv, "combined_usd", "realized");
+    const realizedUsd   = safe(rv, "combined_usd", "realized");
     const unrealizedUsd = safe(rv, "combined_usd", "unrealized");
-    const unrealizedPct = costUsd ? (unrealizedUsd / costUsd) * 100 : null;
 
-    const ddCombined = safe(risk, "combined", "max_dd_30d");
-    const sharpeCombined = safe(risk, "combined", "sharpe_30d");
+    // Compute USD-eq daily series from snapshots (deduped by date, sorted ascending)
+    const snaps = (safe(DATA, "snapshots") || [])
+      .filter(s => s.us_total_value != null || s.hk_total_value != null);
+    const byDate = new Map();
+    snaps.forEach(s => byDate.set(s.date, s));
+    const series = Array.from(byDate.values()).sort((a, b) => a.date.localeCompare(b.date));
 
-    const setVal = (id, v) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = v;
-    };
+    const dailyPnl = series.map(s => ({
+      date: s.date,
+      pnl: ((s.us_today_change ?? 0) + ((s.hk_today_change ?? 0) / fx)),
+    }));
+    const bookUsd = series.map(s => (s.us_total_value ?? 0) + ((s.hk_total_value ?? 0) / fx));
+    const costUsdLatest = (() => {
+      for (let i = series.length - 1; i >= 0; i--) {
+        const u = series[i].us_total_cost ?? null;
+        const h = series[i].hk_total_cost ?? null;
+        if (u != null || h != null) return (u ?? 0) + ((h ?? 0) / fx);
+      }
+      return null;
+    })();
+
+    // Total return % since first snapshot (uses cost basis if available)
+    const totalPnl = (realizedUsd ?? 0) + (unrealizedUsd ?? 0);
+    const totalRetPct = costUsdLatest && costUsdLatest > 0 ? (totalPnl / costUsdLatest) * 100 : null;
+
+    // Win days
+    const realDays = dailyPnl.filter(d => d.pnl !== 0);
+    const winDays = realDays.filter(d => d.pnl > 0).length;
+    const winPct = realDays.length ? Math.round((winDays / realDays.length) * 100) : null;
+
+    // Best / worst day
+    let best = null, worst = null;
+    dailyPnl.forEach(d => {
+      if (d.pnl === 0) return;
+      if (best == null || d.pnl > best.pnl) best = d;
+      if (worst == null || d.pnl < worst.pnl) worst = d;
+    });
+
+    // All-time drawdown from running peak (USD-eq book series)
+    let peak = -Infinity;
+    let maxDd = 0;
+    bookUsd.forEach(v => {
+      if (v == null) return;
+      if (v > peak) peak = v;
+      if (peak > 0) {
+        const dd = (v - peak) / peak * 100;
+        if (dd < maxDd) maxDd = dd;
+      }
+    });
+
+    const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
     const setClass = (id, c) => {
       const el = document.getElementById(id);
       if (el) { el.classList.remove("pos","neg","neutral"); el.classList.add(c); }
     };
 
-    setVal("kpi-book", fmtMoney(bookUsd, "USD"));
-    setVal("kpi-book-delta",
-      bookDelta != null ? fmtMoney(bookDelta, "USD") + " · " + fmtPct(bookDeltaPct, 1) : DASH);
-    setClass("kpi-book-delta", pnlClass(bookDelta));
-
-    setVal("kpi-today", fmtMoney(todayUsd, "USD"));
-    setVal("kpi-today-pct", todayPct != null ? fmtPct(todayPct, 2) : DASH);
-    setClass("kpi-today", pnlClass(todayUsd));
-    setClass("kpi-today-pct", pnlClass(todayPct));
+    setVal("kpi-totalret", totalRetPct != null ? fmtPct(totalRetPct, 2) : DASH);
+    setVal("kpi-totalret-abs", totalPnl != 0 ? fmtMoney(totalPnl, "USD") + " · 浮 + 已实现" : "浮 + 已实现");
+    setClass("kpi-totalret", pnlClass(totalRetPct));
 
     setVal("kpi-realized", fmtMoney(realizedUsd, "USD"));
     setClass("kpi-realized", pnlClass(realizedUsd));
 
-    setVal("kpi-unrealized", fmtMoney(unrealizedUsd, "USD"));
-    setVal("kpi-unrealized-pct", unrealizedPct != null ? fmtPct(unrealizedPct, 1) : DASH);
-    setClass("kpi-unrealized", pnlClass(unrealizedUsd));
-    setClass("kpi-unrealized-pct", pnlClass(unrealizedPct));
+    setVal("kpi-windays", winPct != null ? winPct + "%" : DASH);
+    setVal("kpi-windays-sub", realDays.length ? `${winDays}/${realDays.length} 天` : "no data");
+    setClass("kpi-windays", winPct == null ? "neutral" :
+                            winPct >= 55 ? "pos" :
+                            winPct <= 40 ? "neg" : "neutral");
 
-    // DD is stored as fraction (e.g. -0.143 = -14.3%); show as percent.
-    setVal("kpi-maxdd", ddCombined != null ? fmtPct(ddCombined * 100, 1) : DASH);
-    setClass("kpi-maxdd", pnlClass(ddCombined));
+    setVal("kpi-bestday", best ? fmtMoney(best.pnl, "USD") : DASH);
+    setVal("kpi-bestday-date", best ? best.date : "no data");
+    // Color by actual sign — "best day" can be negative if no positive day exists yet
+    setClass("kpi-bestday", pnlClass(best ? best.pnl : null));
 
-    setVal("kpi-sharpe", sharpeCombined != null ? fmtNum(sharpeCombined, 2) : DASH);
-    setClass("kpi-sharpe", sharpeCombined == null ? "neutral" :
-                          sharpeCombined > 1 ? "pos" :
-                          sharpeCombined < 0 ? "neg" : "neutral");
+    setVal("kpi-worstday", worst ? fmtMoney(worst.pnl, "USD") : DASH);
+    setVal("kpi-worstday-date", worst ? worst.date : "no data");
+    setClass("kpi-worstday", pnlClass(worst ? worst.pnl : null));
+
+    setVal("kpi-maxdd", maxDd < 0 ? fmtPct(maxDd, 1) : (bookUsd.length ? "0.0%" : DASH));
+    setClass("kpi-maxdd", maxDd < 0 ? "neg" : "neutral");
   }
 
   function renderEquityChart() {
