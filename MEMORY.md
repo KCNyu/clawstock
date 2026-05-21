@@ -93,3 +93,14 @@
 - | 代码 | 名称 | 收盘价 | 今日涨跌 | 浮动盈亏 | |------|------|--------|----------|----------| | 00100 | MINIMAX-W | 690.0 | -6.38% | -7,969.8 HKD | | 02208 | 金风科技 | 16.78 | -0.83% | +1,078.4 HKD | [score=0.873 recalls=0 avg=0.620 source=memory/2026-05-12.md:10-13]
 <!-- openclaw-memory-promotion:memory:memory/2026-05-12.md:14:16 -->
 - | 03032 | 恒生科技ETF | 5.060 | -0.59% | -69 HKD | | 07226 | XL二南方恒科 | 4.104 | -1.11% | -1,606.9 HKD | | 03033 | 南方恒生科技 | 4.970 | -0.56% | -170 HKD | [score=0.873 recalls=0 avg=0.620 source=memory/2026-05-12.md:14-16]
+
+## Promoted From Short-Term Memory (2026-05-21)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-14.md:8:11 -->
+- | 代码 | 名称 | 现价 | 涨跌 | 浮盈 | |---|---|---|---|---| | 00100 | MINIMAX | 855.0 | ▲4.5% | +3.9% | | 02208 | 金风科技 | 15.85 | ▼9.4% | +12.5% | [score=0.889 recalls=0 avg=0.620 source=memory/2026-05-14.md:8-11]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-14.md:12:14 -->
+- | 03032 | 恒生科技E | 5.09 | ▲0.3% | -5.8% | | 07226 | XL二南方 | 4.152 | ▲0.5% | -4.8% | | 03033 | 南方恒生科 | 5.0 | ▲0.2% | -2.7% | [score=0.889 recalls=0 avg=0.620 source=memory/2026-05-14.md:12-14]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-14.md:16:16 -->
+- **总市值** HK$89,400 | **浮盈** +1,124 (+1.3%) | **今日** +1,703 [score=0.889 recalls=0 avg=0.620 source=memory/2026-05-14.md:16-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-14.md:19:19 -->
+- ⚠️ 02208 金风科技：今日 -9.4%，需关注是否消息面异动 [score=0.889 recalls=0 avg=0.620 source=memory/2026-05-14.md:19-19]
