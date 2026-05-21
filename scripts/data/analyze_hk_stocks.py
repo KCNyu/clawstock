@@ -415,6 +415,8 @@ def update_hk_portfolio(dry_run: bool = False) -> Dict:
         print("  [dry-run] Not written.\n")
     else:
         from safe_io import safe_write_json
+        from recompute_realized import recompute as recompute_realized
+        recompute_realized(data)
         safe_write_json(PORTFOLIO_PATH, data)
         print(f"  ✅ Saved → {PORTFOLIO_PATH}")
 

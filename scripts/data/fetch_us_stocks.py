@@ -638,6 +638,8 @@ def update_us_portfolio(
         print("\n  [dry-run] portfolio.json NOT written.\n")
     else:
         from safe_io import safe_write_json
+        from recompute_realized import recompute as recompute_realized
+        recompute_realized(data)
         safe_write_json(portfolio_path, data)
         print(f"\n  ✅ Saved → {portfolio_path}")
 
