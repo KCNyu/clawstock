@@ -50,6 +50,19 @@ def validate(text, ctx):
 
     if REQUIRED_SECTION not in text:
         issues.append(f'缺段标记 "{REQUIRED_SECTION}"')
+    else:
+        # 我的看法 段必须 ≥ 60 字（否则就是敷衍 1 句结案）
+        section_body = text.split(REQUIRED_SECTION, 1)[1].strip()
+        # cut to next section (▎XXX) or end
+        next_marker = section_body.find('\n▎')
+        if next_marker > 0:
+            section_body = section_body[:next_marker]
+        section_body = section_body.strip()
+        if len(section_body) < 60:
+            issues.append(
+                f'"{REQUIRED_SECTION}" 段仅 {len(section_body)} 字，太敷衍 '
+                f'(< 60 软下限)；需引用具体票 + 一行判断'
+            )
 
     n = len(text)
     if n > 1000:

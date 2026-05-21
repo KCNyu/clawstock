@@ -559,13 +559,15 @@ def print_wechat_report(data: Dict, news_map: Optional[Dict[str, List]] = None, 
     if idx_bits:
         lines.append('  ' + '  '.join(idx_bits))
 
-    # Totals
-    pnl_sign  = '+' if total_pnl  >= 0 else ''
+    # Totals — single line so LLM doesn't reformat 3-line→1-line (verbatim violation)
+    pnl_sign   = '+' if total_pnl  >= 0 else ''
     today_sign = '+' if today_chg >= 0 else ''
     lines.append('')
-    lines.append(f"📊 市值 HK${total_value:,.0f}")
-    lines.append(f"💰 浮盈 {pnl_sign}{total_pnl:,.0f} ({pnl_sign}{pnl_pct:.1f}%)")
-    lines.append(f"📈 今日 {today_sign}{today_chg:,.0f}")
+    lines.append(
+        f"📊 市值 HK${total_value:,.0f}"
+        f" | 浮盈 {pnl_sign}{total_pnl:,.0f} ({pnl_sign}{pnl_pct:.1f}%)"
+        f" | 今日 {today_sign}{today_chg:,.0f}"
+    )
 
     # Holdings list
     lines.append('')

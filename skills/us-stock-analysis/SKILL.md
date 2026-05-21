@@ -87,11 +87,14 @@ python3 /root/.openclaw/workspace/scripts/harness/intraday_preflight.py --market
 输出 `memory/.tmp/intraday-context-us-latest.json`，关键字段：`should_alert` + `alert_reasons`。
 
 #### Step 2: 写报告
-- 拷贝 `raw_wechat_block` 到消息开头（verbatim）
-  - 注：intraday 的 holdings 是 **markdown 表格**（7 列：代码/股/成本/现价/今日/浮%/浮$，右对齐数字。2026-05-21 改成 visual-width-aware 渲染走 `scripts/data/_wechat_table.py`，去 $ 前缀 + 加 浮$ 金额列，每行视觉宽度精确一致，mobile WeChat 即使强制换行也对齐；RSI 在信号段不再占表头）；其他段（信号 / 亏损统计 / 新闻）保持 ASCII
-- 加 `▎我的看法` 段（2-3 行）：
+- 拷贝 `raw_wechat_block` 到消息开头（**verbatim — 不许改格式不许 trim**）
+  - intraday 的 holdings 是 **markdown 表格**（7 列：代码/股/成本/现价/今日/浮%/浮$，右对齐数字。走 `scripts/data/_wechat_table.py` 的 visual-width-aware 渲染，去 $ 前缀 + 加 浮$ 金额列；RSI 在信号段不再占表头）
+  - **市值/浮盈/今日/已实现 已经是单行用 `|` 分隔的格式** — 不要拆 3 行
+  - **`📉 亏损持仓 X/Y | 杠杆ETF敞口 N%` 必须保留**，不要省
+- 加 `▎我的看法` 段：**至少 60 字（postflight 软下限），目标 2-3 行**
   - 若 `should_alert=true`，**必须**提 `anomalies` 中至少一个票
-  - 简短判断；不复述数字
+  - 必须包含：今天该看/该等/该减 + 引用至少 1 个具体数字（票现价 / 异动幅度 / 信号 / RSI）
+  - 禁止"无异动，观望"这种敷衍 1 句话
 - ≤ 600 字软上限
 
 #### Step 3: postflight

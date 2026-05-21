@@ -347,13 +347,17 @@ def print_wechat_report(data: Dict, analyses: List[Dict], md_table: bool = False
     lines: List[str] = []
     lines.append(f"🇺🇸 美股盯盘 | {now.strftime('%m/%d %H:%M ET')}")
 
+    # Totals — single line so LLM doesn't reformat 3-line→1-line (verbatim violation)
     sgn  = lambda x: '+' if x >= 0 else ''
     lines.append('')
-    lines.append(f"📊 市值 ${tv:,.0f}")
-    lines.append(f"💰 浮盈 {sgn(pnl)}${pnl:,.0f} ({sgn(pnl_)}{pnl_:.1f}%)")
-    lines.append(f"📈 今日 {sgn(day)}${day:,.0f}")
+    totals = (
+        f"📊 市值 ${tv:,.0f}"
+        f" | 浮盈 {sgn(pnl)}${pnl:,.0f} ({sgn(pnl_)}{pnl_:.1f}%)"
+        f" | 今日 {sgn(day)}${day:,.0f}"
+    )
     if real:
-        lines.append(f"✅ 已实现 +${real:,.0f}")
+        totals += f" | ✅ 已实现 +${real:,.0f}"
+    lines.append(totals)
 
     # Holdings
     lines.append('')

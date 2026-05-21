@@ -56,12 +56,13 @@ def render_holdings_table(rows: List[Dict], currency: str = '') -> List[str]:
     Returns list of strings (no trailing newline). Caller joins with '\\n'.
 
     rows: each dict has keys code, shares, cost, price, today_pct, pnl_pct, pnl_abs.
-    currency: optional string (e.g. 'HKD' / 'USD') appended to the unit-note
-              line shown above the table. Pass '' to skip the note.
+    currency: kept for backward-compat / future use. We do NOT emit a unit-note
+              line because: (1) WeChat 不渲染 markdown italic, the raw `_...._`
+              looked ugly and LLM verbatim-trimmed it; (2) the currency is already
+              implicit via the 市值 line above the table (HK$xxx / $xxx).
     """
+    _ = currency  # intentionally unused
     out: List[str] = []
-    if currency:
-        out.append(f'_单位 {currency}（成本/现价/浮$）_')
     # Header — left-align code, right-align rest. All widths in visual chars.
     out.append(
         '| ' + pad_left('代码', W_CODE) +
