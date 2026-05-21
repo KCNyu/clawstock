@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-20T20:04:37.645983Z",
+  "generated_at": "2026-05-21T00:07:08.525298Z",
   "last_updated": "2026/05/21 04:04 HKT",
   "fx": {
     "usdhkd": 7.8328,
@@ -500,11 +500,23 @@
       "hk_total_cost": 88276.24,
       "hk_total_pnl": -8722.64,
       "hk_today_change": -3282.4
+    },
+    {
+      "date": "2026-05-21",
+      "file": "2026-05-21.json",
+      "us_total_value": 3081.12,
+      "us_total_cost": 2812.04,
+      "us_total_pnl": 269.08,
+      "us_today_change": 111.69,
+      "hk_total_value": 76169.6,
+      "hk_total_cost": 88276.24,
+      "hk_total_pnl": -12106.64,
+      "hk_today_change": -3384.0
     }
   ],
-  "snapshots_total": 6,
+  "snapshots_total": 7,
   "snapshots_embedded_cap": 90,
-  "plans_count": 4,
+  "plans_count": 5,
   "recent_plans": [
     {
       "date": "2026-05-17",
@@ -860,6 +872,98 @@
         },
         "self_calibration_note": "窗口 15/5，未填满，跳过"
       }
+    },
+    {
+      "date": "2026-05-21",
+      "file": "2026-05-21-plan.json",
+      "plan": {
+        "date": "2026-05-21",
+        "fx_rate_usdhkd": 7.8,
+        "fx_source": "HARDCODED_FALLBACK",
+        "regime": {
+          "us": "trending-up",
+          "hk": "trending-down"
+        },
+        "book": {
+          "usd_total_pnl": -1283.05,
+          "hkd_total_pnl": -10007.82,
+          "hk_leg_hkd": -12106.64,
+          "us_leg_usd": 269.08
+        },
+        "actions": [
+          {
+            "ticker": "ROBN",
+            "bucket": "cut",
+            "size_pct": 50,
+            "size_shares": 20,
+            "trigger_type": "open",
+            "trigger_price": null,
+            "trigger_condition": "开盘任意价减20股",
+            "confidence": 0.75,
+            "rationale": "PnL -21.6% 证伪 thesis；HOOD 加密叙事退潮；2x decay 加速"
+          },
+          {
+            "ticker": "MSFU",
+            "bucket": "cut",
+            "size_pct": 100,
+            "size_shares": 20,
+            "trigger_type": "open",
+            "trigger_price": null,
+            "trigger_condition": "开盘任意价全清",
+            "confidence": 0.78,
+            "rationale": "PnL 归零；MSFT 无 AI 催化；cash 备用"
+          },
+          {
+            "ticker": "00100",
+            "bucket": "trim_on_rebound",
+            "size_pct": 33,
+            "size_shares": 20,
+            "trigger_type": "price_above",
+            "trigger_price": 730,
+            "trigger_condition": "盘中反弹至730以上减20股至40股",
+            "confidence": 0.68,
+            "rationale": "-7.5% vs peer -1.4%，alpha 流失6pp；700有支撑先守"
+          },
+          {
+            "ticker": "SOXL",
+            "bucket": "trim_on_rebound",
+            "size_pct": 50,
+            "size_shares": 1,
+            "trigger_type": "price_above",
+            "trigger_price": 180,
+            "trigger_condition": "若盘后/隔夜涨至180以上减1股留1股",
+            "confidence": 0.72,
+            "rationale": "RSI>80 momentum极致随时reversion；+88%浮盈保护只留1股"
+          },
+          {
+            "ticker": "PLTU",
+            "bucket": "trim_on_rebound",
+            "size_pct": 50,
+            "size_shares": 7,
+            "trigger_type": "price_above",
+            "trigger_price": 38.5,
+            "trigger_condition": "反弹至38.5以上减半至7股",
+            "confidence": 0.65,
+            "rationale": "2x leverage decay；PLTR叙事相对MSFT强，留半仓等反弹"
+          },
+          {
+            "ticker": "07226",
+            "bucket": "hold_and_watch",
+            "size_pct": 0,
+            "size_shares": 0,
+            "trigger_type": "manual",
+            "trigger_price": null,
+            "trigger_condition": "等HSTECH确认方向后再动",
+            "confidence": 0.6,
+            "rationale": "HSTECH方向未明；2x杠杆不追加也不减"
+          }
+        ],
+        "watch_levels": {
+          "hstech_breakdown": 4800,
+          "soxl_breakdown_pct": -4,
+          "book_force_derisk_usd": -300
+        }
+      }
     }
   ],
   "recent_plans_cap": 5,
@@ -878,12 +982,12 @@
   "market_context": {},
   "delta": {
     "us": {
-      "today_pct": 2.94,
+      "today_pct": -13.91,
       "7d_pct": null,
       "30d_pct": null
     },
     "hk": {
-      "today_pct": 0.1,
+      "today_pct": -4.25,
       "7d_pct": null,
       "30d_pct": null
     }
@@ -922,64 +1026,36 @@
     {
       "type": "peer_divergence",
       "ticker": "00100",
-      "detail": "00020 商汤-W -0.5% vs self -7.2% (gap +6.7pp)",
-      "severity": "medium"
-    },
-    {
-      "type": "peer_divergence",
-      "ticker": "02208",
-      "detail": "01798 大唐新能源 +2.4% vs self -1.6% (gap +3.9pp)",
-      "severity": "low"
-    },
-    {
-      "type": "peer_divergence",
-      "ticker": "RKLX",
-      "detail": "RKLB Rocket Lab (underlying) +0.0% vs self -6.9% (gap +6.9pp)",
+      "detail": "02469 速腾聚创 -1.4% vs self -7.5% (gap +6.1pp)",
       "severity": "medium"
     },
     {
       "type": "high_weight_loss",
       "ticker": "00100",
-      "detail": "weight 56.0% + pnl -16.5%",
+      "detail": "weight 54.1% + pnl -16.5%",
       "severity": "high"
     },
     {
       "type": "high_weight_loss",
       "ticker": "07226",
-      "detail": "weight 29.2% + pnl -13.6%",
+      "detail": "weight 30.7% + pnl -13.6%",
       "severity": "medium"
     },
     {
       "type": "leveraged_etf_stop",
       "ticker": "ROBN",
-      "detail": "leveraged ETF: pnl -23.7%",
+      "detail": "leveraged ETF: pnl -21.6%",
       "severity": "medium"
     }
   ],
   "peer_divergence": [
     {
       "ticker": "00100",
-      "self_pct_1d": -7.19,
-      "best_peer": "00020",
-      "best_peer_name": "商汤-W",
-      "peer_pct_1d": -0.54,
-      "divergence_pp": 6.65
-    },
-    {
-      "ticker": "02208",
-      "self_pct_1d": -1.57,
-      "best_peer": "01798",
-      "best_peer_name": "大唐新能源",
-      "peer_pct_1d": 2.37,
-      "divergence_pp": 3.94
-    },
-    {
-      "ticker": "RKLX",
-      "self_pct_1d": -6.9,
-      "best_peer": "RKLB",
-      "best_peer_name": "Rocket Lab (underlying)",
-      "peer_pct_1d": 0.0,
-      "divergence_pp": 6.9
+      "self_pct_1d": -7.47,
+      "best_peer": "02469",
+      "best_peer_name": "速腾聚创",
+      "peer_pct_1d": -1.35,
+      "divergence_pp": 6.12
     }
   ],
   "calibration": {
@@ -1036,6 +1112,60 @@
     }
   },
   "recent_plan_actions": [
+    {
+      "date": "2026-05-21",
+      "ticker": "ROBN",
+      "bucket": "cut",
+      "confidence": 0.75,
+      "trigger_type": "open",
+      "outcome": "pending",
+      "pnl_5d": null
+    },
+    {
+      "date": "2026-05-21",
+      "ticker": "MSFU",
+      "bucket": "cut",
+      "confidence": 0.78,
+      "trigger_type": "open",
+      "outcome": "pending",
+      "pnl_5d": null
+    },
+    {
+      "date": "2026-05-21",
+      "ticker": "00100",
+      "bucket": "trim_on_rebound",
+      "confidence": 0.68,
+      "trigger_type": "price_above",
+      "outcome": "pending",
+      "pnl_5d": null
+    },
+    {
+      "date": "2026-05-21",
+      "ticker": "SOXL",
+      "bucket": "trim_on_rebound",
+      "confidence": 0.72,
+      "trigger_type": "price_above",
+      "outcome": "pending",
+      "pnl_5d": null
+    },
+    {
+      "date": "2026-05-21",
+      "ticker": "PLTU",
+      "bucket": "trim_on_rebound",
+      "confidence": 0.65,
+      "trigger_type": "price_above",
+      "outcome": "pending",
+      "pnl_5d": null
+    },
+    {
+      "date": "2026-05-21",
+      "ticker": "07226",
+      "bucket": "hold_and_watch",
+      "confidence": 0.6,
+      "trigger_type": "manual",
+      "outcome": "pending",
+      "pnl_5d": null
+    },
     {
       "date": "2026-05-20",
       "ticker": "00100",
@@ -1161,67 +1291,13 @@
       "trigger_type": "price_above",
       "outcome": "pending",
       "pnl_5d": null
-    },
-    {
-      "date": "2026-05-18",
-      "ticker": "SOXL",
-      "bucket": "add_only_on_trigger",
-      "confidence": 0.6,
-      "trigger_type": "price_above",
-      "outcome": "pending",
-      "pnl_5d": null
-    },
-    {
-      "date": "2026-05-17",
-      "ticker": "ROBN",
-      "bucket": "cut",
-      "confidence": 0.75,
-      "trigger_type": "price_below",
-      "outcome": "pending",
-      "pnl_5d": null
-    },
-    {
-      "date": "2026-05-17",
-      "ticker": "00100",
-      "bucket": "trim_on_rebound",
-      "confidence": 0.65,
-      "trigger_type": "price_below",
-      "outcome": "pending",
-      "pnl_5d": null
-    },
-    {
-      "date": "2026-05-17",
-      "ticker": "MSFU",
-      "bucket": "hold_and_watch",
-      "confidence": 0.7,
-      "trigger_type": "price_above",
-      "outcome": "pending",
-      "pnl_5d": null
-    },
-    {
-      "date": "2026-05-17",
-      "ticker": "SOXL",
-      "bucket": "hold_and_watch",
-      "confidence": 0.65,
-      "trigger_type": "manual",
-      "outcome": "pending",
-      "pnl_5d": null
-    },
-    {
-      "date": "2026-05-17",
-      "ticker": "07226",
-      "bucket": "t_only",
-      "confidence": 0.55,
-      "trigger_type": "index_breakdown",
-      "outcome": "pending",
-      "pnl_5d": null
     }
   ],
   "drawdown": {
-    "max_pct_30d_hk": -4.64,
-    "max_pct_30d_us": -5.89,
-    "current_pct_hk": -4.54,
-    "current_pct_us": -3.12
+    "max_pct_30d_hk": -8.6,
+    "max_pct_30d_us": -16.6,
+    "current_pct_hk": -8.6,
+    "current_pct_us": -16.6
   },
   "sector_exposure": {
     "us": [
@@ -1316,48 +1392,53 @@
     ]
   },
   "risk": {
-    "generated_at": "2026-05-20T00:03:33.828582+00:00",
-    "as_of": "2026-05-20",
+    "generated_at": "2026-05-21T00:03:50.185465+00:00",
+    "as_of": "2026-05-21",
     "us": {
-      "beta_spx": 4.2206,
-      "vol_30d_annualized": 0.7688,
-      "max_dd_30d": -0.1302,
-      "sharpe_30d": 5.3156,
-      "current_value_usd": 3578.99
+      "beta_spx": 4.5788,
+      "vol_30d_annualized": 0.7461,
+      "max_dd_30d": -0.156,
+      "sharpe_30d": 4.1404,
+      "current_value_usd": 3081.12
     },
     "hk": {
-      "beta_hsi": 2.5571,
-      "vol_30d_annualized": 0.718,
-      "max_dd_30d": -0.1667,
-      "sharpe_30d": -1.6754,
-      "current_value_hkd": 79553.6
+      "beta_hsi": 2.4986,
+      "vol_30d_annualized": 0.6864,
+      "max_dd_30d": -0.1796,
+      "sharpe_30d": -1.3133,
+      "current_value_hkd": 76169.6
     },
     "combined": {
-      "vol_30d_annualized": 0.56,
-      "max_dd_30d": -0.1397,
-      "sharpe_30d": 0.0568
+      "vol_30d_annualized": 0.5467,
+      "max_dd_30d": -0.143,
+      "sharpe_30d": -0.8478
     },
     "leveraged_exposure": {
-      "us_leverage_factor_avg": 1.9724,
-      "hk_leverage_factor_avg": 1.2924,
-      "combined_avg": 1.469,
-      "margin_at_risk_pct": 14.6904
+      "us_leverage_factor_avg": 1.8218,
+      "hk_leverage_factor_avg": 1.3067,
+      "combined_avg": 1.4302,
+      "margin_at_risk_pct": 14.3025
     },
     "alerts": [
       {
         "type": "high_beta",
         "severity": "high",
-        "detail": "US β vs S&P 500 = 4.2206 (> 3.0)"
+        "detail": "US β vs S&P 500 = 4.5788 (> 3.0)"
       },
       {
         "type": "high_vol",
         "severity": "high",
-        "detail": "Combined 30d annualised vol = 56.0% (> 50%)"
+        "detail": "Combined 30d annualised vol = 54.7% (> 50%)"
       },
       {
         "type": "deep_dd",
         "severity": "medium",
-        "detail": "Combined 30d max DD = -14.0% (< -10%)"
+        "detail": "Combined 30d max DD = -14.3% (< -10%)"
+      },
+      {
+        "type": "negative_sharpe",
+        "severity": "medium",
+        "detail": "Combined 30d Sharpe = -0.8478 (< 0)"
       }
     ],
     "meta": {
@@ -1375,14 +1456,13 @@
           "CRCL",
           "PLTU",
           "SOXL",
-          "RKLX",
           "ROBN",
           "MSFU"
         ],
         "failed": [],
         "n_returns": 30,
-        "dates_first": "2026-04-07",
-        "dates_last": "2026-05-19"
+        "dates_first": "2026-04-08",
+        "dates_last": "2026-05-20"
       },
       "hk_fetch": {
         "fetched": [
@@ -1394,8 +1474,8 @@
         ],
         "failed": [],
         "n_returns": 30,
-        "dates_first": "2026-04-01",
-        "dates_last": "2026-05-19"
+        "dates_first": "2026-04-02",
+        "dates_last": "2026-05-20"
       }
     }
   },

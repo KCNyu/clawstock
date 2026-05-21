@@ -1,0 +1,88 @@
+{
+  "date": "2026-05-21",
+  "fx_rate_usdhkd": 7.8,
+  "fx_source": "HARDCODED_FALLBACK",
+  "regime": {
+    "us": "trending-up",
+    "hk": "trending-down"
+  },
+  "book": {
+    "usd_total_pnl": -1283.05,
+    "hkd_total_pnl": -10007.82,
+    "hk_leg_hkd": -12106.64,
+    "us_leg_usd": 269.08
+  },
+  "actions": [
+    {
+      "ticker": "ROBN",
+      "bucket": "cut",
+      "size_pct": 50,
+      "size_shares": 20,
+      "trigger_type": "open",
+      "trigger_price": null,
+      "trigger_condition": "开盘任意价减20股",
+      "confidence": 0.75,
+      "rationale": "PnL -21.6% 证伪 thesis；HOOD 加密叙事退潮；2x decay 加速"
+    },
+    {
+      "ticker": "MSFU",
+      "bucket": "cut",
+      "size_pct": 100,
+      "size_shares": 20,
+      "trigger_type": "open",
+      "trigger_price": null,
+      "trigger_condition": "开盘任意价全清",
+      "confidence": 0.78,
+      "rationale": "PnL 归零；MSFT 无 AI 催化；cash 备用"
+    },
+    {
+      "ticker": "00100",
+      "bucket": "trim_on_rebound",
+      "size_pct": 33,
+      "size_shares": 20,
+      "trigger_type": "price_above",
+      "trigger_price": 730,
+      "trigger_condition": "盘中反弹至730以上减20股至40股",
+      "confidence": 0.68,
+      "rationale": "-7.5% vs peer -1.4%，alpha 流失6pp；700有支撑先守"
+    },
+    {
+      "ticker": "SOXL",
+      "bucket": "trim_on_rebound",
+      "size_pct": 50,
+      "size_shares": 1,
+      "trigger_type": "price_above",
+      "trigger_price": 180,
+      "trigger_condition": "若盘后/隔夜涨至180以上减1股留1股",
+      "confidence": 0.72,
+      "rationale": "RSI>80 momentum极致随时reversion；+88%浮盈保护只留1股"
+    },
+    {
+      "ticker": "PLTU",
+      "bucket": "trim_on_rebound",
+      "size_pct": 50,
+      "size_shares": 7,
+      "trigger_type": "price_above",
+      "trigger_price": 38.5,
+      "trigger_condition": "反弹至38.5以上减半至7股",
+      "confidence": 0.65,
+      "rationale": "2x leverage decay；PLTR叙事相对MSFT强，留半仓等反弹"
+    },
+    {
+      "ticker": "07226",
+      "bucket": "hold_and_watch",
+      "size_pct": 0,
+      "size_shares": 0,
+      "trigger_type": "manual",
+      "trigger_price": null,
+      "trigger_condition": "等HSTECH确认方向后再动",
+      "confidence": 0.60,
+      "rationale": "HSTECH方向未明；2x杠杆不追加也不减"
+    }
+  ],
+  "watch_levels": {
+    "hstech_breakdown": 4800,
+    "soxl_breakdown_pct": -4,
+    "book_force_derisk_usd": -300
+  }
+}
