@@ -266,7 +266,7 @@ kcn 标记方式：`python3 scripts/data/mark_followed.py YYYY-MM-DD TICKER BUCK
 结构（**postflight 会校验这些段标记**，缺哪个 fail）：
 
 - `# Header`（regime US/HK 分开 + FX rate + book USD/HKD 双视角）
-- `## ▎仓位明细` —— HK + US 各一张 6 列 markdown 表 `代码 | 股 | 成本 | 现价 | 今日 | 浮盈%`（与 Mode 6/7 cron 完全一致；数据从 context.json 的 `portfolio.portfolios.{hk,us}_stocks.holdings` 直接取，**只列 shares>0 的**，2026-05-21 起加，让 brief 头屏就能看到本金对照现价）
+- `## ▎仓位明细` —— HK + US 各一张 7 列 markdown 表 `代码 | 股 | 成本 | 现价 | 今日 | 浮% | 浮$`（与 Mode 6/7 cron 完全一致；数据从 context.json 的 `portfolio.portfolios.{hk,us}_stocks.holdings` 直接取，**只列 shares>0 的**。2026-05-21 起的 visual-width-aware 渲染推荐 import `scripts.data._wechat_table.render_holdings_table`，省得手算 CJK 对齐）
 - `## Retrospective`（来自 context.json 的 retrospective）
 - `## Tier 1` 大表
 - `## Tier 2` Bull vs Bear

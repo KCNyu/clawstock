@@ -86,7 +86,7 @@ python3 /root/.openclaw/workspace/scripts/harness/intraday_preflight.py --market
 
 #### Step 2: 写报告
 - 拷贝 `raw_wechat_block` 到消息开头（verbatim）
-  - 注：intraday 的 holdings 已经是 **markdown 表格**（6 列：代码/股/成本/现价/今日/浮盈%，右对齐数字。2026-05-21 起补 shares+cost_basis 让微信展示一眼看到本金），WeChat 移动端会渲染成真表格；其他段（信号 / 亏损统计 / 新闻）保持 ASCII
+  - 注：intraday 的 holdings 是 **markdown 表格**（7 列：代码/股/成本/现价/今日/浮%/浮$，右对齐数字。2026-05-21 改成 visual-width-aware 渲染走 `scripts/data/_wechat_table.py`，去 HK$ 前缀 + 加 浮$ 金额列，每行视觉宽度精确一致，mobile WeChat 即使强制换行也对齐）；其他段（信号 / 亏损统计 / 新闻）保持 ASCII
 - 加 `▎我的看法` 段（2-3 行）：
   - 若 `should_alert=true`，**必须**提到 `anomalies` 里至少一个票
   - 简短判断：今天该看 / 该等 / 该减；不复述脚本里的数字

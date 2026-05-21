@@ -358,22 +358,19 @@ def print_wechat_report(data: Dict, analyses: List[Dict], md_table: bool = False
     # Holdings
     lines.append('')
     if md_table:
-        # Mobile-aligned markdown table (6 cols: code/股/成本/现价/今日/浮盈%)
-        # RSI moved out of table (often unavailable) → cost+shares added
-        # 2026-05-21 per kcn request. RSI still surfaces in the signals block.
-        lines.append('| 代码 |  股 |    成本 |     现价 |   今日 |  浮盈% |')
-        lines.append('|:-----|----:|--------:|---------:|-------:|-------:|')
-        for a in analyses:
-            h      = a['holding']
-            shares = h.get('shares', 0)
-            cost   = h.get('cost_basis', 0)
-            dp     = h.get('today_change_pct', 0)
-            pnl_p  = h.get('pnl_percent', 0)
-            cost_s  = f"${cost:,.2f}" if cost else '—'
-            price_s = f"${h['current_price']:,.2f}"
-            today   = f"{dp:+.1f}%"
-            pnlp    = f"{pnl_p:+.1f}%"
-            lines.append(f"| {h['ticker']:<4} | {shares:>3} | {cost_s:>7} | {price_s:>8} | {today:>6} | {pnlp:>6} |")
+        # 7-col visual-width-aligned markdown table — see _wechat_table.py.
+        # Stays consistent line-width on mobile WeChat (no md render there).
+        from _wechat_table import render_holdings_table
+        rows = [{
+            'code':      a['holding']['ticker'],
+            'shares':    a['holding'].get('shares', 0),
+            'cost':      a['holding'].get('cost_basis'),
+            'price':     a['holding'].get('current_price', 0),
+            'today_pct': a['holding'].get('today_change_pct', 0),
+            'pnl_pct':   a['holding'].get('pnl_percent', 0),
+            'pnl_abs':   a['holding'].get('pnl_abs', 0),
+        } for a in analyses]
+        lines.extend(render_holdings_table(rows, currency='USD'))
     else:
         for a in analyses:
             h     = a['holding']
