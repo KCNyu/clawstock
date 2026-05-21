@@ -55,7 +55,7 @@ def run_analyze(market):
     script = DATA_DIR / f'analyze_{market}_stocks.py'
     try:
         r = subprocess.run(
-            ['python3', str(script), '--wechat'],
+            ['python3', str(script), '--wechat', '--md-table'],
             capture_output=True, text=True, timeout=120,
         )
         return r.returncode, r.stdout, r.stderr
@@ -88,24 +88,34 @@ def parse_signals(stdout):
 
 
 def parse_anomalies(stdout):
-    """Find tickers with ≥3% intraday move (▲ or ▼)."""
+    """Find tickers with ≥3% intraday move from md-table holdings rows.
+
+    Row shape (6 cols, both markets, since 2026-05-21):
+      HK: `| 00100 | 60 | HK$822.83 | HK$722.00 | +5.1% | -12.2% |`
+      US: `| RKLB |  5 | $71.00 | $134.28 | +0.0% | +89.1% |`
+    Cell[0]=ticker, cell[4]=today change (signed %). Cell[2]=cost, [3]=price.
+    """
     anomalies = []
-    head_re = re.compile(r'^[🟢🔴]\s+(\S+)')
-    move_re = re.compile(r'([▲▼])([\d\.]+)%')
+    pct_re = re.compile(r'([+\-])([\d\.]+)%')
     for line in stdout.splitlines():
         s = line.strip()
-        head = head_re.match(s)
-        if not head:
+        if not s.startswith('|') or not s.endswith('|'):
             continue
-        ticker = head.group(1)
-        move = move_re.search(s)
-        if not move:
+        cells = [c.strip() for c in s.strip('|').split('|')]
+        if len(cells) < 6:
             continue
-        arrow, pct_str = move.groups()
+        ticker = cells[0]
+        if ticker == '代码' or ticker.startswith(':'):  # header / separator
+            continue
+        today = cells[4]
+        m = pct_re.search(today)
+        if not m:
+            continue
+        sign, pct_str = m.groups()
         pct = float(pct_str)
         if pct < 3.0:
             continue
-        direction = 1 if arrow == '▲' else -1
+        direction = 1 if sign == '+' else -1
         anomalies.append({
             'ticker':   ticker,
             'move_pct': direction * pct,

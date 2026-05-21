@@ -570,18 +570,23 @@ def print_wechat_report(data: Dict, news_map: Optional[Dict[str, List]] = None, 
     # Holdings list
     lines.append('')
     if md_table:
-        # Mobile-aligned markdown table (4 cols, drop name to keep narrow)
-        lines.append('| 代码  |       现价 |   今日 |  浮盈% |')
-        lines.append('|:------|-----------:|-------:|-------:|')
+        # Mobile-aligned markdown table (6 cols: code/股/成本/现价/今日/浮盈%)
+        # cost+shares added 2026-05-21 per kcn request — render still fits both
+        # mobile and desktop WeChat as long as cost stays ≤8 chars.
+        lines.append('| 代码  |  股 |     成本 |     现价 |   今日 |  浮盈% |')
+        lines.append('|:------|----:|---------:|---------:|-------:|-------:|')
         for h in active:
-            code  = h['ticker']
-            price = h.get('current_price', 0)
-            dp    = h.get('today_change_pct', 0)
-            pnl_p = h.get('pnl_percent', 0)
-            price_s = f"HK${price:,.3f}"
+            code   = h['ticker']
+            shares = h.get('shares', 0)
+            cost   = h.get('cost_basis', 0)
+            price  = h.get('current_price', 0)
+            dp     = h.get('today_change_pct', 0)
+            pnl_p  = h.get('pnl_percent', 0)
+            cost_s  = f"HK${cost:,.2f}" if cost else '—'
+            price_s = f"HK${price:,.2f}"
             today   = f"{dp:+.1f}%"
             pnlp    = f"{pnl_p:+.1f}%"
-            lines.append(f"| {code:<5} | {price_s:>10} | {today:>6} | {pnlp:>6} |")
+            lines.append(f"| {code:<5} | {shares:>3} | {cost_s:>8} | {price_s:>8} | {today:>6} | {pnlp:>6} |")
     else:
         for h in active:
             code  = h['ticker']

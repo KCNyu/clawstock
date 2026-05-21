@@ -227,6 +227,23 @@ python3 -c "import json; d=json.load(open('/root/.openclaw/cron/jobs.json')); ..
 ```
 不要手编辑 jobs.json — JSON 错误会让全部 10 个 job 停摆（包括 Memory Dreaming）。
 
+### Cron 运行历史（自动 + 手动跨 job 聚合）
+
+`openclaw cron runs` 必须带 `--id`，且单 job 视角。跨 job + 自动调度 + 手动 trigger 一起看用：
+
+```bash
+./check_crons.sh                 # 最近 20 次（auto + manual 混排，HKT 倒序）
+./check_crons.sh 50              # 最近 50 次
+./check_crons.sh --status error  # 只看失败
+./check_crons.sh --kind cron     # 只看自动调度
+./check_crons.sh --job 港股       # 按 job 名子串过滤
+./check_crons.sh --full          # 摘要不截断
+./check_crons.sh --json          # JSON 输出（喂给后续 pipeline）
+```
+
+底层数据 `~/.openclaw/cron/runs/{jobId}.jsonl`；`runId` 以 `manual:` 开头是手动 trigger，
+其余空 runId 是 cron daemon 自动调度。脚本本体 `scripts/data/cron_runs.py`。
+
 ### 已废弃（不作为调用入口，但作为参考代码可读）
 > 这些脚本**不要直接调起来跑**当主路径，但里面的 URL、header、fallback 思路、解析片段在调试或场景超出现役脚本时仍有参考价值。
 - `scripts/legacy/stock_analyzer.py` — 被 `scripts/data/analyze_us_stocks.py` + `analyze_hk_stocks.py` 取代；早期 fallback 顺序的来源

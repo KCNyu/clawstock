@@ -71,9 +71,10 @@ def parse_signals(stdout):
 def parse_anomalies(stdout):
     """Parse markdown holdings table rows (--md-table form) and flag ≥3% moves.
 
-    Row shape (US): `| RKLB | $125.59 | -1.4% | +76.9% | 70 |`
-    Row shape (HK): `| 00700 | HK$3.230 | -1.2% | +5.3% |`
-    Cell[1] = ticker, cell[3] = today change (signed %).
+    Row shape (6 cols, both markets, since 2026-05-21):
+      HK: `| 00100 | 60 | HK$822.83 | HK$722.00 | +5.1% | -12.2% |`
+      US: `| RKLB |  5 | $71.00 | $134.28 | +0.0% | +89.1% |`
+    Cell[0]=ticker, cell[4]=today change (signed %).
     Header / separator rows are filtered (代码 / `:---`).
     """
     anomalies = []
@@ -83,12 +84,12 @@ def parse_anomalies(stdout):
         if not s.startswith('|') or not s.endswith('|'):
             continue
         cells = [c.strip() for c in s.strip('|').split('|')]
-        if len(cells) < 4:
+        if len(cells) < 6:
             continue
         ticker = cells[0]
         if ticker == '代码' or ticker.startswith(':'):  # header / separator
             continue
-        today = cells[2]
+        today = cells[4]
         m = pct_re.search(today)
         if not m:
             continue

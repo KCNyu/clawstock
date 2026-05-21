@@ -10,7 +10,9 @@ Usage: read the briefing text from stdin (preferred for cron),
 Validates:
   1. ▎情绪面 / ▎技术面 / ▎操作建议 三段标记齐全
   2. 若 preflight needs_risk_section=true, 必须有 ▎风险提示 段
-  3. 总长度 ≤ 800 字 (warn) / ≤ 1200 字 (fail)
+  3. 总长度 ≤ soft (warn) / ≤ hard (fail) — per-market:
+       HK: 800 / 1200    (current)
+       US: 1200 / 1500   (US needs more breadth: 7 holdings + macro + Fed press)
   4. 必须以 raw_wechat_block 开头（脚本数据块 verbatim，禁止编造）
   5. 如果 preflight 有 anomalies，报告必须提到至少一个 anomaly 票
   6. 没有"等待数据/数据待获取"等敷衍词
@@ -36,6 +38,12 @@ TMP = WS / 'memory' / '.tmp'
 
 REQUIRED_SECTIONS = ['▎情绪面', '▎技术面', '▎操作建议']
 FORBIDDEN_PHRASES = ['数据待获取', '等待数据', '数据缺失（占位）', 'TODO', 'TBD']
+
+# Per-market char limits (US needs more breadth: 7 holdings + macro + Fed)
+CHAR_LIMITS = {
+    'hk': {'soft': 800,  'hard': 1200},
+    'us': {'soft': 1200, 'hard': 1500},
+}
 
 
 def load_context(market, phase, date):
@@ -67,12 +75,14 @@ def validate(text, ctx):
     if ctx.get('needs_risk_section') and '▎风险提示' not in text:
         issues.append('preflight 标 needs_risk_section=true 但未见 "▎风险提示" 段')
 
-    # 4. 长度
+    # 4. 长度 (per-market)
     n_chars = len(text)
-    if n_chars > 1200:
-        issues.append(f'报告长度 {n_chars} 字 > 1200 上限')
-    elif n_chars > 800:
-        issues.append(f'报告长度 {n_chars} 字 > 800 软上限 (warn)')
+    limits = CHAR_LIMITS.get(ctx.get('market', 'hk'), CHAR_LIMITS['hk'])
+    soft, hard = limits['soft'], limits['hard']
+    if n_chars > hard:
+        issues.append(f'报告长度 {n_chars} 字 > {hard} 上限')
+    elif n_chars > soft:
+        issues.append(f'报告长度 {n_chars} 字 > {soft} 软上限 (warn)')
 
     # 5. 异动票必须被提到
     anomalies = ctx.get('anomalies', [])
@@ -94,7 +104,9 @@ def categorize(issues):
     if not issues:
         return 'pass'
     has_critical = any(
-        '缺段标记' in i or '未包含原始数据块' in i or '> 1200' in i or '敷衍词' in i
+        '缺段标记' in i or '未包含原始数据块' in i
+        or ('字 >' in i and '上限' in i and '软上限' not in i)  # hard char limit hit
+        or '敷衍词' in i
         for i in issues
     )
     if has_critical:
