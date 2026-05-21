@@ -809,12 +809,17 @@ layout: null
 
     <div class="card">
       <h3>Track Record <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(USD-eq · 全期)</span></h3>
-      <p class="chart-hint">Hero 看当下 snapshot；Reflect 看历史表现。这一栏只显示 Hero 没有的 perf 指标。</p>
+      <p class="chart-hint">两个回报率并排看：<b>当前浮动率</b>只看现持仓账面（贴近"我现在亏多少"直觉）；<b>总回报率</b>用累计投入本金做分母、含历史已实现兑现 —— 看你的"盈利垫"还剩多少。</p>
       <div class="kpi-grid">
+        <div class="kpi-cell">
+          <div class="lbl">当前浮动率</div>
+          <div class="val" id="kpi-floatpct">—</div>
+          <div class="sub" id="kpi-floatpct-abs">现持仓账面</div>
+        </div>
         <div class="kpi-cell">
           <div class="lbl">总回报率</div>
           <div class="val" id="kpi-totalret">—</div>
-          <div class="sub" id="kpi-totalret-abs">浮 + 已实现</div>
+          <div class="sub" id="kpi-totalret-abs">(浮+已实现) ÷ 累计投入</div>
         </div>
         <div class="kpi-cell">
           <div class="lbl">已实现 (合计)</div>
@@ -1524,6 +1529,7 @@ layout: null
   function renderReflectKpi() {
     const fx = safe(DATA, "fx", "usdhkd") || 7.83;
     const rv = safe(DATA, "realized_vs_unrealized") || {};
+    const cap = safe(DATA, "capital_deployed") || {};
 
     const realizedUsd   = safe(rv, "combined_usd", "realized");
     const unrealizedUsd = safe(rv, "combined_usd", "unrealized");
@@ -1540,18 +1546,20 @@ layout: null
       pnl: ((s.us_today_change ?? 0) + ((s.hk_today_change ?? 0) / fx)),
     }));
     const bookUsd = series.map(s => (s.us_total_value ?? 0) + ((s.hk_total_value ?? 0) / fx));
-    const costUsdLatest = (() => {
-      for (let i = series.length - 1; i >= 0; i--) {
-        const u = series[i].us_total_cost ?? null;
-        const h = series[i].hk_total_cost ?? null;
-        if (u != null || h != null) return (u ?? 0) + ((h ?? 0) / fx);
-      }
-      return null;
-    })();
+    // Current holdings cost (USD-eq) for 浮动率 — from totals API (more authoritative
+    // than digging through snapshots which may lag).
+    const usCostNow = safe(DATA, "totals", "us", "cost_usd") ?? 0;
+    const hkCostNowHkd = safe(DATA, "totals", "hk", "cost_hkd") ?? 0;
+    const currentCostUsd = usCostNow + (hkCostNowHkd / fx);
 
-    // Total return % since first snapshot (uses cost basis if available)
+    // 当前浮动率：仅看现持仓账面盈亏 / 现持仓成本
+    const floatPct = currentCostUsd > 0 ? (unrealizedUsd / currentCostUsd) * 100 : null;
+
+    // 总回报率 (option C 2026-05-22): (浮+已实现) / (当前持仓成本 + 累计已实现)
+    // 不再用 Σbuys（会被 rotation churn 重复计算）
     const totalPnl = (realizedUsd ?? 0) + (unrealizedUsd ?? 0);
-    const totalRetPct = costUsdLatest && costUsdLatest > 0 ? (totalPnl / costUsdLatest) * 100 : null;
+    const capUsd = safe(cap, "combined_usd");
+    const totalRetPct = capUsd && capUsd > 0 ? (totalPnl / capUsd) * 100 : null;
 
     // Win days
     const realDays = dailyPnl.filter(d => d.pnl !== 0);
@@ -1584,8 +1592,16 @@ layout: null
       if (el) { el.classList.remove("pos","neg","neutral"); el.classList.add(c); }
     };
 
+    setVal("kpi-floatpct", floatPct != null ? fmtPct(floatPct, 2) : DASH);
+    setVal("kpi-floatpct-abs", unrealizedUsd != null
+      ? `${fmtMoney(unrealizedUsd, "USD")} / ${fmtMoney(currentCostUsd, "USD")}`
+      : "现持仓账面");
+    setClass("kpi-floatpct", pnlClass(floatPct));
+
     setVal("kpi-totalret", totalRetPct != null ? fmtPct(totalRetPct, 2) : DASH);
-    setVal("kpi-totalret-abs", totalPnl != 0 ? fmtMoney(totalPnl, "USD") + " · 浮 + 已实现" : "浮 + 已实现");
+    setVal("kpi-totalret-abs", capUsd
+      ? `${fmtMoney(totalPnl, "USD")} ÷ ${fmtMoney(capUsd, "USD")} 基准`
+      : "(浮+已实现) ÷ 累计投入");
     setClass("kpi-totalret", pnlClass(totalRetPct));
 
     setVal("kpi-realized", fmtMoney(realizedUsd, "USD"));

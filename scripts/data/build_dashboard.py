@@ -858,6 +858,48 @@ def compute_realized_vs_unrealized(portfolio, fx_rate):
     return out
 
 
+def compute_capital_deployed(portfolio, fx_rate):
+    """资本基准（"自己曾经拥有过的钱"） per region + combined USD-eq.
+
+    Formula (option C, 2026-05-22 决定):
+      basis = current_cost_basis(active holdings) + cumulative realized_pnl
+
+    Why C 而不是 Σbuys：Σbuys 会把 rotation churn 重复计算（同一笔钱在 07709
+    海力士里反复买卖每次都计入）。C 是没有完整 cash-flow log 的个人 tracker
+    最诚实的"capital basis"近似 —— 代表"现在场上的钱 + 历史已兑现拿出来的"。
+    雪球非 TWR 模式逻辑类似。
+
+    行业标准 TWR / MWR 需要每日 portfolio value + 时间戳现金流（含
+    deposit/withdrawal），我们没有这个数据。
+
+    See 2026-05-22 conversation with kcn (rotation churn 问题).
+    """
+    out = {
+        'us':  {'native': None, 'usd': None},
+        'hk':  {'native': None, 'usd': None},
+        'combined_usd': None,
+    }
+
+    try:
+        us = portfolio['portfolios']['us_stocks']
+        hk = portfolio['portfolios']['hk_stocks']
+
+        us_cur  = us.get('total_cost', 0) or 0
+        us_real = us.get('realized_pnl', 0) or 0
+        hk_cur  = hk.get('total_cost', 0) or 0
+        hk_real = hk.get('realized_pnl', 0) or 0
+
+        out['us']['native'] = round(us_cur + us_real, 2)
+        out['hk']['native'] = round(hk_cur + hk_real, 2)
+        out['us']['usd'] = out['us']['native']  # US native is USD
+        if fx_rate and fx_rate > 0:
+            out['hk']['usd'] = round(out['hk']['native'] / fx_rate, 2)
+            out['combined_usd'] = round(out['us']['usd'] + out['hk']['usd'], 2)
+    except Exception as e:
+        print(f'  warn: compute_capital_deployed failed: {e}', file=sys.stderr)
+    return out
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     portfolio = load_json(WS_ROOT / 'portfolio.json')
@@ -967,6 +1009,7 @@ def main():
     out['all_time_extremes'] = compute_all_time_extremes(portfolio, top_n=3)
     out['today_ranges'] = compute_today_ranges(portfolio, top_n=8)
     out['realized_vs_unrealized'] = compute_realized_vs_unrealized(portfolio, fx_rate)
+    out['capital_deployed'] = compute_capital_deployed(portfolio, fx_rate)
     if brief_ctx_path:
         print(f'  brief-context source: {os.path.basename(brief_ctx_path)}')
 
