@@ -121,7 +121,9 @@ def maybe_commit(status, commit_msg):
         return False, 'skipped (status=fail)'
     rebuild_dashboard()
     suffix = ' (validation warnings)' if status == 'warn' else ''
-    ok, _ = _git('add', 'portfolio.json', 'assets/data/dashboard.json')
+    today = datetime.now().strftime('%Y-%m-%d')
+    ok, _ = _git('add', 'portfolio.json', 'assets/data/dashboard.json',
+                 f'memory/snapshots/{today}.json')
     if not ok:
         return False, 'git add failed'
     ok, out = _git('commit', '-m', f'{commit_msg}{suffix}')
