@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026/05/22 12:04 HKT",
+  "last_updated": "2026/05/22 12:05 HKT",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -723,7 +723,7 @@
           "current_price": 736.0,
           "current_value": 44160.0,
           "pnl_percent": -10.55,
-          "data_source": "Tencent+Eastmoney May 22 12:04 HKT",
+          "data_source": "Tencent+Eastmoney May 22 12:05 HKT",
           "today_change": 4380.0,
           "today_change_pct": 11.01,
           "pnl_abs": -5209.8,
@@ -771,7 +771,7 @@
           "current_price": 14.34,
           "current_value": 5736.0,
           "pnl_percent": 1.82,
-          "data_source": "Tencent+Eastmoney May 22 12:04 HKT",
+          "data_source": "Tencent+Eastmoney May 22 12:05 HKT",
           "today_change": 12.0,
           "today_change_pct": 0.21,
           "pnl_abs": 102.4,
@@ -804,7 +804,7 @@
           "current_price": 4.852,
           "current_value": 970.4,
           "pnl_percent": -10.23,
-          "data_source": "Tencent+Eastmoney May 22 12:04 HKT",
+          "data_source": "Tencent+Eastmoney May 22 12:05 HKT",
           "today_change": 20.0,
           "today_change_pct": 2.1,
           "pnl_abs": -110.6,
@@ -827,7 +827,7 @@
           "current_price": 3.748,
           "current_value": 23237.6,
           "pnl_percent": -14.1,
-          "data_source": "Tencent+Eastmoney May 22 12:04 HKT",
+          "data_source": "Tencent+Eastmoney May 22 12:05 HKT",
           "trades": [
             {
               "date": "2026-03-24",
@@ -859,7 +859,7 @@
           "current_price": 4.764,
           "current_value": 4764.0,
           "pnl_percent": -7.32,
-          "data_source": "Tencent+Eastmoney May 22 12:04 HKT",
+          "data_source": "Tencent+Eastmoney May 22 12:05 HKT",
           "today_change": 96.0,
           "today_change_pct": 2.06,
           "pnl_abs": -376.0,
