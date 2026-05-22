@@ -104,3 +104,8 @@
 - **总市值** HK$89,400 | **浮盈** +1,124 (+1.3%) | **今日** +1,703 [score=0.889 recalls=0 avg=0.620 source=memory/2026-05-14.md:16-16]
 <!-- openclaw-memory-promotion:memory:memory/2026-05-14.md:19:19 -->
 - ⚠️ 02208 金风科技：今日 -9.4%，需关注是否消息面异动 [score=0.889 recalls=0 avg=0.620 source=memory/2026-05-14.md:19-19]
+
+## Promoted From Short-Term Memory (2026-05-22)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-14.md:5:5 -->
+- **恒指** 26,452 ▲0.24% | **恒科** 5,110 ▲0.33% [score=0.889 recalls=0 avg=0.620 source=memory/2026-05-14.md:5-5]
