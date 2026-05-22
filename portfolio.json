@@ -1146,17 +1146,17 @@
       "indices_snapshot": {
         "HSI": {
           "name": "恒生指数",
-          "price": 26500.77,
-          "prev_close": 26406.84,
-          "chg_pct": 0.3557,
-          "source": "Tencent qt.gtimg.cn 2026/05/12 09:30 HKT"
+          "price": 25606.03,
+          "prev_close": 25386.52,
+          "chg_pct": 0.86,
+          "source": "Tencent qt.gtimg.cn 2026/05/23 02:10 HKT"
         },
         "HSTECH": {
-          "name": "恒生科技指数",
-          "price": 5134.76,
-          "prev_close": 5106.4,
-          "chg_pct": 0.5554,
-          "source": "Tencent qt.gtimg.cn 2026/05/12 09:30 HKT"
+          "name": "恒生科技",
+          "price": 4869.57,
+          "prev_close": 4768.9,
+          "chg_pct": 2.11,
+          "source": "Tencent qt.gtimg.cn 2026/05/23 02:10 HKT"
         }
       },
       "last_midday_attempted": "2026-05-07 12:00:00 HKT",
