@@ -1,66 +1,71 @@
 {
-  "generated_at": "2026-05-21T01:33:29.211263+00:00",
+  "generated_at": "2026-05-22T01:34:47.409254+00:00",
   "vix": {
     "symbol": "^VIX",
-    "price": 17.44,
-    "prev": 18.06,
-    "change_pct": -3.43,
-    "as_of": 1779308101,
+    "price": 16.76,
+    "prev": 17.44,
+    "change_pct": -3.9,
+    "as_of": 1779394501,
     "source": "yahoo"
   },
   "treasury_10y": {
     "symbol": "^TNX",
-    "price": 4.572,
-    "prev": 4.667,
-    "change_pct": -2.04,
-    "as_of": 1779303595,
+    "price": 4.586,
+    "prev": 4.572,
+    "change_pct": 0.31,
+    "as_of": 1779389993,
     "source": "yahoo",
-    "yield_pct": 0.457
+    "yield_pct": 0.459
   },
   "dxy": {
     "symbol": "DX-Y.NYB",
-    "price": 99.074,
-    "prev": 99.092,
-    "change_pct": -0.02,
-    "as_of": 1779326607,
+    "price": 99.252,
+    "prev": 99.257,
+    "change_pct": -0.01,
+    "as_of": 1779413086,
     "source": "yahoo"
   },
   "fear_greed": {
-    "score": 60.9,
+    "score": 58.3,
     "rating": "greed",
-    "prev_close": 60.4,
-    "prev_1_week": 64.0,
-    "as_of": "2026-05-20T23:59:47+00:00"
+    "prev_close": 60.9,
+    "prev_1_week": 65.9,
+    "as_of": "2026-05-21T23:59:41+00:00"
   },
   "hsi": {
     "symbol": "^HSI",
-    "price": 25714.68,
-    "prev": 25651.12,
-    "change_pct": 0.25,
+    "price": 25555.06,
+    "prev": 25386.52,
+    "change_pct": 0.66,
     "source": "stooq"
   },
   "hstech": {
     "symbol": "^HSTECH",
-    "price": 4905.19,
-    "prev": 4873.82,
-    "change_pct": 0.64,
+    "price": 4831.77,
+    "prev": 4768.9,
+    "change_pct": 1.32,
     "source": "tencent"
   },
   "spx": {
     "symbol": "^GSPC",
-    "price": 7433.0,
-    "prev": 7369.2,
-    "change_pct": 0.87,
+    "price": 7445.7,
+    "prev": 7410.8,
+    "change_pct": 0.47,
     "source": "stooq"
   },
   "nasdaq": {
     "symbol": "^IXIC",
-    "price": 29297.7,
-    "prev": 29006.57,
-    "change_pct": 1.0,
+    "price": 29357.27,
+    "prev": 29150.13,
+    "change_pct": 0.71,
     "source": "stooq"
   },
   "fed_press": [
+    {
+      "date": "2026-05-21",
+      "title": "Federal Reserve Board issues enforcement action with former employee of Commerce Bank",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260521a.htm"
+    },
     {
       "date": "2026-05-20",
       "title": "Federal Reserve Board requests public comment on a proposal to establish a \"payment account,\" which legally eligible financial institutions could use for the specific purpose of clearing and settling ",
@@ -90,16 +95,6 @@
       "date": "2026-05-15",
       "title": "Federal Reserve Board announces termination of enforcement actions with UBS Group AG, Credit Suisse AG, Credit Suisse Holdings (USA), Inc., and Credit Suisse AG, New York Branch",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260515a.htm"
-    },
-    {
-      "date": "2026-05-14",
-      "title": "Stephen I. Miran submits his resignation as a member of the Federal Reserve Board, effective when or shortly before his successor on the Board is sworn in",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260514b.htm"
-    },
-    {
-      "date": "2026-05-14",
-      "title": "Federal Reserve Board releases results from two surveys of senior financial officers at banks about their views on discount window operating days and their strategies and practices for managing reserv",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260514a.htm"
     }
   ]
 }
