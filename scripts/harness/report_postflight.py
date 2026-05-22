@@ -113,7 +113,7 @@ def categorize(issues):
 
 
 sys.path.insert(0, str(Path(__file__).parent))
-from _harness_common import git_cmd as _git, rebuild_dashboard, push_with_rebase_retry  # noqa: E402
+from _harness_common import git_cmd as _git, rebuild_dashboard, push_with_rebase_retry, snapshot_date_for_now  # noqa: E402
 
 
 def maybe_commit(status, commit_msg):
@@ -121,9 +121,11 @@ def maybe_commit(status, commit_msg):
         return False, 'skipped (status=fail)'
     rebuild_dashboard()
     suffix = ' (validation warnings)' if status == 'warn' else ''
-    today = datetime.now().strftime('%Y-%m-%d')
-    ok, _ = _git('add', 'portfolio.json', 'assets/data/dashboard.json',
-                 f'memory/snapshots/{today}.json')
+    snap_date = snapshot_date_for_now()
+    add_args = ['add', 'portfolio.json', 'assets/data/dashboard.json']
+    if snap_date:
+        add_args.append(f'memory/snapshots/{snap_date}.json')
+    ok, _ = _git(*add_args)
     if not ok:
         return False, 'git add failed'
     ok, out = _git('commit', '-m', f'{commit_msg}{suffix}')

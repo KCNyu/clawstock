@@ -1,0 +1,160 @@
+#!/usr/bin/env python3
+"""
+gc_sessions.py — clean up stale openclaw session/log artifacts.
+
+All 11 cron jobs run with sessionTarget=isolated, so each invocation creates a
+fresh session file + trajectory.jsonl that nothing ever deletes. At ~70 files
+per day (~25 MB/day) the sessions/ dir grows ~9 GB/year unattended.
+
+This script removes:
+  - sessions/*.trajectory.jsonl     older than KEEP_TRAJECTORY_DAYS
+  - sessions/*.jsonl (plain)        older than KEEP_SESSION_DAYS
+  - sessions/*.json (non-jsonl)     older than KEEP_SESSION_DAYS
+  - sessions/bak-* / pre-cleanup-*  older than KEEP_BAK_DAYS
+  - gateway-supervisor-restart-handoff.json if expired
+
+Defaults are conservative; tune via env vars if needed.
+Designed to run as a daily cron (~03:00 HKT, after overnight monitor ends 02:30
+and before US close 04:05 — see openclaw-intraday-cron-no-overlap memory).
+
+Idempotent + dry-run via --dry-run. Failures non-fatal (prints + exits 0).
+"""
+import argparse
+import json
+import os
+import sys
+import time
+from pathlib import Path
+
+OPENCLAW_HOME = Path(os.environ.get('OPENCLAW_HOME', '/root/.openclaw'))
+SESSIONS_DIR  = OPENCLAW_HOME / 'agents' / 'main' / 'sessions'
+HANDOFF_FILE  = OPENCLAW_HOME / 'gateway-supervisor-restart-handoff.json'
+
+KEEP_TRAJECTORY_DAYS = int(os.environ.get('GC_KEEP_TRAJECTORY_DAYS', '7'))
+KEEP_SESSION_DAYS    = int(os.environ.get('GC_KEEP_SESSION_DAYS',    '14'))
+KEEP_BAK_DAYS        = int(os.environ.get('GC_KEEP_BAK_DAYS',        '3'))
+
+
+def humansize(n):
+    for unit in ['B', 'KB', 'MB', 'GB']:
+        if n < 1024:
+            return f'{n:.1f} {unit}'
+        n /= 1024
+    return f'{n:.1f} TB'
+
+
+def gc_files(pattern_predicate, cutoff_ts, label, dry_run):
+    """Walk SESSIONS_DIR, delete files matching predicate(name) older than cutoff."""
+    if not SESSIONS_DIR.exists():
+        return 0, 0
+    n_files, n_bytes = 0, 0
+    for p in SESSIONS_DIR.iterdir():
+        if not p.is_file():
+            continue
+        if not pattern_predicate(p.name):
+            continue
+        try:
+            mt = p.stat().st_mtime
+            sz = p.stat().st_size
+        except FileNotFoundError:
+            continue
+        if mt >= cutoff_ts:
+            continue
+        n_files += 1
+        n_bytes += sz
+        if not dry_run:
+            try:
+                p.unlink()
+            except OSError as e:
+                print(f'  skip {p.name}: {e}', file=sys.stderr)
+    print(f'  {label}: {n_files} files, {humansize(n_bytes)}')
+    return n_files, n_bytes
+
+
+def gc_handoff(dry_run):
+    if not HANDOFF_FILE.exists():
+        return False
+    try:
+        data = json.loads(HANDOFF_FILE.read_text())
+    except Exception as e:
+        print(f'  handoff unreadable, leaving in place: {e}')
+        return False
+    expires = data.get('expiresAt', 0) / 1000
+    if expires == 0 or expires >= time.time():
+        return False
+    age_h = (time.time() - expires) / 3600
+    print(f'  handoff: expired {age_h:.1f}h ago, removing')
+    if not dry_run:
+        try:
+            HANDOFF_FILE.unlink()
+        except OSError as e:
+            print(f'    skip: {e}', file=sys.stderr)
+    return True
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dry-run', action='store_true', help='Print but do not delete')
+    args = parser.parse_args()
+
+    now = time.time()
+    print(f'gc_sessions: dir={SESSIONS_DIR} dry_run={args.dry_run}')
+    print(f'  keep trajectory ≤ {KEEP_TRAJECTORY_DAYS}d, session ≤ {KEEP_SESSION_DAYS}d, bak ≤ {KEEP_BAK_DAYS}d')
+
+    total_files, total_bytes = 0, 0
+
+    # trajectory.jsonl — biggest disk hog, shortest retention
+    f, b = gc_files(
+        lambda n: n.endswith('.trajectory.jsonl'),
+        now - KEEP_TRAJECTORY_DAYS * 86400,
+        'trajectory.jsonl', args.dry_run,
+    )
+    total_files += f
+    total_bytes += b
+
+    # Plain .jsonl (no trajectory suffix) — main session log
+    f, b = gc_files(
+        lambda n: n.endswith('.jsonl') and not n.endswith('.trajectory.jsonl'),
+        now - KEEP_SESSION_DAYS * 86400,
+        'plain .jsonl', args.dry_run,
+    )
+    total_files += f
+    total_bytes += b
+
+    # .json sidecars (metadata)
+    f, b = gc_files(
+        lambda n: n.endswith('.json'),
+        now - KEEP_SESSION_DAYS * 86400,
+        '.json sidecar', args.dry_run,
+    )
+    total_files += f
+    total_bytes += b
+
+    # *.bak-{PID}-{ts}, *.pre-cleanup-*, *.bak — anywhere in name
+    f, b = gc_files(
+        lambda n: '.bak-' in n or '.pre-cleanup-' in n or n.endswith('.bak'),
+        now - KEEP_BAK_DAYS * 86400,
+        'bak / pre-cleanup', args.dry_run,
+    )
+    total_files += f
+    total_bytes += b
+
+    # Stale rename leftovers like *.jsonl.1779044443580 (epoch-ms suffix)
+    f, b = gc_files(
+        lambda n: any(n.endswith(suf) for suf in ('.tmp', '.old')) or
+                  n.split('.')[-1].isdigit() and len(n.split('.')[-1]) >= 10,
+        now - KEEP_BAK_DAYS * 86400,
+        'tmp / numeric-suffix', args.dry_run,
+    )
+    total_files += f
+    total_bytes += b
+
+    # Expired gateway-supervisor-restart-handoff
+    gc_handoff(args.dry_run)
+
+    action = 'would free' if args.dry_run else 'freed'
+    print(f'gc_sessions: {action} {total_files} files / {humansize(total_bytes)}')
+
+
+if __name__ == '__main__':
+    main()

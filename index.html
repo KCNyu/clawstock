@@ -185,7 +185,12 @@ layout: null
      Hero: 总资产卡
      ========================================================= */
   .totals-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px;
+  }
+  @media (max-width: 360px) {
+    /* Narrow phones: HK$xx,xxx is too wide for half-grid; stack legs vertically */
+    .totals-grid { grid-template-columns: 1fr; gap: 8px; }
+    .total-leg { padding: 10px; }
   }
   .total-leg {
     background: var(--card-2);

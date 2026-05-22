@@ -11,9 +11,15 @@ import csv
 import glob
 import json
 import os
+import re
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
+
+# Strict YYYY-MM-DD.json — rejects baselines/backups/archives that share the
+# snapshots dir (e.g. 2026-05-16-saturday-baseline.json caused duplicate 5-16
+# rows in the equity curve before this filter was added).
+SNAPSHOT_FNAME_RE = re.compile(r'^\d{4}-\d{2}-\d{2}\.json$')
 
 WS_ROOT = Path(__file__).resolve().parent.parent.parent
 OUT_DIR = WS_ROOT / 'assets' / 'data'
@@ -91,7 +97,10 @@ def hhi_verdict(hhi, top2):
 
 def load_snapshots():
     """Returns recent-N snapshot summaries (NOT full holdings). Capped at MAX_SNAPSHOTS_EMBEDDED."""
-    paths = sorted(glob.glob(str(WS_ROOT / 'memory' / 'snapshots' / '*.json')))
+    paths = sorted(
+        p for p in glob.glob(str(WS_ROOT / 'memory' / 'snapshots' / '*.json'))
+        if SNAPSHOT_FNAME_RE.match(os.path.basename(p))
+    )
     # Keep only the most recent N — chronological order so dashboard line chart still ascends
     paths = paths[-MAX_SNAPSHOTS_EMBEDDED:]
     results = []
@@ -154,7 +163,10 @@ def total_plans_count():
 
 
 def total_snapshots_count():
-    return len(glob.glob(str(WS_ROOT / 'memory' / 'snapshots' / '*.json')))
+    return sum(
+        1 for p in glob.glob(str(WS_ROOT / 'memory' / 'snapshots' / '*.json'))
+        if SNAPSHOT_FNAME_RE.match(os.path.basename(p))
+    )
 
 
 # ── Dashboard v2 NEW field computers ─────────────────────────────────────
@@ -513,7 +525,7 @@ def compute_calibration():
             return empty
         # Resolved = outcome in {win, loss, flat} (skip pending/blank).
         # 30d window: keep rows whose plan_date is within 30 days of today.
-        today = datetime.utcnow().date()
+        today = datetime.now(timezone.utc).date()
         resolved = []
         for r in rows:
             outcome = (r.get('outcome') or '').strip().lower()
@@ -924,7 +936,7 @@ def main():
     plans = load_plans()
 
     out = {
-        'generated_at': datetime.utcnow().isoformat() + 'Z',
+        'generated_at': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
         'last_updated': portfolio.get('last_updated', ''),
         'fx': {
             'usdhkd': fx_cache.get('rate'),

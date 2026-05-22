@@ -34,25 +34,56 @@ def git_cmd(*args, cwd=None):
 
 
 def refresh_today_snapshot(ws=None):
-    """Overwrite memory/snapshots/{today}.json with current portfolio.json.
+    """Overwrite memory/snapshots/{date}.json with current portfolio.json.
 
     Why: brief_preflight writes today's snapshot at 08:00 HKT before HK open,
     so today_change is stale (often negative) by the time the market closes.
     Calling this before rebuild_dashboard keeps the equity curve's last point
     in sync with the live portfolio. Non-fatal on error.
+
+    Date selection (HKT-aware):
+      - Mon-Fri:      write today (HK + US markets active)
+      - Sat 00-06:    write Fri (US close at ~04:00 HKT belongs to Fri)
+      - Sun / Sat 07+: skip (no market activity, would create stale snapshot)
+
+    Returns (ok, snapshot_filename_or_message). On skip returns (False, msg)
+    — caller should treat as non-fatal.
     """
-    from datetime import datetime
+    from datetime import datetime, timedelta
     ws = ws or WS
     try:
         pf = ws / 'portfolio.json'
         if not pf.exists():
             return False, 'portfolio.json missing'
-        today = datetime.now().strftime('%Y-%m-%d')
-        snap = ws / 'memory' / 'snapshots' / f'{today}.json'
+        now = datetime.now()
+        wd = now.weekday()  # Mon=0 .. Sun=6
+        if wd <= 4:
+            target = now
+        elif wd == 5 and now.hour < 7:
+            target = now - timedelta(days=1)
+        else:
+            return False, f'skipped (weekend: {now.strftime("%a %H:%M")})'
+        date = target.strftime('%Y-%m-%d')
+        snap = ws / 'memory' / 'snapshots' / f'{date}.json'
         snap.write_bytes(pf.read_bytes())
-        return True, str(snap.name)
+        return True, snap.name
     except Exception as e:
         return False, str(e)
+
+
+def snapshot_date_for_now():
+    """Returns the date string refresh_today_snapshot would write, or None if
+    it would skip. Used by callers (like report_postflight) that need to know
+    the snapshot filename for git add. Mirrors refresh_today_snapshot's date logic.
+    """
+    from datetime import datetime, timedelta
+    now = datetime.now()
+    wd = now.weekday()
+    if wd <= 4:
+        return now.strftime('%Y-%m-%d')
+    if wd == 5 and now.hour < 7:
+        return (now - timedelta(days=1)).strftime('%Y-%m-%d')
+    return None
 
 
 def rebuild_dashboard(ws=None):

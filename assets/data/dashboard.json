@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-22T17:05:20.834612Z",
+  "generated_at": "2026-05-22T17:17:11.340918Z",
   "last_updated": "2026/05/23 01:00 HKT",
   "fx": {
     "usdhkd": 7.8328,
@@ -465,18 +465,6 @@
   "snapshots": [
     {
       "date": "2026-05-16",
-      "file": "2026-05-16-saturday-baseline.json",
-      "us_total_value": 3694.25,
-      "us_total_cost": 3181.05,
-      "us_total_pnl": 513.2,
-      "us_today_change": -43.6,
-      "hk_total_value": 83340.4,
-      "hk_total_cost": 88276.24,
-      "hk_total_pnl": -4935.84,
-      "hk_today_change": -5178.0
-    },
-    {
-      "date": "2026-05-16",
       "file": "2026-05-16.json",
       "us_total_value": 3694.25,
       "us_total_cost": 3181.05,
@@ -560,7 +548,7 @@
       "hk_today_change": 6280.8
     }
   ],
-  "snapshots_total": 8,
+  "snapshots_total": 7,
   "snapshots_embedded_cap": 90,
   "plans_count": 6,
   "recent_plans": [
@@ -1051,12 +1039,12 @@
   "delta": {
     "us": {
       "today_pct": 0.86,
-      "7d_pct": -15.88,
+      "7d_pct": null,
       "30d_pct": null
     },
     "hk": {
       "today_pct": 4.71,
-      "7d_pct": -4.3,
+      "7d_pct": null,
       "30d_pct": null
     }
   },
@@ -1640,7 +1628,7 @@
     }
   },
   "us_news_digest": {
-    "generated_at": "2026-05-21T16:12:08.592294",
+    "generated_at": "2026-05-22T15:45:18.759749",
     "lookback_hours": 48,
     "tickers": [
       "RKLB",
@@ -1650,12 +1638,12 @@
       "ROBN",
       "MSFU"
     ],
-    "digest_markdown": "### Top 3-5 移动信号\n- **RKLB**: 伴随SpaceX IPO预期升温，太空板块热度回升，RKLB股价因关键技术信号单日大涨超10%。*（利好持仓：板块β+个股α共振，短期动量强劲）*\n- **SOXL**: 费城半导体指数周度RSI创历史新高，历史数据显示类似信号后平均跌幅达44%。*（风险提示：板块技术面严重超买，杠杆ETF SOXL面临大幅回调风险）*\n- **CRCL**: 摩根士丹利将Circle (CRCL)目标价从80美元上调至106美元，维持“持有”评级。*（中性偏多：龙头机构上调估值，但“持有”评级限制上行想象空间）*\n\n### Per-ticker 简报\n- **RKLB**: 太空ETF新品上市与SpaceX IPO炒作共同推动板块热度，叠加个股突破关键交易信号，形成双重催化剂。\n- **CRCL**: 投资界开始区分比特币的投机性与稳定币的实用价值，为Circle的稳定币业务提供积极叙事背景；分析师上调目标价确认基本面改善。\n- **SOXL**: 三星罢工事件叠加Nvidia财报前的预期，加剧半导体市场波动；技术指标显示极端超买，杠杆风险突出。\n\n### 风险 watch\n- **SOXL**: 费城半导体指数周度RSI达到1995年以来最高水平，技术分析师警告历史上类似信号后常伴随深度回调，**杠杆ETF (SOXL) 的下跌风险会被显著放大**。",
+    "digest_markdown": "### Top 3-5 移动信号 (跨 ticker 排序)\n- **RKLB**: Q1 revenue surged 63.5% YoY to $200.3M with backlog doubling to $2.2B – strong growth catalyst, reinforces kcn's long position.\n- **RKLB**: Landed $90M US Space Force contract – adds government revenue stream, but $3B stock offering filed may cause dilution pressure.\n- **SOXL**: Semiconductor mania resumes ahead of Nvidia earnings, driven by AI capex – leveraged ETF benefits, but volatility risk escalates.\n- **RKLB**: Analyst downgrade warns against chasing rally – signals potential overvaluation, advising caution on incremental buys.\n\n### Per-ticker 简报\n- **RKLB**: Key events: Q1 earnings beat, $90M Space Force deal, $3B stock offering, and rating downgrade – growth balanced by dilution and valuation risks.\n- **SOXL**: Highlight: Sector momentum pre-Nvidia earnings, but leveraged exposure amplifies timing risks, supporting a hold stance.\n\n### 风险 watch\n- **RKLB**: $3B stock offering risks share dilution; analyst downgrade indicates near-term headwinds.\n- **SOXL**: Leveraged ETF structure magnifies market swings; high volatility requires careful entry timing.",
     "raw_news_counts": {
       "RKLB": 5,
-      "CRCL": 2,
+      "CRCL": 0,
       "PLTU": 0,
-      "SOXL": 5,
+      "SOXL": 3,
       "ROBN": 0,
       "MSFU": 0
     }
