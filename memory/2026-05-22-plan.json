@@ -1,0 +1,100 @@
+{
+  "date": "2026-05-22",
+  "fx_rate_usdhkd": 7.8,
+  "fx_source": "HARDCODED_FALLBACK",
+  "regime": {
+    "us": "volatile",
+    "hk": "trending-down"
+  },
+  "book": {
+    "usd_total_pnl": -1652.18,
+    "hkd_total_pnl": -12886.97,
+    "hk_leg_hkd": -14796.64,
+    "us_leg_usd": 244.83
+  },
+  "actions": [
+    {
+      "ticker": "ROBN",
+      "bucket": "cut",
+      "size_pct": 50,
+      "size_shares": 20,
+      "trigger_type": "open",
+      "trigger_price": null,
+      "trigger_condition": "开盘任意价减20股至20股",
+      "confidence": 0.78,
+      "rationale": "-20.79% PnL 证伪 thesis；crypto sentiment 无改善；MSFU 已清仓 cash 在手"
+    },
+    {
+      "ticker": "RKLB",
+      "bucket": "trim_on_rebound",
+      "size_pct": 40,
+      "size_shares": 2,
+      "trigger_type": "price_above",
+      "trigger_price": 128,
+      "trigger_condition": "若 RKLB 反弹至 128 以上减 2 股保留 3 股",
+      "confidence": 0.65,
+      "rationale": "-6.43% gap down 破坏短线 momentum；+77% 浮盈仍在；β=4.78 高β仓需降"
+    },
+    {
+      "ticker": "SOXL",
+      "bucket": "hold_and_watch",
+      "size_pct": 0,
+      "size_shares": 0,
+      "trigger_type": "price_above",
+      "trigger_price": 185,
+      "trigger_condition": "若 RSI >80 或 SOXL 冲 185 以上考虑减 1 股留 1 股",
+      "confidence": 0.70,
+      "rationale": "浮+93% 安全垫厚；半体 upcycle 未破；RSI 未超 80 前持有"
+    },
+    {
+      "ticker": "PLTU",
+      "bucket": "t_only",
+      "size_pct": 50,
+      "size_shares": 7,
+      "trigger_type": "price_above",
+      "trigger_price": 38.5,
+      "trigger_condition": "反弹至 38.5 以上减半至 7 股（成本 40.96，37 有支撑）",
+      "confidence": 0.55,
+      "rationale": "浮亏 -9.66%；37 美元技术支撑；等 PLTR AIP 催化；momentum 未反转"
+    },
+    {
+      "ticker": "CRCL",
+      "bucket": "add_only_on_trigger",
+      "size_pct": 50,
+      "size_shares": 1,
+      "trigger_type": "price_above",
+      "trigger_price": 120,
+      "trigger_condition": "CRCL 站稳 120 加 1 股至 3 股（浮+32%，crypto 监管催化）",
+      "confidence": 0.68,
+      "rationale": "昨 +2.94% 独立走势；Circle USDC 合规预期；GENIUS Act 6 月国会进度；安全垫厚"
+    },
+    {
+      "ticker": "00100",
+      "bucket": "hold_and_watch",
+      "size_pct": 0,
+      "size_shares": 0,
+      "trigger_type": "manual",
+      "trigger_price": null,
+      "trigger_condition": "等 MiniMax 下一轮融资估值确认；南向资金净流入信号",
+      "confidence": 0.62,
+      "rationale": "-19.42% 重伤；但 peer 也弱（06682 -0.51%）；题材未死；22.5 亿估值待验证"
+    },
+    {
+      "ticker": "07226",
+      "bucket": "hold_and_watch",
+      "size_pct": 0,
+      "size_shares": 0,
+      "trigger_type": "index_breakdown",
+      "trigger_price": 4800,
+      "trigger_condition": "若 HSTECH 跌破 4800 减半仓 3100 股；否则持有等指数企稳",
+      "confidence": 0.58,
+      "rationale": "HSTECH 方向未明；2x 杠杆高 cost；与 00100 高度相关；权重 84.6% 集中风险"
+    }
+  ],
+  "watch_levels": {
+    "hstech_breakdown": 4800,
+    "soxl_rsi_overbought": 80,
+    "soxl_breakdown_pct": -4,
+    "book_force_derisk_usd": -2000
+  }
+}
