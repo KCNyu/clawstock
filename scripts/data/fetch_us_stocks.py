@@ -341,6 +341,43 @@ def get_polygon_quote(ticker: str, api_key: str) -> Optional[Dict]:
         return None
 
 
+def fetch_us_indices() -> Dict[str, Dict]:
+    """Fetch SPX / NDX / DJI live quotes.
+
+    Tries Nasdaq API on ETF proxies (SPY/QQQ/DIA) — most reliable from a server IP.
+    Falls back to yfinance for the raw index symbol if the proxy fails.
+
+    Returns dict keyed by short symbol (SPX/NDX/DJI) with name/price/prev_close/
+    change_pct/proxy/source. Failures tolerated — missing keys omit that index.
+    """
+    # (yahoo_idx, etf_proxy, short, display_name)
+    symbols = [
+        ('^GSPC', 'SPY', 'SPX', 'S&P 500'),
+        ('^NDX',  'QQQ', 'NDX', 'Nasdaq 100'),
+        ('^DJI',  'DIA', 'DJI', 'Dow Jones'),
+    ]
+    out = {}
+    now_et = datetime.now(timezone(timedelta(hours=-4))).strftime('%Y-%m-%d %H:%M ET')
+    for yh_sym, etf, short, name in symbols:
+        # 1. ETF proxy via Nasdaq API (works from server IPs, no rate-limit)
+        q = get_nasdaq_quote(etf)
+        src_tag = f'Nasdaq API {etf} ETF @ {now_et}'
+        # 2. Yahoo lib for the raw index (often rate-limited from cloud IPs)
+        if not q:
+            q = get_yfinance_quote(yh_sym)
+            src_tag = f'yfinance {yh_sym} @ {now_et}'
+        if not q or q.get('c') is None:
+            continue
+        out[short] = {
+            'name':       name,
+            'price':      round(q['c'], 2),
+            'prev_close': round(q.get('pc') or q['c'], 2),
+            'change_pct': round(q.get('dp') or 0, 3),
+            'source':     src_tag,
+        }
+    return out
+
+
 def get_prev_close_polygon(ticker: str, api_key: str) -> Optional[tuple]:
     """
     Return (prev_trading_day_close, 'YYYY-MM-DD') from Polygon historical.
@@ -633,6 +670,19 @@ def update_us_portfolio(
     print(f"  Updated:        {', '.join(updated)}")
     if missing:
         print(f"  ⚠️  Failed:    {', '.join(missing)}")
+
+    # Refresh US indices_snapshot (SPX/NDX/DJI) — was a manual web-search stub before
+    try:
+        idx = fetch_us_indices()
+        if idx:
+            us['indices_snapshot'] = idx
+            summary = ' · '.join(
+                f"{k} {v['price']} ({v['change_pct']:+.2f}%)"
+                for k, v in idx.items()
+            )
+            print(f"  Indices:        {summary}")
+    except Exception as e:
+        print(f"  ⚠ US indices fetch failed (non-fatal): {e}")
 
     if dry_run:
         print("\n  [dry-run] portfolio.json NOT written.\n")

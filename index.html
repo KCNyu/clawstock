@@ -182,6 +182,64 @@ layout: null
   .card h3 .badge { float: right; text-transform: none; letter-spacing: 0; }
 
   /* =========================================================
+     Hero: Market Snapshot (大盘指数 vs 我的组合)
+     ========================================================= */
+  .market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 8px;
+  }
+  .market-cell {
+    background: var(--card-2);
+    border-radius: var(--radius-sm);
+    padding: 10px 8px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    position: relative;
+  }
+  .market-cell .lbl {
+    font-size: 10px; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+  }
+  .market-cell .val {
+    font-size: 16px; font-weight: 700; margin: 3px 0 1px;
+  }
+  .market-cell .pct {
+    font-size: 13px; font-weight: 600;
+  }
+  .market-cell .src {
+    font-size: 9px; color: var(--text-faint); margin-top: 2px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .market-cell.stale::after {
+    content: "⚠"; position: absolute; top: 4px; right: 6px;
+    color: var(--text-faint); font-size: 11px;
+  }
+  .rs-row { line-height: 1.4; }
+  .rs-row b.pos { color: var(--green); }
+  .rs-row b.neg { color: var(--red); }
+
+  /* Holdings 7d sparkline grid (one card per active ticker) */
+  .hold-trend-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 8px;
+  }
+  .hold-trend-cell {
+    background: var(--card-2); border-radius: var(--radius-sm);
+    padding: 8px 10px; font-variant-numeric: tabular-nums;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .hold-trend-cell .row {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 6px;
+  }
+  .hold-trend-cell .tk {
+    font-weight: 700; font-family: ui-monospace, "Menlo", monospace; font-size: 13px;
+  }
+  .hold-trend-cell .px { font-size: 13px; font-weight: 600; }
+  .hold-trend-cell .pct { font-size: 11px; font-weight: 600; }
+  .hold-trend-cell .spark-wrap { line-height: 0; margin-top: 2px; }
+  .hold-trend-cell .spark-wrap svg { width: 100%; height: 32px; }
+
+  /* =========================================================
      Hero: 总资产卡
      ========================================================= */
   .totals-grid {
@@ -421,6 +479,21 @@ layout: null
   .holdings-table th:first-child, .holdings-table td:first-child,
   .holdings-table th:nth-child(2), .holdings-table td:nth-child(2) { text-align: left; }
   .holdings-table .name-cell { max-width: 140px; overflow: hidden; text-overflow: ellipsis; color: var(--text-dim); font-size: 11.5px; }
+  .holdings-table .spark-cell { padding: 4px 6px; line-height: 0; vertical-align: middle; min-width: 60px; }
+  .holdings-table .spark { display: inline-block; vertical-align: middle; }
+  .holdings-table .spark.spark-up   { color: var(--green); }
+  .holdings-table .spark.spark-down { color: var(--red); }
+  .holdings-table .spark.spark-flat { color: var(--text-faint); }
+  .holdings-table .spark.muted-spark { color: var(--text-faint); }
+  /* Sparkline column is dense; hide it whenever the holdings table sits in a narrow
+   * column. The dashboard uses a 3-column grid ≥1024px (each column ≈ 1/3 of the
+   * viewport), so Drill only has room for the sparkline once the viewport is wider
+   * than ~1440px. The standalone "Holdings 7d Trend" card on the Hero panel covers
+   * the visual gap on narrower screens. */
+  @media (max-width: 1440px) {
+    .holdings-table .spark-col, .holdings-table .spark-cell { display: none; }
+  }
+  .holdings-table .spark-cell svg { width: 56px; height: 18px; }
   .holdings-table .cell-stack { line-height: 1.3; }
   .holdings-table .cell-sub { font-size: 10.5px; opacity: 0.75; }
   .holdings-table thead th {
@@ -574,6 +647,14 @@ layout: null
   <section class="panel active" data-panel="hero">
     <h2>Hero</h2>
 
+    <div class="card market-card">
+      <h3>Market Snapshot <span class="muted" id="market-asof" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">—</span></h3>
+      <div class="market-grid" id="market-grid">
+        <div class="empty-state">No index data.</div>
+      </div>
+      <div class="rs-row muted" id="market-rs" style="margin-top:10px;font-size:11px"></div>
+    </div>
+
     <div class="card">
       <h3>Total Book</h3>
       <div class="totals-grid">
@@ -713,6 +794,13 @@ layout: null
     </div>
 
     <div class="card">
+      <h3>Holdings 7d Trend <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(active 持仓 · 价格走势)</span></h3>
+      <div class="hold-trend-grid" id="hold-trend-grid">
+        <div class="empty-state">No price history.</div>
+      </div>
+    </div>
+
+    <div class="card">
       <h3>Catalysts <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(next 14d)</span></h3>
       <div class="catalysts-list" id="catalysts-list">
         <div class="empty-state">No upcoming catalysts.</div>
@@ -763,6 +851,7 @@ layout: null
               <th data-sort="cost_basis" class="num">Cost</th>
               <th data-sort="current_price" class="num">Price</th>
               <th data-sort="current_value" class="num active-sort">Value <span class="arr">&#x25BC;</span></th>
+              <th class="num spark-col">7d</th>
               <th data-sort="today_change_pct" class="num">Today</th>
               <th data-sort="pnl_percent" class="num">P&amp;L</th>
             </tr>
@@ -941,6 +1030,33 @@ layout: null
     if (v < 0) return "neg";
     return "neutral";
   };
+  // Inline-SVG sparkline. Handles null gaps and degenerate (flat / 1-point) series.
+  function sparklineSVG(series, w = 56, h = 18) {
+    const pts = (series || []).filter(v => v != null && isFinite(v));
+    if (pts.length < 2) {
+      return `<svg width="${w}" height="${h}" class="spark muted-spark"><line x1="2" y1="${h/2}" x2="${w-2}" y2="${h/2}" stroke="currentColor" stroke-width="1" opacity="0.3"/></svg>`;
+    }
+    const min = Math.min(...pts), max = Math.max(...pts);
+    const range = max - min || 1;
+    const stepX = (w - 4) / (pts.length - 1);
+    const path = pts.map((v, i) => {
+      const x = 2 + i * stepX;
+      const y = h - 2 - ((v - min) / range) * (h - 4);
+      return `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(" ");
+    const first = pts[0], last = pts[pts.length - 1];
+    const cls = last > first ? "spark-up" : (last < first ? "spark-down" : "spark-flat");
+    const lastX = 2 + (pts.length - 1) * stepX;
+    const lastY = h - 2 - ((last - min) / range) * (h - 4);
+    return `<svg width="${w}" height="${h}" class="spark ${cls}" viewBox="0 0 ${w} ${h}">
+      <path d="${path}" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="1.6" fill="currentColor"/>
+    </svg>`;
+  }
+
+  const escapeHtml = (s) => String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   const safe = (obj, ...path) => {
     let cur = obj;
     for (const k of path) {
@@ -1005,6 +1121,8 @@ layout: null
   function render() {
     if (!DATA) return;
     renderHeader();
+    renderMarketSnapshot();
+    renderHoldingsTrend();
     renderTotals();
     renderTodayPnl();
     renderDelta();
@@ -1032,6 +1150,135 @@ layout: null
   function renderHeader() {
     const t = safe(DATA, "last_updated") || safe(DATA, "generated_at") || DASH;
     document.getElementById("last-updated").textContent = "· " + t;
+  }
+
+  // Display order for the Market Snapshot card.
+  const MARKET_INDICES = ["SPX", "NDX", "DJI", "HSI", "HSTECH"];
+
+  // Parse a YYYY/MM/DD or YYYY-MM-DD timestamp out of the source string so we
+  // can flag stale (>1 trading day old) data with a ⚠ marker.
+  function _indexAgeDays(src) {
+    if (!src) return null;
+    const m = src.match(/(20\d\d)[-/](\d{2})[-/](\d{2})/);
+    if (!m) return null;
+    const d = new Date(`${m[1]}-${m[2]}-${m[3]}`);
+    if (isNaN(d)) return null;
+    return Math.floor((Date.now() - d.getTime()) / 86400000);
+  }
+
+  function renderMarketSnapshot() {
+    const idx = safe(DATA, "indices") || {};
+    const grid = document.getElementById("market-grid");
+    const asof = document.getElementById("market-asof");
+    const rsRow = document.getElementById("market-rs");
+    if (!grid) return;
+
+    const cells = MARKET_INDICES.filter(k => idx[k]).map(k => {
+      const r = idx[k];
+      const pct = r.change_pct;
+      const cls = (pct == null) ? "neutral" : (pct > 0 ? "pos" : (pct < 0 ? "neg" : "neutral"));
+      const ageDays = _indexAgeDays(r.source);
+      const stale = ageDays != null && ageDays > 1;
+      const priceTxt = (r.price != null)
+        ? r.price.toLocaleString("en-US", { maximumFractionDigits: r.price < 100 ? 2 : 0 })
+        : DASH;
+      const pctTxt = (pct == null) ? DASH : `${pct > 0 ? "+" : ""}${pct.toFixed(2)}%`;
+      const srcShort = (r.source || "").split(/[@(]/, 1)[0].trim().slice(0, 22);
+      return `
+        <div class="market-cell ${stale ? "stale" : ""}" title="${escapeHtml(r.source || "")}">
+          <div class="lbl">${escapeHtml(k)}</div>
+          <div class="val">${priceTxt}</div>
+          <div class="pct ${cls}">${pctTxt}</div>
+          <div class="src">${escapeHtml(srcShort)}</div>
+        </div>`;
+    });
+    grid.innerHTML = cells.length ? cells.join("") : `<div class="empty-state">No index data.</div>`;
+
+    // As-of line: most recent age across rendered cells
+    const ages = MARKET_INDICES.map(k => idx[k] && _indexAgeDays(idx[k].source)).filter(a => a != null);
+    if (ages.length && asof) {
+      const minAge = Math.min(...ages);
+      asof.textContent = minAge === 0 ? "(刚刚)" : minAge === 1 ? "(1 天前)" : `(${minAge} 天前)`;
+    }
+
+    // RS: our combined today_pct vs SPX/HSI (region-weighted)
+    if (rsRow) {
+      const delta = safe(DATA, "delta") || {};
+      const usMine = delta.us?.today_pct;
+      const hkMine = delta.hk?.today_pct;
+      const spx = idx.SPX?.change_pct;
+      const hsi = idx.HSI?.change_pct;
+      const parts = [];
+      if (usMine != null && spx != null) {
+        const rs = usMine - spx;
+        const cls = rs >= 0 ? "pos" : "neg";
+        parts.push(`US 组合 ${usMine.toFixed(2)}% vs SPY ${spx > 0 ? "+" : ""}${spx.toFixed(2)}% → <b class="${cls}">${rs > 0 ? "+" : ""}${rs.toFixed(2)}pp</b>`);
+      }
+      if (hkMine != null && hsi != null) {
+        const rs = hkMine - hsi;
+        const cls = rs >= 0 ? "pos" : "neg";
+        parts.push(`HK 组合 ${hkMine.toFixed(2)}% vs HSI ${hsi > 0 ? "+" : ""}${hsi.toFixed(2)}% → <b class="${cls}">${rs > 0 ? "+" : ""}${rs.toFixed(2)}pp</b>`);
+      }
+      rsRow.innerHTML = parts.length ? "RS: " + parts.join(" · ") : "";
+    }
+  }
+
+  function renderHoldingsTrend() {
+    const el = document.getElementById("hold-trend-grid");
+    if (!el) return;
+    const hist = safe(DATA, "holdings_history") || {};
+    const active = [
+      ...(safe(DATA, "holdings", "us") || []),
+      ...(safe(DATA, "holdings", "hk") || []),
+    ].filter(h => h.is_active !== false && (h.shares ?? 0) > 0);
+
+    if (!active.length) {
+      el.innerHTML = `<div class="empty-state">No active holdings.</div>`;
+      return;
+    }
+
+    // Sort by current_value desc — biggest holdings first
+    active.sort((a, b) => {
+      // Normalize to USD-eq for comparable sort across regions
+      const fx = safe(DATA, "fx", "usdhkd") || 7.83;
+      const va = (a.currency === "HKD") ? (a.current_value || 0) / fx : (a.current_value || 0);
+      const vb = (b.currency === "HKD") ? (b.current_value || 0) / fx : (b.current_value || 0);
+      return vb - va;
+    });
+
+    el.innerHTML = active.map(h => {
+      const series = hist[h.ticker] || [];
+      const ccy = h.currency === "HKD" ? "HK$" : "$";
+      const pxTxt = h.current_price != null
+        ? `${ccy}${h.current_price.toLocaleString("en-US", { maximumFractionDigits: h.current_price < 10 ? 3 : 2 })}`
+        : DASH;
+      const pctTxt = h.today_change_pct != null
+        ? `${h.today_change_pct > 0 ? "+" : ""}${h.today_change_pct.toFixed(2)}%`
+        : "";
+      const pctCls = pnlClass(h.today_change_pct);
+      // 7d change vs ~7 days ago (first non-null in 7-len trailing window)
+      const last7 = series.slice(-7);
+      const firstReal = last7.find(v => v != null);
+      const last = [...last7].reverse().find(v => v != null);
+      let trend7 = "";
+      if (firstReal != null && last != null && firstReal > 0) {
+        const chg = ((last - firstReal) / firstReal) * 100;
+        const cls = pnlClass(chg);
+        trend7 = `<span class="${cls}" style="font-size:10px;opacity:0.8">7d ${chg > 0 ? "+" : ""}${chg.toFixed(1)}%</span>`;
+      }
+      return `
+        <div class="hold-trend-cell">
+          <div class="row">
+            <span class="tk">${escapeHtml(h.ticker || "")}</span>
+            <span class="px">${pxTxt}</span>
+          </div>
+          <div class="row">
+            <span class="${pctCls} pct">${pctTxt}</span>
+            ${trend7}
+          </div>
+          <div class="spark-wrap">${sparklineSVG(last7, 120, 32)}</div>
+        </div>`;
+    }).join("");
   }
 
   function renderTotals() {
@@ -1356,6 +1603,7 @@ layout: null
           <td class="num">${fmtPrice(h.cost_basis, ccy)}</td>
           <td class="num">${fmtPrice(h.current_price, ccy)}</td>
           <td class="num">${fmtMoney(h.current_value, ccy)}</td>
+          <td class="num spark-cell">${sparklineSVG((safe(DATA, "holdings_history", h.ticker) || []), 56, 18)}</td>
           <td class="num cell-stack">
             <div class="${pnlClass(h.today_change)}">${fmtMoney(h.today_change, ccy)}</div>
             <div class="cell-sub ${pnlClass(h.today_change_pct)}">${fmtPct(h.today_change_pct)}</div>

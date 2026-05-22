@@ -86,17 +86,60 @@ def snapshot_date_for_now():
     return None
 
 
+GHA_DATA_FILES = ['sentiment.json', 'macro.json', 'us_news_digest.json', 'catalysts.json']
+
+
+def sync_gha_data_files(ws=None):
+    """Fetch + checkout the latest GH Action–managed data files from origin/master
+    without touching the working tree's other changes.
+
+    Why: GH Actions (sentiment/macro/news/catalysts scans) push fresh JSON to remote
+    but our local working tree doesn't auto-pull. If we rebuild_dashboard without
+    syncing first, dashboard.json embeds stale data — verified 2026-05-22: brief at
+    08:06 HKT embedded 5-21 sentiment because the 5-22 sentiment GHA didn't finish
+    until 09:27 HKT, and even later commits (16:03) still showed 5-21 data because
+    pull-rebase happens AFTER rebuild_dashboard.
+
+    Non-fatal: any step failing just leaves the local copy in place.
+
+    Returns (ok, summary_msg).
+    """
+    ws = ws or WS
+    try:
+        fetch = subprocess.run(
+            ['git', 'fetch', 'origin', 'master', '--quiet'],
+            capture_output=True, text=True, timeout=15, cwd=str(ws),
+        )
+        if fetch.returncode != 0:
+            return False, f'fetch failed: {fetch.stderr[-150:]}'
+
+        synced = []
+        for f in GHA_DATA_FILES:
+            relpath = f'assets/data/{f}'
+            r = subprocess.run(
+                ['git', 'checkout', 'origin/master', '--', relpath],
+                capture_output=True, text=True, timeout=10, cwd=str(ws),
+            )
+            if r.returncode == 0:
+                synced.append(f)
+        return True, f'synced {len(synced)}/{len(GHA_DATA_FILES)}'
+    except Exception as e:
+        return False, str(e)
+
+
 def rebuild_dashboard(ws=None):
     """Re-run build_dashboard.py to refresh assets/data/dashboard.json.
 
-    Refreshes today's snapshot first so the equity curve reflects the latest
-    portfolio state (not the early-morning brief_preflight snapshot).
+    Refreshes today's snapshot AND syncs GH Action-managed data files first, so
+    the equity curve reflects latest portfolio state and the embedded sentiment/
+    macro/news data are not 24 h stale.
 
     Returns (ok, last_300_chars_of_output). Failure is non-fatal — caller
     should log but not abort the commit pipeline.
     """
     ws = ws or WS
     refresh_today_snapshot(ws)
+    sync_gha_data_files(ws)
     try:
         r = subprocess.run(
             ['python3', str(ws / 'scripts' / 'data' / 'build_dashboard.py')],

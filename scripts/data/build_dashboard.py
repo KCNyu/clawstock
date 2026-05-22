@@ -95,6 +95,65 @@ def hhi_verdict(hhi, top2):
     return {'level': 'danger', 'label': '危险集中', 'color': '#ef4444'}
 
 
+def build_holdings_history(snapshot_paths, days=10):
+    """Extract per-ticker current_price series from the last N snapshots.
+
+    Returns { ticker: [price_or_null, ...] } in chronological order. Tickers
+    that are missing from a given day get null, so the array length is constant
+    and the frontend can simply slice it.
+
+    Used by the holdings table to render a 7d sparkline next to each row.
+    """
+    paths = snapshot_paths[-days:]
+    out = {}
+    for p in paths:
+        d = load_json(p)
+        if not d:
+            continue
+        for region in ('us_stocks', 'hk_stocks'):
+            for h in (d.get('portfolios', {}).get(region, {}).get('holdings') or []):
+                t = h.get('ticker') or h.get('code')
+                if not t:
+                    continue
+                out.setdefault(t, []).append(h.get('current_price'))
+    # Right-align: if a ticker appeared late, pad the head with None so length matches paths
+    n = len(paths)
+    for t, arr in out.items():
+        if len(arr) < n:
+            arr[:0] = [None] * (n - len(arr))
+        out[t] = arr[-n:]  # safety cap
+    return out
+
+
+def _aggregate_indices(us_pf, hk_pf):
+    """Combine US + HK leg indices into one flat dict for the dashboard.
+
+    portfolio.json stores them per-leg (legacy: only US leg was read), so HK
+    indices (HSI/HSTECH) were invisible to the frontend even though they're
+    fetched daily by analyze_hk_stocks.py. Normalize key shape to:
+
+        { TICKER: {name, price, prev_close, change_pct, source} }
+
+    where TICKER is NDX/SPX/HSI/HSTECH/etc.
+    """
+    out = {}
+    for leg in (us_pf or {}, hk_pf or {}):
+        idx = leg.get('indices_snapshot') or {}
+        for k, v in idx.items():
+            if not isinstance(v, dict):
+                continue
+            # Different sources use chg_pct vs change_pct — normalize
+            normalized = {
+                'name':       v.get('name', k),
+                'price':      v.get('price'),
+                'prev_close': v.get('prev_close'),
+                'change_pct': v.get('change_pct') if v.get('change_pct') is not None else v.get('chg_pct'),
+                'source':     v.get('source', 'unknown'),
+            }
+            out[k] = normalized
+    return out
+
+
 def load_snapshots():
     """Returns recent-N snapshot summaries (NOT full holdings). Capped at MAX_SNAPSHOTS_EMBEDDED."""
     paths = sorted(
@@ -975,8 +1034,15 @@ def main():
         'plans_count': total_plans_count(),
         'recent_plans': plans,
         'recent_plans_cap': MAX_PLANS_EMBEDDED,
-        'indices': us_pf.get('indices_snapshot', {}),
+        'indices': _aggregate_indices(us_pf, hk_pf),
         'market_context': portfolio.get('market_context', {}),
+        'holdings_history': build_holdings_history(
+            sorted(
+                p for p in glob.glob(str(WS_ROOT / 'memory' / 'snapshots' / '*.json'))
+                if SNAPSHOT_FNAME_RE.match(os.path.basename(p))
+            ),
+            days=10,
+        ),
     }
 
     # ── Dashboard v2 NEW fields (additive; never replace existing keys) ─

@@ -400,6 +400,26 @@ def update_hk_portfolio(dry_run: bool = False) -> Dict:
     us['total_pnl_percent']   = round(total_pnl / total_cost * 100, 2) if total_cost else 0
     us['today_total_change']  = round(today_chg, 2)
 
+    # Refresh HK indices_snapshot (HSI/HSTECH) so dashboard Market Snapshot stays fresh.
+    # build_dashboard normalizes "chg_pct" → "change_pct" downstream.
+    try:
+        idx_raw = fetch_indices()
+        snap = {}
+        for key, short in [('r_hkHSI', 'HSI'), ('r_hkHSTECH', 'HSTECH')]:
+            if key in idx_raw:
+                r = idx_raw[key]
+                snap[short] = {
+                    'name':       r.get('label', short),
+                    'price':      round(r['c'], 2),
+                    'prev_close': round(r.get('pc') or r['c'], 2),
+                    'chg_pct':    round(r.get('dp') or 0, 3),
+                    'source':     f"Tencent qt.gtimg.cn {hkt_str}",
+                }
+        if snap:
+            us['indices_snapshot'] = snap
+    except Exception as e:
+        print(f"  ⚠ HK indices snapshot failed (non-fatal): {e}")
+
     data['last_updated'] = hkt_str
 
     print(f"{'─'*60}")
