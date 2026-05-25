@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-25T13:34:53.108874Z",
-  "last_updated": "2026/05/25 21:33 HKT",
+  "generated_at": "2026-05-25T20:03:55.467394Z",
+  "last_updated": "2026/05/26 04:00 HKT",
   "fx": {
     "usdhkd": 7.8328,
     "source": "Frankfurter",
@@ -558,9 +558,21 @@
       "hk_total_cost": 88276.24,
       "hk_total_pnl": -7379.84,
       "hk_today_change": 7416.8
+    },
+    {
+      "date": "2026-05-26",
+      "file": "2026-05-26.json",
+      "us_total_value": 3085.24,
+      "us_total_cost": 2812.04,
+      "us_total_pnl": 273.2,
+      "us_today_change": -2.02,
+      "hk_total_value": 80896.4,
+      "hk_total_cost": 88276.24,
+      "hk_total_pnl": -7379.84,
+      "hk_today_change": 7416.8
     }
   ],
-  "snapshots_total": 8,
+  "snapshots_total": 9,
   "snapshots_embedded_cap": 90,
   "plans_count": 7,
   "recent_plans": [
@@ -1101,21 +1113,21 @@
       "price": 745.64,
       "prev_close": 745.64,
       "change_pct": 0.39,
-      "source": "Nasdaq API SPY ETF @ 2026-05-25 09:33 ET"
+      "source": "Nasdaq API SPY ETF @ 2026-05-25 16:00 ET"
     },
     "NDX": {
       "name": "Nasdaq 100",
       "price": 717.54,
       "prev_close": 717.54,
       "change_pct": 0.42,
-      "source": "Nasdaq API QQQ ETF @ 2026-05-25 09:33 ET"
+      "source": "Nasdaq API QQQ ETF @ 2026-05-25 16:00 ET"
     },
     "DJI": {
       "name": "Dow Jones",
       "price": 506.12,
       "prev_close": 506.12,
       "change_pct": 0.6,
-      "source": "Nasdaq API DIA ETF @ 2026-05-25 09:33 ET"
+      "source": "Nasdaq API DIA ETF @ 2026-05-25 16:00 ET"
     },
     "HSI": {
       "name": "恒生指数",
@@ -1142,6 +1154,7 @@
       213.0,
       213.0,
       213.0,
+      213.0,
       213.0
     ],
     "RKLB": [
@@ -1151,6 +1164,7 @@
       119.15,
       127.31,
       134.28,
+      135.76,
       135.76,
       135.76
     ],
@@ -1162,9 +1176,11 @@
       110.87,
       111.62,
       113.05,
+      113.12,
       113.12
     ],
     "OKLO": [
+      72.39,
       72.39,
       72.39,
       72.39,
@@ -1182,9 +1198,11 @@
       694.41,
       694.41,
       694.41,
+      694.41,
       694.41
     ],
     "TCOM": [
+      53.328,
       53.328,
       53.328,
       53.328,
@@ -1202,6 +1220,7 @@
       71.17,
       71.17,
       71.17,
+      71.17,
       71.17
     ],
     "HOOD": [
@@ -1210,6 +1229,7 @@
       76.09,
       76.09,
       76.09,
+      75.4,
       75.4,
       75.4,
       75.4
@@ -1222,6 +1242,7 @@
       35.959,
       37.12,
       36.9,
+      36.92,
       36.92
     ],
     "SOXL": [
@@ -1232,6 +1253,7 @@
       151.89,
       172.8,
       190.41,
+      190.56,
       190.56
     ],
     "RKLX": [
@@ -1240,6 +1262,7 @@
       80.85,
       72.6751,
       83.01,
+      90.415,
       90.415,
       90.415,
       90.415
@@ -1252,6 +1275,7 @@
       17.99,
       18.5,
       17.64,
+      17.65,
       17.65
     ],
     "MSFU": [
@@ -1261,6 +1285,7 @@
       29.315,
       28.61,
       29.06,
+      28.81,
       28.81,
       28.81
     ],
@@ -1272,6 +1297,7 @@
       742.5,
       687.0,
       749.0,
+      768.5,
       768.5
     ],
     "02208": [
@@ -1282,6 +1308,7 @@
       15.03,
       14.62,
       14.56,
+      14.59,
       14.59
     ],
     "03032": [
@@ -1292,6 +1319,7 @@
       4.846,
       4.85,
       4.85,
+      4.846,
       4.846
     ],
     "07226": [
@@ -1302,6 +1330,7 @@
       3.752,
       3.768,
       3.752,
+      3.746,
       3.746
     ],
     "03033": [
@@ -1312,9 +1341,11 @@
       4.76,
       4.77,
       4.764,
+      4.756,
       4.756
     ],
     "07709": [
+      null,
       null,
       null,
       null,
@@ -1332,17 +1363,18 @@
       null,
       null,
       null,
+      null,
       null
     ]
   },
   "delta": {
     "us": {
-      "today_pct": 0.04,
+      "today_pct": 0.0,
       "7d_pct": -16.49,
       "30d_pct": null
     },
     "hk": {
-      "today_pct": 1.42,
+      "today_pct": 0.0,
       "7d_pct": -2.93,
       "30d_pct": null
     }
@@ -2226,7 +2258,7 @@
     }
   },
   "us_news_digest": {
-    "generated_at": "2026-05-22T15:45:18.759749",
+    "generated_at": "2026-05-25T15:46:35.401358",
     "lookback_hours": 48,
     "tickers": [
       "RKLB",
@@ -2236,12 +2268,12 @@
       "ROBN",
       "MSFU"
     ],
-    "digest_markdown": "### Top 3-5 移动信号 (跨 ticker 排序)\n- **RKLB**: Q1 revenue surged 63.5% YoY to $200.3M with backlog doubling to $2.2B – strong growth catalyst, reinforces kcn's long position.\n- **RKLB**: Landed $90M US Space Force contract – adds government revenue stream, but $3B stock offering filed may cause dilution pressure.\n- **SOXL**: Semiconductor mania resumes ahead of Nvidia earnings, driven by AI capex – leveraged ETF benefits, but volatility risk escalates.\n- **RKLB**: Analyst downgrade warns against chasing rally – signals potential overvaluation, advising caution on incremental buys.\n\n### Per-ticker 简报\n- **RKLB**: Key events: Q1 earnings beat, $90M Space Force deal, $3B stock offering, and rating downgrade – growth balanced by dilution and valuation risks.\n- **SOXL**: Highlight: Sector momentum pre-Nvidia earnings, but leveraged exposure amplifies timing risks, supporting a hold stance.\n\n### 风险 watch\n- **RKLB**: $3B stock offering risks share dilution; analyst downgrade indicates near-term headwinds.\n- **SOXL**: Leveraged ETF structure magnifies market swings; high volatility requires careful entry timing.",
+    "digest_markdown": "### Top 3-5 移动信号 (跨 ticker 排序)\n- RKLB: Retail investors buzzing about RKLB as a top stock on Reddit and X this week – Implication: Increased retail-driven volatility for kcn's position; monitor for short-term overbought conditions.\n- RKLB: SpaceX IPO anticipation fueling space sector momentum – Implication: Sector-wide sentiment boost could provide tailwinds for RKLB's valuation.\n- RKLB: Market-wide risk-taking elevated amid S&P 500 highs – Implication: High-growth stocks like RKLB may experience amplified swings; kcn should assess position sizing.\n\n### Per-ticker 简报 (有新闻才列)\n- RKLB: Listed among 5 stocks with peak retail buzz on social platforms – Positive sentiment but may signal near-term hype-driven price action.\n\n### 风险 watch (若有)\n- 无显著ticker-specific风险；但市场层面过度风险承担可能加剧回调压力。",
     "raw_news_counts": {
       "RKLB": 5,
       "CRCL": 0,
       "PLTU": 0,
-      "SOXL": 3,
+      "SOXL": 0,
       "ROBN": 0,
       "MSFU": 0
     }
