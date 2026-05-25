@@ -528,6 +528,85 @@ layout: null
   .outcome.pending { background: rgba(107,118,145,.15); color: var(--gray); }
   .outcome.flat { background: rgba(251,191,36,.15); color: var(--amber); }
 
+  /* Plan timeline (Reflect) — fuller decision cards: plan + rationale + outcome */
+  .plan-timeline { display: flex; flex-direction: column; gap: 10px; }
+  .pt-row {
+    padding: 12px; background: var(--card-2); border-radius: var(--radius-sm);
+    border-left: 3px solid var(--border);
+    display: grid; grid-template-columns: auto 1fr auto; gap: 6px 12px;
+    align-items: start; font-size: 13px;
+  }
+  .pt-row.outcome-win { border-left-color: var(--green); }
+  .pt-row.outcome-loss { border-left-color: var(--red); }
+  .pt-row.outcome-pending { border-left-color: var(--gray); }
+  .pt-row .pt-head {
+    display: flex; flex-direction: column; gap: 2px; min-width: 78px;
+  }
+  .pt-row .pt-date { font-size: 11px; color: var(--text-faint); font-family: var(--mono); }
+  .pt-row .pt-ticker { font-family: var(--mono); font-weight: 700; font-size: 14px; }
+  .pt-row .pt-region { font-size: 10px; color: var(--text-faint); }
+  .pt-row .pt-body { min-width: 0; }
+  .pt-row .pt-action {
+    font-weight: 600; color: var(--text);
+  }
+  .pt-row .pt-trigger {
+    font-size: 11px; color: var(--text-dim); margin-top: 2px;
+    font-family: var(--mono);
+  }
+  .pt-row .pt-rationale {
+    font-size: 12px; color: var(--text-dim); margin-top: 6px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  .pt-row .pt-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .pt-row .pt-conf {
+    font-size: 11px; padding: 2px 7px; border-radius: 999px;
+    background: rgba(91,141,239,.12); color: var(--accent); font-weight: 600;
+    font-family: var(--mono);
+  }
+  .pt-row .pt-followed-true { color: var(--green); font-size: 10px; font-weight: 600; }
+  .pt-row .pt-followed-false { color: var(--text-faint); font-size: 10px; }
+  .pt-row .pt-pnl { font-size: 11px; font-family: var(--mono); font-weight: 600; }
+  .pt-row .pt-pnl.pos { color: var(--green); }
+  .pt-row .pt-pnl.neg { color: var(--red); }
+
+  /* Trigger-type breakdown bars (extends Plan Review card) */
+  .trig-block { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--border); }
+  .trig-block .trig-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-dim); margin-bottom: 10px; font-weight: 600;
+  }
+  .trig-row { display: grid; grid-template-columns: 100px 1fr 70px; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 12px; }
+  .trig-row .trig-name { font-family: var(--mono); color: var(--text); }
+  .trig-row .trig-bar {
+    height: 14px; background: var(--card-2); border-radius: 4px; overflow: hidden;
+    display: flex;
+  }
+  .trig-row .trig-bar .seg-win { background: var(--green); }
+  .trig-row .trig-bar .seg-loss { background: var(--red); }
+  .trig-row .trig-bar .seg-pending { background: var(--gray); opacity: 0.5; }
+  .trig-row .trig-stat { font-family: var(--mono); font-size: 11px; text-align: right; color: var(--text-dim); }
+  .trig-row .trig-stat.alert { color: var(--red); font-weight: 700; }
+
+  /* Weight × Confidence scatter (Drill) */
+  .wc-chart-box { width: 100%; min-height: 300px; height: 300px; }
+  @media (min-width: 1024px) {
+    .wc-chart-box { min-height: 380px; height: 380px; }
+  }
+  .wc-legend {
+    display: flex; flex-wrap: wrap; gap: 10px 18px; font-size: 11px;
+    color: var(--text-dim); margin-top: 8px;
+  }
+  .wc-legend span::before {
+    content: ""; display: inline-block; width: 9px; height: 9px;
+    border-radius: 50%; margin-right: 5px; vertical-align: middle;
+  }
+  .wc-legend .lg-high::before { background: #ef4444; }
+  .wc-legend .lg-conv::before { background: #5b8def; }
+  .wc-legend .lg-low::before { background: #facc15; }
+  .wc-legend .lg-com::before { background: #34d399; }
+  .wc-legend .lg-nod::before { background: #6b7691; }
+
   /* =========================================================
      Reflect: charts
      ========================================================= */
@@ -888,6 +967,19 @@ layout: null
     </div>
 
     <div class="card">
+      <h3>Position × Conviction <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(weight vs 30d avg confidence)</span></h3>
+      <p class="chart-hint">右下角 (高仓位 + 低置信) = 红色 = 需要审视：仓位重但你自己最近也没那么确定。圆点大小 = 仓位权重。</p>
+      <div id="chart-weight-conf" class="wc-chart-box"></div>
+      <div class="wc-legend">
+        <span class="lg-high">High risk (≥20% & conf&lt;0.65)</span>
+        <span class="lg-conv">Conviction (≥20% & conf≥0.65)</span>
+        <span class="lg-low">Low-conv small (&lt;20% & conf&lt;0.65)</span>
+        <span class="lg-com">Comfort (&lt;20% & conf≥0.65)</span>
+        <span class="lg-nod">No calibration data</span>
+      </div>
+    </div>
+
+    <div class="card">
       <h3>Recent Plan Actions <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">(last 5d)</span></h3>
       <div class="plan-actions" id="plan-actions">
         <div class="empty-state">No recent plan actions.</div>
@@ -962,6 +1054,14 @@ layout: null
     </div>
 
     <div class="card">
+      <h3>Plan Timeline <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(last 15 actions · 包含 rationale)</span></h3>
+      <p class="chart-hint">每条卡片 = 一次具体计划：写的时候置信度 / 当初理由 / 现在结果。绿色边 = win，红色边 = loss，灰色边 = 待结算。<b>followed=true</b> 才记入命中率。</p>
+      <div class="plan-timeline" id="plan-timeline">
+        <div class="empty-state">No timeline data yet.</div>
+      </div>
+    </div>
+
+    <div class="card">
       <h3>Plan Review <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(last 30d)</span></h3>
       <p class="chart-hint">每天 08:00 brief 写的 plan，T+1 起检测执行率，T+5 起算输赢。Brier 越接近 0 越准。</p>
       <div class="kpi-grid" style="margin-bottom:14px">
@@ -987,6 +1087,12 @@ layout: null
         </div>
       </div>
       <div id="plan-bucket-bars"></div>
+      <div class="trig-block">
+        <div class="trig-title">By Trigger Type — 哪类计划最该信 / 最该改</div>
+        <div id="plan-trigger-bars">
+          <div class="empty-state" style="font-size:11px">No trigger data yet.</div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1097,7 +1203,7 @@ layout: null
   // =========================================================
   let DATA = null;
   let holdingsSort = { key: "current_value", dir: "desc" };
-  const charts = { equity: null, dailyPnl: null, realized: null, sector: null };
+  const charts = { equity: null, dailyPnl: null, realized: null, sector: null, weightConf: null };
 
   // =========================================================
   // Data load
@@ -1139,12 +1245,15 @@ layout: null
     renderTodayRange();
     renderExtremes();
     renderPlanActions();
+    renderWeightConfidence();
     renderReflectKpi();
     renderSectorChart();
+    renderPlanTimeline();
     renderEquityChart();
     renderRealizedChart();
     renderDailyPnlChart();
     renderPlanReview();
+    renderCalibByTrigger();
   }
 
   function renderHeader() {
@@ -2287,6 +2396,213 @@ layout: null
   }
 
   // =========================================================
+  // Plan Timeline — full decision cards (plan + rationale + outcome)
+  // =========================================================
+  function renderPlanTimeline() {
+    const wrap = document.getElementById("plan-timeline");
+    if (!wrap) return;
+    const list = safe(DATA, "plan_timeline") || [];
+    if (!list.length) {
+      wrap.innerHTML = '<div class="empty-state">No timeline data yet.</div>';
+      return;
+    }
+    const fmtConf = c => (c == null ? DASH : (c * 100).toFixed(0) + "%");
+    const fmtTriggerPrice = (p) => p == null ? "" : ` @ ${typeof p === "number" ? p.toLocaleString("en-US", { maximumFractionDigits: 4 }) : p}`;
+    const fmtSize = (a) => {
+      const parts = [];
+      if (a.size_pct != null) parts.push(`${a.size_pct}%`);
+      if (a.size_shares != null) parts.push(`${Number(a.size_shares).toLocaleString("en-US")} 股`);
+      return parts.length ? ` · ${parts.join(" / ")}` : "";
+    };
+    const fmtPnl = (p) => {
+      if (p == null) return "";
+      const cls = p >= 0 ? "pos" : "neg";
+      const s = p >= 0 ? "+" : "";
+      return `<div class="pt-pnl ${cls}">5d ${s}${p.toFixed(2)}%</div>`;
+    };
+    wrap.innerHTML = list.map(a => {
+      const oc = a.outcome || "pending";
+      const followed = (a.followed || "unknown").toLowerCase();
+      const trig = `${a.trigger_type || ""}${fmtTriggerPrice(a.trigger_price)}${fmtSize(a)}`;
+      const cond = a.trigger_condition ? `<div class="pt-trigger" title="${escapeHtml(a.trigger_condition)}">${escapeHtml(a.trigger_condition)}</div>` : "";
+      const rationale = a.rationale ? `<div class="pt-rationale">${escapeHtml(a.rationale)}</div>` : "";
+      const region = /^\d/.test(a.ticker) ? "HK" : "US";
+      const followedTag = followed === "true"
+        ? `<div class="pt-followed-true">✓ followed</div>`
+        : followed === "false"
+        ? `<div class="pt-followed-false">未执行</div>`
+        : `<div class="pt-followed-false">待跟踪</div>`;
+      return `
+        <div class="pt-row outcome-${oc}">
+          <div class="pt-head">
+            <div class="pt-date">${a.date || ""}</div>
+            <div class="pt-ticker">${escapeHtml(a.ticker || DASH)}</div>
+            <div class="pt-region">${region}</div>
+          </div>
+          <div class="pt-body">
+            <div class="pt-action">${escapeHtml(a.bucket || DASH)}</div>
+            <div class="pt-trigger">${escapeHtml(trig)}</div>
+            ${cond}
+            ${rationale}
+          </div>
+          <div class="pt-side">
+            <div class="pt-conf">conf ${fmtConf(a.confidence)}</div>
+            <div class="outcome ${oc}">${oc}</div>
+            ${followedTag}
+            ${fmtPnl(a.pnl_5d)}
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  // =========================================================
+  // Calibration by Trigger Type — extends Plan Review
+  // =========================================================
+  function renderCalibByTrigger() {
+    const el = document.getElementById("plan-trigger-bars");
+    if (!el) return;
+    const data = safe(DATA, "calibration_by_trigger") || {};
+    const entries = Object.entries(data)
+      .map(([k, v]) => ({ name: k, ...v }))
+      .filter(e => (e.n_resolved || 0) + (e.n_pending || 0) > 0);
+    if (!entries.length) {
+      el.innerHTML = '<div class="empty-state" style="font-size:11px">No trigger data yet.</div>';
+      return;
+    }
+    // Sort: lowest win rate first (most actionable: "改/砍这类")
+    entries.sort((a, b) => {
+      const aw = a.win_rate == null ? 99 : a.win_rate;
+      const bw = b.win_rate == null ? 99 : b.win_rate;
+      return aw - bw;
+    });
+    const maxTotal = Math.max(...entries.map(e => (e.wins || 0) + (e.losses || 0) + (e.n_pending || 0)));
+    el.innerHTML = entries.map(e => {
+      const total = (e.wins || 0) + (e.losses || 0) + (e.n_pending || 0);
+      const scale = maxTotal > 0 ? total / maxTotal : 0;
+      const winFrac = total ? (e.wins || 0) / total : 0;
+      const lossFrac = total ? (e.losses || 0) / total : 0;
+      const pendFrac = total ? (e.n_pending || 0) / total : 0;
+      const wrTxt = e.win_rate == null
+        ? `pending (${e.n_pending || 0})`
+        : `win ${(e.win_rate * 100).toFixed(0)}% · n=${e.n_resolved}`;
+      const alertCls = (e.win_rate != null && e.win_rate < 0.4 && e.n_resolved >= 2) ? " alert" : "";
+      const confTxt = e.avg_confidence != null ? ` · conf ${(e.avg_confidence * 100).toFixed(0)}%` : "";
+      return `
+        <div class="trig-row">
+          <div class="trig-name">${escapeHtml(e.name)}</div>
+          <div class="trig-bar" style="width:${(scale * 100).toFixed(1)}%; min-width:24px">
+            <div class="seg-win" style="width:${(winFrac * 100).toFixed(1)}%"></div>
+            <div class="seg-loss" style="width:${(lossFrac * 100).toFixed(1)}%"></div>
+            <div class="seg-pending" style="width:${(pendFrac * 100).toFixed(1)}%"></div>
+          </div>
+          <div class="trig-stat${alertCls}">${wrTxt}${confTxt}</div>
+        </div>`;
+    }).join("");
+  }
+
+  // =========================================================
+  // Weight × Confidence Scatter (Drill, ECharts)
+  // =========================================================
+  function renderWeightConfidence() {
+    const el = document.getElementById("chart-weight-conf");
+    if (!el || !window.echarts) return;
+    if (!charts.weightConf) charts.weightConf = echarts.init(el, null, { renderer: "canvas" });
+
+    const list = safe(DATA, "weight_confidence") || [];
+    const quadrantColor = {
+      high_risk:      "#ef4444",
+      conviction:     "#5b8def",
+      low_conv_small: "#facc15",
+      comfort:        "#34d399",
+      no_data:        "#6b7691",
+    };
+    const points = list.map(p => ({
+      name: p.ticker,
+      value: [p.weight_pct, (p.avg_confidence != null ? p.avg_confidence * 100 : null), p.n_actions],
+      itemStyle: { color: quadrantColor[p.quadrant] || "#6b7691" },
+      _quad: p.quadrant,
+      _region: p.region,
+    })).filter(p => p.value[1] != null);
+
+    // No-data tickers: plot at conf=50 (mid) as grey ghost dots — still visible
+    const ghosts = list.filter(p => p.avg_confidence == null).map(p => ({
+      name: p.ticker,
+      value: [p.weight_pct, 50, 0],
+      itemStyle: { color: quadrantColor.no_data, opacity: 0.6 },
+      _quad: "no_data",
+      _region: p.region,
+    }));
+
+    const opt = {
+      ...baseChartOpts(),
+      grid: { left: 50, right: 30, top: 30, bottom: 50, containLabel: true },
+      tooltip: {
+        trigger: "item",
+        formatter: (p) => {
+          const q = p.data._quad === "high_risk" ? "⚠ High Risk"
+                  : p.data._quad === "conviction" ? "Conviction"
+                  : p.data._quad === "low_conv_small" ? "Low Conv (small)"
+                  : p.data._quad === "comfort" ? "Comfort"
+                  : "No data";
+          return `<b>${p.data.name}</b> (${p.data._region.toUpperCase()})<br>
+            weight: ${p.value[0]}%<br>
+            conf: ${p.value[1] == null ? "n/a" : p.value[1].toFixed(1) + "%"}<br>
+            n_actions: ${p.value[2]}<br>
+            <span style="color:${p.color}">${q}</span>`;
+        },
+      },
+      xAxis: {
+        name: "Weight %", nameLocation: "middle", nameGap: 28,
+        type: "value", min: 0, max: 60,
+        axisLine: { lineStyle: { color: chartGridColor() } },
+        splitLine: { lineStyle: { color: chartGridColor(), opacity: 0.5 } },
+        axisLabel: { color: chartTextColor(), fontSize: 10, formatter: "{value}%" },
+        nameTextStyle: { color: chartTextColor(), fontSize: 11 },
+      },
+      yAxis: {
+        name: "Avg Confidence %", nameLocation: "middle", nameGap: 40,
+        type: "value", min: 30, max: 100,
+        axisLine: { lineStyle: { color: chartGridColor() } },
+        splitLine: { lineStyle: { color: chartGridColor(), opacity: 0.5 } },
+        axisLabel: { color: chartTextColor(), fontSize: 10, formatter: "{value}%" },
+        nameTextStyle: { color: chartTextColor(), fontSize: 11 },
+      },
+      // Reference lines: weight=20%, conf=65%
+      series: [{
+        type: "scatter",
+        symbolSize: (v) => Math.max(14, Math.min(46, 14 + v[0] * 0.7)),
+        data: [...points, ...ghosts],
+        label: {
+          show: true, position: "right", fontSize: 10, color: chartTextColor(),
+          formatter: (p) => p.data.name,
+        },
+        markLine: {
+          silent: true,
+          symbol: "none",
+          lineStyle: { color: chartGridColor(), type: "dashed", width: 1 },
+          label: { show: false },
+          data: [
+            { xAxis: 20 },
+            { yAxis: 65 },
+          ],
+        },
+        markArea: {
+          silent: true,
+          itemStyle: { color: "rgba(239,68,68,0.06)" },
+          data: [[{ xAxis: 20, yAxis: 30 }, { xAxis: 60, yAxis: 65 }]],
+        },
+      }],
+    };
+    if (!points.length && !ghosts.length) {
+      opt.graphic = [{
+        type: "text", left: "center", top: "middle",
+        style: { text: "No weight/confidence data", fill: chartTextColor(), fontSize: 13, opacity: 0.5 },
+      }];
+    }
+    charts.weightConf.setOption(opt, true);
+  }
+
+  // =========================================================
   // Wire up resize + theme change
   // =========================================================
   window.addEventListener("resize", () => {
@@ -2301,6 +2617,7 @@ layout: null
       renderRealizedChart();
       renderDailyPnlChart();
       renderPlanReview();
+      renderWeightConfidence();
     }
   });
 

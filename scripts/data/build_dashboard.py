@@ -683,6 +683,199 @@ def recent_actions_from_csv(limit=20):
         return []
 
 
+_CALIB_TRIGGERS = ['price_above', 'price_below', 'open', 'manual', 'index_breakdown']
+
+
+def compute_calibration_by_trigger(window_days=30):
+    """Per-trigger_type win/loss/pending breakdown — answers 'which trigger
+    pattern is bleeding'. Counts pending separately (gives texture beyond 30d
+    Brier which only sees resolved rows).
+    """
+    empty = {t: {'n_resolved': 0, 'n_pending': 0, 'wins': 0, 'losses': 0,
+                 'win_rate': None, 'avg_confidence': None} for t in _CALIB_TRIGGERS}
+    try:
+        rows = _read_calibration_rows()
+        if not rows:
+            return empty
+        today = datetime.now(timezone.utc).date()
+        out = {t: {'n_resolved': 0, 'n_pending': 0, 'wins': 0, 'losses': 0,
+                   'conf_sum': 0.0, 'conf_n': 0} for t in _CALIB_TRIGGERS}
+        for r in rows:
+            try:
+                pd = datetime.strptime(r.get('plan_date', '')[:10], '%Y-%m-%d').date()
+            except Exception:
+                continue
+            if (today - pd).days > window_days:
+                continue
+            trig = (r.get('trigger_type') or '').strip()
+            if trig not in out:
+                continue
+            outcome = (r.get('outcome') or '').strip().lower()
+            conf = _to_float(r.get('confidence'))
+            if conf is not None:
+                out[trig]['conf_sum'] += conf
+                out[trig]['conf_n'] += 1
+            if outcome in ('win', 'loss', 'flat'):
+                out[trig]['n_resolved'] += 1
+                if outcome == 'win':
+                    out[trig]['wins'] += 1
+                elif outcome == 'loss':
+                    out[trig]['losses'] += 1
+            elif outcome == 'pending':
+                out[trig]['n_pending'] += 1
+        result = {}
+        for t, agg in out.items():
+            decided = agg['wins'] + agg['losses']
+            wr = round(agg['wins'] / decided, 4) if decided else None
+            avg_c = round(agg['conf_sum'] / agg['conf_n'], 3) if agg['conf_n'] else None
+            result[t] = {
+                'n_resolved': agg['n_resolved'],
+                'n_pending': agg['n_pending'],
+                'wins': agg['wins'],
+                'losses': agg['losses'],
+                'win_rate': wr,
+                'avg_confidence': avg_c,
+            }
+        return result
+    except Exception as e:
+        print(f'  warn: compute_calibration_by_trigger failed: {e}', file=sys.stderr)
+        return empty
+
+
+def compute_weight_confidence(portfolio, window_days=30):
+    """Per-ticker current_weight × avg_confidence (last N days), to spot
+    'high weight + low confidence' red flags at a glance.
+    Output: list[{ticker, region, weight_pct, avg_confidence, n_actions, quadrant}]
+    quadrant ∈ {high_risk, conviction, low_conv_small, comfort}:
+      high_risk      = weight ≥ 0.20 AND conf < 0.65   ← user's red zone
+      conviction     = weight ≥ 0.20 AND conf ≥ 0.65
+      low_conv_small = weight < 0.20 AND conf < 0.65
+      comfort        = weight < 0.20 AND conf ≥ 0.65
+    """
+    try:
+        rows = _read_calibration_rows()
+        today = datetime.now(timezone.utc).date()
+        # Aggregate avg confidence per ticker over window
+        conf_acc = {}  # ticker -> [sum, count]
+        for r in rows:
+            try:
+                pd = datetime.strptime(r.get('plan_date', '')[:10], '%Y-%m-%d').date()
+            except Exception:
+                continue
+            if (today - pd).days > window_days:
+                continue
+            tk = (r.get('ticker') or '').strip()
+            c = _to_float(r.get('confidence'))
+            if not tk or c is None:
+                continue
+            acc = conf_acc.setdefault(tk, [0.0, 0])
+            acc[0] += c
+            acc[1] += 1
+
+        # Compute per-region weights from active holdings
+        out = []
+        for region_key, region_label in (('us_stocks', 'us'), ('hk_stocks', 'hk')):
+            pf = (portfolio.get('portfolios') or {}).get(region_key, {}) or {}
+            holdings = [h for h in pf.get('holdings', []) if (h.get('shares') or 0) > 0]
+            total = sum((h.get('current_value') or 0) for h in holdings)
+            if total <= 0:
+                continue
+            for h in holdings:
+                tk = h.get('ticker') or h.get('code')
+                if not tk:
+                    continue
+                weight = (h.get('current_value') or 0) / total
+                acc = conf_acc.get(tk)
+                avg_c = round(acc[0] / acc[1], 3) if acc and acc[1] > 0 else None
+                n = acc[1] if acc else 0
+                # quadrant only meaningful when we have a confidence reading
+                if avg_c is None:
+                    quad = 'no_data'
+                elif weight >= 0.20 and avg_c < 0.65:
+                    quad = 'high_risk'
+                elif weight >= 0.20:
+                    quad = 'conviction'
+                elif avg_c < 0.65:
+                    quad = 'low_conv_small'
+                else:
+                    quad = 'comfort'
+                out.append({
+                    'ticker': tk,
+                    'region': region_label,
+                    'weight_pct': round(weight * 100, 2),
+                    'avg_confidence': avg_c,
+                    'n_actions': n,
+                    'quadrant': quad,
+                })
+        # Sort: high_risk first, then by weight desc
+        rank = {'high_risk': 0, 'conviction': 1, 'low_conv_small': 2, 'comfort': 3, 'no_data': 4}
+        out.sort(key=lambda x: (rank.get(x['quadrant'], 9), -x['weight_pct']))
+        return out
+    except Exception as e:
+        print(f'  warn: compute_weight_confidence failed: {e}', file=sys.stderr)
+        return []
+
+
+def compute_plan_timeline(plans, limit=15):
+    """Join recent_plans[].plan.actions with calibration.csv outcomes by
+    (date, ticker, bucket) so the dashboard can show 'what I planned + why +
+    what happened'. Returns most-recent-first.
+    """
+    try:
+        if not plans:
+            return []
+        rows = _read_calibration_rows()
+        # Build index: (date, ticker, bucket) -> calibration row
+        cal_idx = {}
+        for r in rows:
+            key = (r.get('plan_date', '')[:10], (r.get('ticker') or '').strip(),
+                   (r.get('bucket') or '').strip())
+            if key[0] and key[1] and key[2]:
+                cal_idx[key] = r
+
+        out = []
+        # plans is ascending date — reverse so newest first
+        for entry in reversed(plans):
+            date = entry.get('date', '')
+            plan = entry.get('plan') or {}
+            # plan can be the trimmed-summary dict (no actions field) — skip
+            actions = plan.get('actions') if isinstance(plan, dict) else None
+            if not isinstance(actions, list):
+                continue
+            for a in actions:
+                if not isinstance(a, dict):
+                    continue
+                tk = (a.get('ticker') or '').strip()
+                bk = (a.get('bucket') or '').strip()
+                cal = cal_idx.get((date, tk, bk))
+                outcome = (cal.get('outcome') if cal else None) or 'pending'
+                followed_raw = (cal.get('followed') if cal else '') or 'unknown'
+                followed = followed_raw.strip().lower().split(' ', 1)[0]  # strip trailing "(auto)"
+                if followed not in ('true', 'false', 'unknown'):
+                    followed = 'unknown'
+                out.append({
+                    'date': date,
+                    'ticker': tk,
+                    'bucket': bk,
+                    'trigger_type': a.get('trigger_type') or '',
+                    'trigger_price': a.get('trigger_price'),
+                    'trigger_condition': a.get('trigger_condition') or '',
+                    'size_pct': a.get('size_pct'),
+                    'size_shares': a.get('size_shares'),
+                    'confidence': a.get('confidence'),
+                    'rationale': (a.get('rationale') or '').strip(),
+                    'outcome': outcome.strip().lower() if isinstance(outcome, str) else 'pending',
+                    'pnl_5d': _to_float(cal.get('pnl_5d')) if cal else None,
+                    'followed': followed,
+                })
+                if len(out) >= limit:
+                    return out
+        return out
+    except Exception as e:
+        print(f'  warn: compute_plan_timeline failed: {e}', file=sys.stderr)
+        return []
+
+
 def compute_drawdown(snapshots):
     """30-day rolling drawdown per region.
 
@@ -1052,7 +1245,10 @@ def main():
     out['anomalies'] = extract_anomalies(brief_ctx, us_h, hk_h)
     out['peer_divergence'] = extract_peer_divergence(brief_ctx)
     out['calibration'] = compute_calibration()
+    out['calibration_by_trigger'] = compute_calibration_by_trigger()
     out['recent_plan_actions'] = recent_actions_from_csv(limit=20)
+    out['plan_timeline'] = compute_plan_timeline(plans, limit=15)
+    out['weight_confidence'] = compute_weight_confidence(portfolio)
     out['drawdown'] = compute_drawdown(snapshots)
     # v2.1: broker-style analytics
     fx_rate = (out.get('fx') or {}).get('usdhkd')
