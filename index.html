@@ -576,17 +576,36 @@ layout: null
     font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
     color: var(--text-dim); margin-bottom: 10px; font-weight: 600;
   }
-  .trig-row { display: grid; grid-template-columns: 100px 1fr 70px; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 12px; }
-  .trig-row .trig-name { font-family: var(--mono); color: var(--text); }
+  /* Mobile: 2-row stacked (name + stat above bar). Desktop: 3-col single row. */
+  .trig-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "name stat" "bar bar";
+    column-gap: 10px; row-gap: 4px;
+    align-items: center; margin-bottom: 10px; font-size: 12px;
+  }
+  .trig-row .trig-name { grid-area: name; font-family: var(--mono); color: var(--text); }
   .trig-row .trig-bar {
-    height: 14px; background: var(--card-2); border-radius: 4px; overflow: hidden;
+    grid-area: bar;
+    height: 12px; background: var(--card-2); border-radius: 4px; overflow: hidden;
     display: flex;
   }
   .trig-row .trig-bar .seg-win { background: var(--green); }
   .trig-row .trig-bar .seg-loss { background: var(--red); }
   .trig-row .trig-bar .seg-pending { background: var(--gray); opacity: 0.5; }
-  .trig-row .trig-stat { font-family: var(--mono); font-size: 11px; text-align: right; color: var(--text-dim); }
+  .trig-row .trig-stat {
+    grid-area: stat; font-family: var(--mono); font-size: 11px;
+    text-align: right; color: var(--text-dim);
+  }
   .trig-row .trig-stat.alert { color: var(--red); font-weight: 700; }
+  @media (min-width: 640px) {
+    .trig-row {
+      grid-template-columns: 110px 1fr 130px;
+      grid-template-areas: "name bar stat";
+      row-gap: 0;
+    }
+    .trig-row .trig-bar { height: 14px; }
+  }
 
   /* Drawdown Recovery (Reflect) */
   .dd-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
@@ -2644,7 +2663,8 @@ layout: null
       },
       xAxis: {
         name: "Weight %", nameLocation: "middle", nameGap: 28,
-        type: "value", min: 0, max: 60,
+        // 70 leaves buffer for the 00100 bubble (weight ~57% + symbol radius ~42px)
+        type: "value", min: 0, max: 70,
         axisLine: { lineStyle: { color: chartGridColor() } },
         splitLine: { lineStyle: { color: chartGridColor(), opacity: 0.5 } },
         axisLabel: { color: chartTextColor(), fontSize: 10, formatter: "{value}%" },
@@ -2661,10 +2681,14 @@ layout: null
       // Reference lines: weight=20%, conf=65%
       series: [{
         type: "scatter",
-        symbolSize: (v) => Math.max(14, Math.min(46, 14 + v[0] * 0.7)),
+        // Cap at 42 so even a 57% weight bubble fits inside the xAxis(=70) buffer
+        symbolSize: (v) => Math.max(14, Math.min(42, 14 + v[0] * 0.6)),
         data: [...points, ...ghosts],
         label: {
-          show: true, position: "right", fontSize: 10, color: chartTextColor(),
+          // bottom position avoids label colliding with neighbouring bubbles
+          // (notably 00100/07226 cluster) and never overflows the right edge
+          show: true, position: "bottom", distance: 4,
+          fontSize: 10, color: chartTextColor(),
           formatter: (p) => p.data.name,
         },
         markLine: {
@@ -2680,7 +2704,7 @@ layout: null
         markArea: {
           silent: true,
           itemStyle: { color: "rgba(239,68,68,0.06)" },
-          data: [[{ xAxis: 20, yAxis: 30 }, { xAxis: 60, yAxis: 65 }]],
+          data: [[{ xAxis: 20, yAxis: 30 }, { xAxis: 70, yAxis: 65 }]],
         },
       }],
     };
@@ -2726,7 +2750,9 @@ layout: null
         recovery = Math.max(0, Math.min(100, (1 - r.curr / r.max) * 100));
       }
 
-      setT("recovery", recovery == null ? DASH : recovery.toFixed(0) + "%");
+      setT("recovery", recovery == null ? DASH
+        : (recovery > 0 && recovery < 1) ? "<1%"
+        : recovery.toFixed(0) + "%");
       setCls("current", (r.curr != null && r.curr < 0) ? "neg" : "pos");
 
       let tier, statusTxt;
