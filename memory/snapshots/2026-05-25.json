@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026/05/25 09:07 HKT",
+  "last_updated": "2026/05/25 09:33 HKT",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -734,7 +734,7 @@
           "current_price": 768.5,
           "current_value": 46110.0,
           "pnl_percent": -6.6,
-          "data_source": "Tencent+Eastmoney May 25 09:07 HKT",
+          "data_source": "Tencent+Eastmoney May 25 09:33 HKT",
           "today_change": 6330.0,
           "today_change_pct": 15.91,
           "pnl_abs": -3259.8,
@@ -782,7 +782,7 @@
           "current_price": 14.59,
           "current_value": 5836.0,
           "pnl_percent": 3.59,
-          "data_source": "Tencent+Eastmoney May 25 09:07 HKT",
+          "data_source": "Tencent+Eastmoney May 25 09:33 HKT",
           "today_change": 112.0,
           "today_change_pct": 1.96,
           "pnl_abs": 202.4,
@@ -815,7 +815,7 @@
           "current_price": 4.846,
           "current_value": 969.2,
           "pnl_percent": -10.34,
-          "data_source": "Tencent+Eastmoney May 25 09:07 HKT",
+          "data_source": "Tencent+Eastmoney May 25 09:33 HKT",
           "today_change": 18.8,
           "today_change_pct": 1.98,
           "pnl_abs": -111.8,
@@ -838,7 +838,7 @@
           "current_price": 3.746,
           "current_value": 23225.2,
           "pnl_percent": -14.15,
-          "data_source": "Tencent+Eastmoney May 25 09:07 HKT",
+          "data_source": "Tencent+Eastmoney May 25 09:33 HKT",
           "trades": [
             {
               "date": "2026-03-24",
@@ -870,7 +870,7 @@
           "current_price": 4.756,
           "current_value": 4756.0,
           "pnl_percent": -7.47,
-          "data_source": "Tencent+Eastmoney May 25 09:07 HKT",
+          "data_source": "Tencent+Eastmoney May 25 09:33 HKT",
           "today_change": 88.0,
           "today_change_pct": 1.89,
           "pnl_abs": -384.0,
@@ -1149,14 +1149,14 @@
           "price": 25606.03,
           "prev_close": 25386.52,
           "chg_pct": 0.86,
-          "source": "Tencent qt.gtimg.cn 2026/05/25 09:07 HKT"
+          "source": "Tencent qt.gtimg.cn 2026/05/25 09:33 HKT"
         },
         "HSTECH": {
           "name": "恒生科技",
           "price": 4869.57,
           "prev_close": 4768.9,
           "chg_pct": 2.11,
-          "source": "Tencent qt.gtimg.cn 2026/05/25 09:07 HKT"
+          "source": "Tencent qt.gtimg.cn 2026/05/25 09:33 HKT"
         }
       },
       "last_midday_attempted": "2026-05-07 12:00:00 HKT",

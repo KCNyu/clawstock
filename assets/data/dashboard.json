@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-25T01:07:24.110947Z",
-  "last_updated": "2026/05/25 09:07 HKT",
+  "generated_at": "2026-05-25T01:33:57.054066Z",
+  "last_updated": "2026/05/25 09:33 HKT",
   "fx": {
     "usdhkd": 7.8328,
     "source": "Frankfurter",
@@ -1122,14 +1122,14 @@
       "price": 25606.03,
       "prev_close": 25386.52,
       "change_pct": 0.86,
-      "source": "Tencent qt.gtimg.cn 2026/05/25 09:07 HKT"
+      "source": "Tencent qt.gtimg.cn 2026/05/25 09:33 HKT"
     },
     "HSTECH": {
       "name": "恒生科技",
       "price": 4869.57,
       "prev_close": 4768.9,
       "change_pct": 2.11,
-      "source": "Tencent qt.gtimg.cn 2026/05/25 09:07 HKT"
+      "source": "Tencent qt.gtimg.cn 2026/05/25 09:33 HKT"
     }
   },
   "market_context": {},
