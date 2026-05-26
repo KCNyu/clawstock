@@ -19,12 +19,12 @@ plan_date,ticker,bucket,trigger_type,trigger_price,confidence,sim_entry_price,ou
 2026-05-20,ROBN,cut,price_below,17.5,0.8,17.99,win,1.95,,false,2026-05-22T08:00:49.483190 (auto),2026-05-25T08:02:50.598170
 2026-05-20,MSFU,trim_on_rebound,open,,0.6,28.61,loss,-0.7,,false,2026-05-22T08:00:49.497136 (auto),2026-05-25T08:02:50.598969
 2026-05-20,SOXL,hold_and_watch,price_below,148,0.65,151.89,win,6.74,,false,2026-05-21T23:37:25.844606 (auto),2026-05-25T08:02:50.599868
-2026-05-21,ROBN,cut,open,,0.75,18.5,pending,,,false,2026-05-25T08:02:50.448705 (auto),2026-05-25T08:02:50.448721
-2026-05-21,MSFU,cut,open,,0.78,29.06,pending,,,false,2026-05-25T08:02:50.462784 (auto),2026-05-25T08:02:50.462825
-2026-05-21,00100,trim_on_rebound,price_above,730,0.68,687.0,pending,,,false,2026-05-25T08:02:50.476010 (auto),2026-05-25T08:02:50.476025
-2026-05-21,SOXL,trim_on_rebound,price_above,180,0.72,172.8,pending,,,true,2026-05-25T08:02:50.489058 (auto),2026-05-25T08:02:50.489071
-2026-05-21,PLTU,trim_on_rebound,price_above,38.5,0.65,37.12,pending,,,false,2026-05-25T08:02:50.502092 (auto),2026-05-25T08:02:50.502107
-2026-05-21,07226,hold_and_watch,manual,,0.6,3.768,pending,,,true,2026-05-22T08:00:49.511590 (auto),2026-05-22T08:00:49.511605
+2026-05-21,ROBN,cut,open,,0.75,18.5,win,4.59,,false,2026-05-25T08:02:50.448705 (auto),2026-05-26T08:03:58.978685
+2026-05-21,MSFU,cut,open,,0.78,29.06,win,0.86,,false,2026-05-25T08:02:50.462784 (auto),2026-05-26T08:03:58.979294
+2026-05-21,00100,trim_on_rebound,price_above,730,0.68,687.0,loss,-11.86,,false,2026-05-25T08:02:50.476010 (auto),2026-05-26T08:03:58.979849
+2026-05-21,SOXL,trim_on_rebound,price_above,180,0.72,172.8,loss,-10.28,,true,2026-05-25T08:02:50.489058 (auto),2026-05-26T08:03:58.980394
+2026-05-21,PLTU,trim_on_rebound,price_above,38.5,0.65,37.12,win,0.54,,false,2026-05-25T08:02:50.502092 (auto),2026-05-26T08:03:58.981055
+2026-05-21,07226,hold_and_watch,manual,,0.6,3.768,win,3.88,,true,2026-05-22T08:00:49.511590 (auto),2026-05-26T08:03:58.981582
 2026-05-22,ROBN,cut,open,,0.78,18.68,pending,,,false,2026-05-25T08:02:50.515052 (auto),2026-05-25T08:02:50.515065
 2026-05-22,RKLB,trim_on_rebound,price_above,128,0.65,128,pending,,,false,2026-05-25T08:02:50.526614 (auto),2026-05-25T08:02:50.526627
 2026-05-22,SOXL,hold_and_watch,price_above,185,0.7,185,pending,,,true,2026-05-25T08:02:50.538196 (auto),2026-05-25T08:02:50.538209
@@ -34,9 +34,20 @@ plan_date,ticker,bucket,trigger_type,trigger_price,confidence,sim_entry_price,ou
 2026-05-22,07226,hold_and_watch,index_breakdown,4800,0.58,4800,pending,,,true,2026-05-25T08:02:50.584585 (auto),2026-05-25T08:02:50.584595
 2026-05-25,ROBN,cut,open,,0.78,17.64,pending,,,unknown,,2026-05-25T08:06:20.426877
 2026-05-25,SOXL,trim_on_rebound,price_above,200,0.65,200,pending,,,unknown,,2026-05-25T08:06:20.428832
-2026-05-25,00100,hold_and_watch,manual,,0.6,749.0,pending,,,unknown,,2026-05-25T08:06:20.429304
-2026-05-25,07226,hold_and_watch,index_breakdown,4800,0.55,4800,pending,,,unknown,,2026-05-25T08:06:20.429315
-2026-05-25,RKLB,hold_and_watch,price_below,120,0.68,120,pending,,,unknown,,2026-05-25T08:06:20.429321
-2026-05-25,PLTU,t_only,price_above,38.5,0.5,38.5,pending,,,unknown,,2026-05-25T08:06:20.429325
+2026-05-25,00100,hold_and_watch,manual,,0.6,749.0,pending,,,true,2026-05-26T08:03:58.933678 (auto),2026-05-26T08:03:58.933692
+2026-05-25,07226,hold_and_watch,index_breakdown,4800,0.55,4800,pending,,,true,2026-05-26T08:03:58.944389 (auto),2026-05-26T08:03:58.944401
+2026-05-25,RKLB,hold_and_watch,price_below,120,0.68,120,pending,,,true,2026-05-26T08:03:58.955349 (auto),2026-05-26T08:03:58.955363
+2026-05-25,PLTU,t_only,price_above,38.5,0.5,38.5,pending,,,true,2026-05-26T08:03:58.965947 (auto),2026-05-26T08:03:58.965959
 2026-05-25,CRCL,add_only_on_trigger,price_above,120,0.62,120,pending,,,unknown,,2026-05-25T08:06:20.429330
-2026-05-25,MSFU,hold_and_watch,price_below,26,0.65,26,pending,,,unknown,,2026-05-25T08:06:20.429334
+2026-05-25,MSFU,hold_and_watch,price_below,26,0.65,26,pending,,,true,2026-05-26T08:03:58.976743 (auto),2026-05-26T08:03:58.976754
+2026-05-26,ROBN,cut,open,,0.75,17.65,pending,,,unknown,,2026-05-26T08:07:33.075681
+2026-05-26,07226,trim_on_rebound,price_above,3.85,0.7,3.85,pending,,,unknown,,2026-05-26T08:07:33.075696
+2026-05-26,SOXL,trim_on_rebound,open,,0.65,190.56,pending,,,unknown,,2026-05-26T08:07:33.076161
+2026-05-26,00100,hold_and_watch,price_below,700,0.6,700,pending,,,unknown,,2026-05-26T08:07:33.076170
+2026-05-26,RKLB,hold_and_watch,price_below,120,0.68,120,pending,,,unknown,,2026-05-26T08:07:33.076173
+2026-05-26,CRCL,add_only_on_trigger,price_above,120,0.62,120,pending,,,unknown,,2026-05-26T08:07:33.076176
+2026-05-26,PLTU,t_only,price_above,37.5,0.5,37.5,pending,,,unknown,,2026-05-26T08:07:33.076179
+2026-05-26,MSFU,hold_and_watch,price_below,26,0.65,26,pending,,,unknown,,2026-05-26T08:07:33.076183
+2026-05-26,02208,hold_and_watch,manual,,0.6,14.59,pending,,,unknown,,2026-05-26T08:07:33.076638
+2026-05-26,03032,hold_and_watch,manual,,0.55,4.846,pending,,,unknown,,2026-05-26T08:07:33.077098
+2026-05-26,03033,hold_and_watch,manual,,0.55,4.756,pending,,,unknown,,2026-05-26T08:07:33.077529
