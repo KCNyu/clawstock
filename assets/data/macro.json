@@ -1,28 +1,28 @@
 {
-  "generated_at": "2026-05-23T01:25:51.459246+00:00",
+  "generated_at": "2026-05-26T01:28:43.512680+00:00",
   "vix": {
     "symbol": "^VIX",
-    "price": 16.7,
-    "prev": 16.76,
-    "change_pct": -0.36,
-    "as_of": 1779480901,
+    "price": 16.59,
+    "prev": 16.7,
+    "change_pct": -0.66,
+    "as_of": 1779723001,
     "source": "yahoo"
   },
   "treasury_10y": {
     "symbol": "^TNX",
     "price": 4.558,
-    "prev": 4.586,
-    "change_pct": -0.61,
+    "prev": 4.558,
+    "change_pct": 0.0,
     "as_of": 1779476393,
     "source": "yahoo",
     "yield_pct": 0.456
   },
   "dxy": {
     "symbol": "DX-Y.NYB",
-    "price": 99.319,
-    "prev": 99.257,
-    "change_pct": 0.06,
-    "as_of": 1779483599,
+    "price": 99.239,
+    "prev": 99.239,
+    "change_pct": 0.0,
+    "as_of": 1779758322,
     "source": "yahoo"
   },
   "fear_greed": {
@@ -34,16 +34,16 @@
   },
   "hsi": {
     "symbol": "^HSI",
-    "price": 25606.03,
-    "prev": 25386.52,
-    "change_pct": 0.86,
+    "price": 25622.36,
+    "prev": 25606.03,
+    "change_pct": 0.06,
     "source": "stooq"
   },
   "hstech": {
     "symbol": "^HSTECH",
-    "price": 4869.57,
-    "prev": 4768.9,
-    "change_pct": 2.11,
+    "price": 4962.22,
+    "prev": 4869.57,
+    "change_pct": 1.9,
     "source": "tencent"
   },
   "spx": {
