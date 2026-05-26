@@ -111,6 +111,28 @@ context.json 关键字段：
 - **归因句必带**：落后是因为(a) 利好时点（盘后才公布）/ (b) 早盘异常抛压 / (c) β 错配 / (d) 个股逻辑滞后？
 - 输出在 ▎板块全景 段（pre-open.md 必带），引用 ≥3 个具体涨跌幅 + 1 个明确归因
 - ⚠️ **持仓自己的数字** (RSI/MA/PnL) 仍然从 context.json 取，板块这段只 search 板块/同行公开行情
+- **同时落盘到** `memory/.tmp/sector-scan-{date}.json`（build_dashboard 会读，让 GH Pages dashboard 同步显示）。schema：
+  ```json
+  {
+    "generated_at": "{ISO8601}",
+    "date": "{YYYY-MM-DD}",
+    "sectors": [
+      {
+        "theme": "HK AI 大模型",
+        "tickers_in_book": ["00100"],
+        "top_movers": [
+          {"ticker": "06651", "name": "五一视界", "pct": 27.6, "catalyst": "具身智能数据平台"},
+          {"ticker": "00992", "name": "联想集团", "pct": 15.0, "catalyst": "AI 营收翻倍"}
+        ],
+        "self": [
+          {"ticker": "00100", "pct": 0.07, "rank_text": "落后", "attribution": "Token Pay 盘后才公布"}
+        ]
+      }
+    ],
+    "narrative": "今天港股 AI 板块全面爆发，主角不是 MINIMAX 而是..."
+  }
+  ```
+  - 缺失/解析失败 dashboard 容错（market_context 退回 portfolio.json 的 {}），不影响 brief 投递
 
 #### Tier 2 — Bull vs Bear（必须有真分歧）
 

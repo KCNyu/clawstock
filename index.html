@@ -443,6 +443,21 @@ layout: null
   .mover-card .pct { font-size: 18px; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
   .mover-card .px { font-size: 11px; color: var(--text-faint); font-variant-numeric: tabular-nums; }
 
+  /* Sector Context — vertical sector blocks with top-movers + self position */
+  .sector-context { display: flex; flex-direction: column; gap: 10px; }
+  .sector-block { background: var(--card-2); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .sector-block .theme { font-weight: 700; font-size: 13px; margin-bottom: 6px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .sector-block .theme .in-book { font-size: 10.5px; font-weight: 500; color: var(--text-dim); font-family: var(--mono); }
+  .sector-block .movers { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 11.5px; }
+  .sector-block .mover-inline { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .sector-block .mover-inline .nm { color: var(--text-dim); font-family: var(--font); margin-left: 4px; }
+  .sector-block .mover-inline .cat { color: var(--text-faint); font-family: var(--font); font-size: 10.5px; margin-left: 4px; }
+  .sector-block .self { margin-top: 6px; font-size: 11.5px; padding-top: 6px; border-top: 1px dashed var(--card); color: var(--text-dim); }
+  .sector-block .self .tk { font-family: var(--mono); color: var(--text); font-weight: 600; }
+  .sector-block .self .rank.lead { color: var(--green); }
+  .sector-block .self .rank.lag { color: var(--red); }
+  .sector-block .self .attr { font-style: italic; }
+
   /* Calibration badge */
   .calib-badge {
     display: flex; align-items: center; gap: 12px;
@@ -946,6 +961,14 @@ layout: null
     </div>
 
     <div class="card">
+      <h3>板块全景 <span class="muted" id="sector-context-asof" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">—</span></h3>
+      <p class="chart-hint" id="sector-narrative" style="display:none"></p>
+      <div class="sector-context" id="sector-context">
+        <div class="empty-state">等待今日 brief 写入 sector-scan（08:00 HKT 后刷新）</div>
+      </div>
+    </div>
+
+    <div class="card">
       <h3>Holdings 7d Trend <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(active 持仓 · 价格走势)</span></h3>
       <div class="hold-trend-grid" id="hold-trend-grid">
         <div class="empty-state">No price history.</div>
@@ -1345,6 +1368,7 @@ layout: null
     renderRiskMetrics();
     renderAnomalies();
     renderMovers();
+    renderSectorContext();
     renderCatalysts();
     renderNewsDigest();
     renderMacro();
@@ -1634,6 +1658,58 @@ layout: null
           </div>
         </div>
       `;
+    }).join("");
+  }
+
+  function renderSectorContext() {
+    const wrap = document.getElementById("sector-context");
+    if (!wrap) return;
+    const ctx = safe(DATA, "market_context") || {};
+    const sectors = ctx.sectors || [];
+    const asof = document.getElementById("sector-context-asof");
+    if (asof) {
+      asof.textContent = ctx.date ? `as of ${ctx.date}` : "";
+    }
+    const narr = document.getElementById("sector-narrative");
+    if (narr) {
+      if (ctx.narrative) {
+        narr.textContent = ctx.narrative;
+        narr.style.display = "";
+      } else {
+        narr.style.display = "none";
+      }
+    }
+    if (!sectors.length) {
+      wrap.innerHTML = '<div class="empty-state">等待今日 brief 写入 sector-scan（08:00 HKT 后刷新）</div>';
+      return;
+    }
+    const escape = s => String(s == null ? "" : s).replace(/[<>&"]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;","\"":"&quot;"}[c]));
+    const rankClass = txt => {
+      const t = (txt || "").toString();
+      if (/领涨|领先|榜首|top/i.test(t)) return "lead";
+      if (/落后|倒数|垫底|lag/i.test(t)) return "lag";
+      return "";
+    };
+    wrap.innerHTML = sectors.map(s => {
+      const movers = (s.top_movers || []).slice(0, 5).map(m => {
+        const pct = m.pct == null ? "—" : fmtPct(m.pct, 1);
+        const klass = pnlClass(m.pct);
+        return `<span class="mover-inline"><span class="${klass}">${escape(m.ticker)} ${pct}</span>` +
+               `${m.name ? `<span class="nm">${escape(m.name)}</span>` : ""}` +
+               `${m.catalyst ? `<span class="cat">· ${escape(m.catalyst)}</span>` : ""}</span>`;
+      }).join("");
+      const selfRows = (s.self || []).map(sf => {
+        const pct = sf.pct == null ? "" : fmtPct(sf.pct, 1);
+        return `<span class="tk">${escape(sf.ticker)}</span> ${pct} · ` +
+               `<span class="rank ${rankClass(sf.rank_text)}">${escape(sf.rank_text || "")}</span>` +
+               `${sf.attribution ? ` — <span class="attr">${escape(sf.attribution)}</span>` : ""}`;
+      }).join("<br>");
+      const inBook = (s.tickers_in_book || []).join(", ");
+      return `<div class="sector-block">
+        <div class="theme">${escape(s.theme)} ${inBook ? `<span class="in-book">[持仓: ${escape(inBook)}]</span>` : ""}</div>
+        <div class="movers">${movers || '<span class="empty-state" style="padding:4px">no top movers</span>'}</div>
+        ${selfRows ? `<div class="self">${selfRows}</div>` : ""}
+      </div>`;
     }).join("");
   }
 

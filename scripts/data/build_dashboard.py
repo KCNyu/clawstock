@@ -331,6 +331,30 @@ def _latest_brief_context():
         return None, None
 
 
+def load_sector_scan():
+    """Read the freshest sector-scan-*.json written by daily-deep-brief LLM.
+
+    LLM writes today's sector overview (theme / top movers / self position /
+    attribution / narrative) to memory/.tmp/sector-scan-{date}.json after
+    running Step 3 板块全景 tavily-search. We pick the newest by mtime to
+    cover overnight edge cases. Non-fatal on any error (returns {}).
+    """
+    try:
+        paths = glob.glob(str(WS_ROOT / 'memory' / '.tmp' / 'sector-scan-*.json'))
+        if not paths:
+            return {}
+        latest = max(paths, key=os.path.getmtime)
+        data = load_json(latest)
+        if not isinstance(data, dict):
+            return {}
+        # Stamp where it came from so frontend can show "as of {date}"
+        data.setdefault('_source', os.path.basename(latest))
+        return data
+    except Exception as e:
+        print(f'  warn: load_sector_scan failed: {e}', file=sys.stderr)
+        return {}
+
+
 # Tickers we treat as leveraged ETFs even when context doesn't tag them.
 _LEVERAGED_TICKERS = {'SOXL', 'TQQQ', 'MSFU', 'PLTU', 'ROBN', 'RKLX', '07226'}
 
@@ -1228,7 +1252,7 @@ def main():
         'recent_plans': plans,
         'recent_plans_cap': MAX_PLANS_EMBEDDED,
         'indices': _aggregate_indices(us_pf, hk_pf),
-        'market_context': portfolio.get('market_context', {}),
+        'market_context': load_sector_scan() or portfolio.get('market_context', {}),
         'holdings_history': build_holdings_history(
             sorted(
                 p for p in glob.glob(str(WS_ROOT / 'memory' / 'snapshots' / '*.json'))
