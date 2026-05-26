@@ -107,4 +107,12 @@ def render_holdings_table(rows: List[Dict], currency: str = '') -> List[str]:
             ' | ' + pad_right(pnlp_s,    W_PNL_P) +
             ' | ' + pad_right(pnla_s,    W_PNL_A) + ' |'
         )
+    # Self-check: header / separator / each data row must split to the same
+    # number of pipe segments. Catches regressions in this builder itself.
+    seg_counts = {line.count('|') for line in out}
+    if len(seg_counts) != 1:
+        raise AssertionError(
+            f'_wechat_table: pipe-segment counts diverge across rows ({seg_counts}); '
+            f'header/sep/data must be identical column count.'
+        )
     return out

@@ -97,6 +97,13 @@ def validate_markdown(path, context=None):
     if 'USDHKD' not in text and 'FX' not in text and '汇率' not in text:
         issues.append('pre-open.md 未提及 FX rate / 汇率')
 
+    # Markdown table column consistency — Pages renderer breaks if header/sep/data
+    # rows diverge in pipe-segment count (same class of bug as the WeChat one
+    # caught by intraday/report postflights).
+    from _harness_common import check_md_table_column_consistency
+    for issue in check_md_table_column_consistency(text):
+        issues.append(f'pre-open.md {issue}')
+
     # NEW: peer-rotation enforcement — divergence_signal in context must be addressed
     if context and context.get('peer_scan'):
         divergence_tickers = [t for t, p in context['peer_scan'].items()
@@ -109,17 +116,20 @@ def validate_markdown(path, context=None):
     return issues
 
 
+CRITICAL_KEYWORDS = ['缺失', '解析失败', '表格 #']  # table column-mismatch is critical
+
+
 def categorize(issues):
-    if not issues:
-        return 'pass'
-    has_critical = any('缺失' in i or '解析失败' in i for i in issues)
-    if has_critical:
-        return 'fail'
-    return 'warn' if len(issues) <= 4 else 'fail'
+    return categorize_issues(issues, CRITICAL_KEYWORDS, warn_max=4)
 
 
 sys.path.insert(0, str(Path(__file__).parent))
-from _harness_common import git_cmd as _git, rebuild_dashboard, push_with_rebase_retry  # noqa: E402
+from _harness_common import (  # noqa: E402
+    categorize_issues,
+    git_cmd as _git,
+    push_with_rebase_retry,
+    rebuild_dashboard,
+)
 
 
 def _current_price_for(ticker):

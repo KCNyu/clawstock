@@ -87,6 +87,7 @@ python3 /root/.openclaw/workspace/scripts/harness/intraday_preflight.py --market
 #### Step 2: 写报告
 - 拷贝 `raw_wechat_block` 到消息开头（**verbatim — 不许改格式不许 trim**）
   - intraday 的 holdings 是 **markdown 表格**（7 列：代码/股/成本/现价/今日/浮%/浮$，右对齐数字。走 `scripts/data/_wechat_table.py` 的 visual-width-aware 渲染，去 HK$ 前缀 + 加 浮$ 金额列）
+  - ⚠️ **表格的 3 类行（表头 / 分隔 `|:--|--:|...|` / 每条数据）每一字符 1:1 复制**，不要数列重写分隔行 — 5/21 后多次因 LLM 自己写分隔行少一段 `--:|` 导致渲染失败（postflight 会 fail）
   - **市值/浮盈/今日 已经是单行用 `|` 分隔的格式** — 不要拆 3 行
   - **`📉 亏损持仓 X/Y | 2x杠杆敞口 N%` 必须保留**，不要省
 - 加 `▎我的看法` 段：**至少 60 字（postflight 软下限），目标 2-3 行**
@@ -123,7 +124,7 @@ cat /root/.openclaw/workspace/memory/.tmp/report-context-hk-{phase}-$(date +%Y-%
 ```
 
 context.json 关键字段：
-- `raw_wechat_block` — 脚本数据块，**verbatim 拷贝到消息开头**
+- `raw_wechat_block` — 脚本数据块，**verbatim 拷贝到消息开头**。⚠️ 若含 markdown 表格（7 列 holdings），**表头/分隔/数据三类行每字符 1:1 复制**，不要重写分隔行 — 列数必须一致，postflight 会 fail。
 - `title` — WeChat 标题（按 phase 自动选）
 - `signal_count` / `anomalies` / `index_direction` — 用于写分析段
 - `needs_risk_section` — STOP+TRIM ≥ 2 时为 true，必须加 ▎风险提示 段

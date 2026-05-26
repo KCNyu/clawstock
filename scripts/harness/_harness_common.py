@@ -171,6 +171,86 @@ def push_with_rebase_retry(remote='origin', branch='master', attempts=3):
     return False, last_out
 
 
+def _extract_md_tables(text):
+    """Yield lists of consecutive lines that look like markdown table rows."""
+    cur = []
+    for ln in text.splitlines():
+        s = ln.strip()
+        if s.startswith('|') and s.endswith('|'):
+            cur.append(ln)
+        elif cur:
+            yield cur
+            cur = []
+    if cur:
+        yield cur
+
+
+def check_raw_tables_verbatim(text, raw_wechat_block):
+    """Verify every markdown-table line in raw_wechat_block appears verbatim in text.
+
+    preflight builds the holdings table via _wechat_table.py (7-col, known correct).
+    LLMs sometimes paraphrase rows or drop a separator segment when "copying" —
+    e.g. 5/21+ regression where header had 7 cols but separator only 6, breaking
+    markdown renderers. Strict substring match catches that.
+
+    Returns list of issue strings (empty = pass).
+    """
+    if not raw_wechat_block:
+        return []
+    issues = []
+    for tbl in _extract_md_tables(raw_wechat_block):
+        for ln in tbl:
+            if ln not in text:
+                issues.append(f'表格行未 verbatim 复制: "{ln.strip()[:50]}..."')
+                break  # one issue per table is enough
+    return issues
+
+
+def check_md_table_column_consistency(text):
+    """Verify every markdown table inside text has uniform pipe-segment counts
+    across its header/separator/data rows.
+
+    Use this when there's no canonical `raw_wechat_block` to compare against —
+    e.g. LLM-authored pre-open.md where tables are composed (not copied).
+    A diverging segment count breaks markdown renderers.
+
+    Returns list of issue strings.
+    """
+    issues = []
+    for i, tbl in enumerate(_extract_md_tables(text), start=1):
+        counts = {ln.count('|') for ln in tbl}
+        if len(counts) > 1:
+            issues.append(f'markdown 表格 #{i} 列数不一致: pipe-segments={sorted(counts)}')
+    return issues
+
+
+def validate_forbidden_phrases(text, phrases, label='报告'):
+    """Return one issue per forbidden phrase found in text."""
+    return [f'{label}含敷衍词 "{p}"' for p in phrases if p in text]
+
+
+def categorize_issues(issues, critical_substrings, warn_max=2, extra_critical=None):
+    """Common pass/warn/fail decision used by all postflights.
+
+    - empty issues → pass
+    - any issue containing any critical_substring OR matching extra_critical(i) → fail
+    - otherwise warn if ≤ warn_max issues else fail
+
+    extra_critical: optional callable(issue_str) -> bool for compound checks
+    (e.g. hard char limit detection that can't be a simple substring).
+    """
+    if not issues:
+        return 'pass'
+    has_critical = any(
+        any(c in i for c in critical_substrings)
+        or (extra_critical is not None and extra_critical(i))
+        for i in issues
+    )
+    if has_critical:
+        return 'fail'
+    return 'warn' if len(issues) <= warn_max else 'fail'
+
+
 def safe_write_text(path, text):
     """Re-export safe_io.safe_write_text for harness scripts.
 

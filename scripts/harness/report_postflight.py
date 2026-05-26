@@ -63,6 +63,7 @@ def validate(text, ctx):
         first_line = raw.splitlines()[0]
         if first_line not in text:
             issues.append(f'报告未包含原始数据块首行 "{first_line[:40]}..." (verbatim 验证失败)')
+        issues.extend(check_raw_tables_verbatim(text, raw))
 
     # 2. 必有三段标记
     for sec in REQUIRED_SECTIONS:
@@ -91,29 +92,35 @@ def validate(text, ctx):
             issues.append(f'preflight 标了 {len(anomalies)} 个 ≥3% 异动票 ({tickers}) 但报告全部未提及')
 
     # 6. 敷衍 phrases
-    for phrase in FORBIDDEN_PHRASES:
-        if phrase in text:
-            issues.append(f'报告含敷衍词 "{phrase}"')
+    issues.extend(validate_forbidden_phrases(text, FORBIDDEN_PHRASES))
 
     return issues
 
 
+CRITICAL_KEYWORDS = ['缺段标记', '未包含原始数据块', '敷衍词', '表格行未 verbatim']
+
+
+def _is_hard_char_limit(issue):
+    """Hard char limit (e.g. '字 > 1500 上限') is critical; soft is not."""
+    return '字 >' in issue and '上限' in issue and '软上限' not in issue
+
+
 def categorize(issues):
-    if not issues:
-        return 'pass'
-    has_critical = any(
-        '缺段标记' in i or '未包含原始数据块' in i
-        or ('字 >' in i and '上限' in i and '软上限' not in i)  # hard char limit hit
-        or '敷衍词' in i
-        for i in issues
+    return categorize_issues(
+        issues, CRITICAL_KEYWORDS, warn_max=3, extra_critical=_is_hard_char_limit,
     )
-    if has_critical:
-        return 'fail'
-    return 'warn' if len(issues) <= 3 else 'fail'
 
 
 sys.path.insert(0, str(Path(__file__).parent))
-from _harness_common import git_cmd as _git, rebuild_dashboard, push_with_rebase_retry, snapshot_date_for_now  # noqa: E402
+from _harness_common import (  # noqa: E402
+    categorize_issues,
+    check_raw_tables_verbatim,
+    git_cmd as _git,
+    push_with_rebase_retry,
+    rebuild_dashboard,
+    snapshot_date_for_now,
+    validate_forbidden_phrases,
+)
 
 
 def maybe_commit(status, commit_msg):

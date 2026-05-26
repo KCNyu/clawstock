@@ -22,11 +22,19 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).parent))
+from _harness_common import (  # noqa: E402
+    categorize_issues,
+    check_raw_tables_verbatim,
+    validate_forbidden_phrases,
+)
+
 WS = Path('/root/.openclaw/workspace')
 TMP = WS / 'memory' / '.tmp'
 
 REQUIRED_SECTION = '▎我的看法'
 FORBIDDEN_PHRASES = ['数据待获取', '等待数据', 'TODO', 'TBD']
+CRITICAL_KEYWORDS = ['缺段标记', '未包含原始数据块', '> 1000', '敷衍词', '表格行未 verbatim']
 
 
 def load_context(market):
@@ -47,6 +55,7 @@ def validate(text, ctx):
         first_line = raw.splitlines()[0]
         if first_line not in text:
             issues.append(f'报告未包含原始数据块首行 "{first_line[:40]}..." (verbatim 失败)')
+        issues.extend(check_raw_tables_verbatim(text, raw))
 
     if REQUIRED_SECTION not in text:
         issues.append(f'缺段标记 "{REQUIRED_SECTION}"')
@@ -76,23 +85,13 @@ def validate(text, ctx):
         if anomaly_tickers and not mentioned:
             issues.append(f'should_alert=true 但报告未提任何异动票 ({", ".join(anomaly_tickers)})')
 
-    for p in FORBIDDEN_PHRASES:
-        if p in text:
-            issues.append(f'报告含敷衍词 "{p}"')
+    issues.extend(validate_forbidden_phrases(text, FORBIDDEN_PHRASES))
 
     return issues
 
 
 def categorize(issues):
-    if not issues:
-        return 'pass'
-    has_critical = any(
-        '缺段标记' in i or '未包含原始数据块' in i or '> 1000' in i or '敷衍词' in i
-        for i in issues
-    )
-    if has_critical:
-        return 'fail'
-    return 'warn' if len(issues) <= 2 else 'fail'
+    return categorize_issues(issues, CRITICAL_KEYWORDS, warn_max=2)
 
 
 def main():
