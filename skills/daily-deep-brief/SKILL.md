@@ -99,6 +99,19 @@ context.json 关键字段：
 - Sentiment：US 看 r/wallstreetbets + Tavily；HK 看雪球 + 富途 + 南向资金
 - Cross-Market：纳指→恒科链路当日是否工作；US 隔夜 vs HK 即将开盘
 
+#### ⚡ 板块全景（必跑 — context.json 不覆盖）
+
+每日 Tier 1 后必做一段板块横向扫描，目标回答："你持仓在板块里**领涨/落后/中位**？归因是什么？"
+
+- 板块来源是动态的：读 `memory/peer-map.json`，**每个 active ticker 的 `theme` 字段就是它的板块名**（如 "HK AI 大模型" / "HK 科技指数 2x leveraged (HSTECH 标的)" / "商业航天"）。持仓变了，板块自动跟变 — 不要在 SKILL.md / 报告里写死任何特定 ticker
+- 对每个去重后的 theme 跑一次 **tavily-search**（或等价 web search 工具）：
+  - HK 板块 → 搜 "今日 HK {theme} 涨幅榜 / 板块异动"
+  - US 板块 → 搜对应 sector ETF（如 SOXX/QQQ/ARK） + 今日成分涨跌
+- 每个板块输出：Top 3-5 涨幅 + 你持仓票在榜单中的位置（领涨/落后/中位）
+- **归因句必带**：落后是因为(a) 利好时点（盘后才公布）/ (b) 早盘异常抛压 / (c) β 错配 / (d) 个股逻辑滞后？
+- 输出在 ▎板块全景 段（pre-open.md 必带），引用 ≥3 个具体涨跌幅 + 1 个明确归因
+- ⚠️ **持仓自己的数字** (RSI/MA/PnL) 仍然从 context.json 取，板块这段只 search 板块/同行公开行情
+
 #### Tier 2 — Bull vs Bear（必须有真分歧）
 
 两段，各 80-120 字。Bull 用 Tier 1 数据组装"持有 + 加仓"案；Bear 用 Tier 1 数据组装"减仓 + 砍仓"案。**至少在 1 个仓位上观点不同** — 完全一致说明辩论失败。

@@ -93,6 +93,7 @@ python3 /root/.openclaw/workspace/scripts/harness/intraday_preflight.py --market
 - 加 `▎我的看法` 段：**至少 60 字（postflight 软下限），目标 2-3 行**
   - 若 `should_alert=true`，**必须**提到 `anomalies` 里至少一个票
   - 必须包含：今天该看/该等/该减 + 引用至少 1 个具体数字（票现价 / 异动幅度 / 信号）
+  - ⚡ **板块全景鼓励 tavily-search**：板块名读 `memory/peer-map.json` 各 ticker 的 `theme` 字段（持仓变了自动跟变，不要写死任何 ticker）；search 拿板块今日 Top 涨幅 + 你持仓在榜单里的位置 + 1 句归因；持仓自己的数字仍从 context.json
   - 禁止"无异动，观望"这种敷衍 1 句话
 - ≤ 1200 字软上限 / ≤ 1500 字硬上限
 
@@ -137,7 +138,7 @@ context.json 关键字段：
 {raw_wechat_block 原样}
 
 ▎情绪面
-{Finnhub 新闻 + 恒指/恒科方向 → 大盘判断（2-3 行）}
+{Finnhub 新闻 + 恒指/恒科方向 → 大盘判断（2-3 行）；⚡ **板块全景鼓励 tavily-search**：板块名读 peer-map.json `theme`（持仓动态），search 今日板块 Top 5 + 你持仓位置 + 1 句归因}
 
 ▎技术面
 {结合 anomalies + signals → 超买/超卖/突破（2-3 行）}
