@@ -310,6 +310,43 @@ layout: null
   .macro-cell .lbl { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
   .macro-cell .val { font-size: 17px; font-weight: 700; }
   .macro-cell .sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  .macro-cell.up   .sub { color: #16a34a; }
+  .macro-cell.down .sub { color: #dc2626; }
+
+  /* Risk keyword banner (top of macro card; hidden when no hits) */
+  .risk-banner {
+    margin-bottom: 10px; padding: 8px 10px;
+    background: rgba(220, 38, 38, 0.10); border-left: 3px solid #dc2626;
+    border-radius: var(--radius-sm); font-size: 12px; line-height: 1.5;
+  }
+  .risk-banner .rb-hdr { color: #dc2626; font-weight: 700; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .risk-banner .rb-row { color: var(--text); margin: 2px 0; }
+  .risk-banner .rb-tk  { font-weight: 700; color: #dc2626; margin-right: 6px; }
+  .risk-banner .rb-kw  { background: rgba(220, 38, 38, 0.15); padding: 1px 5px;
+    border-radius: 3px; font-size: 11px; margin: 0 3px; }
+
+  /* Per-ticker sentiment drill (collapsible) */
+  .sentiment-drill { margin-top: 10px; display: flex; flex-direction: column; gap: 4px; }
+  .sd-row { background: var(--card-2); border-radius: var(--radius-sm); overflow: hidden; }
+  .sd-row summary {
+    list-style: none; cursor: pointer; padding: 7px 10px;
+    display: grid; grid-template-columns: 56px 28px 1fr auto; gap: 8px; align-items: center;
+    font-size: 12px; font-variant-numeric: tabular-nums;
+  }
+  .sd-row summary::-webkit-details-marker { display: none; }
+  .sd-row summary::after { content: '▸'; color: var(--text-dim); font-size: 10px; }
+  .sd-row[open] summary::after { content: '▾'; }
+  .sd-row .sd-tk { font-weight: 700; color: var(--text); }
+  .sd-row .sd-reg { font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
+  .sd-row .sd-counts { color: var(--text-dim); font-size: 11px; }
+  .sd-row .sd-counts strong { color: var(--text); }
+  .sd-body { padding: 4px 10px 10px; font-size: 11.5px; line-height: 1.5; color: var(--text-dim); }
+  .sd-body .sd-grp { color: var(--text-dim); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.05em; margin-top: 6px; }
+  .sd-body ul { margin: 2px 0 0; padding-left: 16px; }
+  .sd-body li { margin: 1px 0; color: var(--text); }
+  .sd-body .sd-empty { color: var(--text-dim); font-style: italic; font-size: 11px; }
 
   /* Risk metrics grid */
   .risk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -1010,9 +1047,11 @@ layout: null
 
     <div class="card">
       <h3>Macro · Sentiment</h3>
+      <div id="risk-banner" class="risk-banner" style="display:none"></div>
       <div class="macro-row" id="macro-row">
         <div class="empty-state">No macro data.</div>
       </div>
+      <div id="sentiment-drill" class="sentiment-drill"></div>
     </div>
 
     <div class="card">
@@ -1884,13 +1923,23 @@ layout: null
     const s = safe(DATA, 'sentiment') || {};
     const cells = [];
     const fmt = (v, suffix='') => v == null || isNaN(v) ? DASH : (Number(v).toFixed(2) + suffix);
+    // Trend tag: 'up'/'down'/'' so .sub can be color-coded
+    const trend = (chg) => chg == null ? '' : (chg > 0 ? 'up' : (chg < 0 ? 'down' : ''));
 
-    if (m.vix?.price != null) cells.push({lbl: 'VIX', val: fmt(m.vix.price), sub: fmtPct(m.vix.change_pct)});
+    // Volatility / rates / dollar (existing)
+    if (m.vix?.price != null) cells.push({lbl: 'VIX', val: fmt(m.vix.price), sub: fmtPct(m.vix.change_pct), cls: trend(m.vix.change_pct)});
     if (m.treasury_10y?.yield_pct != null) cells.push({lbl: '10Y Yield', val: fmt(m.treasury_10y.yield_pct, '%'), sub: ''});
-    if (m.dxy?.price != null) cells.push({lbl: 'DXY', val: fmt(m.dxy.price), sub: fmtPct(m.dxy.change_pct)});
+    if (m.dxy?.price != null) cells.push({lbl: 'DXY', val: fmt(m.dxy.price), sub: fmtPct(m.dxy.change_pct), cls: trend(m.dxy.change_pct)});
     if (m.fear_greed?.score != null) cells.push({lbl: 'F&G', val: fmt(m.fear_greed.score), sub: m.fear_greed.rating || ''});
 
-    // Sentiment: reddit_mentions_7d aggregated across tickers + google news count
+    // [A] Market indices — newly added so dashboard aligns with brief ▎大盘速读
+    const idxFmt = (v) => v == null ? DASH : (v >= 1000 ? Math.round(v).toLocaleString() : fmt(v));
+    if (m.spx?.price != null)    cells.push({lbl: 'SPX',    val: idxFmt(m.spx.price),    sub: fmtPct(m.spx.change_pct),    cls: trend(m.spx.change_pct)});
+    if (m.nasdaq?.price != null) cells.push({lbl: 'NDX',    val: idxFmt(m.nasdaq.price), sub: fmtPct(m.nasdaq.change_pct), cls: trend(m.nasdaq.change_pct)});
+    if (m.hsi?.price != null)    cells.push({lbl: 'HSI',    val: idxFmt(m.hsi.price),    sub: fmtPct(m.hsi.change_pct),    cls: trend(m.hsi.change_pct)});
+    if (m.hstech?.price != null) cells.push({lbl: 'HSTECH', val: idxFmt(m.hstech.price), sub: fmtPct(m.hstech.change_pct), cls: trend(m.hstech.change_pct)});
+
+    // Sentiment aggregate (kept as quick-glance counts; per-ticker drill below)
     if (s.tickers && Array.isArray(s.tickers)) {
       const totalReddit = s.tickers.reduce((sum, t) => sum + (t.reddit_mentions_7d || 0), 0);
       const totalNews = s.tickers.reduce((sum, t) => sum + ((t.google_news_en || []).length + (t.google_news_zh || []).length), 0);
@@ -1906,20 +1955,100 @@ layout: null
       wrap.innerHTML = '<div class="empty-state">Macro feed stale (Yahoo rate-limited). Awaiting next macro-scan cron.</div>';
     } else {
       wrap.innerHTML = cells.map(c =>
-        `<div class="macro-cell"><div class="lbl">${c.lbl}</div><div class="val">${c.val}</div>${c.sub ? `<div class="sub">${c.sub}</div>` : ''}</div>`
+        `<div class="macro-cell ${c.cls || ''}"><div class="lbl">${c.lbl}</div><div class="val">${c.val}</div>${c.sub ? `<div class="sub">${c.sub}</div>` : ''}</div>`
       ).join('');
     }
 
-    // Fed press 显示最新一条标题 (可点击)
+    // [D] Fed press top 3 — list instead of single-latest
     if (m.fed_press?.length) {
-      const latest = m.fed_press[0];
       const fedDiv = document.createElement('div');
       fedDiv.className = 'fed-latest';
       fedDiv.style.cssText = 'margin-top:8px;padding:8px 10px;background:var(--card-2);border-radius:var(--radius-sm);font-size:11.5px;border-left:3px solid var(--accent-2);';
-      fedDiv.innerHTML = `<div style="color:var(--text-dim);font-size:10px;">Latest Fed press · ${latest.date}</div>
-        <a href="${latest.url}" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;display:block;margin-top:2px;">${latest.title.substring(0, 140)}</a>`;
+      const rows = m.fed_press.slice(0, 3).map(p =>
+        `<div style="margin:3px 0;">
+          <span style="color:var(--text-dim);font-size:10px;margin-right:6px;">${p.date}</span>
+          <a href="${p.url}" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;">${(p.title || '').substring(0, 130)}</a>
+        </div>`).join('');
+      fedDiv.innerHTML = `<div style="color:var(--text-dim);font-size:10px;margin-bottom:2px;">Fed press · past 7d</div>${rows}`;
       wrap.appendChild(fedDiv);
     }
+
+    // [B] Per-ticker drill + [C] risk banner — render alongside macro
+    renderSentimentDrill(s);
+    renderRiskBanner(s);
+  }
+
+  // [B] Per-ticker sentiment drill — sorted by signal strength, collapsed by default
+  function renderSentimentDrill(s) {
+    const wrap = document.getElementById('sentiment-drill');
+    if (!wrap) return;
+    const tickers = (s && Array.isArray(s.tickers)) ? s.tickers : [];
+    // Keep only tickers with any signal
+    const withSignal = tickers
+      .map(t => ({
+        ticker: t.ticker,
+        name: t.name || '',
+        region: t.region || '',
+        reddit: t.reddit_mentions_7d || 0,
+        reddit_posts: t.reddit_posts || [],
+        news: [...(t.google_news_en || []), ...(t.google_news_zh || [])],
+      }))
+      .filter(t => t.reddit > 0 || t.news.length > 0)
+      .sort((a, b) => (b.reddit - a.reddit) || (b.news.length - a.news.length));
+    if (!withSignal.length) { wrap.innerHTML = ''; return; }
+    const regionTag = (r) => r === 'us_stocks' ? 'US' : (r === 'hk_stocks' ? 'HK' : '');
+    wrap.innerHTML = withSignal.map(t => {
+      const newsLis = t.news.slice(0, 3).map(n =>
+        `<li>${(n.title || '').replace(/</g, '&lt;')}</li>`).join('');
+      const redditLis = t.reddit_posts.slice(0, 3).map(p =>
+        `<li>${(p.title || '').replace(/</g, '&lt;')} <span style="color:var(--text-dim);font-size:10px;">· ${p.score || 0}↑ ${p.num_comments || 0}💬</span></li>`).join('');
+      return `<details class="sd-row">
+        <summary>
+          <span class="sd-tk">${t.ticker}</span>
+          <span class="sd-reg">${regionTag(t.region)}</span>
+          <span class="sd-counts"><strong>${t.reddit}</strong>R · <strong>${t.news.length}</strong>N</span>
+        </summary>
+        <div class="sd-body">
+          ${newsLis ? `<div class="sd-grp">News</div><ul>${newsLis}</ul>` :
+                      `<div class="sd-empty">no news headlines</div>`}
+          ${redditLis ? `<div class="sd-grp">Reddit</div><ul>${redditLis}</ul>` : ''}
+        </div>
+      </details>`;
+    }).join('');
+  }
+
+  // [C] Risk keyword banner — scans sentiment headlines for negative keywords
+  function renderRiskBanner(s) {
+    const wrap = document.getElementById('risk-banner');
+    if (!wrap) return;
+    const tickers = (s && Array.isArray(s.tickers)) ? s.tickers : [];
+    // Match whole-word so "Mission" doesn't trip "miss". \b on letters; lowercase compare.
+    const KWS = ['miss', 'sec', 'probe', 'fraud', 'lawsuit', 'downgrade',
+                 'halt', 'recall', 'short report', 'subpoena', 'restate'];
+    const hits = [];
+    for (const t of tickers) {
+      const corpus = [
+        ...(t.google_news_en || []).map(n => n.title || ''),
+        ...(t.google_news_zh || []).map(n => n.title || ''),
+        ...(t.reddit_posts   || []).map(p => p.title || ''),
+      ].join(' \n ').toLowerCase();
+      const matched = [];
+      for (const kw of KWS) {
+        const re = kw.includes(' ')
+          ? new RegExp(kw.replace(/ /g, '\\s+'), 'i')
+          : new RegExp('\\b' + kw + '\\b', 'i');
+        if (re.test(corpus)) matched.push(kw);
+      }
+      if (matched.length) hits.push({ticker: t.ticker, kws: matched});
+    }
+    if (!hits.length) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+    wrap.style.display = '';
+    wrap.innerHTML =
+      `<div class="rb-hdr">⚠ Risk keywords (${hits.length})</div>` +
+      hits.map(h =>
+        `<div class="rb-row"><span class="rb-tk">${h.ticker}</span>` +
+        h.kws.map(k => `<span class="rb-kw">${k}</span>`).join('') +
+        `</div>`).join('');
   }
 
   function renderCalibBadge() {
