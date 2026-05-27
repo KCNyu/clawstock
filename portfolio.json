@@ -295,18 +295,18 @@
         },
         {
           "ticker": "SOXL",
-          "shares": 2,
+          "shares": 0,
           "cost_basis": 91.87,
-          "current_price": 235.8625,
-          "today_change_pct": 4.461,
-          "pnl_percent": 156.7351,
+          "current_price": 217.17,
+          "today_change_pct": 0,
+          "pnl_percent": 0,
           "data_source": "Nasdaq API (etf) May 27, 2026 09:30 ET",
           "day_high": 235.8625,
           "day_low": 235.8625,
           "day_open": 235.8625,
           "prev_close": 225.79,
-          "current_value": 471.73,
-          "pnl_abs": 287.99,
+          "current_value": 0,
+          "pnl_abs": 0,
           "today_change": 20.15,
           "note": "2026-04-17 按用户截图记录买入，做半导体 3x 杠杆短线仓",
           "trades": [
@@ -332,6 +332,14 @@
               "price": 170.8,
               "realized_pnl": 236.79,
               "note": "SOXL 减仓，锁利留 2 股"
+            },
+            {
+              "date": "2026-05-27",
+              "action": "sell",
+              "shares": 2,
+              "price": 217.17,
+              "realized_pnl": 250.6,
+              "note": "AI板块出货，今日市价清仓"
             }
           ],
           "name": "三倍做多半导体ETF-Direxion",
