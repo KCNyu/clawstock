@@ -1,51 +1,46 @@
 {
-  "generated_at": "2026-05-22T01:06:26.241952+00:00",
-  "as_of": "2026-05-22",
+  "generated_at": "2026-05-27T14:48:03.406790+00:00",
+  "as_of": "2026-05-27",
   "us": {
-    "beta_spx": 4.7786,
-    "vol_30d_annualized": 0.7287,
-    "max_dd_30d": -0.1558,
-    "sharpe_30d": 4.6364,
-    "current_value_usd": 3056.87
+    "beta_spx": 3.9173,
+    "vol_30d_annualized": 0.7198,
+    "max_dd_30d": -0.1906,
+    "sharpe_30d": 2.447,
+    "current_value_usd": 2728.58
   },
   "hk": {
-    "beta_hsi": 2.5159,
-    "vol_30d_annualized": 0.6543,
-    "max_dd_30d": -0.1984,
-    "sharpe_30d": -2.7484,
-    "current_value_hkd": 73479.6
+    "beta_hsi": 2.5129,
+    "vol_30d_annualized": 0.7823,
+    "max_dd_30d": -0.2036,
+    "sharpe_30d": -0.2039,
+    "current_value_hkd": 85827.6
   },
   "combined": {
-    "vol_30d_annualized": 0.5465,
-    "max_dd_30d": -0.143,
-    "sharpe_30d": -0.8836
+    "vol_30d_annualized": 0.6656,
+    "max_dd_30d": -0.1687,
+    "sharpe_30d": 0.2528
   },
   "leveraged_exposure": {
-    "us_leverage_factor_avg": 1.8356,
-    "hk_leverage_factor_avg": 1.3043,
-    "combined_avg": 1.4344,
-    "margin_at_risk_pct": 14.3445
+    "us_leverage_factor_avg": 1.6673,
+    "hk_leverage_factor_avg": 1.2746,
+    "combined_avg": 1.3527,
+    "margin_at_risk_pct": 13.5266
   },
   "alerts": [
     {
       "type": "high_beta",
       "severity": "high",
-      "detail": "US β vs S&P 500 = 4.7786 (> 3.0)"
+      "detail": "US β vs S&P 500 = 3.9173 (> 3.0)"
     },
     {
       "type": "high_vol",
       "severity": "high",
-      "detail": "Combined 30d annualised vol = 54.6% (> 50%)"
+      "detail": "Combined 30d annualised vol = 66.6% (> 50%)"
     },
     {
       "type": "deep_dd",
       "severity": "medium",
-      "detail": "Combined 30d max DD = -14.3% (< -10%)"
-    },
-    {
-      "type": "negative_sharpe",
-      "severity": "medium",
-      "detail": "Combined 30d Sharpe = -0.8836 (< 0)"
+      "detail": "Combined 30d max DD = -16.9% (< -10%)"
     }
   ],
   "meta": {
@@ -62,14 +57,13 @@
         "RKLB",
         "CRCL",
         "PLTU",
-        "SOXL",
         "ROBN",
         "MSFU"
       ],
       "failed": [],
       "n_returns": 30,
-      "dates_first": "2026-04-09",
-      "dates_last": "2026-05-21"
+      "dates_first": "2026-04-14",
+      "dates_last": "2026-05-27"
     },
     "hk_fetch": {
       "fetched": [
@@ -81,8 +75,8 @@
       ],
       "failed": [],
       "n_returns": 30,
-      "dates_first": "2026-04-08",
-      "dates_last": "2026-05-21"
+      "dates_first": "2026-04-13",
+      "dates_last": "2026-05-27"
     }
   }
 }

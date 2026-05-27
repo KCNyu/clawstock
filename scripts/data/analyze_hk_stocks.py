@@ -348,6 +348,15 @@ def update_hk_portfolio(dry_run: bool = False) -> Dict:
     active = [h for h in us['holdings'] if h.get('shares', 0) > 0]
     codes  = [h['ticker'] for h in active]
 
+    # Zero out snapshot fields on closed positions — refresh skips shares==0
+    # holdings, so without this they keep stale cv/pnl from the pre-close run.
+    for h in us['holdings']:
+        if h.get('shares', 0) == 0:
+            for k in ('current_value', 'pnl_abs', 'pnl_percent',
+                      'today_change', 'today_change_pct'):
+                if h.get(k):
+                    h[k] = 0
+
     print(f"\n{'═'*60}")
     print(f"  HK Portfolio Price Refresh   {now_hkt.strftime('%Y-%m-%d %H:%M HKT')}")
     print(f"  Holdings: {', '.join(codes)}")

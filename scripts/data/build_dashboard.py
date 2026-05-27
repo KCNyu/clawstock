@@ -174,17 +174,25 @@ def load_snapshots():
         pf = d.get('portfolios', {})
         us = pf.get('us_stocks', {})
         hk = pf.get('hk_stocks', {})
+        us_val = us.get('total_current_value', 0) or 0
+        hk_val = hk.get('total_current_value', 0) or 0
+        us_real = us.get('realized_pnl', 0) or 0
+        hk_real = hk.get('realized_pnl', 0) or 0
         results.append({
             'date': date,
             'file': fname,
-            'us_total_value': us.get('total_current_value', 0),
+            'us_total_value': us_val,
             'us_total_cost': us.get('total_cost', 0),
             'us_total_pnl': us.get('total_pnl', 0),
             'us_today_change': us.get('today_total_change', 0),
-            'hk_total_value': hk.get('total_current_value', 0),
+            'us_realized': us_real,
+            'us_equity': round(us_val + us_real, 2),
+            'hk_total_value': hk_val,
             'hk_total_cost': hk.get('total_cost', 0),
             'hk_total_pnl': hk.get('total_pnl', 0),
             'hk_today_change': hk.get('today_total_change', 0),
+            'hk_realized': hk_real,
+            'hk_equity': round(hk_val + hk_real, 2),
         })
     return results
 
@@ -275,8 +283,8 @@ def compute_delta(snapshots):
                 '30d_pct':   _pct_change(today_v, at(30, value_key)) if n >= 31 else None,
             }
         return {
-            'us': region('us_total_value'),
-            'hk': region('hk_total_value'),
+            'us': region('us_equity'),
+            'hk': region('hk_equity'),
         }
     except Exception as e:
         print(f'  warn: compute_delta failed: {e}', file=sys.stderr)
@@ -958,10 +966,10 @@ def compute_drawdown(snapshots):
             return round((t - b) / abs(b) * 100, 2)
 
         return {
-            'max_pct_30d_hk': max_drawdown_pct('hk_total_value'),
-            'max_pct_30d_us': max_drawdown_pct('us_total_value'),
-            'current_pct_hk': current_pct('hk_total_value'),
-            'current_pct_us': current_pct('us_total_value'),
+            'max_pct_30d_hk': max_drawdown_pct('hk_equity'),
+            'max_pct_30d_us': max_drawdown_pct('us_equity'),
+            'current_pct_hk': current_pct('hk_equity'),
+            'current_pct_us': current_pct('us_equity'),
         }
     except Exception as e:
         print(f'  warn: compute_drawdown failed: {e}', file=sys.stderr)

@@ -731,11 +731,23 @@ def main():
     print('[10/11] Risk metrics')
     risk = {}
     try:
-        subprocess.run(['python3', str(WS / 'scripts' / 'data' / 'portfolio_risk_metrics.py')],
-                       capture_output=True, text=True, timeout=120, check=False)
+        r = subprocess.run(['python3', str(WS / 'scripts' / 'data' / 'portfolio_risk_metrics.py')],
+                           capture_output=True, text=True, timeout=180, check=False)
+        if r.returncode != 0:
+            tail = (r.stderr or r.stdout or '')[-500:]
+            print(f'   ⚠ risk metrics exited {r.returncode}: ...{tail}')
         risk_path = WS / 'assets' / 'data' / 'risk.json'
         if risk_path.exists():
             risk = json.loads(risk_path.read_text())
+            # Freshness check — silent failures can leave a stale file in place
+            from datetime import datetime as _dt, timezone as _tz
+            gen = risk.get('generated_at', '')
+            try:
+                age_h = (_dt.now(_tz.utc) - _dt.fromisoformat(gen.replace('Z','+00:00'))).total_seconds() / 3600
+                if age_h > 26:  # daily refresh; >1 day = stale
+                    print(f'   ⚠ risk.json stale: generated_at={gen} ({age_h:.0f}h ago)')
+            except Exception:
+                pass
             alerts = risk.get('alerts', [])
             print(f'   US β={risk.get("us",{}).get("beta_spx","?")}, combined vol={risk.get("combined",{}).get("vol_30d_annualized","?")}, alerts={len(alerts)}')
             for a in alerts[:5]:

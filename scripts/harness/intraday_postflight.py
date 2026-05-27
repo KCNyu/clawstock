@@ -13,7 +13,9 @@ Validates:
   4. 若 preflight should_alert=true：报告必须提到至少一个异动票或 alert_reason
   5. 无敷衍 phrases
 
-Note: Mode 7 does NOT git commit (per SKILL.md; cron runs */30 too noisy to commit each time).
+Note: Mode 7 does NOT commit portfolio.json (cron runs */30 too noisy to commit
+each refresh). But it DOES rebuild + commit dashboard.json so the public Pages
+front-end shows the latest 30-min prices instead of stale brief/report snapshots.
 """
 
 import argparse
@@ -26,6 +28,10 @@ sys.path.insert(0, str(Path(__file__).parent))
 from _harness_common import (  # noqa: E402
     categorize_issues,
     check_raw_tables_verbatim,
+    git_cmd,
+    push_with_rebase_retry,
+    rebuild_dashboard,
+    snapshot_date_for_now,
     validate_forbidden_phrases,
 )
 
@@ -126,6 +132,27 @@ def main():
                          + '\n'.join('- ' + i for i in issues[:4])
                          + '\n\n')
 
+    dashboard_published = False
+    if status in ('pass', 'warn'):
+        try:
+            ok, _ = rebuild_dashboard()
+            if ok:
+                paths = ['assets/data/dashboard.json']
+                snap = snapshot_date_for_now()
+                if snap:
+                    paths.append(f'memory/snapshots/{snap}.json')
+                git_cmd('add', '--', *paths)
+                # git diff --cached --quiet returns 0 when there is NO diff
+                clean, _ = git_cmd('diff', '--cached', '--quiet', '--', *paths)
+                if not clean:
+                    msg = f"dashboard: intraday refresh ({args.market} {datetime.now().strftime('%H:%M HKT')})"
+                    c_ok, _ = git_cmd('commit', '-m', msg, '--', *paths)
+                    if c_ok:
+                        push_ok, _ = push_with_rebase_retry()
+                        dashboard_published = push_ok
+        except Exception as e:
+            print(f'warn: dashboard auto-publish failed: {e}', file=sys.stderr)
+
     result = {
         'status':        status,
         'market':        args.market,
@@ -133,6 +160,7 @@ def main():
         'issues':        issues,
         'wechat_prefix': wechat_prefix,
         'n_chars':       len(text),
+        'dashboard_published': dashboard_published,
     }
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if status == 'pass' else (1 if status == 'warn' else 2)
