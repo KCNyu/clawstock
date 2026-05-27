@@ -1179,7 +1179,7 @@ layout: null
 
     <div class="card">
       <h3>Equity Curve · USD-eq</h3>
-      <p class="chart-hint">日终总资产折成 USD；虚线 = 累计成本基础；红色填充 = 历史最高点回撤。<br>简单读法：实线在虚线之上 = 整体浮盈；红色越深 = 回撤越大。</p>
+      <p class="chart-hint">蓝实线 = 日终总资产 USD-eq；灰虚线 = 累计成本基础；<b>紫线 = SPY 等值</b>（"当初同等美元 all-in SPY 到今天的账面"，非美股交易日延用前值）；红色填充 = 历史峰值回撤。<br>读法：蓝线在紫线上方 = 跑赢大盘；红色越深 = 回撤越大。</p>
       <div id="chart-equity" class="chart-box"></div>
     </div>
 
@@ -2308,11 +2308,16 @@ layout: null
       const c = benchByDate.get(dates[i]);
       if (c != null) { baselineIdx = i; baselineBenchClose = c; break; }
     }
+    // Forward-fill: SPY only trades on US business days; portfolio snapshots include
+    // weekends/holidays. Carry the last known close forward so the overlay stays
+    // continuous instead of dropping out on Sat/Sun/holiday/today-pre-close.
+    let lastBenchClose = null;
     const benchUsd = dates.map((d, i) => {
-      if (baselineIdx < 0 || i < baselineIdx) return null;
+      if (baselineIdx < 0 || i < baselineIdx || !baselineBenchClose) return null;
       const c = benchByDate.get(d);
-      if (c == null || !baselineBenchClose) return null;
-      return Math.round(bookUsd[baselineIdx] * (c / baselineBenchClose) * 100) / 100;
+      if (c != null) lastBenchClose = c;
+      if (lastBenchClose == null) return null;
+      return Math.round(bookUsd[baselineIdx] * (lastBenchClose / baselineBenchClose) * 100) / 100;
     });
 
     const accent = getCSS("--accent") || "#5b8def";
@@ -2374,7 +2379,7 @@ layout: null
         { name: "SPY 等值", type: "line", data: benchUsd, yAxisIndex: 0,
           itemStyle: { color: benchColor },
           lineStyle: { width: 1.4, color: benchColor, opacity: 0.85 },
-          symbol: "none", smooth: true, z: 2 },
+          symbol: "none", smooth: true, z: 2, connectNulls: true },
         { name: "回撤", type: "line", data: ddPct, yAxisIndex: 1,
           areaStyle: { color: red, opacity: 0.14 }, lineStyle: { color: red, opacity: 0.55, width: 1 },
           symbol: "none", smooth: true, z: 1 },
