@@ -1,0 +1,113 @@
+{
+  "date": "2026-05-27",
+  "fx_rate_usdhkd": 7.8,
+  "fx_source": "HARDCODED_FALLBACK",
+  "regime": {
+    "us": "volatile-mixed",
+    "hk": "trending-down-rebound"
+  },
+  "book": {
+    "usd_total_pnl": -485.78,
+    "hkd_total_pnl": -3789.06,
+    "hk_leg_hkd": -6579.04,
+    "us_leg_usd": 357.69
+  },
+  "actions": [
+    {
+      "ticker": "ROBN",
+      "bucket": "cut",
+      "size_pct": 50,
+      "size_shares": 20,
+      "trigger_type": "open",
+      "trigger_price": null,
+      "trigger_condition": "开盘任意价",
+      "confidence": 0.75,
+      "rationale": "HOOD thesis 证伪；-24.2% 浮亏；杠杆 decay 持续侵蚀；连续三期 cut 未执行 — 执行断层必须解决"
+    },
+    {
+      "ticker": "PLTU",
+      "bucket": "cut",
+      "size_pct": 50,
+      "size_shares": 7,
+      "trigger_type": "open",
+      "trigger_price": null,
+      "trigger_condition": "开盘任意价",
+      "confidence": 0.72,
+      "rationale": "连续四期 trigger 未触发；-10.3% 浮亏 + 2x decay；下行趋势未止；活死人仓位必须减半"
+    },
+    {
+      "ticker": "07226",
+      "bucket": "trim_on_rebound",
+      "size_pct": 32,
+      "size_shares": 2000,
+      "trigger_type": "price_above",
+      "trigger_price": 4.10,
+      "trigger_condition": "日内高点 ≥ 4.10",
+      "confidence": 0.62,
+      "rationale": "HHI 0.414 🔴 危险集中；杠杆 decay 不可逆；HSTECH 反弹中 2x 放大合理但需降集中度"
+    },
+    {
+      "ticker": "SOXL",
+      "bucket": "trim_on_rebound",
+      "size_pct": 50,
+      "size_shares": 1,
+      "trigger_type": "price_above",
+      "trigger_price": 250,
+      "trigger_condition": "日内高点 ≥ 250",
+      "confidence": 0.65,
+      "rationale": "+145.0% 浮盈极厚；+18.13% 过热；GDP 前锁利；半导体 upcycle 延续但杠杆放大回撤风险"
+    },
+    {
+      "ticker": "00100",
+      "bucket": "hold_and_watch",
+      "size_pct": 0,
+      "size_shares": 0,
+      "trigger_type": "price_below",
+      "trigger_price": 700,
+      "trigger_condition": "日内低点 ≤ 700 则止损",
+      "confidence": 0.55,
+      "rationale": "连续两天 +0.07% vs 智谱 +10% alpha 衰退；但 6/8 恒科纳入催化在即；不砍在催化前但设 700 止损"
+    },
+    {
+      "ticker": "RKLB",
+      "bucket": "hold_and_watch",
+      "size_pct": 0,
+      "size_shares": 0,
+      "trigger_type": "price_below",
+      "trigger_price": 120,
+      "trigger_condition": "日内低点 ≤ 120 则止损",
+      "confidence": 0.70,
+      "rationale": "+101.2% 浮盈 + Neutron Q4 催化 + $2.2B backlog；但远超分析师 PT $105-120 需防回调"
+    },
+    {
+      "ticker": "CRCL",
+      "bucket": "add_only_on_trigger",
+      "size_pct": 0,
+      "size_shares": 1,
+      "trigger_type": "price_below",
+      "trigger_price": 95,
+      "trigger_condition": "日内低点 ≤ 95 则加仓",
+      "confidence": 0.50,
+      "rationale": "-7.97% 暴跌后 USDC 基本面仍强（$77B +28%，首超 Tether）；但 insider selling + 利率敏感；signal 分裂"
+    },
+    {
+      "ticker": "MSFU",
+      "bucket": "hold_and_watch",
+      "size_pct": 0,
+      "size_shares": 0,
+      "trigger_type": "price_below",
+      "trigger_price": 26,
+      "trigger_condition": "日内低点 ≤ 26 则止损",
+      "confidence": 0.65,
+      "rationale": "MSFT Q3 beat（rev $82.9B +18%，Azure +29%，Copilot 20M seats）；-2.5% 中性"
+    }
+  ],
+  "watch_levels": {
+    "hstech_breakdown": 4800,
+    "00100_rotation_trigger": 700,
+    "soxl_trim_trigger": 250,
+    "crcl_add_trigger": 95,
+    "book_force_derisk_usd": -1500,
+    "gdp_5_28": "Q1 2nd estimate — miss → full book derisk; beat → risk-on"
+  }
+}
