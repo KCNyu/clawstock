@@ -521,6 +521,15 @@ def update_us_portfolio(
     all_active      = [h['ticker'] for h in active_holdings]
     tickers         = tickers_override if tickers_override else all_active
 
+    # Zero out snapshot fields on closed positions — refresh skips shares==0
+    # holdings, so without this they keep stale cv/pnl from the pre-close run.
+    for h in us['holdings']:
+        if h.get('shares', 0) == 0:
+            for k in ('current_value', 'pnl_abs', 'pnl_percent',
+                      'today_change', 'today_change_pct'):
+                if h.get(k):
+                    h[k] = 0
+
     # Timezone helpers
     et_tz  = timezone(timedelta(hours=-4))   # EDT; adjust to -5 for EST
     hkt_tz = timezone(timedelta(hours=8))
