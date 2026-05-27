@@ -623,8 +623,13 @@ layout: null
   }
 
   /* Drawdown Recovery (Reflect) */
-  .dd-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
-  @media (min-width: 768px) { .dd-grid { grid-template-columns: 1fr 1fr; } }
+  /* minmax(0, 1fr) prevents wide stat cells from forcing the card past its column.
+   * On desktop the dashboard runs a 3-col layout (≥1024px) so the Reflect column
+   * is only ~420px wide — too narrow for a 2-col DD grid; collapse back to single. */
+  .dd-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .dd-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  }
   .dd-region {
     padding: 14px; background: var(--card-2); border-radius: var(--radius-sm);
     border-left: 3px solid var(--border);
@@ -1707,7 +1712,7 @@ layout: null
       const inBook = (s.tickers_in_book || []).join(", ");
       return `<div class="sector-block">
         <div class="theme">${escape(s.theme)} ${inBook ? `<span class="in-book">[持仓: ${escape(inBook)}]</span>` : ""}</div>
-        <div class="movers">${movers || '<span class="empty-state" style="padding:4px">no top movers</span>'}</div>
+        <div class="movers">${movers || '<span class="muted" style="font-size:11px;opacity:0.55">— LLM 未填 top movers</span>'}</div>
         ${selfRows ? `<div class="self">${selfRows}</div>` : ""}
       </div>`;
     }).join("");
