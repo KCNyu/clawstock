@@ -109,8 +109,14 @@ layout: null
     min-height: 36px; min-width: 36px; padding: 0 10px;
     font-size: 14px; cursor: pointer;
     display: inline-flex; align-items: center; gap: 4px;
+    transition: background 0.15s, color 0.15s, border-color 0.3s;
   }
   .refresh-btn:active { background: var(--card-2); }
+  .refresh-btn.is-loading .ic { animation: spin 0.8s linear infinite; }
+  .refresh-btn.ok-flash { border-color: var(--green); }
+  .refresh-btn.fresh-flash { border-color: var(--accent); color: var(--accent); }
+  .refresh-btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+  @keyframes spin { to { transform: rotate(360deg); } }
   .topbar-actions { display: inline-flex; align-items: center; gap: 8px; }
   .nav-link {
     color: var(--text-dim); text-decoration: none; font-size: 13px;
@@ -799,8 +805,8 @@ layout: null
       <a class="nav-link" href="briefs.html">Briefs</a>
       <a class="nav-link" href="https://github.com/KCNyu/clawock" target="_blank" rel="noopener">GitHub</a>
       <button class="refresh-btn" id="refresh-btn" type="button" aria-label="Refresh data">
-        <span aria-hidden="true">&#x21bb;</span>
-        <span>Refresh</span>
+        <span class="ic" aria-hidden="true">&#x21bb;</span>
+        <span class="lbl">Refresh</span>
       </button>
     </div>
   </div>
@@ -1344,17 +1350,87 @@ layout: null
   // =========================================================
   // Data load
   // =========================================================
-  async function loadData() {
+  // Tracks the last `generated_at` we successfully rendered so we can tell the
+  // user whether a refresh actually pulled new data vs. they got the same JSON.
+  let LAST_LOADED_AT = null;
+  let AUTO_REFRESH_TIMER = null;
+
+  function _formatRelative(iso) {
+    if (!iso) return "—";
+    const t = new Date(iso);
+    if (isNaN(t)) return iso;
+    const secs = Math.max(0, Math.round((Date.now() - t.getTime()) / 1000));
+    if (secs < 60) return "刚刚";
+    if (secs < 3600) return `${Math.round(secs / 60)} 分钟前`;
+    if (secs < 86400) return `${Math.round(secs / 3600)} 小时前`;
+    return `${Math.round(secs / 86400)} 天前`;
+  }
+
+  function _updateAgeLabel() {
+    const el = document.getElementById("last-updated");
+    if (!el || !DATA) return;
+    const gen = DATA.generated_at || DATA.last_updated;
+    const rel = _formatRelative(gen);
+    // Two-line form: relative time + absolute timestamp tail
+    const absTail = gen && gen.length > 16 ? gen.slice(11, 16) + " UTC" : (gen || "");
+    el.textContent = `· 生成于 ${rel} · ${absTail}`;
+    el.title = gen || "";
+  }
+
+  async function loadData(triggeredByUser = false) {
+    const btn = document.getElementById("refresh-btn");
+    if (btn) btn.classList.add("is-loading");
+    if (triggeredByUser && btn) btn.setAttribute("disabled", "true");
     try {
       const url = "assets/data/dashboard.json?t=" + Date.now();
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error("HTTP " + res.status);
-      DATA = await res.json();
+      const json = await res.json();
+      const newAt = json.generated_at;
+      const hasNew = newAt && newAt !== LAST_LOADED_AT;
+      DATA = json;
       render();
+      _updateAgeLabel();
+      if (btn) {
+        btn.classList.remove("is-loading");
+        if (triggeredByUser) {
+          btn.removeAttribute("disabled");
+          btn.classList.add(hasNew ? "fresh-flash" : "ok-flash");
+          const lbl = btn.querySelector(".lbl");
+          if (lbl) {
+            const prev = lbl.textContent;
+            lbl.textContent = hasNew ? "已更新 ✓" : "已是最新";
+            setTimeout(() => {
+              lbl.textContent = prev;
+              btn.classList.remove("fresh-flash", "ok-flash");
+            }, 1800);
+          }
+        } else if (hasNew) {
+          // Quiet auto-refresh: just a soft border tint, no label flicker
+          btn.classList.add("fresh-flash");
+          setTimeout(() => btn.classList.remove("fresh-flash"), 1500);
+        }
+      }
+      LAST_LOADED_AT = newAt;
     } catch (e) {
       console.error("Failed to load dashboard.json:", e);
       document.getElementById("last-updated").textContent = "load failed";
+      if (btn) {
+        btn.classList.remove("is-loading");
+        btn.removeAttribute("disabled");
+      }
     }
+  }
+
+  function _scheduleAutoRefresh() {
+    // Re-pull dashboard.json every 60 s in the background so the user doesn't
+    // have to keep clicking. Pauses while the tab is hidden to be polite.
+    if (AUTO_REFRESH_TIMER) clearInterval(AUTO_REFRESH_TIMER);
+    AUTO_REFRESH_TIMER = setInterval(() => {
+      if (document.visibilityState !== "hidden") loadData(false);
+    }, 60000);
+    // Refresh "age" label more often than the data — keeps "X 分钟前" honest
+    setInterval(_updateAgeLabel, 15000);
   }
 
   // =========================================================
@@ -1392,12 +1468,15 @@ layout: null
     renderRealizedChart();
     renderDailyPnlChart();
     renderPlanReview();
+    renderPlanTimeline();
     renderCalibByTrigger();
   }
 
   function renderHeader() {
-    const t = safe(DATA, "last_updated") || safe(DATA, "generated_at") || DASH;
-    document.getElementById("last-updated").textContent = "· " + t;
+    // Header age label is owned by loadData() / _updateAgeLabel — they keep it
+    // synced with the relative-time formatter even between refreshes. Calling
+    // _updateAgeLabel here just covers the first render before LAST_LOADED_AT is set.
+    _updateAgeLabel();
   }
 
   // Display order for the Market Snapshot card.
@@ -2216,15 +2295,36 @@ layout: null
       return peak > 0 ? Math.round(((v - peak) / peak) * 10000) / 100 : 0;
     });
 
+    // Benchmark overlay — "what if I bought SPY at the same dollar amount on day 0?"
+    // Normalize so benchmark[0] === bookUsd[0], then scale by bench_close[i] / bench_close[0].
+    // This puts the benchmark line in the same USD axis as the portfolio so the visual gap
+    // IS the cumulative alpha (or beta drag).
+    const bench = safe(DATA, "benchmark", "series", "SPY") || [];
+    const benchByDate = new Map(bench.map(b => [b.date, b.close]));
+    // Find first portfolio date that also has a benchmark close (skip leading nulls)
+    let baselineIdx = -1, baselineBenchClose = null;
+    for (let i = 0; i < dates.length; i++) {
+      if (bookUsd[i] == null) continue;
+      const c = benchByDate.get(dates[i]);
+      if (c != null) { baselineIdx = i; baselineBenchClose = c; break; }
+    }
+    const benchUsd = dates.map((d, i) => {
+      if (baselineIdx < 0 || i < baselineIdx) return null;
+      const c = benchByDate.get(d);
+      if (c == null || !baselineBenchClose) return null;
+      return Math.round(bookUsd[baselineIdx] * (c / baselineBenchClose) * 100) / 100;
+    });
+
     const accent = getCSS("--accent") || "#5b8def";
     const red = getCSS("--red") || "#f87171";
     const dim = getCSS("--text-dim") || "#9aa4b8";
+    const benchColor = getCSS("--accent-2") || "#a78bfa";
 
     const isMobile = window.innerWidth < 1024;
     const opt = {
       ...baseChartOpts(),
       grid: { left: isMobile ? 56 : 72, right: isMobile ? 48 : 68, top: 34, bottom: 36 },
-      legend: { data: ["总资产", "成本基础", "回撤"], textStyle: { color: chartTextColor(), fontSize: 10 }, top: 4, itemGap: 10 },
+      legend: { data: ["总资产", "成本基础", "SPY 等值", "回撤"], textStyle: { color: chartTextColor(), fontSize: 10 }, top: 4, itemGap: 10 },
       tooltip: {
         trigger: "axis", axisPointer: { type: "cross" },
         formatter: (params) => {
@@ -2271,6 +2371,10 @@ layout: null
         { name: "成本基础", type: "line", data: costUsd, yAxisIndex: 0,
           itemStyle: { color: dim }, lineStyle: { width: 1, type: "dashed", color: dim },
           symbol: "none", z: 2 },
+        { name: "SPY 等值", type: "line", data: benchUsd, yAxisIndex: 0,
+          itemStyle: { color: benchColor },
+          lineStyle: { width: 1.4, color: benchColor, opacity: 0.85 },
+          symbol: "none", smooth: true, z: 2 },
         { name: "回撤", type: "line", data: ddPct, yAxisIndex: 1,
           areaStyle: { color: red, opacity: 0.14 }, lineStyle: { color: red, opacity: 0.55, width: 1 },
           symbol: "none", smooth: true, z: 1 },
@@ -2491,6 +2595,81 @@ layout: null
       ],
     };
     charts.realized.setOption(opt, true);
+  }
+
+  // Bucket → human-readable Chinese label (consistent with brief / wechat output)
+  const BUCKET_LABEL = {
+    cut: "减仓",
+    trim_on_rebound: "反弹减仓",
+    hold_and_watch: "观望",
+    t_only: "短 T",
+    add_only_on_trigger: "触发加仓",
+    watch: "观望",
+  };
+
+  function renderPlanTimeline() {
+    const wrap = document.getElementById("plan-timeline");
+    if (!wrap) return;
+    const rows = safe(DATA, "plan_timeline") || [];
+    if (!rows.length) {
+      wrap.innerHTML = '<div class="empty-state">No plan timeline yet.</div>';
+      return;
+    }
+
+    // Quick lookup: ticker → region (us/hk) from the holdings list
+    const regionOf = new Map();
+    (safe(DATA, "holdings", "us") || []).forEach(h => regionOf.set(h.ticker, "us"));
+    (safe(DATA, "holdings", "hk") || []).forEach(h => regionOf.set(h.ticker, "hk"));
+
+    wrap.innerHTML = rows.map(r => {
+      const outcome = r.outcome || "pending";
+      const conf = r.confidence != null ? Math.round(r.confidence * 100) + "%" : "—";
+      const region = regionOf.get(r.ticker) || "";
+      const bucketTxt = BUCKET_LABEL[r.bucket] || r.bucket || "—";
+      const trigParts = [];
+      if (r.trigger_type) trigParts.push(r.trigger_type);
+      if (r.trigger_condition) trigParts.push(r.trigger_condition);
+      else if (r.trigger_price != null) trigParts.push("@ " + r.trigger_price);
+      const sizeParts = [];
+      if (r.size_pct != null) sizeParts.push(r.size_pct + "%");
+      if (r.size_shares != null) sizeParts.push(r.size_shares + " 股");
+      const sizeTxt = sizeParts.join(" · ");
+
+      const followed = (r.followed || "unknown").toLowerCase();
+      const followedTag = followed === "true"
+        ? `<span class="pt-followed-true" title="git history detected execution">✓ followed</span>`
+        : followed === "false"
+        ? `<span class="pt-followed-false" title="git history shows no follow-through">○ not followed</span>`
+        : `<span class="pt-followed-false">— unknown</span>`;
+
+      const pnlTxt = r.pnl_5d != null
+        ? `<span class="pt-pnl ${pnlClass(r.pnl_5d)}">${fmtPct(r.pnl_5d, 1)}</span>`
+        : "";
+
+      const rationale = (r.rationale || "").trim();
+      const rationaleHtml = rationale
+        ? `<div class="pt-rationale">${escapeHtml(rationale)}</div>`
+        : "";
+
+      return `
+        <div class="pt-row outcome-${outcome}">
+          <div class="pt-head">
+            <span class="pt-date">${escapeHtml(r.date || "")}</span>
+            <span class="pt-ticker">${escapeHtml(r.ticker || "—")}</span>
+            ${region ? `<span class="pt-region">${region.toUpperCase()}</span>` : ""}
+          </div>
+          <div class="pt-body">
+            <div class="pt-action">${escapeHtml(bucketTxt)}${sizeTxt ? ` · <span class="muted" style="font-weight:500">${escapeHtml(sizeTxt)}</span>` : ""}</div>
+            ${trigParts.length ? `<div class="pt-trigger">trigger: ${escapeHtml(trigParts.join(" · "))}</div>` : ""}
+            ${rationaleHtml}
+          </div>
+          <div class="pt-side">
+            <span class="pt-conf">${conf}</span>
+            ${followedTag}
+            ${pnlTxt}
+          </div>
+        </div>`;
+    }).join("");
   }
 
   function renderPlanReview() {
@@ -2954,7 +3133,7 @@ layout: null
     }
   });
 
-  document.getElementById("refresh-btn").addEventListener("click", () => loadData());
+  document.getElementById("refresh-btn").addEventListener("click", () => loadData(true));
 
   // =========================================================
   // Boot — wait for ECharts to load (it's deferred)
@@ -2965,6 +3144,7 @@ layout: null
       return;
     }
     loadData();
+    _scheduleAutoRefresh();
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", boot);

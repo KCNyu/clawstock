@@ -766,6 +766,22 @@ def main():
         print(f'   ⚠ catalysts step failed: {e}')
         issues.append(f'catalysts step exception: {type(e).__name__}')
 
+    # Benchmark history (SPY + HSI/HSTECH) for the Equity Curve overlay.
+    # Refreshed once per day at brief time; consumed by build_dashboard.
+    print('[12/12] Fetch benchmark history')
+    try:
+        bm_out, bm_ok = _run('scripts/data/fetch_benchmark_history.py', timeout=30)
+        if not bm_ok:
+            print(f'   ⚠ benchmark fetch failed: {bm_out[-150:]}')
+            issues.append('benchmark history fetch failed')
+        else:
+            # Surface a one-line summary
+            tail = bm_out.strip().splitlines()[-1] if bm_out.strip() else ''
+            print(f'   {tail}')
+    except Exception as e:
+        print(f'   ⚠ benchmark step failed: {e}')
+        issues.append(f'benchmark step exception: {type(e).__name__}')
+
     # Write context.json
     context = {
         'generated_at':  datetime.now(timezone(timedelta(hours=8))).isoformat(),

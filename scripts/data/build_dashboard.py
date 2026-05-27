@@ -1301,6 +1301,7 @@ def main():
         out[key] = None
 
     _embed('catalysts', 'catalysts.json')              # fetch_catalysts.py + brief preflight [11/11]
+    _embed('benchmark', 'benchmark.json')              # fetch_benchmark_history.py: SPY/HSI/HSTECH daily close
     _embed('us_news_digest', 'us_news_digest.json')    # GH Action news-digest.yml (xiaomi)
     _embed('sentiment', 'sentiment.json')              # GH Action sentiment-scan.yml
     _embed('macro', 'macro.json')                      # GH Action macro-scan.yml
