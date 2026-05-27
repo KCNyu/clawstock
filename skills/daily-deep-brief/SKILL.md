@@ -62,6 +62,8 @@ context.json 关键字段：
 - `concentration` — `{hk: {hhi, top2_pct, weights, verdict}, us: {...}}`
 - `edgar_summaries` — 单股最新 quarter 财报关键数字
 - `retrospective` — 上次 plan.json 每个 action 的触发结果 + 模拟 P&L
+- `macro` — VIX / DXY / 10Y / F&G / HSI / HSTECH / SPX / NASDAQ + Fed press top 3（GH Action 每个工作日 23:30 UTC 刷）
+- `sentiment` — 每个持仓票的 Reddit 提及数 + Reddit top 3 + Google News top 3（无 signal 的票已被剔）
 
 ### Step 3: Swarm 分析（你的创造性工作）
 
@@ -258,6 +260,52 @@ context.json 关键字段：
 
 **如果出现 ⚠️ 切换信号 → Tier 3 Judge 给 rotation trigger**（例："00100 反弹至 800 减 20 股，换入 0020 商汤")。
 
+#### ▎大盘速读 (REQUIRED if `context.macro` 存在且 age_hours ≤ 36)
+
+从 `context.macro` 抓数，写**一段 5 行以内**的市场 context（不是论文）。每行 1 个指标 + 1 句"对我持仓意味什么"。
+
+格式：
+
+```
+▎大盘速读
+
+- VIX 17.0 (+2.5%) · F&G 60.8 greed → 风险偏好仍在但开始降温, leveraged 仓位 (SOXL/RKLX/7226) 注意
+- SPX 7519 (+0.1%) / NDX 30001 (+0.5%) → 美股小幅向上, 不构成 regime 切换
+- HSI 25612 (+0.05%) / HSTECH 4989 (+0.85%) → HSTECH 4900 支撑确认, 07226 杠杆暴露 OK
+- 10Y yield 4.49% (-1.4%) · DXY 99.1 → 利率回落小幅利好成长股
+- Fed 最新动态: {fed_press[0].title 截断到 80 字符}
+```
+
+规则：
+- macro 数据 age_hours > 36 时整段写"⚠️ macro 数据 stale ({age}h), 跳过本段"；postflight 不 fail
+- 每行末尾 → 后必须是**对当前持仓**的具体含义（不是教科书定义）
+- Fed press 段，如果今日无新发布或与利率无关（如人事任命）可省略最后一行
+
+#### ▎社交舆情速读 (REQUIRED if `context.sentiment.tickers` 非空)
+
+从 `context.sentiment.tickers` 抓数，**只列有信号的票**（context 已剔掉 0 mention + 0 news 的）。
+
+格式：
+
+```
+▎社交舆情速读
+
+| 票 | Reddit 7d | 新闻关键词 | 信号判断 |
+|---|---|---|---|
+| RKLB | 0 mentions | "$90M Space Force deal" "52-week high" | 利好催化已在价 — 观望或减一档 |
+| CRCL | 0 mentions | "crypto cool" "Q1 miss" "insider sell" | ⚠️ 多个利空叠加 — 严守止损 |
+| SOXL | 12 mentions ↑ | "TSMC capex beat" | 散户温度上升 — 杠杆顺势可持 |
+
+异常关注（必带）:
+- {ticker}: Reddit mention 突然飙升或新闻里出现 "miss / SEC / probe / fraud / lawsuit / downgrade" 关键词
+```
+
+规则：
+- 新闻关键词只抽 2-3 个动词/名词短语，不要复制全标题
+- 信号判断必须连到**你今天对这个票的 action bucket**（一致 / 矛盾要点出来）
+- "异常关注"段：扫所有 ticker 的 news_top + reddit_top 文本，命中负面关键词 (`miss/SEC/probe/fraud/lawsuit/downgrade/halt/recall/short report`) 必列；无命中写"无"
+- sentiment 数据 age_hours > 36 整段写"⚠️ sentiment 数据 stale, 跳过本段"
+
 #### ▎Confidence 自校准 (REQUIRED if `self_calibration.samples >= 5`)
 
 context.json 有 `self_calibration` 字段含 Brier 30d + 每个 bucket 实际胜率 + 信心分桶实际率。
@@ -307,6 +355,8 @@ kcn 标记方式：`python3 scripts/data/mark_followed.py YYYY-MM-DD TICKER BUCK
 - `## Tier 2` Bull vs Bear
 - `## Tier 3` Aggressive/Conservative/Neutral + Judge
 - `## ▎同行扫描` peer rotation matrix (uses `peer_scan` from context)
+- `## ▎大盘速读` macro 一句话 5 行内 (uses `macro` from context; 数据 stale > 36h 时跳过)
+- `## ▎社交舆情速读` per-ticker Reddit + news (uses `sentiment` from context; 无信号票自动剔)
 - `## Confidence` 表
 - `## ▎Confidence 校准` self-calibration (uses `self_calibration` from context, if samples ≥ 5)
 - `## Next-Session` plan

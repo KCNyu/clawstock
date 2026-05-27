@@ -2,11 +2,15 @@
 """
 gh_action_news_digest.py — daily 21:00 HKT US news digest via Xiaomi.
 
-Fetches Finnhub company-news for 7 active US holdings (past 48h),
-calls Xiaomi to distill into actionable bullets, writes
-assets/data/us_news_digest.json.
+Fetches news for 7 active US holdings (past 48h), calls Xiaomi to distill into
+actionable bullets, writes assets/data/us_news_digest.json.
 
-Env: FINNHUB_API_KEY + XIAOMI_API_KEY required
+News source chain (per-ticker fallback):
+  1. Finnhub company-news (rich: headline + summary + source attribution)
+  2. Google News RSS (free, no key; title-only; used when Finnhub key absent
+     or returns empty for a ticker)
+
+Env: XIAOMI_API_KEY required; FINNHUB_API_KEY optional (digest still runs).
 """
 import json
 import os
@@ -18,38 +22,68 @@ import requests
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from xiaomi_llm import chat
+from fetch_sentiment import fetch_google_news
+
+
+def _fetch_finnhub(ticker, since, until, key):
+    """Returns list of dicts (may be empty) or None on error."""
+    try:
+        r = requests.get(
+            'https://finnhub.io/api/v1/company-news',
+            params={'symbol': ticker, 'from': since, 'to': until, 'token': key},
+            timeout=15,
+        )
+        if r.status_code != 200:
+            return None
+        items = r.json() or []
+        return [
+            {
+                'headline': it.get('headline', '')[:200],
+                'summary':  (it.get('summary', '') or '')[:400],
+                'datetime': it.get('datetime'),
+                'source':   it.get('source', ''),
+                'origin':   'finnhub',
+            }
+            for it in items[:5]
+        ]
+    except Exception:
+        return None
+
+
+def _fetch_gnews(ticker):
+    """Google News RSS fallback. Title-only; no summary."""
+    items = fetch_google_news(f'{ticker} stock', hl='en-US', gl='US', limit=5)
+    return [
+        {
+            'headline': it.get('title', '')[:200],
+            'summary':  '',  # GNews RSS doesn't carry body
+            'datetime': None,  # pubDate string available via it['published'] but format varies
+            'source':   it.get('source', '') or 'Google News',
+            'origin':   'gnews-rss',
+        }
+        for it in items
+    ]
 
 
 def fetch_news(tickers, since_days=2):
     finnhub_key = os.environ.get('FINNHUB_API_KEY')
-    if not finnhub_key:
-        print('FINNHUB_API_KEY not set — abort', file=sys.stderr)
-        sys.exit(1)
     today = date.today()
     since = (today - timedelta(days=since_days)).isoformat()
     until = today.isoformat()
     out = {}
     for t in tickers:
-        try:
-            r = requests.get(
-                'https://finnhub.io/api/v1/company-news',
-                params={'symbol': t, 'from': since, 'to': until, 'token': finnhub_key},
-                timeout=15,
-            )
-            items = r.json() if r.status_code == 200 else []
-            out[t] = [
-                {
-                    'headline': it.get('headline', '')[:200],
-                    'summary': (it.get('summary', '') or '')[:400],
-                    'datetime': it.get('datetime'),
-                    'source': it.get('source', ''),
-                }
-                for it in (items or [])[:5]
-            ]
-            print(f'  {t}: {len(out[t])} news')
-        except Exception as e:
-            out[t] = []
-            print(f'  {t}: error {e}', file=sys.stderr)
+        items = None
+        if finnhub_key:
+            items = _fetch_finnhub(t, since, until, finnhub_key)
+        # Fall back to GNews if Finnhub absent, errored, or returned empty list
+        if not items:
+            why = 'no FINNHUB_KEY' if not finnhub_key else ('error' if items is None else 'empty')
+            gn = _fetch_gnews(t)
+            print(f'  {t}: 0 finnhub ({why}) → {len(gn)} gnews')
+            out[t] = gn
+        else:
+            print(f'  {t}: {len(items)} finnhub')
+            out[t] = items
     return out
 
 
@@ -66,7 +100,8 @@ def main():
     system = "You are Rick, kcn's stock analyst. Distill US holding news into actionable bullets."
 
     user = (
-        "下面 7 个 US holding 过去 48h 的 Finnhub news. 提炼成 markdown digest:\n\n"
+        "下面 US holdings 过去 48h 新闻 (来源 Finnhub 或 Google News RSS, "
+        "每条 `origin` 字段标注). 提炼成 markdown digest:\n\n"
         "## 格式 (严格遵守)\n\n"
         "### Top 3-5 移动信号 (跨 ticker 排序)\n"
         "- TICKER: 1 行核心 fact + 1 行 implication for kcn's position\n"
@@ -79,6 +114,7 @@ def main():
         "- 总长 ≤ 500 字 (digest 不是 brief)\n"
         "- 重复 / 营销稿 / 通用市场新闻 -> 忽略\n"
         "- 优先 ticker-specific catalyst (财报 / 合约 / 监管 / 大单)\n"
+        "- gnews-rss 项只有标题没 summary, 要靠标题关键词判断, 不要编造细节\n"
         "- 不许说 \"需要进一步研究\" 这种废话\n"
         "- 直接出 markdown\n\n"
         f"Raw news (JSON):\n```json\n{json.dumps(raw, ensure_ascii=False)[:25000]}\n```\n"
@@ -87,12 +123,18 @@ def main():
     # News digest: short output but enable thinking helps prioritize signal vs noise
     digest = chat(system=system, user=user, max_tokens=32000, temperature=0.5)
 
+    # Per-ticker provenance so dashboard can show "fallback used"
+    source_per_ticker = {
+        t: (items[0]['origin'] if items else 'none')
+        for t, items in raw.items()
+    }
     out = {
         'generated_at': datetime.now().isoformat(),
         'lookback_hours': 48,
         'tickers': tickers,
         'digest_markdown': digest.strip(),
         'raw_news_counts': {t: len(v) for t, v in raw.items()},
+        'news_source_per_ticker': source_per_ticker,
     }
     os.makedirs('assets/data', exist_ok=True)
     with open('assets/data/us_news_digest.json', 'w') as f:

@@ -18,7 +18,9 @@ Steps:
   9. Self-calibration
  10. Risk metrics
  11. Catalyst calendar (next 14d earnings + FOMC + macro)
- 12. Write memory/.tmp/brief-context-{date}.json
+ 12. Benchmark history (SPY + HSI/HSTECH) for equity curve overlay
+ 13. Load macro + sentiment snapshots (read assets/data/{macro,sentiment}.json)
+ 14. Write memory/.tmp/brief-context-{date}.json
 
 Output (stdout): step-by-step progress; final summary with issue count.
 Exit: 0 if no issues, 1 if any data leg failed.
@@ -622,6 +624,110 @@ def compute_self_calibration():
     }
 
 
+def load_macro_and_sentiment(today, issues):
+    """Read GH-Action-produced macro.json + sentiment.json; trim to LLM-friendly subset.
+
+    Files are written daily by sentiment-scan.yml / macro-scan.yml. Stale (>36h)
+    or missing files emit a non-fatal warn — brief still runs, just without these
+    sections.
+
+    Returns: (macro_trim, sentiment_trim) — either may be {} on miss.
+    """
+    macro_path = WS / 'assets' / 'data' / 'macro.json'
+    sent_path  = WS / 'assets' / 'data' / 'sentiment.json'
+    stale_cutoff_h = 36
+
+    def _age_hours(path):
+        try:
+            mtime = datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
+            return (datetime.now(timezone.utc) - mtime).total_seconds() / 3600
+        except Exception:
+            return None
+
+    macro_trim = {}
+    try:
+        if not macro_path.exists():
+            print(f'   ⚠ macro.json missing — sentiment-scan never ran')
+            issues.append('macro snapshot missing')
+        else:
+            age = _age_hours(macro_path)
+            m = json.loads(macro_path.read_text())
+            def _q(k):
+                v = m.get(k)
+                if not v: return None
+                return {'price': v.get('price'), 'change_pct': v.get('change_pct'),
+                        'source': v.get('source')}
+            macro_trim = {
+                'as_of':        m.get('generated_at'),
+                'age_hours':    round(age, 1) if age is not None else None,
+                'vix':          _q('vix'),
+                'dxy':          _q('dxy'),
+                'treasury_10y_yield_pct': (m.get('treasury_10y') or {}).get('yield_pct'),
+                'fear_greed':   m.get('fear_greed'),
+                'hsi':          _q('hsi'),
+                'hstech':       _q('hstech'),
+                'spx':          _q('spx'),
+                'nasdaq':       _q('nasdaq'),
+                'fed_press':    (m.get('fed_press') or [])[:3],
+            }
+            if age and age > stale_cutoff_h:
+                print(f'   ⚠ macro stale ({age:.1f}h old, cutoff {stale_cutoff_h}h)')
+                issues.append(f'macro snapshot stale {age:.0f}h')
+            else:
+                fg = macro_trim['fear_greed'] or {}
+                print(f'   macro: VIX {(macro_trim["vix"] or {}).get("price","?")}, '
+                      f'F&G {fg.get("score","?")} ({fg.get("rating","?")}), '
+                      f'fed_press {len(macro_trim["fed_press"])}')
+    except Exception as e:
+        print(f'   ⚠ macro load failed: {e}')
+        issues.append(f'macro load exception: {type(e).__name__}')
+
+    sentiment_trim = {}
+    try:
+        if not sent_path.exists():
+            print(f'   ⚠ sentiment.json missing — sentiment-scan never ran')
+            issues.append('sentiment snapshot missing')
+        else:
+            age = _age_hours(sent_path)
+            s = json.loads(sent_path.read_text())
+            tickers_out = []
+            for t in s.get('tickers', []):
+                reddit_n  = t.get('reddit_mentions_7d', 0)
+                gn_en     = t.get('google_news_en') or []
+                gn_zh     = t.get('google_news_zh') or []
+                # Skip noise: 0 mention + 0 news
+                if reddit_n == 0 and not gn_en and not gn_zh:
+                    continue
+                tickers_out.append({
+                    'ticker': t.get('ticker'),
+                    'name':   t.get('name'),
+                    'region': t.get('region'),
+                    'reddit_mentions_7d': reddit_n,
+                    'reddit_top': [{'title': p.get('title'), 'score': p.get('score'),
+                                    'comments': p.get('num_comments')}
+                                   for p in (t.get('reddit_posts') or [])[:3]],
+                    'news_top':   [n.get('title') for n in (gn_en + gn_zh)[:3] if n.get('title')],
+                })
+            sentiment_trim = {
+                'as_of':       s.get('generated_at'),
+                'age_hours':   round(age, 1) if age is not None else None,
+                'sources':     s.get('sources', []),
+                'tickers':     tickers_out,
+            }
+            if age and age > stale_cutoff_h:
+                print(f'   ⚠ sentiment stale ({age:.1f}h old, cutoff {stale_cutoff_h}h)')
+                issues.append(f'sentiment snapshot stale {age:.0f}h')
+            else:
+                with_signal = sum(1 for t in tickers_out if t['reddit_mentions_7d'] or t['news_top'])
+                print(f'   sentiment: {with_signal}/{len(s.get("tickers",[]))} tickers '
+                      f'have reddit/news signal')
+    except Exception as e:
+        print(f'   ⚠ sentiment load failed: {e}')
+        issues.append(f'sentiment load exception: {type(e).__name__}')
+
+    return macro_trim, sentiment_trim
+
+
 def main():
     today = datetime.now().strftime('%Y-%m-%d')
     TMP_DIR.mkdir(parents=True, exist_ok=True)
@@ -780,7 +886,7 @@ def main():
 
     # Benchmark history (SPY + HSI/HSTECH) for the Equity Curve overlay.
     # Refreshed once per day at brief time; consumed by build_dashboard.
-    print('[12/12] Fetch benchmark history')
+    print('[12/13] Fetch benchmark history')
     try:
         bm_out, bm_ok = _run('scripts/data/fetch_benchmark_history.py', timeout=30)
         if not bm_ok:
@@ -793,6 +899,12 @@ def main():
     except Exception as e:
         print(f'   ⚠ benchmark step failed: {e}')
         issues.append(f'benchmark step exception: {type(e).__name__}')
+
+    # [13] Macro + sentiment snapshots — written by GH Action (macro-scan / sentiment-scan).
+    # Read-only here; brief LLM consumes the trimmed subset so "▎大盘速读" and
+    # "▎社交舆情速读" sections aren't flying blind.
+    print('[13/13] Load macro + sentiment snapshots')
+    macro_trim, sentiment_trim = load_macro_and_sentiment(today, issues)
 
     # Write context.json
     context = {
@@ -810,6 +922,8 @@ def main():
         'self_calibration': self_calib,
         'risk_metrics':  risk,
         'catalysts':     catalysts,
+        'macro':         macro_trim,
+        'sentiment':     sentiment_trim,
         'issues':        issues,
     }
     ctx_path = TMP_DIR / f'brief-context-{today}.json'

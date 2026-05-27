@@ -208,9 +208,14 @@ def main():
         'fed_press':      fed_press_releases(days=7),
     }
 
-    # 10Y treasury yield = price / 10
+    # 10Y treasury yield — source format differs:
+    #   Yahoo legacy ^TNX: price = yield * 10 (e.g. 44.93 means 4.493%)
+    #   Yahoo current + Stooq + Tencent: price = yield directly (e.g. 4.493%)
+    # Sustained US 10Y > 10% is historically unrealistic (last seen 1979-1985),
+    # so use that as the format-discriminator.
     if out['treasury_10y']:
-        out['treasury_10y']['yield_pct'] = round(out['treasury_10y']['price'] / 10, 3)
+        raw = out['treasury_10y']['price']
+        out['treasury_10y']['yield_pct'] = round(raw / 10 if raw > 10 else raw, 3)
 
     # Atomic write
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
