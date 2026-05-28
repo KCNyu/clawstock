@@ -1196,6 +1196,57 @@ def compute_capital_deployed(portfolio, fx_rate):
     return out
 
 
+def compute_net_principal_return(portfolio, fx_rate):
+    """复利口径："自有现金"的真实回报 per region + combined USD-eq.
+
+    Formula (2026-05-29 决定，与 capital_deployed 的 option-C 并列、互补):
+      净投入本金 net_principal = current_cost_basis(active) − cumulative realized_pnl
+      总收益    total_profit  = unrealized_pnl + realized_pnl
+      回报率    return_pct    = total_profit / net_principal × 100
+
+    Why 这个口径：active trader 会把卖出回笼的现金（含已兑现利润）反复滚进
+    新仓。`cost − realized` 还原的是"还压在场上的自有现金净额"——把赚到又滚
+    回去的利润从分母里剔除，于是 return_pct 反映自有资金的复利增速（赢家立刻
+    再投会把这个数顶得很高，这正是复利效应，不是错算）。
+
+    与 capital_deployed(cost+realized) 的关系：那个用"我曾经拥有过的钱"做分母
+    （保守、不会过 100% churn），这个用"我净掏的钱"做分母（激进、体现滚动复利）。
+    两个并排给 kcn 看，一上一下夹住真实回报。See 2026-05-29 conversation.
+
+    net_principal ≤ 0 ⇒ 已收回的现金 ≥ 投入，纯用利润在玩，return_pct 无意义置 None。
+    """
+    out = {
+        'us':  {'net_principal': None, 'total_profit': None, 'return_pct': None},
+        'hk':  {'net_principal': None, 'total_profit': None, 'return_pct': None},
+        'combined_usd': {'net_principal': None, 'total_profit': None, 'return_pct': None},
+        'formula': '净投入本金 = 累计成本 − 已实现；回报率 = (浮动 + 已实现) ÷ 净投入本金',
+    }
+
+    def _region(pf):
+        cost = pf.get('total_cost', 0) or 0
+        real = pf.get('realized_pnl', 0) or 0
+        unrl = pf.get('total_pnl', 0) or 0
+        net_principal = round(cost - real, 2)
+        total_profit = round(real + unrl, 2)
+        ret = round(total_profit / net_principal * 100, 2) if net_principal > 0 else None
+        return {'net_principal': net_principal, 'total_profit': total_profit, 'return_pct': ret}
+
+    try:
+        out['us'] = _region(portfolio['portfolios']['us_stocks'])
+        out['hk'] = _region(portfolio['portfolios']['hk_stocks'])
+        if fx_rate and fx_rate > 0:
+            np_usd = round(out['us']['net_principal'] + out['hk']['net_principal'] / fx_rate, 2)
+            tp_usd = round(out['us']['total_profit'] + out['hk']['total_profit'] / fx_rate, 2)
+            out['combined_usd'] = {
+                'net_principal': np_usd,
+                'total_profit': tp_usd,
+                'return_pct': round(tp_usd / np_usd * 100, 2) if np_usd > 0 else None,
+            }
+    except Exception as e:
+        print(f'  warn: compute_net_principal_return failed: {e}', file=sys.stderr)
+    return out
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     portfolio = load_json(WS_ROOT / 'portfolio.json')
@@ -1317,6 +1368,7 @@ def main():
     out['today_ranges'] = compute_today_ranges(portfolio, top_n=8)
     out['realized_vs_unrealized'] = compute_realized_vs_unrealized(portfolio, fx_rate)
     out['capital_deployed'] = compute_capital_deployed(portfolio, fx_rate)
+    out['net_principal_return'] = compute_net_principal_return(portfolio, fx_rate)
     if brief_ctx_path:
         print(f'  brief-context source: {os.path.basename(brief_ctx_path)}')
 

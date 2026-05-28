@@ -1236,7 +1236,7 @@ layout: null
 
     <div class="card">
       <h3>Track Record <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(USD-eq · 全期)</span></h3>
-      <p class="chart-hint">两个回报率并排看：<b>当前浮动率</b>只看现持仓账面（贴近"我现在亏多少"直觉）；<b>总回报率</b>用累计投入本金做分母、含历史已实现兑现 —— 看你的"盈利垫"还剩多少。</p>
+      <p class="chart-hint">三个回报率并排看：<b>当前浮动率</b>只看现持仓账面（贴近"我现在亏多少"直觉）；<b>总回报率</b>用累计投入本金(成本+已实现)做分母 —— 看"盈利垫"还剩多少，是保守口径；<b>净本金回报率</b>用净投入本金(成本−已实现)做分母 —— 把赚到又滚回去的钱从分母剔除，反映你自有现金的真实复利回报（赢家立刻再投会把它顶高，正是复利效应）。</p>
       <div class="kpi-grid">
         <div class="kpi-cell">
           <div class="lbl">当前浮动率</div>
@@ -1247,6 +1247,11 @@ layout: null
           <div class="lbl">总回报率</div>
           <div class="val" id="kpi-totalret">—</div>
           <div class="sub" id="kpi-totalret-abs">(浮+已实现) ÷ 累计投入</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="lbl">净本金回报率</div>
+          <div class="val" id="kpi-netret">—</div>
+          <div class="sub" id="kpi-netret-abs">(浮+已实现) ÷ 净投入本金</div>
         </div>
         <div class="kpi-cell">
           <div class="lbl">已实现 (合计)</div>
@@ -2483,6 +2488,21 @@ layout: null
       ? `${fmtMoney(totalPnl, "USD")} ÷ ${fmtMoney(capUsd, "USD")} 基准`
       : "(浮+已实现) ÷ 累计投入");
     setClass("kpi-totalret", pnlClass(totalRetPct));
+
+    // 净本金回报率 (复利口径 2026-05-29): (浮+已实现) / (累计成本 − 已实现)
+    const npr = safe(DATA, "net_principal_return") || {};
+    const nprUsd    = safe(npr, "combined_usd", "net_principal");
+    const nprPct    = safe(npr, "combined_usd", "return_pct");
+    const nprProfit = safe(npr, "combined_usd", "total_profit");
+    const usNprPct  = safe(npr, "us", "return_pct");
+    const hkNprPct  = safe(npr, "hk", "return_pct");
+    setVal("kpi-netret", nprPct != null ? fmtPct(nprPct, 2) : DASH);
+    setVal("kpi-netret-abs",
+      (usNprPct != null && hkNprPct != null)
+        ? `US ${fmtPct(usNprPct, 1)} · HK ${fmtPct(hkNprPct, 1)}`
+        : (nprUsd ? `${fmtMoney(nprProfit, "USD")} ÷ ${fmtMoney(nprUsd, "USD")} 净本金`
+                  : "(浮+已实现) ÷ 净投入本金"));
+    setClass("kpi-netret", pnlClass(nprPct));
 
     setVal("kpi-realized", fmtMoney(realizedUsd, "USD"));
     setClass("kpi-realized", pnlClass(realizedUsd));
