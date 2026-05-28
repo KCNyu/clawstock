@@ -1,21 +1,26 @@
 {
-  "generated_at": "2026-05-26T16:37:30.150080",
+  "generated_at": "2026-05-28T16:47:24.659628",
   "lookback_hours": 48,
   "tickers": [
     "RKLB",
     "CRCL",
     "PLTU",
-    "SOXL",
     "ROBN",
     "MSFU"
   ],
-  "digest_markdown": "### Top 3-5 移动信号 (跨 ticker 排序)\n- RKLB: SpaceX IPO speculation drives massive investor interest and broader optimism in the space sector. – 短期内可能推高 RKLB 股价，但投机性强，若持有需警惕回调风险。\n- CRCL: Circle and other crypto companies are shifting to infrastructure businesses to prove survival capability beyond Bitcoin price bets. – 可能增强 CRCL 长期韧性，减少加密货币波动依赖，对头寸偏积极。\n\n### Per-ticker 简报 (有新闻才列)\n- RKLB: SpaceX IPO 推测驱动空间股上涨 – 短期情绪利好，但缺乏基本面催化剂。\n- CRCL: Circle 转型基础设施业务 – crypto 公司寻求可持续性，可能改善长期价值。\n\n### 风险 watch (若有)\n- 无显著 risk 关键词，如 financial guidance、监管或大股东减持等。",
+  "digest_markdown": "### Top 3-5 移动信号 (跨 ticker 排序)\n- **RKLB**: 通过美国国防航天局 (SDA) 合同关键里程碑，该合同价值超过13亿美元。这直接扩大了其国防业务版图，巩固了其在政府高增长预算中的份额，利好长期增长。\n- **CRCL**: 宣布与 Nium 建立合作伙伴关系，将 USDC 结算网络与覆盖190国的支付通道整合。此举旨在简化全球支付，可能显著提升 USDC 的实用性和交易量。\n- **PLTU** (标的PLTR): 标的公司 Palantir (PLTR) 公布超预期的第四季度财报。作为2倍杠杆ETF，此催化剂可能放大标的股价的上涨波动性。\n\n### Per-ticker 简报\n- **RKLB**: SpaceX IPO 被视为潜在的板块重估催化剂，因其验证了太空行业的商业可行性。\n- **ROBN**: 标的公司 Robinhood (HOOD) 股价盘后下跌，但相关ETF新闻仅显示为市场情绪反应。\n\n### 风险 watch\n- **ROBN**: 标的股价盘后下跌。作为2倍杠杆ETF，对标的股价的日常波动极为敏感，下行风险加倍。",
   "raw_news_counts": {
     "RKLB": 5,
-    "CRCL": 2,
-    "PLTU": 0,
-    "SOXL": 0,
-    "ROBN": 0,
-    "MSFU": 0
+    "CRCL": 5,
+    "PLTU": 5,
+    "ROBN": 5,
+    "MSFU": 5
+  },
+  "news_source_per_ticker": {
+    "RKLB": "finnhub",
+    "CRCL": "finnhub",
+    "PLTU": "gnews-rss",
+    "ROBN": "gnews-rss",
+    "MSFU": "gnews-rss"
   }
 }
