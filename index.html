@@ -423,22 +423,42 @@ layout: null
   .delta-table thead th { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
   .delta-table tbody tr:last-child td { border-bottom: none; }
 
-  /* Return-rate breakdown (collapsible) */
-  .ret-breakdown { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 10px; }
-  .ret-breakdown-summary {
-    cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text);
-    list-style: none; display: flex; align-items: center; gap: 7px; user-select: none;
+  /* Per-market return breakdown cards */
+  .mkt-breakdown { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px; }
+  .mkt-breakdown-head { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+  .mkt-breakdown-head .muted { font-weight: 500; font-size: 11px; }
+  .mkt-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 560px) { .mkt-cards { grid-template-columns: 1fr; } }
+  .mkt-card {
+    background: var(--card-2); border: 1px solid var(--border);
+    border-top: 2px solid var(--accent); border-radius: var(--radius-sm);
+    padding: 13px 14px 12px;
   }
-  .ret-breakdown-summary::-webkit-details-marker { display: none; }
-  .ret-breakdown-summary::before {
-    content: "▸"; color: var(--text-dim); font-size: 10px;
-    transition: transform 0.15s ease; display: inline-block;
-  }
-  .ret-breakdown[open] .ret-breakdown-summary::before { transform: rotate(90deg); }
-  .ret-breakdown-summary:hover { color: var(--accent); }
-  .ret-breakdown-summary .muted { font-weight: 500; font-size: 11px; text-transform: none; letter-spacing: 0; }
-  .ret-breakdown-body { animation: retfade 0.15s ease; }
-  @keyframes retfade { from { opacity: 0; } to { opacity: 1; } }
+  .mkt-card[data-mkt="hk"] { border-top-color: var(--accent-2); }
+  .mkt-head { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: var(--text);
+    display: flex; align-items: center; gap: 6px; }
+  .mkt-head .muted { font-weight: 500; }
+  .mkt-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .mkt-card[data-mkt="hk"] .mkt-dot { background: var(--accent-2); }
+  .mkt-ret-label { font-size: 11px; color: var(--text-dim); margin-top: 9px; }
+  .mkt-ret { font-size: 27px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; margin-top: 1px; }
+  .mkt-stats { margin-top: 11px; display: grid; gap: 5px; }
+  .mkt-stat { display: flex; justify-content: space-between; font-size: 13px; }
+  .mkt-stat .lbl { color: var(--text-dim); }
+  .mkt-stat .v { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .mkt-comp { margin-top: 11px; display: grid; gap: 7px; }
+  .mkt-comp-row { display: grid; grid-template-columns: 44px 1fr 62px; align-items: center; gap: 8px; font-size: 12px; }
+  .mkt-comp-row .lbl { color: var(--text-dim); }
+  .mkt-comp-row .v { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .mkt-bar { height: 7px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+  .mkt-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+  .mkt-bar-fill.pos { background: var(--green); }
+  .mkt-bar-fill.neg { background: var(--red); }
+  .mkt-chips { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .mkt-chip { font-size: 11px; color: var(--text-dim); background: var(--card);
+    border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; }
+  .mkt-chip b { font-weight: 600; font-variant-numeric: tabular-nums; margin-left: 2px; }
+  .mkt-card-skel { color: var(--text-faint); padding: 20px; text-align: center; }
 
   /* HHI gauges */
   .hhi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -1297,28 +1317,12 @@ layout: null
         </div>
       </div>
 
-      <details class="ret-breakdown">
-        <summary class="ret-breakdown-summary">回报率口径明细 <span class="muted">三口径 分子÷分母 · US/HK 分区</span></summary>
-        <div class="ret-breakdown-body">
-          <p class="chart-hint" style="margin-top:10px">同一笔总盈亏、换三个分母 → 三个回报率，基准越大回报率越低。分子：<b>浮动率</b>只算浮动盈亏，<b>总回报率/净本金率</b>算浮动+已实现。<b>真实回报率夹在总回报率与净本金率之间</b>，落点取决于已实现利润有多少再投/提现（需券商入金流水才能精确）。</p>
-          <table class="delta-table" style="margin-top:6px">
-            <thead>
-              <tr><th>口径</th><th>盈亏 (分子)</th><th>基准 (分母)</th><th>回报率</th></tr>
-            </thead>
-            <tbody id="retbreak-tbody">
-              <tr><td colspan="4" class="muted">—</td></tr>
-            </tbody>
-          </table>
-          <table class="delta-table" style="margin-top:10px">
-            <thead>
-              <tr><th>分区</th><th>浮动率</th><th>总回报率</th><th>净本金率</th></tr>
-            </thead>
-            <tbody id="retbreak-region-tbody">
-              <tr><td colspan="4" class="muted">—</td></tr>
-            </tbody>
-          </table>
+      <div class="mkt-breakdown">
+        <div class="mkt-breakdown-head">分市场拆解 <span class="muted">净本金口径 · 已落袋 vs 浮动构成</span></div>
+        <div class="mkt-cards" id="mkt-cards">
+          <div class="mkt-card-skel">—</div>
         </div>
-      </details>
+      </div>
     </div>
 
     <div class="card">
@@ -2534,14 +2538,10 @@ layout: null
     const nprUsd    = safe(npr, "combined_usd", "net_principal");
     const nprPct    = safe(npr, "combined_usd", "return_pct");
     const nprProfit = safe(npr, "combined_usd", "total_profit");
-    const usNprPct  = safe(npr, "us", "return_pct");
-    const hkNprPct  = safe(npr, "hk", "return_pct");
     setVal("kpi-netret", nprPct != null ? fmtPct(nprPct, 2) : DASH);
-    setVal("kpi-netret-abs",
-      (usNprPct != null && hkNprPct != null)
-        ? `US ${fmtPct(usNprPct, 1)} · HK ${fmtPct(hkNprPct, 1)}`
-        : (nprUsd ? `${fmtMoney(nprProfit, "USD")} ÷ ${fmtMoney(nprUsd, "USD")} 净本金`
-                  : "(浮+已实现) ÷ 净投入本金"));
+    setVal("kpi-netret-abs", nprUsd
+      ? `${fmtMoney(nprProfit, "USD")} ÷ ${fmtMoney(nprUsd, "USD")} 净本金`
+      : "(浮+已实现) ÷ 净投入本金");
     setClass("kpi-netret", pnlClass(nprPct));
 
     setVal("kpi-realized", fmtMoney(realizedUsd, "USD"));
@@ -2565,42 +2565,48 @@ layout: null
     setVal("kpi-maxdd", maxDd < 0 ? fmtPct(maxDd, 1) : (bookUsd.length ? "0.0%" : DASH));
     setClass("kpi-maxdd", maxDd < 0 ? "neg" : "neutral");
 
-    // ── 回报率口径明细表：同一总盈亏换三个分母 ──
-    const fmtP = v => (v != null ? fmtPct(v, 1) : DASH);
-    const cls  = v => `class="${pnlClass(v)}"`;
-    const money = v => {
-      if (v == null) return DASH;
-      const r = Math.round(v);
-      return (r < 0 ? "-$" : "$") + Math.abs(r).toLocaleString("en-US");
-    };
-    const mainRows = [
-      ["当前浮动率", unrealizedUsd, currentCostUsd, floatPct],
-      ["总回报率",   totalPnl,      capUsd,         totalRetPct],
-      ["净本金率",   nprProfit,     nprUsd,         nprPct],
-    ];
-    const mainTb = document.getElementById("retbreak-tbody");
-    if (mainTb) {
-      mainTb.innerHTML = mainRows.map(([name, num, den, pct]) =>
-        `<tr><td>${name}</td><td ${cls(num)}>${money(num)}</td>`
-        + `<td>${money(den)}</td><td ${cls(pct)}>${fmtP(pct)}</td></tr>`).join("");
-    }
-    const regionRates = (realized, unrealized, cost) => {
-      if (realized == null || unrealized == null || !cost) return { flo: null, tot: null, net: null };
-      const profit = realized + unrealized;
-      return {
-        flo: cost > 0 ? unrealized / cost * 100 : null,
-        tot: (cost + realized) > 0 ? profit / (cost + realized) * 100 : null,
-        net: (cost - realized) > 0 ? profit / (cost - realized) * 100 : null,
+    // ── 分市场拆解卡：US / HK 各一张（净本金口径 + 已落袋/浮动构成）──
+    const mktCards = document.getElementById("mkt-cards");
+    if (mktCards) {
+      const ccyMoney = (v, ccy, plus) => {
+        if (v == null || !isFinite(v)) return DASH;
+        const sym = ccy === "USD" ? "$" : "HK$";
+        const sign = v < 0 ? "-" : (plus ? "+" : "");
+        return sign + sym + Math.abs(Math.round(v)).toLocaleString("en-US");
       };
-    };
-    const usR = regionRates(safe(rv, "us", "realized"), safe(rv, "us", "unrealized"), safe(DATA, "totals", "us", "cost_usd"));
-    const hkR = regionRates(safe(rv, "hk", "realized"), safe(rv, "hk", "unrealized"), safe(DATA, "totals", "hk", "cost_hkd"));
-    const regionTb = document.getElementById("retbreak-region-tbody");
-    if (regionTb) {
-      const rrow = (label, r) =>
-        `<tr><td>${label}</td><td ${cls(r.flo)}>${fmtP(r.flo)}</td>`
-        + `<td ${cls(r.tot)}>${fmtP(r.tot)}</td><td ${cls(r.net)}>${fmtP(r.net)}</td></tr>`;
-      regionTb.innerHTML = rrow("US", usR) + rrow("HK", hkR);
+      const signNum = v => (v == null || !isFinite(v)) ? DASH
+        : (v < 0 ? "-" : "+") + Math.abs(Math.round(v)).toLocaleString("en-US");
+      const pct1 = v => (v != null ? fmtPct(v, 1) : DASH);
+      const buildCard = (key, label, ccy) => {
+        const r = safe(rv, key, "realized") ?? 0;
+        const u = safe(rv, key, "unrealized") ?? 0;
+        const cost = safe(DATA, "totals", key, ccy === "USD" ? "cost_usd" : "cost_hkd") ?? 0;
+        const profit = r + u, net = cost - r;
+        const netPct = net > 0 ? profit / net * 100 : null;
+        const floPct = cost > 0 ? u / cost * 100 : null;
+        const totPct = (cost + r) > 0 ? profit / (cost + r) * 100 : null;
+        const ref = Math.max(Math.abs(r), Math.abs(u), 1);
+        const rW = Math.min(Math.abs(r) / ref * 100, 100);
+        const uW = Math.min(Math.abs(u) / ref * 100, 100);
+        return `<div class="mkt-card" data-mkt="${key}">`
+          + `<div class="mkt-head"><span class="mkt-dot"></span>${label} <span class="muted">· ${ccy}</span></div>`
+          + `<div class="mkt-ret-label">净本金回报率</div>`
+          + `<div class="mkt-ret ${pnlClass(netPct)}">${netPct != null ? pct1(netPct) : DASH}</div>`
+          + `<div class="mkt-stats">`
+            + `<div class="mkt-stat"><span class="lbl">净投入本金</span><span class="v">${ccyMoney(net, ccy, false)}</span></div>`
+            + `<div class="mkt-stat"><span class="lbl">总盈亏</span><span class="v ${pnlClass(profit)}">${ccyMoney(profit, ccy, true)}</span></div>`
+          + `</div>`
+          + `<div class="mkt-comp">`
+            + `<div class="mkt-comp-row"><span class="lbl">已落袋</span><div class="mkt-bar"><div class="mkt-bar-fill ${r < 0 ? "neg" : "pos"}" style="width:${rW}%"></div></div><span class="v ${pnlClass(r)}">${signNum(r)}</span></div>`
+            + `<div class="mkt-comp-row"><span class="lbl">浮动</span><div class="mkt-bar"><div class="mkt-bar-fill ${u < 0 ? "neg" : "pos"}" style="width:${uW}%"></div></div><span class="v ${pnlClass(u)}">${signNum(u)}</span></div>`
+          + `</div>`
+          + `<div class="mkt-chips">`
+            + `<span class="mkt-chip">浮动率 <b class="${pnlClass(floPct)}">${pct1(floPct)}</b></span>`
+            + `<span class="mkt-chip">总回报率 <b class="${pnlClass(totPct)}">${pct1(totPct)}</b></span>`
+          + `</div>`
+        + `</div>`;
+      };
+      mktCards.innerHTML = buildCard("us", "US", "USD") + buildCard("hk", "HK", "HKD");
     }
   }
 
