@@ -555,6 +555,23 @@ layout: null
   .holdings-table .spark.spark-down { color: var(--red); }
   .holdings-table .spark.spark-flat { color: var(--text-faint); }
   .holdings-table .spark.muted-spark { color: var(--text-faint); }
+
+  /* Watch Levels (今日触发位) */
+  .watch-levels { display: flex; flex-direction: column; }
+  .wl-row { display: grid; grid-template-columns: 50px 1fr auto auto auto; gap: 8px;
+    align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--border);
+    font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  .wl-row:last-child { border-bottom: none; }
+  .wl-who { font-weight: 700; color: var(--text); }
+  .wl-label { color: var(--text-dim); font-size: 11.5px; }
+  .wl-target { color: var(--text); text-align: right; }
+  .wl-cur { color: var(--text-dim); font-size: 11.5px; text-align: right; }
+  .wl-dist { text-align: right; font-weight: 700; white-space: nowrap; }
+  .wl-dist.near { color: var(--red); }
+  .wl-dist.mid  { color: var(--amber); }
+  .wl-dist.far  { color: var(--text-faint); }
+  .wl-cond { grid-template-columns: 50px 1fr; }
+  .wl-cond-txt { color: var(--text-dim); font-size: 11.5px; }
   /* Sparkline column is dense; hide it whenever the holdings table sits in a narrow
    * column. The dashboard uses a 3-column grid ≥1024px (each column ≈ 1/3 of the
    * viewport), so Drill only has room for the sparkline once the viewport is wider
@@ -1004,6 +1021,12 @@ layout: null
         </div>
       </div>
       <div class="risk-alerts" id="risk-alerts"></div>
+    </div>
+
+    <div class="card" id="watch-levels-card" style="display:none">
+      <h3>今日触发位 <span class="muted" id="watch-levels-date" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">Watch Levels</span></h3>
+      <p class="chart-hint">盘前计划写死的触发价位 vs 现价。距离越近越该盯，&lt;2% 标红。</p>
+      <div class="watch-levels" id="watch-levels-list"></div>
     </div>
 
     <div class="card">
@@ -1487,6 +1510,74 @@ layout: null
   // =========================================================
   // Render — orchestrates all sections
   // =========================================================
+  // Watch Levels: render latest plan's watch_levels vs current price, color by proximity.
+  // watch_levels keys are LLM-authored & free-form, so resolution is heuristic and
+  // degrades gracefully (unmappable numeric → no distance; string → shown as condition).
+  function renderWatchLevels() {
+    const card = document.getElementById("watch-levels-card");
+    const list = document.getElementById("watch-levels-list");
+    if (!card || !list) return;
+    const plans = (safe(DATA, "recent_plans") || []).slice()
+      .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+    const latest = plans[0];
+    const wl = latest ? safe(latest, "plan", "watch_levels") : null;
+    if (!wl || typeof wl !== "object" || !Object.keys(wl).length) {
+      card.style.display = "none";
+      return;
+    }
+    card.style.display = "";
+    const dateEl = document.getElementById("watch-levels-date");
+    if (dateEl) dateEl.textContent = latest.date ? `${latest.date} 计划` : "Watch Levels";
+
+    const hmap = {};
+    flatHoldings().forEach(h => { if (h.ticker) hmap[String(h.ticker).toUpperCase()] = h; });
+    const idx = safe(DATA, "indices") || {};
+    const hkTot = safe(DATA, "totals", "hk") || {};
+    const LABELS = { stop:"止损", support:"支撑", breakdown:"破位", target:"目标",
+      derisk:"强制减仓", force:"强制减仓", trigger:"触发", resist:"压力", resistance:"压力" };
+
+    function resolve(key) {
+      const k = key.toLowerCase();
+      if (k.includes("hstech")) return { cur: safe(idx,"HSTECH","price"), ccy:"", who:"恒科", strip:["hstech"] };
+      if (k.includes("hsi") || k.includes("hang") || k.includes("seng")) return { cur: safe(idx,"HSI","price"), ccy:"", who:"恒指", strip:["hsi","hang","hangseng","seng"] };
+      if (k.includes("spx") || k.includes("sp500")) return { cur: safe(idx,"SPX","price"), ccy:"", who:"SPX", strip:["spx","sp500"] };
+      if (k.includes("ndx") || k.includes("nasdaq")) return { cur: safe(idx,"NDX","price"), ccy:"", who:"NDX", strip:["ndx","nasdaq"] };
+      if (k.includes("book") || k.includes("derisk")) return { cur: hkTot.pnl_hkd, ccy:"HKD", who:"账面", strip:["book"] };
+      const tok = key.split(/[_\-]/)[0];
+      const h = hmap[tok.toUpperCase()];
+      if (h) return { cur: h.current_price, ccy: h.region === "hk" ? "HKD" : "USD", who: tok.toUpperCase(), strip:[tok.toLowerCase()] };
+      return { cur: null, ccy:"", who: null, strip: [] };
+    }
+    const labelOf = (toks) => {
+      const joined = toks.join("_");
+      for (const k in LABELS) if (joined.includes(k)) return LABELS[k];
+      return toks.length ? toks.join(" ") : "触发位";
+    };
+
+    list.innerHTML = Object.entries(wl).map(([key, val]) => {
+      const r = resolve(key);
+      const who = r.who || key.split(/[_\-]/)[0].toUpperCase();
+      const toks = key.toLowerCase().split(/[_\-]/).filter(t => !r.strip.includes(t) && t !== "hkd" && t !== "usd");
+      const label = labelOf(toks);
+      if (typeof val !== "number" || !isFinite(val)) {
+        return `<div class="wl-row wl-cond"><span class="wl-who">${escapeHtml(who)}</span>` +
+          `<span class="wl-cond-txt">${escapeHtml(String(val))}</span></div>`;
+      }
+      let curHtml = `<span class="wl-cur"></span>`;
+      let distHtml = `<span class="wl-dist far">—</span>`;
+      if (r.cur != null && isFinite(r.cur)) {
+        const dist = (r.cur - val) / Math.abs(val) * 100;
+        const ad = Math.abs(dist);
+        const cls = ad < 2 ? "near" : ad < 5 ? "mid" : "far";
+        curHtml = `<span class="wl-cur">现 ${fmtMoney(r.cur, r.ccy)}</span>`;
+        distHtml = `<span class="wl-dist ${cls}">${fmtPct(dist, 1)}${ad < 2 ? " ⚠️" : ""}</span>`;
+      }
+      return `<div class="wl-row"><span class="wl-who">${escapeHtml(who)}</span>` +
+        `<span class="wl-label">${escapeHtml(label)}</span>` +
+        `<span class="wl-target">${fmtMoney(val, r.ccy)}</span>${curHtml}${distHtml}</div>`;
+    }).join("");
+  }
+
   function render() {
     if (!DATA) return;
     renderHeader();
@@ -1498,6 +1589,7 @@ layout: null
     renderHHI();
     renderLeveragedETF();
     renderRiskMetrics();
+    renderWatchLevels();
     renderAnomalies();
     renderMovers();
     renderSectorContext();
