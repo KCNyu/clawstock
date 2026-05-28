@@ -49,7 +49,7 @@ def _run(script, args=None, timeout=120):
 
 
 def fetch_fx_rate():
-    out, ok = _run('fetch_fx.py', ['--json'])
+    out, ok = _run('scripts/data/fetch_fx.py', ['--json'])
     if not ok:
         return {'rate': 7.80, 'source': 'HARDCODED_FALLBACK', 'error': out[-300:]}
     try:
@@ -78,7 +78,7 @@ def collect_us_fundamentals(portfolio):
         if h.get('shares', 0) <= 0 or _is_leveraged_etf(h):
             continue
         ticker = h['ticker']
-        out, ok = _run('fetch_us_filings.py', [ticker, '--financials', '--json'], timeout=30)
+        out, ok = _run('scripts/data/fetch_us_filings.py', [ticker, '--financials', '--json'], timeout=30)
         if not ok:
             fundamentals[ticker] = {'error': out[-300:]}
             continue
@@ -738,7 +738,7 @@ def main():
 
     # [1] Refresh prices
     print('\n[1/11] Refresh US prices')
-    us_out, us_ok = _run('analyze_us_stocks.py', ['--no-news'])
+    us_out, us_ok = _run('scripts/data/analyze_us_stocks.py', ['--no-news'])
     if not us_ok:
         issues.append(f'US refresh failed: {us_out[-200:]}')
         print(f'   ⚠️  {issues[-1]}')
@@ -746,7 +746,7 @@ def main():
         print('   ✓ done')
 
     print('[2/11] Refresh HK prices')
-    hk_out, hk_ok = _run('analyze_hk_stocks.py', ['--no-news'])
+    hk_out, hk_ok = _run('scripts/data/analyze_hk_stocks.py', ['--no-news'])
     if not hk_ok:
         issues.append(f'HK refresh failed: {hk_out[-200:]}')
         print(f'   ⚠️  {issues[-1]}')
