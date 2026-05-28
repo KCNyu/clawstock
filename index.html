@@ -2529,6 +2529,14 @@ layout: null
       if (v > peak) peak = v;
       return peak > 0 ? Math.round(((v - peak) / peak) * 10000) / 100 : 0;
     });
+    // Day-over-day equity change (USD + %) — shown in tooltip separately from 回撤,
+    // so consecutive new highs (回撤 0%) don't look like a stuck/duplicate value.
+    const chgUsd = bookUsd.map((v, i) =>
+      (i > 0 && v != null && bookUsd[i - 1] != null)
+        ? Math.round((v - bookUsd[i - 1]) * 100) / 100 : null);
+    const chgPct = bookUsd.map((v, i) =>
+      (i > 0 && v != null && bookUsd[i - 1] != null && bookUsd[i - 1] !== 0)
+        ? Math.round(((v - bookUsd[i - 1]) / bookUsd[i - 1]) * 10000) / 100 : null);
 
     // Benchmark overlay — "what if I bought SPY at the same dollar amount on day 0?"
     // Normalize so benchmark[0] === bookUsd[0], then scale by bench_close[i] / bench_close[0].
@@ -2557,6 +2565,7 @@ layout: null
 
     const accent = getCSS("--accent") || "#5b8def";
     const red = getCSS("--red") || "#f87171";
+    const green = getCSS("--green") || "#34d399";
     const dim = getCSS("--text-dim") || "#9aa4b8";
     const benchColor = getCSS("--accent-2") || "#a78bfa";
 
@@ -2569,6 +2578,7 @@ layout: null
         trigger: "axis", axisPointer: { type: "cross" },
         formatter: (params) => {
           const date = params[0]?.axisValue || "";
+          const i = params[0]?.dataIndex;
           const lines = params.map(p => {
             const v = p.value;
             const isPct = p.seriesName === "回撤";
@@ -2577,6 +2587,18 @@ layout: null
               : (v != null ? "$" + v.toLocaleString("en-US", { maximumFractionDigits: 0 }) : "—");
             return `${p.marker} ${p.seriesName}: <b>${fmt}</b>`;
           });
+          // 当日涨跌 = 总资产日环比，与"回撤"分开标：回撤是"距历史峰值多少"，
+          // 连续新高时恒为 0%，看当日涨跌才知道资产其实每天在动。
+          if (i != null && chgUsd[i] != null) {
+            const c = chgUsd[i];
+            const col = c > 0 ? green : c < 0 ? red : dim;
+            const s = c >= 0 ? "+" : "-";
+            const pctStr = chgPct[i] != null ? ` (${s}${Math.abs(chgPct[i]).toFixed(2)}%)` : "";
+            const abs = Math.abs(c).toLocaleString("en-US", { maximumFractionDigits: 0 });
+            lines.push(`<span style="color:${col}">当日涨跌: <b>${s}$${abs}</b>${pctStr}</span>`);
+          } else if (i === 0) {
+            lines.push(`<span style="color:${dim}">当日涨跌: <b>首日</b></span>`);
+          }
           return [date, ...lines].join("<br>");
         },
       },
