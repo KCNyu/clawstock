@@ -423,6 +423,11 @@ layout: null
   .delta-table thead th { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
   .delta-table tbody tr:last-child td { border-bottom: none; }
 
+  /* Return-rate breakdown */
+  .ret-breakdown { margin-top: 18px; }
+  .ret-breakdown-title { font-size: 13px; font-weight: 600; margin: 0 0 2px; color: var(--text); }
+  .ret-breakdown-title .muted { font-weight: 500; font-size: 11px; text-transform: none; letter-spacing: 0; }
+
   /* HHI gauges */
   .hhi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .hhi-card {
@@ -1278,6 +1283,27 @@ layout: null
           <div class="val" id="kpi-maxdd">—</div>
           <div class="sub muted">all-time from peak</div>
         </div>
+      </div>
+
+      <div class="ret-breakdown">
+        <h4 class="ret-breakdown-title">回报率口径明细 <span class="muted">(USD-eq · 全期)</span></h4>
+        <p class="chart-hint" style="margin-top:4px">同一笔总盈亏、换三个分母 → 三个回报率，基准越大回报率越低。分子：<b>浮动率</b>只算浮动盈亏，<b>总回报率/净本金率</b>算浮动+已实现。<b>真实回报率夹在总回报率与净本金率之间</b>，落点取决于已实现利润有多少再投/提现（需券商入金流水才能精确）。</p>
+        <table class="delta-table" style="margin-top:6px">
+          <thead>
+            <tr><th>口径</th><th>盈亏 (分子)</th><th>基准 (分母)</th><th>回报率</th></tr>
+          </thead>
+          <tbody id="retbreak-tbody">
+            <tr><td colspan="4" class="muted">—</td></tr>
+          </tbody>
+        </table>
+        <table class="delta-table" style="margin-top:10px">
+          <thead>
+            <tr><th>分区</th><th>浮动率</th><th>总回报率</th><th>净本金率</th></tr>
+          </thead>
+          <tbody id="retbreak-region-tbody">
+            <tr><td colspan="4" class="muted">—</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -2524,6 +2550,40 @@ layout: null
 
     setVal("kpi-maxdd", maxDd < 0 ? fmtPct(maxDd, 1) : (bookUsd.length ? "0.0%" : DASH));
     setClass("kpi-maxdd", maxDd < 0 ? "neg" : "neutral");
+
+    // ── 回报率口径明细表：同一总盈亏换三个分母 ──
+    const fmtP = v => (v != null ? fmtPct(v, 1) : DASH);
+    const cls  = v => `class="${pnlClass(v)}"`;
+    const money = v => (v != null ? fmtMoney(v, "USD") : DASH);
+    const mainRows = [
+      ["当前浮动率", unrealizedUsd, currentCostUsd, floatPct],
+      ["总回报率",   totalPnl,      capUsd,         totalRetPct],
+      ["净本金率",   nprProfit,     nprUsd,         nprPct],
+    ];
+    const mainTb = document.getElementById("retbreak-tbody");
+    if (mainTb) {
+      mainTb.innerHTML = mainRows.map(([name, num, den, pct]) =>
+        `<tr><td>${name}</td><td ${cls(num)}>${money(num)}</td>`
+        + `<td>${money(den)}</td><td ${cls(pct)}>${fmtP(pct)}</td></tr>`).join("");
+    }
+    const regionRates = (realized, unrealized, cost) => {
+      if (realized == null || unrealized == null || !cost) return { flo: null, tot: null, net: null };
+      const profit = realized + unrealized;
+      return {
+        flo: cost > 0 ? unrealized / cost * 100 : null,
+        tot: (cost + realized) > 0 ? profit / (cost + realized) * 100 : null,
+        net: (cost - realized) > 0 ? profit / (cost - realized) * 100 : null,
+      };
+    };
+    const usR = regionRates(safe(rv, "us", "realized"), safe(rv, "us", "unrealized"), safe(DATA, "totals", "us", "cost_usd"));
+    const hkR = regionRates(safe(rv, "hk", "realized"), safe(rv, "hk", "unrealized"), safe(DATA, "totals", "hk", "cost_hkd"));
+    const regionTb = document.getElementById("retbreak-region-tbody");
+    if (regionTb) {
+      const rrow = (label, r) =>
+        `<tr><td>${label}</td><td ${cls(r.flo)}>${fmtP(r.flo)}</td>`
+        + `<td ${cls(r.tot)}>${fmtP(r.tot)}</td><td ${cls(r.net)}>${fmtP(r.net)}</td></tr>`;
+      regionTb.innerHTML = rrow("US", usR) + rrow("HK", hkR);
+    }
   }
 
   function renderEquityChart() {
