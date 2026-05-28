@@ -2581,9 +2581,12 @@ layout: null
     const benchColor = getCSS("--accent-2") || "#a78bfa";
 
     const isMobile = window.innerWidth < 1024;
+    // 天数 >30 后启用底部缩放滑块，默认显示最近 ~30 天，可拖动看全程。
+    const manyPts = dates.length > 30;
+    const zoomStart = manyPts ? Math.max(0, (1 - 30 / dates.length) * 100) : 0;
     const opt = {
       ...baseChartOpts(),
-      grid: { left: isMobile ? 56 : 72, right: isMobile ? 48 : 68, top: 34, bottom: 36 },
+      grid: { left: isMobile ? 56 : 72, right: isMobile ? 48 : 68, top: 34, bottom: manyPts ? 58 : 36 },
       legend: { data: ["总资产", "成本基础", "SPY 等值", "回撤"], textStyle: { color: chartTextColor(), fontSize: 10 }, top: 4, itemGap: 10 },
       tooltip: {
         trigger: "axis", axisPointer: { type: "cross" },
@@ -2616,8 +2619,14 @@ layout: null
       xAxis: {
         type: "category", data: dates,
         axisLine: { lineStyle: { color: chartGridColor() } },
-        axisLabel: { color: chartTextColor(), fontSize: 9, rotate: dates.length > 6 ? 35 : 0 },
+        axisLabel: { color: chartTextColor(), fontSize: 9, rotate: dates.length > 6 ? 35 : 0,
+          hideOverlap: true, formatter: (v) => (v || "").slice(5) },
       },
+      dataZoom: manyPts ? [
+        { type: "slider", start: zoomStart, end: 100, height: 16, bottom: 6,
+          borderColor: chartGridColor(), fillerColor: "rgba(91,141,239,0.15)",
+          handleSize: "120%", textStyle: { color: chartTextColor(), fontSize: 8 } },
+      ] : undefined,
       yAxis: [
         {
           type: "value", name: "USD",
@@ -2639,7 +2648,7 @@ layout: null
       series: [
         { name: "总资产", type: "line", data: bookUsd, yAxisIndex: 0,
           itemStyle: { color: accent }, lineStyle: { width: 2.5 }, smooth: true,
-          symbol: "circle", symbolSize: 5,
+          symbol: dates.length > 45 ? "none" : "circle", symbolSize: 5,
           areaStyle: { color: accent, opacity: 0.08 }, z: 3 },
         { name: "成本基础", type: "line", data: costUsd, yAxisIndex: 0,
           itemStyle: { color: dim }, lineStyle: { width: 1, type: "dashed", color: dim },
@@ -2698,9 +2707,12 @@ layout: null
     }));
 
     const isMobile = window.innerWidth < 1024;
+    // 天数 >30 后启用底部缩放滑块，默认显示最近 ~30 天，可拖动看全程。
+    const manyPts = dates.length > 30;
+    const zoomStart = manyPts ? Math.max(0, (1 - 30 / dates.length) * 100) : 0;
     const opt = {
       ...baseChartOpts(),
-      grid: { left: isMobile ? 56 : 70, right: isMobile ? 56 : 70, top: 34, bottom: 36 },
+      grid: { left: isMobile ? 56 : 70, right: isMobile ? 56 : 70, top: 34, bottom: manyPts ? 58 : 36 },
       legend: { data: ["每日 P&L", "累计"], textStyle: { color: chartTextColor(), fontSize: 10 }, top: 4, itemGap: 10 },
       tooltip: {
         trigger: "axis", axisPointer: { type: "cross" },
@@ -2716,8 +2728,14 @@ layout: null
       xAxis: {
         type: "category", data: dates,
         axisLine: { lineStyle: { color: chartGridColor() } },
-        axisLabel: { color: chartTextColor(), fontSize: 9, rotate: dates.length > 6 ? 35 : 0 },
+        axisLabel: { color: chartTextColor(), fontSize: 9, rotate: dates.length > 6 ? 35 : 0,
+          hideOverlap: true, formatter: (v) => (v || "").slice(5) },
       },
+      dataZoom: manyPts ? [
+        { type: "slider", start: zoomStart, end: 100, height: 16, bottom: 6,
+          borderColor: chartGridColor(), fillerColor: "rgba(91,141,239,0.15)",
+          handleSize: "120%", textStyle: { color: chartTextColor(), fontSize: 8 } },
+      ] : undefined,
       yAxis: [
         {
           type: "value", name: "每日 $",
@@ -2740,7 +2758,7 @@ layout: null
         { name: "每日 P&L", type: "bar", data: bars, yAxisIndex: 0, barWidth: "55%" },
         { name: "累计", type: "line", data: cumulative, yAxisIndex: 1,
           itemStyle: { color: accent }, lineStyle: { width: 2 },
-          symbol: "circle", symbolSize: 4, smooth: true, z: 3 },
+          symbol: dates.length > 45 ? "none" : "circle", symbolSize: 4, smooth: true, z: 3 },
       ],
     };
     if (!dates.length) {
