@@ -423,10 +423,22 @@ layout: null
   .delta-table thead th { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
   .delta-table tbody tr:last-child td { border-bottom: none; }
 
-  /* Return-rate breakdown */
-  .ret-breakdown { margin-top: 18px; }
-  .ret-breakdown-title { font-size: 13px; font-weight: 600; margin: 0 0 2px; color: var(--text); }
-  .ret-breakdown-title .muted { font-weight: 500; font-size: 11px; text-transform: none; letter-spacing: 0; }
+  /* Return-rate breakdown (collapsible) */
+  .ret-breakdown { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .ret-breakdown-summary {
+    cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text);
+    list-style: none; display: flex; align-items: center; gap: 7px; user-select: none;
+  }
+  .ret-breakdown-summary::-webkit-details-marker { display: none; }
+  .ret-breakdown-summary::before {
+    content: "▸"; color: var(--text-dim); font-size: 10px;
+    transition: transform 0.15s ease; display: inline-block;
+  }
+  .ret-breakdown[open] .ret-breakdown-summary::before { transform: rotate(90deg); }
+  .ret-breakdown-summary:hover { color: var(--accent); }
+  .ret-breakdown-summary .muted { font-weight: 500; font-size: 11px; text-transform: none; letter-spacing: 0; }
+  .ret-breakdown-body { animation: retfade 0.15s ease; }
+  @keyframes retfade { from { opacity: 0; } to { opacity: 1; } }
 
   /* HHI gauges */
   .hhi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -1285,26 +1297,28 @@ layout: null
         </div>
       </div>
 
-      <div class="ret-breakdown">
-        <h4 class="ret-breakdown-title">回报率口径明细 <span class="muted">(USD-eq · 全期)</span></h4>
-        <p class="chart-hint" style="margin-top:4px">同一笔总盈亏、换三个分母 → 三个回报率，基准越大回报率越低。分子：<b>浮动率</b>只算浮动盈亏，<b>总回报率/净本金率</b>算浮动+已实现。<b>真实回报率夹在总回报率与净本金率之间</b>，落点取决于已实现利润有多少再投/提现（需券商入金流水才能精确）。</p>
-        <table class="delta-table" style="margin-top:6px">
-          <thead>
-            <tr><th>口径</th><th>盈亏 (分子)</th><th>基准 (分母)</th><th>回报率</th></tr>
-          </thead>
-          <tbody id="retbreak-tbody">
-            <tr><td colspan="4" class="muted">—</td></tr>
-          </tbody>
-        </table>
-        <table class="delta-table" style="margin-top:10px">
-          <thead>
-            <tr><th>分区</th><th>浮动率</th><th>总回报率</th><th>净本金率</th></tr>
-          </thead>
-          <tbody id="retbreak-region-tbody">
-            <tr><td colspan="4" class="muted">—</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <details class="ret-breakdown">
+        <summary class="ret-breakdown-summary">回报率口径明细 <span class="muted">三口径 分子÷分母 · US/HK 分区</span></summary>
+        <div class="ret-breakdown-body">
+          <p class="chart-hint" style="margin-top:10px">同一笔总盈亏、换三个分母 → 三个回报率，基准越大回报率越低。分子：<b>浮动率</b>只算浮动盈亏，<b>总回报率/净本金率</b>算浮动+已实现。<b>真实回报率夹在总回报率与净本金率之间</b>，落点取决于已实现利润有多少再投/提现（需券商入金流水才能精确）。</p>
+          <table class="delta-table" style="margin-top:6px">
+            <thead>
+              <tr><th>口径</th><th>盈亏 (分子)</th><th>基准 (分母)</th><th>回报率</th></tr>
+            </thead>
+            <tbody id="retbreak-tbody">
+              <tr><td colspan="4" class="muted">—</td></tr>
+            </tbody>
+          </table>
+          <table class="delta-table" style="margin-top:10px">
+            <thead>
+              <tr><th>分区</th><th>浮动率</th><th>总回报率</th><th>净本金率</th></tr>
+            </thead>
+            <tbody id="retbreak-region-tbody">
+              <tr><td colspan="4" class="muted">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
     </div>
 
     <div class="card">
@@ -2554,7 +2568,11 @@ layout: null
     // ── 回报率口径明细表：同一总盈亏换三个分母 ──
     const fmtP = v => (v != null ? fmtPct(v, 1) : DASH);
     const cls  = v => `class="${pnlClass(v)}"`;
-    const money = v => (v != null ? fmtMoney(v, "USD") : DASH);
+    const money = v => {
+      if (v == null) return DASH;
+      const r = Math.round(v);
+      return (r < 0 ? "-$" : "$") + Math.abs(r).toLocaleString("en-US");
+    };
     const mainRows = [
       ["当前浮动率", unrealizedUsd, currentCostUsd, floatPct],
       ["总回报率",   totalPnl,      capUsd,         totalRetPct],
