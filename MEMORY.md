@@ -109,3 +109,12 @@
 
 <!-- openclaw-memory-promotion:memory:memory/2026-05-14.md:5:5 -->
 - **恒指** 26,452 ▲0.24% | **恒科** 5,110 ▲0.33% [score=0.889 recalls=0 avg=0.620 source=memory/2026-05-14.md:5-5]
+
+## Promoted From Short-Term Memory (2026-05-28)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-22-0239.md:15:17 -->
+- "chat_id": "o9cq80-hGTruM-OSs8kNmDOtLVZI@im.wechat", "message_id": "openclaw-weixin:1779387377128-998d269b", "timestamp": "Fri 2026-05-22 02:15 GMT+8" [score=0.883 recalls=0 avg=0.620 source=memory/2026-05-22-0239.md:15-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-22-0239.md:21:22 -->
+- 你去github看看openclaw5.19 cron有没有人反馈 assistant: 找到了！今天刚提交的 bug： [score=0.883 recalls=0 avg=0.620 source=memory/2026-05-22-0239.md:21-22]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-22-0239.md:24:24 -->
+- **#85052 — Gateway heap OOM: cron runtime contexts retain sessions.json and skillsSnapshot.prompt** [score=0.883 recalls=0 avg=0.620 source=memory/2026-05-22-0239.md:24-24]
