@@ -879,6 +879,7 @@ layout: null
   <nav class="tabs" role="tablist">
     <button class="tab-btn active" data-tab="hero" role="tab" aria-selected="true">总览 Hero</button>
     <button class="tab-btn" data-tab="drill" role="tab">明细 Drill</button>
+    <button class="tab-btn" data-tab="plan" role="tab">计划 Plan</button>
     <button class="tab-btn" data-tab="reflect" role="tab">复盘 Reflect</button>
   </nav>
 </header>
@@ -886,7 +887,7 @@ layout: null
 <main>
 
   <!-- ============================================
-       HERO — totals, deltas, HHI, anomalies, movers, calibration
+       HERO — totals, deltas, HHI, anomalies, movers, macro
        ============================================ -->
   <section class="panel active" data-panel="hero">
     <h2>总览 Hero</h2>
@@ -1023,12 +1024,6 @@ layout: null
       <div class="risk-alerts" id="risk-alerts"></div>
     </div>
 
-    <div class="card" id="watch-levels-card" style="display:none">
-      <h3>今日触发位 <span class="muted" id="watch-levels-date" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">Watch Levels</span></h3>
-      <p class="chart-hint">盘前计划写死的触发价位 vs 现价。距离越近越该盯，&lt;2% 标红。</p>
-      <div class="watch-levels" id="watch-levels-list"></div>
-    </div>
-
     <div class="card">
       <h3>Anomalies <span class="badge muted" id="anom-count"></span></h3>
       <div class="anomaly-list" id="anomaly-list">
@@ -1089,20 +1084,10 @@ layout: null
       <div id="sentiment-drill" class="sentiment-drill"></div>
     </div>
 
-    <div class="card">
-      <h3>Calibration · 30d</h3>
-      <div class="calib-badge" id="calib-badge">
-        <div>
-          <div class="brier-val" id="brier-val">—</div>
-          <div class="meta" id="brier-meta">—</div>
-        </div>
-        <div class="tier" id="brier-tier">—</div>
-      </div>
-    </div>
   </section>
 
   <!-- ============================================
-       DRILL — holdings, peer divergence, recent actions
+       DRILL — holdings, sector, winners/losers, weight×conviction
        ============================================ -->
   <section class="panel" data-panel="drill">
     <h2>明细 Drill</h2>
@@ -1168,16 +1153,83 @@ layout: null
       </div>
     </div>
 
+  </section>
+
+  <!-- ============================================
+       PLAN — 触发位 / 计划动作 / 决策时间线 / 计划复盘
+       ============================================ -->
+  <section class="panel" data-panel="plan">
+    <h2>计划 Plan</h2>
+
+    <div class="card" id="watch-levels-card" style="display:none">
+      <h3>今日触发位 <span class="muted" id="watch-levels-date" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">Watch Levels</span></h3>
+      <p class="chart-hint">盘前计划写死的触发价位 vs 现价。距离越近越该盯，&lt;2% 标红。</p>
+      <div class="watch-levels" id="watch-levels-list"></div>
+    </div>
+
     <div class="card">
       <h3>Recent Plan Actions <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">(last 5d)</span></h3>
       <div class="plan-actions" id="plan-actions">
         <div class="empty-state">No recent plan actions.</div>
       </div>
     </div>
+
+    <div class="card">
+      <h3>Plan Timeline <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(last 15 actions · 包含 rationale)</span></h3>
+      <p class="chart-hint">每条卡片 = 一次具体计划：写的时候置信度 / 当初理由 / 现在结果。绿色边 = win，红色边 = loss，灰色边 = 待结算。<b>followed=true</b> 才记入命中率。</p>
+      <div class="plan-timeline" id="plan-timeline">
+        <div class="empty-state">No timeline data yet.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Plan Review <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(last 30d)</span></h3>
+      <p class="chart-hint">每天 08:00 brief 写的 plan，T+1 起检测执行率，T+5 起算输赢。Brier 越接近 0 越准。</p>
+      <div class="kpi-grid" style="margin-bottom:14px">
+        <div class="kpi-cell">
+          <div class="lbl">Plans logged</div>
+          <div class="val" id="plan-total">—</div>
+          <div class="sub muted">30d</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="lbl">Followed rate</div>
+          <div class="val" id="plan-followed">—</div>
+          <div class="sub" id="plan-followed-sub">—</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="lbl">Win rate</div>
+          <div class="val" id="plan-winrate">—</div>
+          <div class="sub muted">followed only</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="lbl">Brier score</div>
+          <div class="val" id="plan-brier">—</div>
+          <div class="sub muted">0 = perfect</div>
+        </div>
+      </div>
+      <div id="plan-bucket-bars"></div>
+      <div class="trig-block">
+        <div class="trig-title">By Trigger Type — 哪类计划最该信 / 最该改</div>
+        <div id="plan-trigger-bars">
+          <div class="empty-state" style="font-size:11px">No trigger data yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Calibration · 30d</h3>
+      <div class="calib-badge" id="calib-badge">
+        <div>
+          <div class="brier-val" id="brier-val">—</div>
+          <div class="meta" id="brier-meta">—</div>
+        </div>
+        <div class="tier" id="brier-tier">—</div>
+      </div>
+    </div>
   </section>
 
   <!-- ============================================
-       REFLECT — calibration, equity, plan-outcome heatmap
+       REFLECT — track record, equity, drawdown
        ============================================ -->
   <section class="panel" data-panel="reflect">
     <h2>复盘 Reflect</h2>
@@ -1269,47 +1321,6 @@ layout: null
       <div id="chart-realized" class="chart-box" style="height:220px"></div>
     </div>
 
-    <div class="card">
-      <h3>Plan Timeline <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(last 15 actions · 包含 rationale)</span></h3>
-      <p class="chart-hint">每条卡片 = 一次具体计划：写的时候置信度 / 当初理由 / 现在结果。绿色边 = win，红色边 = loss，灰色边 = 待结算。<b>followed=true</b> 才记入命中率。</p>
-      <div class="plan-timeline" id="plan-timeline">
-        <div class="empty-state">No timeline data yet.</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>Plan Review <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(last 30d)</span></h3>
-      <p class="chart-hint">每天 08:00 brief 写的 plan，T+1 起检测执行率，T+5 起算输赢。Brier 越接近 0 越准。</p>
-      <div class="kpi-grid" style="margin-bottom:14px">
-        <div class="kpi-cell">
-          <div class="lbl">Plans logged</div>
-          <div class="val" id="plan-total">—</div>
-          <div class="sub muted">30d</div>
-        </div>
-        <div class="kpi-cell">
-          <div class="lbl">Followed rate</div>
-          <div class="val" id="plan-followed">—</div>
-          <div class="sub" id="plan-followed-sub">—</div>
-        </div>
-        <div class="kpi-cell">
-          <div class="lbl">Win rate</div>
-          <div class="val" id="plan-winrate">—</div>
-          <div class="sub muted">followed only</div>
-        </div>
-        <div class="kpi-cell">
-          <div class="lbl">Brier score</div>
-          <div class="val" id="plan-brier">—</div>
-          <div class="sub muted">0 = perfect</div>
-        </div>
-      </div>
-      <div id="plan-bucket-bars"></div>
-      <div class="trig-block">
-        <div class="trig-title">By Trigger Type — 哪类计划最该信 / 最该改</div>
-        <div id="plan-trigger-bars">
-          <div class="empty-state" style="font-size:11px">No trigger data yet.</div>
-        </div>
-      </div>
-    </div>
   </section>
 
 </main>
