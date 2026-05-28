@@ -877,9 +877,9 @@ layout: null
     </div>
   </div>
   <nav class="tabs" role="tablist">
-    <button class="tab-btn active" data-tab="hero" role="tab" aria-selected="true">Hero</button>
-    <button class="tab-btn" data-tab="drill" role="tab">Drill</button>
-    <button class="tab-btn" data-tab="reflect" role="tab">Reflect</button>
+    <button class="tab-btn active" data-tab="hero" role="tab" aria-selected="true">总览 Hero</button>
+    <button class="tab-btn" data-tab="drill" role="tab">明细 Drill</button>
+    <button class="tab-btn" data-tab="reflect" role="tab">复盘 Reflect</button>
   </nav>
 </header>
 
@@ -889,7 +889,7 @@ layout: null
        HERO — totals, deltas, HHI, anomalies, movers, calibration
        ============================================ -->
   <section class="panel active" data-panel="hero">
-    <h2>Hero</h2>
+    <h2>总览 Hero</h2>
 
     <div class="card market-card">
       <h3>Market Snapshot <span class="muted" id="market-asof" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">—</span></h3>
@@ -1105,7 +1105,7 @@ layout: null
        DRILL — holdings, peer divergence, recent actions
        ============================================ -->
   <section class="panel" data-panel="drill">
-    <h2>Drill</h2>
+    <h2>明细 Drill</h2>
 
     <div class="card">
       <h3>Holdings <span class="muted" id="holdings-count" style="text-transform:none;letter-spacing:0;font-weight:500"></span></h3>
@@ -1180,7 +1180,7 @@ layout: null
        REFLECT — calibration, equity, plan-outcome heatmap
        ============================================ -->
   <section class="panel" data-panel="reflect">
-    <h2>Reflect</h2>
+    <h2>复盘 Reflect</h2>
 
     <div class="card">
       <h3>Track Record <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(USD-eq · 全期)</span></h3>
@@ -2587,17 +2587,17 @@ layout: null
               : (v != null ? "$" + v.toLocaleString("en-US", { maximumFractionDigits: 0 }) : "—");
             return `${p.marker} ${p.seriesName}: <b>${fmt}</b>`;
           });
-          // 当日涨跌 = 总资产日环比，与"回撤"分开标：回撤是"距历史峰值多少"，
-          // 连续新高时恒为 0%，看当日涨跌才知道资产其实每天在动。
+          // 总资产较昨日 = 本曲线两点之差(含隔夜/取数时点)，与"回撤"分列。
+          // 注意：这≠"每日P&L图"的 today_change(今日盘中相对昨收)，两者口径不同。
           if (i != null && chgUsd[i] != null) {
             const c = chgUsd[i];
             const col = c > 0 ? green : c < 0 ? red : dim;
             const s = c >= 0 ? "+" : "-";
             const pctStr = chgPct[i] != null ? ` (${s}${Math.abs(chgPct[i]).toFixed(2)}%)` : "";
             const abs = Math.abs(c).toLocaleString("en-US", { maximumFractionDigits: 0 });
-            lines.push(`<span style="color:${col}">当日涨跌: <b>${s}$${abs}</b>${pctStr}</span>`);
+            lines.push(`<span style="color:${col}">总资产较昨日: <b>${s}$${abs}</b>${pctStr}</span>`);
           } else if (i === 0) {
-            lines.push(`<span style="color:${dim}">当日涨跌: <b>首日</b></span>`);
+            lines.push(`<span style="color:${dim}">总资产较昨日: <b>首日</b></span>`);
           }
           return [date, ...lines].join("<br>");
         },
