@@ -1253,7 +1253,7 @@ layout: null
 
     <div class="card">
       <h3>Equity Curve · USD-eq</h3>
-      <p class="chart-hint">蓝实线 = 日终总资产 USD-eq；灰虚线 = 累计成本基础；<b>紫线 = SPY 等值</b>（"当初同等美元 all-in SPY 到今天的账面"，非美股交易日延用前值）；红色填充 = 历史峰值回撤。<br>读法：蓝线在紫线上方 = 跑赢大盘；红色越深 = 回撤越大。</p>
+      <p class="chart-hint">蓝实线 = 日终总资产 USD-eq（持仓市值 + 已实现现金）；灰虚线 = 累计成本基础；<b>紫线 = SPY 等值</b>（"当初同等美元 all-in SPY 到今天的账面"，非美股交易日延用前值）；红色填充 = 历史峰值回撤（按总资产口径，卖出不再造成假回撤）。<br>读法：蓝线在紫线上方 = 跑赢大盘；红色越深 = 回撤越大。</p>
       <div id="chart-equity" class="chart-box"></div>
     </div>
 
@@ -2413,7 +2413,8 @@ layout: null
       date: s.date,
       pnl: ((s.us_today_change ?? 0) + ((s.hk_today_change ?? 0) / fx)),
     }));
-    const bookUsd = series.map(s => (s.us_total_value ?? 0) + ((s.hk_total_value ?? 0) / fx));
+    // equity basis (持仓市值 + 已实现现金) so sells don't punch a fake cliff into the curve
+    const bookUsd = series.map(s => (s.us_equity ?? 0) + ((s.hk_equity ?? 0) / fx));
     // Current holdings cost (USD-eq) for 浮动率 — from totals API (more authoritative
     // than digging through snapshots which may lag).
     const usCostNow = safe(DATA, "totals", "us", "cost_usd") ?? 0;
@@ -2507,10 +2508,11 @@ layout: null
     const series = Array.from(byDate.values()).sort((a, b) => a.date.localeCompare(b.date));
 
     const dates = series.map(s => s.date);
-    // Combined book value in USD-eq (HK converted at current FX)
+    // Combined equity in USD-eq = 持仓市值 + 已实现现金 (HK converted at current FX).
+    // equity not raw holdings value, so sells (holdings→cash) don't drop the curve.
     const bookUsd = series.map(s => {
-      const u = s.us_total_value != null ? s.us_total_value : 0;
-      const h = s.hk_total_value != null ? s.hk_total_value / fx : 0;
+      const u = s.us_equity != null ? s.us_equity : 0;
+      const h = s.hk_equity != null ? s.hk_equity / fx : 0;
       return Math.round((u + h) * 100) / 100;
     });
     // Combined cost basis in USD-eq (baseline reference line)
