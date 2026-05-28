@@ -1,0 +1,103 @@
+{
+  "date": "2026-05-28",
+  "fx_rate_usdhkd": 7.8,
+  "fx_source": "HARDCODED_FALLBACK",
+  "regime": {
+    "us": "trending-up",
+    "hk": "range-bound"
+  },
+  "book": {
+    "usd_total_pnl": -184.08,
+    "hkd_total_pnl": -1435.81,
+    "hk_leg_hkd": -2448.64,
+    "us_leg_usd": 129.85
+  },
+  "actions": [
+    {
+      "ticker": "ROBN",
+      "bucket": "cut",
+      "size_pct": 50,
+      "size_shares": 20,
+      "trigger_type": "open",
+      "trigger_price": null,
+      "trigger_condition": "开盘任意价砍 20 股",
+      "confidence": 0.55,
+      "rationale": "连续三期 cut 计划未执行 — 执行断层必须解决；-19.9% 浮亏 + HOOD thesis 证伪 + 杠杆 decay"
+    },
+    {
+      "ticker": "PLTU",
+      "bucket": "cut",
+      "size_pct": 50,
+      "size_shares": 7,
+      "trigger_type": "open",
+      "trigger_price": null,
+      "trigger_condition": "开盘任意价砍 7 股留 7 股",
+      "confidence": 0.55,
+      "rationale": "PLTR insider selling $43M + 92x fwd PE + 2x decay 持续侵蚀；但 PLTR Q1 beat 基本面仍在，留 7 股看底"
+    },
+    {
+      "ticker": "07226",
+      "bucket": "trim_on_rebound",
+      "size_pct": 16,
+      "size_shares": 1000,
+      "trigger_type": "price_above",
+      "trigger_price": 4.0,
+      "trigger_condition": "反弹到 4.0+ 减 1000 股降 HHI",
+      "confidence": 0.60,
+      "rationale": "HHI 0.435 🔴 危险集中必须降；杠杆 decay 不可逆；HSTECH 4900 支撑位考验"
+    },
+    {
+      "ticker": "00100",
+      "bucket": "hold_and_watch",
+      "size_pct": 0,
+      "size_shares": 0,
+      "trigger_type": "price_below",
+      "trigger_price": 750,
+      "trigger_condition": "跌破 750 止损",
+      "confidence": 0.70,
+      "rationale": "恒科纳入 6/8 催化在即 + rev +159% + UBS 目标 1000；但 +10.34% 已反映部分预期，不追高"
+    },
+    {
+      "ticker": "RKLB",
+      "bucket": "hold_and_watch",
+      "size_pct": 0,
+      "size_shares": 0,
+      "trigger_type": "price_below",
+      "trigger_price": 130,
+      "trigger_condition": "跌破 130 止损（上移自 120）",
+      "confidence": 0.75,
+      "rationale": "+111.6% 浮盈 + $2.2B backlog + Neutron 首飞在即；30d +74% 过热但 momentum 强"
+    },
+    {
+      "ticker": "CRCL",
+      "bucket": "add_only_on_trigger",
+      "size_pct": 0,
+      "size_shares": 1,
+      "trigger_type": "price_below",
+      "trigger_price": 95,
+      "trigger_condition": "跌到 $95 以下加 1 股",
+      "confidence": 0.50,
+      "rationale": "USDC $77B +28% 首超 Tether 基本面强；但 Q1 miss + insider sell + 利率敏感 — signal 分裂"
+    },
+    {
+      "ticker": "MSFU",
+      "bucket": "hold_and_watch",
+      "size_pct": 0,
+      "size_shares": 0,
+      "trigger_type": "price_below",
+      "trigger_price": 26,
+      "trigger_condition": "跌破 26 止损",
+      "confidence": 0.65,
+      "rationale": "MSFT Q3 beat rev $82.9B +18% Azure +29%；2x 杠杆 + 大盘风险需设防"
+    }
+  ],
+  "watch_levels": {
+    "hstech_support": 4900,
+    "hstech_breakdown": 4800,
+    "00100_stop": 750,
+    "rklb_stop": 130,
+    "msfu_stop": 26,
+    "book_force_derisk_hkd": -5000,
+    "gdp_trigger": "Q1 2nd estimate < 2.0% = risk-off"
+  }
+}
