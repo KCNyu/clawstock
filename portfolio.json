@@ -4,6 +4,8 @@
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
+      "true_principal": 2471.12,
+      "true_principal_note": "自掏现金真实本金（USD）= 全部交易流水按时间轴走一遍的峰值净投入 @2026-05-06。初始 QQQ 1@622.27 + NVDA 6@187.77 ≈ $1749，卖出回笼再投不重复计，外加后续补入。回报率用它当分母（≈72%），而非 cost−realized（=1255 会把分母做小、虚高到142%）。来源：2026-05-29 与 kcn 对账确认。改持仓/补流水后须按现金流账本重算此值。",
       "holdings": [
         {
           "ticker": "NVDA",

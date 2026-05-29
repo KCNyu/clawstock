@@ -1214,12 +1214,18 @@ def compute_net_principal_return(portfolio, fx_rate):
     两个并排给 kcn 看，一上一下夹住真实回报。See 2026-05-29 conversation.
 
     net_principal ≤ 0 ⇒ 已收回的现金 ≥ 投入，纯用利润在玩，return_pct 无意义置 None。
+
+    true_principal override (2026-05-29)：若 region 配了 `true_principal`（从交易
+    现金流账本反推的峰值净投入＝实际自掏现金），优先用它当分母——net_principal
+    (cost−realized) 会被频繁 churn 把分母做小、return_pct 虚高（US 一度到 142%）。
+    true_principal 是更诚实的"我实际投了多少"。net_principal 仍照算并保留在输出里
+    供参考；combined 也跟随用各 region 实际分母（denom）。
     """
     out = {
         'us':  {'net_principal': None, 'total_profit': None, 'return_pct': None},
         'hk':  {'net_principal': None, 'total_profit': None, 'return_pct': None},
         'combined_usd': {'net_principal': None, 'total_profit': None, 'return_pct': None},
-        'formula': '净投入本金 = 累计成本 − 已实现；回报率 = (浮动 + 已实现) ÷ 净投入本金',
+        'formula': '回报率 = (浮动 + 已实现) ÷ 本金；本金优先用 true_principal（峰值净投入），否则用 净投入本金=累计成本−已实现',
     }
 
     def _region(pf):
@@ -1228,20 +1234,39 @@ def compute_net_principal_return(portfolio, fx_rate):
         unrl = pf.get('total_pnl', 0) or 0
         net_principal = round(cost - real, 2)
         total_profit = round(real + unrl, 2)
-        ret = round(total_profit / net_principal * 100, 2) if net_principal > 0 else None
-        return {'net_principal': net_principal, 'total_profit': total_profit, 'return_pct': ret}
+        true_p = pf.get('true_principal')
+        denom = round(true_p, 2) if (true_p and true_p > 0) else net_principal
+        ret = round(total_profit / denom * 100, 2) if denom and denom > 0 else None
+        res = {
+            'net_principal': net_principal,
+            'total_profit':  total_profit,
+            'return_pct':    ret,
+            'return_basis':  'true_principal' if (true_p and true_p > 0) else 'net_principal',
+            '_denom':        denom,
+        }
+        if true_p and true_p > 0:
+            res['true_principal'] = round(true_p, 2)
+            # 自洽跳闸：true_principal=峰值净投入，理应 ≥ 当前净投入(cost−realized)。
+            # 若反超，说明加仓/补流水后常量没重算 → 警告（不阻断，回报率仍出）。
+            if net_principal > true_p + 1:
+                print(f'  warn: true_principal({true_p}) < net_principal({net_principal}) — 常量疑似过期，'
+                      f'改持仓后请按现金流账本重算 true_principal', file=sys.stderr)
+        return res
 
     try:
         out['us'] = _region(portfolio['portfolios']['us_stocks'])
         out['hk'] = _region(portfolio['portfolios']['hk_stocks'])
         if fx_rate and fx_rate > 0:
-            np_usd = round(out['us']['net_principal'] + out['hk']['net_principal'] / fx_rate, 2)
+            np_usd = round(out['us']['_denom'] + out['hk']['_denom'] / fx_rate, 2)
             tp_usd = round(out['us']['total_profit'] + out['hk']['total_profit'] / fx_rate, 2)
             out['combined_usd'] = {
                 'net_principal': np_usd,
                 'total_profit': tp_usd,
                 'return_pct': round(tp_usd / np_usd * 100, 2) if np_usd > 0 else None,
             }
+        # _denom 仅用于 combined 计算，不外泄到输出
+        for r in ('us', 'hk'):
+            out[r].pop('_denom', None)
     except Exception as e:
         print(f'  warn: compute_net_principal_return failed: {e}', file=sys.stderr)
     return out

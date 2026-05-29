@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T05:06:09.865207Z",
+  "generated_at": "2026-05-29T05:20:26.158871Z",
   "last_updated": "2026/05/29 12:00 HKT",
   "fx": {
     "usdhkd": 7.8346,
@@ -3841,18 +3841,21 @@
     "us": {
       "net_principal": 1255.42,
       "total_profit": 1787.19,
-      "return_pct": 142.36
+      "return_pct": 72.32,
+      "return_basis": "true_principal",
+      "true_principal": 2471.12
     },
     "hk": {
       "net_principal": 81017.08,
       "total_profit": 6882.12,
-      "return_pct": 8.49
+      "return_pct": 8.49,
+      "return_basis": "net_principal"
     },
     "combined_usd": {
-      "net_principal": 11596.35,
+      "net_principal": 12812.05,
       "total_profit": 2665.62,
-      "return_pct": 22.99
+      "return_pct": 20.81
     },
-    "formula": "净投入本金 = 累计成本 − 已实现；回报率 = (浮动 + 已实现) ÷ 净投入本金"
+    "formula": "回报率 = (浮动 + 已实现) ÷ 本金；本金优先用 true_principal（峰值净投入），否则用 净投入本金=累计成本−已实现"
   }
 }
