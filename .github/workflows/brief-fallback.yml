@@ -30,6 +30,14 @@ jobs:
 
       - run: pip install --quiet requests numpy
 
+      # Set git identity up front: brief_postflight commits internally (rebuild
+      # dashboard + auto-commit), so it needs an identity well before the final
+      # Commit+push step — otherwise it dies with "empty ident name" on the runner.
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Check if openclaw already ran today's brief
         id: check
         run: |
