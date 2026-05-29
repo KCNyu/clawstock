@@ -379,6 +379,24 @@ layout: null
   .infl-tag.sect { background: var(--card); color: var(--text-dim); font-weight: 500; }
   .infl-meta { color: var(--text-dim); font-size: 10px; margin-top: 4px; }
 
+  /* Peer divergence (your holding vs its sector peers, 1d) */
+  .peer-div-list { display: flex; flex-direction: column; gap: 7px; }
+  .peer-div-row {
+    background: var(--card-2); border-radius: var(--radius-sm); padding: 8px 10px;
+    border-left: 3px solid var(--text-dim); font-variant-numeric: tabular-nums;
+  }
+  .peer-div-row.lag  { border-left-color: #dc2626; }   /* you trail peers */
+  .peer-div-row.lead { border-left-color: #16a34a; }   /* you beat peers */
+  .pd-top { display: flex; align-items: baseline; gap: 8px; font-size: 13px; }
+  .pd-tk { font-weight: 800; color: var(--text); }
+  .pd-self { font-weight: 700; }
+  .pd-gap { margin-left: auto; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 4px; }
+  .pd-gap.lag  { background: rgba(220,38,38,0.14); color: #dc2626; }
+  .pd-gap.lead { background: rgba(22,163,74,0.16); color: #16a34a; }
+  .pd-vs { font-size: 11.5px; color: var(--text-dim); margin-top: 3px; }
+  .pd-vs b { color: var(--text); font-weight: 600; }
+  .pd-caveat { color: var(--text-dim); font-size: 10px; margin-top: 8px; font-style: italic; }
+
   /* Risk metrics grid */
   .risk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .risk-cell {
@@ -1187,6 +1205,13 @@ layout: null
       </div>
     </div>
 
+    <div class="card">
+      <h3>同行背离 <span class="muted" id="peer-div-asof" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">Peer Divergence</span></h3>
+      <div class="peer-div-list" id="peer-div-list">
+        <div class="empty-state">No peer divergence flagged.</div>
+      </div>
+    </div>
+
   </section>
 
   <!-- ============================================
@@ -1812,6 +1837,7 @@ layout: null
     renderSectorContext();
     renderCatalysts();
     renderInfluencer();
+    renderPeerDivergence();
     renderNewsDigest();
     renderMacro();
     renderCalibBadge();
@@ -2076,8 +2102,8 @@ layout: null
   }
 
   function renderAnomalies() {
-    // peer_divergence filtered out at UI layer — peer-map.json data quality unverified
-    const list = (safe(DATA, "anomalies") || []).filter(a => a.type !== "peer_divergence");
+    // peer_divergence now has its own 同行背离 card (Market tab) — not in anomalies anymore
+    const list = (safe(DATA, "anomalies") || []);
     const wrap = document.getElementById("anomaly-list");
     document.getElementById("anom-count").textContent = list.length ? `(${list.length})` : "";
     if (!list.length) {
@@ -2267,6 +2293,39 @@ layout: null
         <div class="infl-meta">${src}${link ? ' ' + link : ''}</div>
       </div>`;
     }).join('');
+  }
+
+  function renderPeerDivergence() {
+    const wrap = document.getElementById('peer-div-list');
+    const asOf = document.getElementById('peer-div-asof');
+    if (!wrap) return;
+    const d = safe(DATA, 'peer_divergence') || {};
+    const items = d.items || [];
+    if (asOf) asOf.textContent = d.as_of ? `${d.as_of} 收盘 1d` : 'Peer Divergence';
+    if (!items.length) {
+      wrap.innerHTML = '<div class="empty-state">今日无显著同行背离。</div>';
+      return;
+    }
+    const fmtPctSigned = (v) => v == null ? '—' : (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+    // divergence_pp > 0 → peer beat you (you lag); < 0 → you beat peer (you lead)
+    const rows = items.map(it => {
+      const gap = it.divergence_pp;
+      const lag = (gap != null && gap > 0);
+      const cls = lag ? 'lag' : 'lead';
+      const gapTxt = gap == null ? '—'
+        : (lag ? `落后 ${Math.abs(gap).toFixed(1)}pp` : `领先 ${Math.abs(gap).toFixed(1)}pp`);
+      const peer = it.best_peer_name || it.best_peer || '同行';
+      return `<div class="peer-div-row ${cls}">
+        <div class="pd-top">
+          <span class="pd-tk">${escapeHtml(it.ticker)}</span>
+          <span class="pd-self">${fmtPctSigned(it.self_pct_1d)}</span>
+          <span class="pd-gap ${cls}">${gapTxt}</span>
+        </div>
+        <div class="pd-vs">vs <b>${escapeHtml(peer)}</b> ${fmtPctSigned(it.peer_pct_1d)}</div>
+      </div>`;
+    }).join('');
+    wrap.innerHTML = rows +
+      '<div class="pd-caveat">同行报价为 best-effort 抓取，仅供参照；已过滤缺报价/陈旧快照。</div>';
   }
 
   function renderNewsDigest() {

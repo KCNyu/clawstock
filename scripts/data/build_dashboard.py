@@ -392,60 +392,11 @@ def extract_anomalies(brief_ctx, us_h, hk_h):
         for h in (hk_h or []):
             holdings_by_ticker[str(h.get('ticker') or '')] = h
 
-        peer_scan = brief_ctx.get('peer_scan') or {}
-        if isinstance(peer_scan, dict):
-            peer_items = peer_scan.items()
-        elif isinstance(peer_scan, list):
-            peer_items = [(p.get('ticker'), p) for p in peer_scan]
-        else:
-            peer_items = []
-
-        # peer_divergence anomalies
-        for ticker, v in peer_items:
-            if not isinstance(v, dict):
-                continue
-            sig = v.get('divergence_signal')
-            if not sig:
-                continue
-            self_pct = v.get('self_pct_1d')
-            # Try to extract gap pp from signal string like "... (gap +6.4pp)"
-            gap_pp = None
-            try:
-                if isinstance(sig, str) and 'gap' in sig:
-                    import re
-                    m = re.search(r'gap\s*([+-]?\d+(?:\.\d+)?)\s*pp', sig)
-                    if m:
-                        gap_pp = abs(float(m.group(1)))
-            except Exception:
-                gap_pp = None
-            # 数据缺口守卫：underlying 解析为 +0.0% 多半是标的报价没取到，
-            # gap≈|self| 是缺口不是真背离 → 跳过（5/28 错位价残留触发的假背离即此类）。
-            und_missing = False
-            try:
-                if isinstance(sig, str):
-                    import re
-                    mu = re.search(r'underlying\)\s*([+-]?\d+(?:\.\d+)?)\s*%', sig)
-                    if mu and float(mu.group(1)) == 0.0:
-                        und_missing = True
-            except Exception:
-                und_missing = False
-            # 实时守卫：若 portfolio 当前 today_change 与快照 self 符号相反，说明快照陈旧 → 跳过
-            h_live = holdings_by_ticker.get(str(ticker).upper()) or holdings_by_ticker.get(str(ticker))
-            live_today = h_live.get('today_change_pct') if isinstance(h_live, dict) else None
-            stale = (isinstance(live_today, (int, float)) and isinstance(self_pct, (int, float))
-                     and live_today * self_pct < 0 and abs(live_today - self_pct) >= 4)
-            if und_missing or stale:
-                continue
-            severity = 'low'
-            if gap_pp is not None:
-                if gap_pp >= 8: severity = 'high'
-                elif gap_pp >= 4: severity = 'medium'
-            out.append({
-                'type': 'peer_divergence',
-                'ticker': str(ticker),
-                'detail': sig if isinstance(sig, str) else f'self {self_pct}% diverges from peers',
-                'severity': severity,
-            })
+        # NOTE: peer_divergence is no longer injected into anomalies. It now has
+        # its own 『同行背离 Peer Divergence』card (Market tab) fed by the single
+        # source extract_peer_divergence() below — avoids the old double-compute +
+        # the UI-layer filter that hid it. holdings_by_ticker above is still used
+        # by the high_weight_loss / leveraged guards.
 
         # high_weight_loss anomalies (concentration top tickers w/ deep loss)
         conc = brief_ctx.get('concentration') or {}
@@ -1393,7 +1344,11 @@ def main():
     out['delta'] = compute_delta(snapshots)
     out['today_movers'] = compute_today_movers(us_h, hk_h)
     out['anomalies'] = extract_anomalies(brief_ctx, us_h, hk_h)
-    out['peer_divergence'] = extract_peer_divergence(brief_ctx, us_h, hk_h)
+    out['peer_divergence'] = {
+        'as_of': (brief_ctx or {}).get('date')
+                 or ((brief_ctx or {}).get('generated_at') or '')[:10],
+        'items': extract_peer_divergence(brief_ctx, us_h, hk_h),
+    }
     out['calibration'] = compute_calibration()
     out['calibration_by_trigger'] = compute_calibration_by_trigger()
     out['recent_plan_actions'] = recent_actions_from_csv(limit=20)

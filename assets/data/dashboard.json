@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T17:34:37.300366Z",
+  "generated_at": "2026-05-29T17:46:34.355655Z",
   "last_updated": "2026/05/30 01:30 HKT",
   "fx": {
     "usdhkd": 7.8356,
@@ -1726,15 +1726,11 @@
       "current_price": 141.1651
     }
   ],
-  "anomalies": [
-    {
-      "type": "high_weight_loss",
-      "ticker": "07226",
-      "detail": "weight 27.6% + pnl -13.8%",
-      "severity": "medium"
-    }
-  ],
-  "peer_divergence": [],
+  "anomalies": [],
+  "peer_divergence": {
+    "as_of": "2026-05-29",
+    "items": []
+  },
   "calibration": {
     "brier_30d": 0.2344,
     "samples": 30,
