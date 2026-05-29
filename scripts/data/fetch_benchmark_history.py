@@ -119,27 +119,37 @@ def main():
     keys = load_api_keys()
     series: Dict[str, List[Dict]] = {}
 
+    # Load the previous file so a transient single-leg fetch failure doesn't
+    # clobber a good series. Polygon's free tier rate-limits / times out
+    # intermittently (verified 2026-05-29: 08:02 HKT brief run dropped SPY
+    # entirely, leaving the equity-curve benchmark line blank). Merge instead of
+    # overwrite: empty fetch → retain prior series.
+    prev_series: Dict[str, List[Dict]] = {}
+    if OUT_FILE.exists():
+        try:
+            prev_series = (json.loads(OUT_FILE.read_text()).get('series') or {})
+        except Exception as e:
+            print(f'  warn: could not read prior benchmark.json: {e}', file=sys.stderr)
+
+    def assign(key, fresh):
+        """Use fresh data if non-empty, else keep the prior series (non-destructive)."""
+        if fresh:
+            series[key] = fresh
+            print(f'  {key}: {len(fresh)} bars ({fresh[0]["date"]} → {fresh[-1]["date"]})')
+        elif prev_series.get(key):
+            series[key] = prev_series[key]
+            kept = prev_series[key]
+            print(f'  {key}: fetch empty — RETAINED prior {len(kept)} bars '
+                  f'(last {kept[-1]["date"]})', file=sys.stderr)
+        else:
+            print(f'  {key}: skipped (no data, no prior to retain)')
+
     # SPY (S&P 500 ETF) — primary US benchmark
-    spy = fetch_polygon_daily('SPY', args.days, keys.get('POLYGON_API_KEY', ''))
-    if spy:
-        series['SPY'] = spy
-        print(f'  SPY:    {len(spy)} bars ({spy[0]["date"]} → {spy[-1]["date"]})')
-    else:
-        print('  SPY: skipped (no data)')
-
+    assign('SPY', fetch_polygon_daily('SPY', args.days, keys.get('POLYGON_API_KEY', '')))
     # HSI (恒生指数) — primary HK benchmark
-    hsi = fetch_tencent_hk_daily('hkHSI', args.days)
-    if hsi:
-        series['HSI'] = hsi
-        print(f'  HSI:    {len(hsi)} bars ({hsi[0]["date"]} → {hsi[-1]["date"]})')
-    else:
-        print('  HSI: skipped (no data)')
-
+    assign('HSI', fetch_tencent_hk_daily('hkHSI', args.days))
     # HSTECH — secondary HK benchmark (tracks tech beta closer to kcn's HK leg)
-    hstech = fetch_tencent_hk_daily('hkHSTECH', args.days)
-    if hstech:
-        series['HSTECH'] = hstech
-        print(f'  HSTECH: {len(hstech)} bars ({hstech[0]["date"]} → {hstech[-1]["date"]})')
+    assign('HSTECH', fetch_tencent_hk_daily('hkHSTECH', args.days))
 
     out = {
         'generated_at': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
