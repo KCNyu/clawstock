@@ -25,6 +25,14 @@ metadata:
    直接跑 `build_dashboard.py` **不会**刷 snapshot，必须先手动调它，否则 dashboard 仍用旧 snapshot。
 4. 重建 dashboard + commit `portfolio.json` + `snapshots/{date}.json` + `dashboard.json` 推送。
 
-**未做的根因硬化（follow-up）**：给 closed 段加 guard——当 Nasdaq `dp` 方向与 `(c-pc)` 符号
-矛盾、或 o==h==l==c 退化报价时，distrust lastSalePrice。需先抓到 20:01 ET 的坏 payload 才能
-测对，别凭猜上线金融管线。相关旧坑见 [[openclaw-stale-gha-data]] [[openclaw-equity-based-metrics]]。
+**根因硬化（已修，2026-05-29，commit c32e3a2）** `fetch_us_stocks.py`：
+- ① 当 Polygon prev-close 日期 == 今日（已盘后，其值=当日官方收盘），若 Nasdaq lastSalePrice
+  与之偏离 >0.5% → 改用 Polygon 收盘当 current_price（数据一致时 no-op，零回归）。
+- ② 同窗口 prev_close 重建：优先用 portfolio 已存的带日期 prev_close（昨日跑留下的真实前收，
+  独立于 Nasdaq 本次响应，即便 dp 也坏也对）→ 其次 Nasdaq dp 反推 → 再次保留旧值。
+  这解决 today_change 在盘后归零的问题。
+- ③ `US_FETCH_DEBUG=1` 落 Nasdaq+Polygon 原始 payload 到 `memory/.tmp/us_fetch_debug_{date}.jsonl`；
+  盘中 o==h==l==c 退化报价打 warn。便于下次复发取样。
+- 最坏态（无已存前收 + dp 也坏）：value/总盈亏仍正确（靠①），仅当日 delta 降级且被③告警。
+
+相关旧坑见 [[openclaw-stale-gha-data]] [[openclaw-equity-based-metrics]]。
