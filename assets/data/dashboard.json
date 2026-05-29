@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-29T16:51:41.307673Z",
-  "last_updated": "2026/05/30 00:30 HKT",
+  "generated_at": "2026-05-29T17:02:39.026043Z",
+  "last_updated": "2026/05/30 01:00 HKT",
   "fx": {
     "usdhkd": 7.8356,
     "source": "Frankfurter",
@@ -8,11 +8,11 @@
   },
   "totals": {
     "us": {
-      "value_usd": 3331.99,
+      "value_usd": 3349.49,
       "cost_usd": 2628.3,
-      "pnl_usd": 703.69,
-      "pnl_pct": 26.7736,
-      "today_change_usd": 289.38,
+      "pnl_usd": 721.19,
+      "pnl_pct": 27.4394,
+      "today_change_usd": 306.9,
       "realized_usd": 1372.88
     },
     "hk": {
@@ -26,41 +26,41 @@
   },
   "concentration": {
     "us": {
-      "hhi": 0.2347,
-      "top2": 0.5418,
+      "hhi": 0.2356,
+      "top2": 0.5456,
       "positions": [
         {
           "ticker": "ROBN",
           "name": "二倍做多HOOD ETF-T-Rex",
-          "value": 1099.16,
-          "weight": 0.3299
+          "value": 1113.22,
+          "weight": 0.3324
         },
         {
           "ticker": "RKLB",
           "name": "Rocket Lab Corp",
-          "value": 705.98,
-          "weight": 0.2119
+          "value": 714.0,
+          "weight": 0.2132
         },
         {
           "ticker": "PLTU",
           "name": "二倍做多PLTR ETF-Direxion",
-          "value": 660.8,
-          "weight": 0.1983
+          "value": 656.67,
+          "weight": 0.1961
         },
         {
           "ticker": "MSFU",
           "name": "二倍做多微软ETF-Direxion",
-          "value": 642.1,
-          "weight": 0.1927
+          "value": 642.8,
+          "weight": 0.1919
         },
         {
           "ticker": "CRCL",
           "name": "Circle Internet Group Inc-A",
-          "value": 223.95,
-          "weight": 0.0672
+          "value": 222.8,
+          "weight": 0.0665
         }
       ],
-      "total": 3331.99,
+      "total": 3349.49,
       "verdict": {
         "level": "moderate",
         "label": "偏集中",
@@ -135,14 +135,14 @@
         "currency": "USD",
         "shares": 5,
         "cost_basis": 71,
-        "current_price": 141.1954,
-        "current_value": 705.98,
-        "today_change": -34.17,
-        "today_change_pct": -4.62,
-        "day_high": 141.1954,
-        "day_low": 141.1954,
-        "pnl_abs": 350.98,
-        "pnl_percent": 98.87,
+        "current_price": 142.8,
+        "current_value": 714.0,
+        "today_change": -26.15,
+        "today_change_pct": -3.53,
+        "day_high": 142.8,
+        "day_low": 142.8,
+        "pnl_abs": 359.0,
+        "pnl_percent": 101.13,
         "is_active": true,
         "trades_count": 0
       },
@@ -152,14 +152,14 @@
         "currency": "USD",
         "shares": 2,
         "cost_basis": 87,
-        "current_price": 111.975,
-        "current_value": 223.95,
-        "today_change": 7.47,
-        "today_change_pct": 3.45,
-        "day_high": 111.975,
-        "day_low": 111.975,
-        "pnl_abs": 49.95,
-        "pnl_percent": 28.71,
+        "current_price": 111.4,
+        "current_value": 222.8,
+        "today_change": 6.32,
+        "today_change_pct": 2.92,
+        "day_high": 111.4,
+        "day_low": 111.4,
+        "pnl_abs": 48.8,
+        "pnl_percent": 28.05,
         "is_active": true,
         "trades_count": 5
       },
@@ -254,14 +254,14 @@
         "currency": "USD",
         "shares": 14,
         "cost_basis": 40.9571,
-        "current_price": 47.2,
-        "current_value": 660.8,
-        "today_change": 98.42,
-        "today_change_pct": 17.5,
-        "day_high": 47.2,
-        "day_low": 47.2,
-        "pnl_abs": 87.4,
-        "pnl_percent": 15.24,
+        "current_price": 46.905,
+        "current_value": 656.67,
+        "today_change": 94.31,
+        "today_change_pct": 16.77,
+        "day_high": 46.905,
+        "day_low": 46.905,
+        "pnl_abs": 83.27,
+        "pnl_percent": 14.52,
         "is_active": true,
         "trades_count": 2
       },
@@ -305,14 +305,14 @@
         "currency": "USD",
         "shares": 40,
         "cost_basis": 23.5825,
-        "current_price": 27.4789,
-        "current_value": 1099.16,
-        "today_change": 173.96,
-        "today_change_pct": 18.8,
-        "day_high": 27.4789,
-        "day_low": 27.4789,
-        "pnl_abs": 155.86,
-        "pnl_percent": 16.52,
+        "current_price": 27.8305,
+        "current_value": 1113.22,
+        "today_change": 188.02,
+        "today_change_pct": 20.32,
+        "day_high": 27.8305,
+        "day_low": 27.8305,
+        "pnl_abs": 169.92,
+        "pnl_percent": 18.01,
         "is_active": true,
         "trades_count": 3
       },
@@ -322,14 +322,14 @@
         "currency": "USD",
         "shares": 20,
         "cost_basis": 29.13,
-        "current_price": 32.105,
-        "current_value": 642.1,
-        "today_change": 43.7,
-        "today_change_pct": 7.3,
-        "day_high": 32.105,
-        "day_low": 32.105,
-        "pnl_abs": 59.5,
-        "pnl_percent": 10.21,
+        "current_price": 32.14,
+        "current_value": 642.8,
+        "today_change": 44.4,
+        "today_change_pct": 7.42,
+        "day_high": 32.14,
+        "day_low": 32.14,
+        "pnl_abs": 60.2,
+        "pnl_percent": 10.33,
         "is_active": true,
         "trades_count": 1
       }
@@ -636,12 +636,12 @@
     {
       "date": "2026-05-29",
       "file": "2026-05-29.json",
-      "us_total_value": 3331.99,
+      "us_total_value": 3349.49,
       "us_total_cost": 2628.3,
-      "us_total_pnl": 703.69,
-      "us_today_change": 289.38,
+      "us_total_pnl": 721.19,
+      "us_today_change": 306.9,
       "us_realized": 1372.88,
-      "us_equity": 4704.87,
+      "us_equity": 4722.37,
       "hk_total_value": 84954.8,
       "hk_total_cost": 88276.24,
       "hk_total_pnl": -3321.44,
@@ -1270,24 +1270,24 @@
   "indices": {
     "SPX": {
       "name": "S&P 500",
-      "price": 7584.36,
+      "price": 7585.32,
       "prev_close": 7563.63,
-      "change_pct": 0.274,
-      "source": "Tencent usINX index @ 2026-05-29 12:30 ET"
+      "change_pct": 0.287,
+      "source": "Tencent usINX index @ 2026-05-29 13:00 ET"
     },
     "NDX": {
       "name": "Nasdaq 100",
-      "price": 30340.2,
+      "price": 30335.47,
       "prev_close": 30223.89,
-      "change_pct": 0.385,
-      "source": "Tencent usNDX index @ 2026-05-29 12:30 ET"
+      "change_pct": 0.369,
+      "source": "Tencent usNDX index @ 2026-05-29 13:00 ET"
     },
     "DJI": {
       "name": "Dow Jones",
-      "price": 51002.52,
+      "price": 50993.28,
       "prev_close": 50668.97,
-      "change_pct": 0.658,
-      "source": "Tencent usDJI index @ 2026-05-29 12:30 ET"
+      "change_pct": 0.64,
+      "source": "Tencent usDJI index @ 2026-05-29 13:00 ET"
     },
     "HSI": {
       "name": "恒生指数",
@@ -1465,7 +1465,7 @@
       143.625,
       142.57,
       146.555,
-      141.1954
+      142.8
     ],
     "CRCL": [
       114.0,
@@ -1477,7 +1477,7 @@
       107.19,
       104.415,
       106.055,
-      111.975
+      111.4
     ],
     "OKLO": [
       72.39,
@@ -1549,7 +1549,7 @@
       35.94,
       35.28,
       37.9999,
-      47.2
+      46.905
     ],
     "SOXL": [
       164.18,
@@ -1585,7 +1585,7 @@
       17.96,
       18.47,
       20.7001,
-      27.4789
+      27.8305
     ],
     "MSFU": [
       29.24,
@@ -1597,7 +1597,7 @@
       28.65,
       28.01,
       29.63,
-      32.105
+      32.14
     ],
     "00100": [
       794.0,
@@ -1686,8 +1686,8 @@
   },
   "delta": {
     "us": {
-      "today_pct": 12.59,
-      "7d_pct": 12.79,
+      "today_pct": 13.0,
+      "7d_pct": 13.21,
       "30d_pct": null
     },
     "hk": {
@@ -1701,36 +1701,29 @@
       "ticker": "ROBN",
       "name": "二倍做多HOOD ETF-T-Rex",
       "region": "us",
-      "today_change_pct": 18.8,
-      "current_price": 27.4789
+      "today_change_pct": 20.32,
+      "current_price": 27.8305
     },
     {
       "ticker": "PLTU",
       "name": "二倍做多PLTR ETF-Direxion",
       "region": "us",
-      "today_change_pct": 17.5,
-      "current_price": 47.2
+      "today_change_pct": 16.77,
+      "current_price": 46.905
     },
     {
       "ticker": "MSFU",
       "name": "二倍做多微软ETF-Direxion",
       "region": "us",
-      "today_change_pct": 7.3,
-      "current_price": 32.105
+      "today_change_pct": 7.42,
+      "current_price": 32.14
     },
     {
       "ticker": "RKLB",
       "name": "Rocket Lab Corp",
       "region": "us",
-      "today_change_pct": -4.62,
-      "current_price": 141.1954
-    },
-    {
-      "ticker": "CRCL",
-      "name": "Circle Internet Group Inc-A",
-      "region": "us",
-      "today_change_pct": 3.45,
-      "current_price": 111.975
+      "today_change_pct": -3.53,
+      "current_price": 142.8
     }
   ],
   "anomalies": [
@@ -2286,7 +2279,7 @@
     {
       "ticker": "ROBN",
       "region": "us",
-      "weight_pct": 32.99,
+      "weight_pct": 33.24,
       "avg_confidence": 0.726,
       "n_actions": 10,
       "quadrant": "conviction"
@@ -2294,7 +2287,7 @@
     {
       "ticker": "RKLB",
       "region": "us",
-      "weight_pct": 21.19,
+      "weight_pct": 21.32,
       "avg_confidence": 0.689,
       "n_actions": 8,
       "quadrant": "conviction"
@@ -2302,7 +2295,7 @@
     {
       "ticker": "PLTU",
       "region": "us",
-      "weight_pct": 19.83,
+      "weight_pct": 19.61,
       "avg_confidence": 0.596,
       "n_actions": 7,
       "quadrant": "low_conv_small"
@@ -2310,7 +2303,7 @@
     {
       "ticker": "CRCL",
       "region": "us",
-      "weight_pct": 6.72,
+      "weight_pct": 6.65,
       "avg_confidence": 0.57,
       "n_actions": 6,
       "quadrant": "low_conv_small"
@@ -2334,7 +2327,7 @@
     {
       "ticker": "MSFU",
       "region": "us",
-      "weight_pct": 19.27,
+      "weight_pct": 19.19,
       "avg_confidence": 0.66,
       "n_actions": 8,
       "quadrant": "comfort"
@@ -2352,46 +2345,46 @@
     "max_pct_30d_hk": -7.91,
     "max_pct_30d_us": -14.3,
     "current_pct_hk": 1.78,
-    "current_pct_us": 9.76
+    "current_pct_us": 10.17
   },
   "sector_exposure": {
     "us": [
       {
         "sector": "Fintech",
-        "value": 1099.16,
-        "pct": 32.99,
+        "value": 1113.22,
+        "pct": 33.24,
         "tickers": [
           "ROBN"
         ]
       },
       {
         "sector": "Aerospace",
-        "value": 705.98,
-        "pct": 21.19,
+        "value": 714.0,
+        "pct": 21.32,
         "tickers": [
           "RKLB"
         ]
       },
       {
         "sector": "AI / Defense",
-        "value": 660.8,
-        "pct": 19.83,
+        "value": 656.67,
+        "pct": 19.61,
         "tickers": [
           "PLTU"
         ]
       },
       {
         "sector": "Tech Mega-cap",
-        "value": 642.1,
-        "pct": 19.27,
+        "value": 642.8,
+        "pct": 19.19,
         "tickers": [
           "MSFU"
         ]
       },
       {
         "sector": "Crypto / Stablecoin",
-        "value": 223.95,
-        "pct": 6.72,
+        "value": 222.8,
+        "pct": 6.65,
         "tickers": [
           "CRCL"
         ]
@@ -2427,9 +2420,9 @@
     ]
   },
   "leveraged_etf": {
-    "us_pct": 72.09,
+    "us_pct": 72.03,
     "hk_pct": 27.44,
-    "combined_pct": 37.94,
+    "combined_pct": 37.96,
     "tickers": [
       "07226",
       "MSFU",
@@ -3050,7 +3043,7 @@
     }
   },
   "us_news_digest": {
-    "generated_at": "2026-05-28T16:47:24.659628",
+    "generated_at": "2026-05-29T16:37:02.168273",
     "lookback_hours": 48,
     "tickers": [
       "RKLB",
@@ -3059,7 +3052,7 @@
       "ROBN",
       "MSFU"
     ],
-    "digest_markdown": "### Top 3-5 移动信号 (跨 ticker 排序)\n- **RKLB**: 通过美国国防航天局 (SDA) 合同关键里程碑，该合同价值超过13亿美元。这直接扩大了其国防业务版图，巩固了其在政府高增长预算中的份额，利好长期增长。\n- **CRCL**: 宣布与 Nium 建立合作伙伴关系，将 USDC 结算网络与覆盖190国的支付通道整合。此举旨在简化全球支付，可能显著提升 USDC 的实用性和交易量。\n- **PLTU** (标的PLTR): 标的公司 Palantir (PLTR) 公布超预期的第四季度财报。作为2倍杠杆ETF，此催化剂可能放大标的股价的上涨波动性。\n\n### Per-ticker 简报\n- **RKLB**: SpaceX IPO 被视为潜在的板块重估催化剂，因其验证了太空行业的商业可行性。\n- **ROBN**: 标的公司 Robinhood (HOOD) 股价盘后下跌，但相关ETF新闻仅显示为市场情绪反应。\n\n### 风险 watch\n- **ROBN**: 标的股价盘后下跌。作为2倍杠杆ETF，对标的股价的日常波动极为敏感，下行风险加倍。",
+    "digest_markdown": "### Top 3-5 移动信号 (跨 ticker 排序)\n- **RKLB**: 通过SDA关键里程碑，扩大国防业务（价值$1.3B+合同）。**Implication**: 短期股价虽波动，但政府合同强化了长期防御收入基本盘，利好持股信心。\n- **CRCL**: 分析指出估值过高（37x EV/EBITDA）且存在下行风险，同时面临SoFi等银行稳定币的直接竞争。**Implication**: 持仓面临估值重评与竞争加剧的双重压力，需密切关注。\n- **PLTU**: Palantir (PLTR) Q4财报超预期，驱动相关ETF上涨。**Implication**: 作为PLTR的2倍杠杆ETF，底层股票强劲业绩直接利好PLTU持仓。\n- **RKLB**: 多篇分析视SpaceX潜在IPO为火箭实验室（RKLB）的重新评级催化剂。**Implication**: 行业事件可能成为股价上涨的驱动因素，但需注意市场已部分消化此预期。\n- **MSFU**: 针对该微软2倍杠杆ETF出现异常活跃的大额期权交易。**Implication**: 市场对MSFT方向性押注情绪升温，杠杆ETF波动性可能加大。\n\n### Per-ticker 简报 (有新闻才列)\n- **RKLB**: 通过SDA里程碑，但估值过高与Neutron项目执行风险导致“卖出”评级。 - 基本面与舆论面冲突，短期股价承压。\n- **CRCL**: 与Nium合作扩展USDC全球支付网络，但面临银行稳定币（如SoFi）的激烈竞争。 - 合作利好被竞争利空覆盖。\n- **PLTU**: Palantir财报超预期，直接推动相关杠杆ETF上涨。 - 业绩催化剂明确，但杠杆放大波动。\n- **ROBN**: 出现动量变化讨论，且公司股东投票日期确定（9月10日）。 - 公司事件可能影响价格，但信息有限。\n- **MSFU**: 获ETF分析关注，且期权交易异常活跃。 - 显示市场对微软ETF的高度关注，可能预示波动。\n\n### 风险 watch\n- **CRCL**: 存在明确的**估值过高**分析（目标跌幅51%），且**竞争风险**升级（银行发行稳定币）。\n- **RKLB**: 获得**“卖出”评级**，主要基于**估值过高**和**Neutron项目执行风险**。\n- **ROBN**: 标题提及“动量变化”，需警惕**技术性回调风险**。",
     "raw_news_counts": {
       "RKLB": 5,
       "CRCL": 5,
@@ -3675,7 +3668,7 @@
     ]
   },
   "influencer_feed": {
-    "generated_at": "2026-05-29T16:45:34.469623+00:00",
+    "generated_at": "2026-05-29T16:52:40.386498+00:00",
     "lookback_hours": 48,
     "sources": {
       "trump": "trumpstruth.org/feed (primary)",
@@ -3683,387 +3676,53 @@
     },
     "llm_filtered": true,
     "counts": {
-      "total": 8,
-      "held_hits": 1,
-      "new_ideas": 5,
-      "sector_hits": 2
+      "total": 1,
+      "held_hits": 0,
+      "new_ideas": 0,
+      "sector_hits": 1
     },
     "items": [
       {
-        "author": "Musk",
-        "text": "Elon Musk could become a top 5 corporate bitcoin holder if Tesla and SpaceX merge",
-        "url": "",
-        "published": "Wed, 27 May 2026 18:09:54 GMT",
-        "origin": "gnews-rss",
-        "source": "CoinDesk",
-        "tickers": [
-          "TSLA"
-        ],
-        "held": [],
-        "new_ideas": [
-          "TSLA"
-        ],
-        "sectors": [
-          "加密货币",
-          "电动车",
-          "航天"
-        ],
-        "sector_holdings": [
-          "CRCL"
-        ],
-        "stance": "endorse",
-        "relevance": 65,
-        "summary_cn": "报道指如果特斯拉和SpaceX合并，马斯克可能成为顶级企业比特币持有者。"
-      },
-      {
-        "author": "Musk",
-        "text": "SpaceX-Tesla merger chatter reignites as Musk pushes rocket company toward Nasdaq",
-        "url": "",
-        "published": "Tue, 26 May 2026 21:07:48 GMT",
-        "origin": "gnews-rss",
-        "source": "cnbc.com",
-        "tickers": [
-          "TSLA"
-        ],
-        "held": [],
-        "new_ideas": [
-          "TSLA"
-        ],
-        "sectors": [
-          "航天",
-          "电动车"
-        ],
-        "sector_holdings": [
-          "RKLB"
-        ],
-        "stance": "neutral",
-        "relevance": 65,
-        "summary_cn": "马斯克推动SpaceX上市，引发SpaceX与特斯拉合并的讨论。"
-      },
-      {
-        "author": "Musk",
-        "text": "Elon Musk Clarifies SpaceX, Anthropic AI Deal. It's Not As Big As Expected.",
-        "url": "",
-        "published": "Thu, 28 May 2026 20:16:00 GMT",
-        "origin": "gnews-rss",
-        "source": "Investor's Business Daily",
-        "tickers": [],
-        "held": [],
-        "new_ideas": [],
-        "sectors": [
-          "航天",
-          "AI"
-        ],
-        "sector_holdings": [
-          "MSFU",
-          "RKLB"
-        ],
-        "stance": "neutral",
-        "relevance": 55,
-        "summary_cn": "马斯克澄清SpaceX与Anthropic的AI合作规模小于预期。"
-      },
-      {
-        "author": "Musk",
-        "text": "Prediction: Elon Musk’s SpaceX Will Buy Intel for $1 Trillion",
-        "url": "",
-        "published": "Thu, 28 May 2026 16:16:32 GMT",
-        "origin": "gnews-rss",
-        "source": "24/7 Wall St.",
-        "tickers": [
-          "INTC"
-        ],
-        "held": [],
-        "new_ideas": [
-          "INTC"
-        ],
-        "sectors": [
-          "半导体",
-          "航天"
-        ],
-        "sector_holdings": [],
-        "stance": "endorse",
-        "relevance": 60,
-        "summary_cn": "预测马斯克的SpaceX将以1万亿美元收购英特尔。"
-      },
-      {
-        "author": "Musk",
-        "text": "Musk says SpaceX agreed only six-month Colossus AI lease to Anthropic",
-        "url": "",
-        "published": "Thu, 28 May 2026 06:38:00 GMT",
-        "origin": "gnews-rss",
-        "source": "Reuters",
-        "tickers": [],
-        "held": [],
-        "new_ideas": [],
-        "sectors": [
-          "航天",
-          "AI"
-        ],
-        "sector_holdings": [
-          "MSFU",
-          "RKLB"
-        ],
-        "stance": "neutral",
-        "relevance": 55,
-        "summary_cn": "马斯克表示SpaceX与Anthropic的Colossus AI租约仅为期六个月。"
-      },
-      {
-        "author": "Musk",
-        "text": "Why a merger with SpaceX could be bad for Tesla shareholders",
-        "url": "",
-        "published": "Fri, 29 May 2026 13:44:17 GMT",
-        "origin": "gnews-rss",
-        "source": "Yahoo Finance",
-        "tickers": [
-          "TSLA"
-        ],
-        "held": [],
-        "new_ideas": [
-          "TSLA"
-        ],
-        "sectors": [
-          "航天",
-          "电动车"
-        ],
-        "sector_holdings": [
-          "RKLB"
-        ],
-        "stance": "attack",
-        "relevance": 70,
-        "summary_cn": "报道分析SpaceX与特斯拉合并可能对特斯拉股东不利。"
-      },
-      {
-        "author": "Musk",
-        "text": "Where Are The Robotaxis? Musk's Texas Promised Land Is Coping With Fewer Than 50 Cars",
-        "url": "",
-        "published": "Fri, 29 May 2026 07:10:00 GMT",
-        "origin": "gnews-rss",
-        "source": "InsideEVs",
-        "tickers": [
-          "TSLA"
-        ],
-        "held": [],
-        "new_ideas": [
-          "TSLA"
-        ],
-        "sectors": [
-          "电动车",
-          "自动驾驶"
-        ],
-        "sector_holdings": [],
-        "stance": "attack",
-        "relevance": 70,
-        "summary_cn": "报道指出马斯克在德克萨斯州承诺的机器人出租车数量远低于预期。"
-      },
-      {
         "author": "Trump",
         "text": "Gary Gensler and the “Anti-Crypto Army” nearly DESTROYED the American Crypto Industry by driving Bitcoin, Crypto Perpetuals, and INNOVATION offshore, but “TRUMP” SAVED IT. America is now the CRYPTO CAPITAL of the WORLD, and Builders and Entrepreneurs are coming BACK to the United States where they belong. Under my Leadership, we will codify a FUTURE-PROOF Digital Asset Market Structure that cannot be undone by the Crypto Haters. The new Frontier of Finance is being Built in America, and “TRUMP” will NEVER let Crypto down! President DONALD J. TRUMP",
         "url": "https://trumpstruth.org/statuses/38837",
         "published": "2026-05-27T22:42:10+00:00",
         "origin": "truthsocial",
         "tickers": [],
-        "held": [
-          "CRCL"
-        ],
+        "held": [],
         "new_ideas": [],
         "sectors": [
           "加密货币"
         ],
-        "sector_holdings": [],
-        "stance": "endorse",
-        "relevance": 75,
-        "summary_cn": "特朗普宣称其领导力拯救了美国加密行业，将美国打造为加密货币之都，并承诺制定永久性数字资产市场结构。"
-      }
-    ],
-    "held_hits": [
-      {
-        "author": "Trump",
-        "text": "Gary Gensler and the “Anti-Crypto Army” nearly DESTROYED the American Crypto Industry by driving Bitcoin, Crypto Perpetuals, and INNOVATION offshore, but “TRUMP” SAVED IT. America is now the CRYPTO CAPITAL of the WORLD, and Builders and Entrepreneurs are coming BACK to the United States where they belong. Under my Leadership, we will codify a FUTURE-PROOF Digital Asset Market Structure that cannot be undone by the Crypto Haters. The new Frontier of Finance is being Built in America, and “TRUMP” will NEVER let Crypto down! President DONALD J. TRUMP",
-        "url": "https://trumpstruth.org/statuses/38837",
-        "published": "2026-05-27T22:42:10+00:00",
-        "origin": "truthsocial",
-        "tickers": [],
-        "held": [
-          "CRCL"
-        ],
-        "new_ideas": [],
-        "sectors": [
-          "加密货币"
-        ],
-        "sector_holdings": [],
-        "stance": "endorse",
-        "relevance": 75,
-        "summary_cn": "特朗普宣称其领导力拯救了美国加密行业，将美国打造为加密货币之都，并承诺制定永久性数字资产市场结构。"
-      }
-    ],
-    "new_ideas": [
-      {
-        "author": "Musk",
-        "text": "Elon Musk could become a top 5 corporate bitcoin holder if Tesla and SpaceX merge",
-        "url": "",
-        "published": "Wed, 27 May 2026 18:09:54 GMT",
-        "origin": "gnews-rss",
-        "source": "CoinDesk",
-        "tickers": [
-          "TSLA"
-        ],
-        "held": [],
-        "new_ideas": [
-          "TSLA"
-        ],
-        "sectors": [
-          "加密货币",
-          "电动车",
-          "航天"
-        ],
         "sector_holdings": [
           "CRCL"
         ],
         "stance": "endorse",
-        "relevance": 65,
-        "summary_cn": "报道指如果特斯拉和SpaceX合并，马斯克可能成为顶级企业比特币持有者。"
-      },
-      {
-        "author": "Musk",
-        "text": "SpaceX-Tesla merger chatter reignites as Musk pushes rocket company toward Nasdaq",
-        "url": "",
-        "published": "Tue, 26 May 2026 21:07:48 GMT",
-        "origin": "gnews-rss",
-        "source": "cnbc.com",
-        "tickers": [
-          "TSLA"
-        ],
-        "held": [],
-        "new_ideas": [
-          "TSLA"
-        ],
-        "sectors": [
-          "航天",
-          "电动车"
-        ],
-        "sector_holdings": [
-          "RKLB"
-        ],
-        "stance": "neutral",
-        "relevance": 65,
-        "summary_cn": "马斯克推动SpaceX上市，引发SpaceX与特斯拉合并的讨论。"
-      },
-      {
-        "author": "Musk",
-        "text": "Prediction: Elon Musk’s SpaceX Will Buy Intel for $1 Trillion",
-        "url": "",
-        "published": "Thu, 28 May 2026 16:16:32 GMT",
-        "origin": "gnews-rss",
-        "source": "24/7 Wall St.",
-        "tickers": [
-          "INTC"
-        ],
-        "held": [],
-        "new_ideas": [
-          "INTC"
-        ],
-        "sectors": [
-          "半导体",
-          "航天"
-        ],
-        "sector_holdings": [],
-        "stance": "endorse",
-        "relevance": 60,
-        "summary_cn": "预测马斯克的SpaceX将以1万亿美元收购英特尔。"
-      },
-      {
-        "author": "Musk",
-        "text": "Why a merger with SpaceX could be bad for Tesla shareholders",
-        "url": "",
-        "published": "Fri, 29 May 2026 13:44:17 GMT",
-        "origin": "gnews-rss",
-        "source": "Yahoo Finance",
-        "tickers": [
-          "TSLA"
-        ],
-        "held": [],
-        "new_ideas": [
-          "TSLA"
-        ],
-        "sectors": [
-          "航天",
-          "电动车"
-        ],
-        "sector_holdings": [
-          "RKLB"
-        ],
-        "stance": "attack",
-        "relevance": 70,
-        "summary_cn": "报道分析SpaceX与特斯拉合并可能对特斯拉股东不利。"
-      },
-      {
-        "author": "Musk",
-        "text": "Where Are The Robotaxis? Musk's Texas Promised Land Is Coping With Fewer Than 50 Cars",
-        "url": "",
-        "published": "Fri, 29 May 2026 07:10:00 GMT",
-        "origin": "gnews-rss",
-        "source": "InsideEVs",
-        "tickers": [
-          "TSLA"
-        ],
-        "held": [],
-        "new_ideas": [
-          "TSLA"
-        ],
-        "sectors": [
-          "电动车",
-          "自动驾驶"
-        ],
-        "sector_holdings": [],
-        "stance": "attack",
-        "relevance": 70,
-        "summary_cn": "报道指出马斯克在德克萨斯州承诺的机器人出租车数量远低于预期。"
+        "relevance": 75,
+        "summary_cn": "特朗普宣称其领导将使美国成为加密货币之都，并承诺制定数字资产市场结构，利好加密货币行业。"
       }
     ],
+    "held_hits": [],
+    "new_ideas": [],
     "sector_hits": [
       {
-        "author": "Musk",
-        "text": "Elon Musk Clarifies SpaceX, Anthropic AI Deal. It's Not As Big As Expected.",
-        "url": "",
-        "published": "Thu, 28 May 2026 20:16:00 GMT",
-        "origin": "gnews-rss",
-        "source": "Investor's Business Daily",
+        "author": "Trump",
+        "text": "Gary Gensler and the “Anti-Crypto Army” nearly DESTROYED the American Crypto Industry by driving Bitcoin, Crypto Perpetuals, and INNOVATION offshore, but “TRUMP” SAVED IT. America is now the CRYPTO CAPITAL of the WORLD, and Builders and Entrepreneurs are coming BACK to the United States where they belong. Under my Leadership, we will codify a FUTURE-PROOF Digital Asset Market Structure that cannot be undone by the Crypto Haters. The new Frontier of Finance is being Built in America, and “TRUMP” will NEVER let Crypto down! President DONALD J. TRUMP",
+        "url": "https://trumpstruth.org/statuses/38837",
+        "published": "2026-05-27T22:42:10+00:00",
+        "origin": "truthsocial",
         "tickers": [],
         "held": [],
         "new_ideas": [],
         "sectors": [
-          "航天",
-          "AI"
+          "加密货币"
         ],
         "sector_holdings": [
-          "MSFU",
-          "RKLB"
+          "CRCL"
         ],
-        "stance": "neutral",
-        "relevance": 55,
-        "summary_cn": "马斯克澄清SpaceX与Anthropic的AI合作规模小于预期。"
-      },
-      {
-        "author": "Musk",
-        "text": "Musk says SpaceX agreed only six-month Colossus AI lease to Anthropic",
-        "url": "",
-        "published": "Thu, 28 May 2026 06:38:00 GMT",
-        "origin": "gnews-rss",
-        "source": "Reuters",
-        "tickers": [],
-        "held": [],
-        "new_ideas": [],
-        "sectors": [
-          "航天",
-          "AI"
-        ],
-        "sector_holdings": [
-          "MSFU",
-          "RKLB"
-        ],
-        "stance": "neutral",
-        "relevance": 55,
-        "summary_cn": "马斯克表示SpaceX与Anthropic的Colossus AI租约仅为期六个月。"
+        "stance": "endorse",
+        "relevance": 75,
+        "summary_cn": "特朗普宣称其领导将使美国成为加密货币之都，并承诺制定数字资产市场结构，利好加密货币行业。"
       }
     ]
   },
@@ -4073,25 +3732,25 @@
         "ticker": "RKLB",
         "name": "Rocket Lab Corp",
         "region": "us",
-        "pnl_percent": 98.87,
-        "pnl_abs": 350.98,
-        "current_value": 705.98
+        "pnl_percent": 101.13,
+        "pnl_abs": 359.0,
+        "current_value": 714.0
       },
       {
         "ticker": "CRCL",
         "name": "Circle Internet Group Inc-A",
         "region": "us",
-        "pnl_percent": 28.71,
-        "pnl_abs": 49.95,
-        "current_value": 223.95
+        "pnl_percent": 28.05,
+        "pnl_abs": 48.8,
+        "current_value": 222.8
       },
       {
         "ticker": "ROBN",
         "name": "二倍做多HOOD ETF-T-Rex",
         "region": "us",
-        "pnl_percent": 16.52,
-        "pnl_abs": 155.86,
-        "current_value": 1099.16
+        "pnl_percent": 18.01,
+        "pnl_abs": 169.92,
+        "current_value": 1113.22
       }
     ],
     "losers": [
@@ -4166,7 +3825,7 @@
   "realized_vs_unrealized": {
     "us": {
       "realized": 1372.88,
-      "unrealized": 703.69
+      "unrealized": 721.19
     },
     "hk": {
       "realized": 7259.16,
@@ -4174,7 +3833,7 @@
     },
     "combined_usd": {
       "realized": 2299.31,
-      "unrealized": 279.8
+      "unrealized": 297.3
     }
   },
   "capital_deployed": {
@@ -4191,8 +3850,8 @@
   "net_principal_return": {
     "us": {
       "net_principal": 1255.42,
-      "total_profit": 2076.57,
-      "return_pct": 84.03,
+      "total_profit": 2094.07,
+      "return_pct": 84.74,
       "return_basis": "true_principal",
       "true_principal": 2471.12
     },
@@ -4204,8 +3863,8 @@
     },
     "combined_usd": {
       "net_principal": 12810.73,
-      "total_profit": 2579.11,
-      "return_pct": 20.13
+      "total_profit": 2596.61,
+      "return_pct": 20.27
     },
     "formula": "回报率 = (浮动 + 已实现) ÷ 本金；本金优先用 true_principal（峰值净投入），否则用 净投入本金=累计成本−已实现"
   }
