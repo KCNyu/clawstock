@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T17:15:38.853618+00:00",
+  "generated_at": "2026-05-29T17:23:53.288038+00:00",
   "lookback_hours": 48,
   "sources": {
     "trump": "trumpstruth.org/feed (primary)",
@@ -25,12 +25,13 @@
       ],
       "new_ideas": [],
       "sectors": [
-        "加密货币"
+        "加密货币",
+        "监管"
       ],
       "sector_holdings": [],
       "stance": "endorse",
       "relevance": 85,
-      "summary_cn": "特朗普宣称自己拯救了美国加密行业，承诺将美国打造为加密货币之都，并建立永久性数字资产市场结构。"
+      "summary_cn": "特朗普宣称自己拯救了美国加密行业，承诺打造全球加密之都并制定永久性数字资产法规。"
     },
     {
       "author": "Musk",
@@ -52,8 +53,8 @@
       ],
       "sector_holdings": [],
       "stance": "attack",
-      "relevance": 70,
-      "summary_cn": "马斯克在德克萨斯州承诺的机器人出租车数量远低于预期，实际运营车辆不足50辆。"
+      "relevance": 75,
+      "summary_cn": "马斯克在德克萨斯州承诺的机器人出租车服务实际运营车辆不足50辆，引发兑现能力质疑。"
     },
     {
       "author": "Musk",
@@ -75,8 +76,8 @@
       ],
       "sector_holdings": [],
       "stance": "attack",
-      "relevance": 65,
-      "summary_cn": "分析指出SpaceX与特斯拉合并可能对特斯拉股东不利。"
+      "relevance": 70,
+      "summary_cn": "分析认为SpaceX与特斯拉合并可能损害特斯拉股东利益。"
     },
     {
       "author": "Musk",
@@ -118,7 +119,7 @@
       ],
       "stance": "neutral",
       "relevance": 50,
-      "summary_cn": "报道分析SpaceX的公司结构如何有利于马斯克。"
+      "summary_cn": "报道分析SpaceX的股权结构如何偏向马斯克。"
     },
     {
       "author": "Musk",
@@ -138,7 +139,7 @@
       ],
       "stance": "neutral",
       "relevance": 50,
-      "summary_cn": "马斯克关于SpaceX的言论与IPO文件存在分歧，引发市场关注。"
+      "summary_cn": "马斯克关于SpaceX的言论与IPO文件存在分歧，引发市场疑虑。"
     },
     {
       "author": "Trump",
@@ -157,7 +158,7 @@
       "sector_holdings": [],
       "stance": "neutral",
       "relevance": 55,
-      "summary_cn": "特朗普要求伊朗开放霍尔木兹海峡并清除水雷，涉及航运与能源通道安全。"
+      "summary_cn": "特朗普要求伊朗开放霍尔木兹海峡并清除水雷，涉及能源运输和地缘政治风险。"
     },
     {
       "author": "Trump",
@@ -175,7 +176,7 @@
       "sector_holdings": [],
       "stance": "endorse",
       "relevance": 55,
-      "summary_cn": "特朗普推动美国与亚美尼亚合作，提及美国能源公司将获得中亚能源通道。"
+      "summary_cn": "特朗普宣布与亚美尼亚合作推进能源通道项目，利好美国能源公司。"
     },
     {
       "author": "Musk",
@@ -210,12 +211,13 @@
       ],
       "new_ideas": [],
       "sectors": [
-        "加密货币"
+        "加密货币",
+        "监管"
       ],
       "sector_holdings": [],
       "stance": "endorse",
       "relevance": 85,
-      "summary_cn": "特朗普宣称自己拯救了美国加密行业，承诺将美国打造为加密货币之都，并建立永久性数字资产市场结构。"
+      "summary_cn": "特朗普宣称自己拯救了美国加密行业，承诺打造全球加密之都并制定永久性数字资产法规。"
     }
   ],
   "new_ideas": [
@@ -239,8 +241,8 @@
       ],
       "sector_holdings": [],
       "stance": "attack",
-      "relevance": 70,
-      "summary_cn": "马斯克在德克萨斯州承诺的机器人出租车数量远低于预期，实际运营车辆不足50辆。"
+      "relevance": 75,
+      "summary_cn": "马斯克在德克萨斯州承诺的机器人出租车服务实际运营车辆不足50辆，引发兑现能力质疑。"
     },
     {
       "author": "Musk",
@@ -262,8 +264,8 @@
       ],
       "sector_holdings": [],
       "stance": "attack",
-      "relevance": 65,
-      "summary_cn": "分析指出SpaceX与特斯拉合并可能对特斯拉股东不利。"
+      "relevance": 70,
+      "summary_cn": "分析认为SpaceX与特斯拉合并可能损害特斯拉股东利益。"
     }
   ],
   "sector_hits": [
@@ -307,7 +309,7 @@
       ],
       "stance": "neutral",
       "relevance": 50,
-      "summary_cn": "报道分析SpaceX的公司结构如何有利于马斯克。"
+      "summary_cn": "报道分析SpaceX的股权结构如何偏向马斯克。"
     },
     {
       "author": "Musk",
@@ -327,7 +329,7 @@
       ],
       "stance": "neutral",
       "relevance": 50,
-      "summary_cn": "马斯克关于SpaceX的言论与IPO文件存在分歧，引发市场关注。"
+      "summary_cn": "马斯克关于SpaceX的言论与IPO文件存在分歧，引发市场疑虑。"
     }
   ]
 }
