@@ -177,6 +177,7 @@ python3 scripts/data/analyze_hk_stocks.py --dry-run   # 不写文件
 **Mode 6 briefing**（HK 开/午/午后/收盘 + US 开/收盘 — 6 个 cron 共享）
 - **`scripts/harness/report_preflight.py --market {hk|us} --phase {open|mid|pm|close}`**：跑 analyze_*.py + 抽信号 (WATCH/STOP/TRIM 计数) + 异动 (≥3% 涨跌) + 指数方向；输出 `memory/.tmp/report-context-{market}-{phase}-{date}.json`，含 `raw_wechat_block`（LLM verbatim 用）+ `title` + `needs_risk_section`
 - **`scripts/harness/report_postflight.py --market {hk|us} --phase {phase}`**：校验三段标记 / 原始数据块 verbatim / 异动票必须被提及 / 长度 / 敷衍词；pass/warn 自动 commit portfolio.json
+- **`scripts/harness/report_watchdog.py --market {hk|us} --phase close --job-name "{cron名}"`**：**LLM-free 兜底哨兵**（2026-05-29 加，见下方事件）。**系统 crontab** 跑（不是 openclaw cron），收盘报告 cron 预期完成后几分钟触发：读该 job 今日最后一条 run 的 `summary`，若不含 preflight `raw_wechat_block` 首行 ⇒ 判定 LLM stall/失败未送出 ⇒ 用 `openclaw message send` 直送 `raw_wechat_block`（带 `📨 自动补发` banner，纯数据无分析段）。发送目标从该 job 历史 `delivery.resolved` 自动解析（不硬编码账号）；`memory/.tmp/watchdog-{tag}-{date}.done` flag 防重复。**postflight 抓不到这类失败**——LLM 死在 Step 2 远早于 postflight，故必须 out-of-band。当前覆盖 HK/US 收盘（`15 16 * * 1-5` / `20 4 * * 2-6`）；扩展到开/午盘只需在系统 crontab 加同样格式行。
 
 **Mode 7 intraday**（HK + US 盘中盯盘 — 2 个 cron 共享，每 30 分钟；HK 8 次/天，US 12 次/天，已错开阶段性报告）
 - **`scripts/harness/intraday_preflight.py --market {hk|us}`**：跑 analyze_*.py + 异动检测 + `should_alert` 决策；输出 `memory/.tmp/intraday-context-{market}-latest.json`
