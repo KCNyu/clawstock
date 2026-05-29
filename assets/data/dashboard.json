@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T02:03:49.777620Z",
+  "generated_at": "2026-05-29T02:07:48.981720Z",
   "last_updated": "2026/05/29 10:00 HKT",
   "fx": {
     "usdhkd": 7.8346,
@@ -13,7 +13,7 @@
       "pnl_usd": 414.31,
       "pnl_pct": 15.7634,
       "today_change_usd": 286.66,
-      "realized_usd": 1372.46
+      "realized_usd": 1281.43
     },
     "hk": {
       "value_hkd": 86264.8,
@@ -117,7 +117,7 @@
         "name": "英伟达",
         "currency": "USD",
         "shares": 0,
-        "cost_basis": 187.7,
+        "cost_basis": 187,
         "current_price": 213.0,
         "current_value": 0,
         "today_change": 0,
@@ -127,7 +127,7 @@
         "pnl_abs": 0,
         "pnl_percent": 0,
         "is_active": false,
-        "trades_count": 3
+        "trades_count": 1
       },
       {
         "ticker": "RKLB",
@@ -161,7 +161,7 @@
         "pnl_abs": 42.48,
         "pnl_percent": 24.41,
         "is_active": true,
-        "trades_count": 4
+        "trades_count": 2
       },
       {
         "ticker": "OKLO",
@@ -185,7 +185,7 @@
         "name": "纳斯达克100ETF-Invesco",
         "currency": "USD",
         "shares": 0,
-        "cost_basis": 622.27,
+        "cost_basis": 622,
         "current_price": 694.41,
         "current_value": 0,
         "today_change": 0,
@@ -195,7 +195,7 @@
         "pnl_abs": 0,
         "pnl_percent": 0,
         "is_active": false,
-        "trades_count": 2
+        "trades_count": 1
       },
       {
         "ticker": "TCOM",
@@ -640,8 +640,8 @@
       "us_total_cost": 2628.3,
       "us_total_pnl": 414.31,
       "us_today_change": 286.66,
-      "us_realized": 1372.46,
-      "us_equity": 4415.07,
+      "us_realized": 1281.43,
+      "us_equity": 4324.04,
       "hk_total_value": 86264.8,
       "hk_total_cost": 88276.24,
       "hk_total_pnl": -2011.44,
@@ -1686,8 +1686,8 @@
   },
   "delta": {
     "us": {
-      "today_pct": 5.65,
-      "7d_pct": 5.85,
+      "today_pct": 3.47,
+      "7d_pct": 3.66,
       "30d_pct": null
     },
     "hk": {
@@ -2380,7 +2380,7 @@
     "max_pct_30d_hk": -7.91,
     "max_pct_30d_us": -14.3,
     "current_pct_hk": 3.23,
-    "current_pct_us": 3.0
+    "current_pct_us": 0.88
   },
   "sector_exposure": {
     "us": [
@@ -3622,7 +3622,7 @@
   ],
   "realized_vs_unrealized": {
     "us": {
-      "realized": 1372.46,
+      "realized": 1281.43,
       "unrealized": 414.31
     },
     "hk": {
@@ -3630,26 +3630,26 @@
       "unrealized": -2011.44
     },
     "combined_usd": {
-      "realized": 2299.01,
+      "realized": 2207.98,
       "unrealized": 157.57
     }
   },
   "capital_deployed": {
     "us": {
-      "native": 4000.76,
-      "usd": 4000.76
+      "native": 3909.73,
+      "usd": 3909.73
     },
     "hk": {
       "native": 95535.4,
       "usd": 12194.04
     },
-    "combined_usd": 16194.8
+    "combined_usd": 16103.77
   },
   "net_principal_return": {
     "us": {
-      "net_principal": 1255.84,
-      "total_profit": 1786.77,
-      "return_pct": 142.28
+      "net_principal": 1346.87,
+      "total_profit": 1695.74,
+      "return_pct": 125.9
     },
     "hk": {
       "net_principal": 81017.08,
@@ -3657,9 +3657,9 @@
       "return_pct": 6.48
     },
     "combined_usd": {
-      "net_principal": 11596.77,
-      "total_profit": 2456.58,
-      "return_pct": 21.18
+      "net_principal": 11687.8,
+      "total_profit": 2365.55,
+      "return_pct": 20.24
     },
     "formula": "净投入本金 = 累计成本 − 已实现；回报率 = (浮动 + 已实现) ÷ 净投入本金"
   }

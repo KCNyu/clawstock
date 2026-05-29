@@ -8,7 +8,7 @@
         {
           "ticker": "NVDA",
           "shares": 0,
-          "cost_basis": 187.7,
+          "cost_basis": 187,
           "current_price": 213.0,
           "today_change_pct": 0,
           "pnl_percent": 0,
@@ -22,26 +22,11 @@
           "today_change": -0.0,
           "trades": [
             {
-              "date": "2026-04-01",
-              "action": "buy",
-              "shares": 6,
-              "price": 187.7,
-              "note": "用户补录原始流水(日期约)"
-            },
-            {
-              "date": "2026-04-14",
-              "action": "sell",
-              "shares": 3,
-              "price": 197.5,
-              "realized_pnl": 29.4,
-              "note": "用户补录原始流水(日期约)"
-            },
-            {
               "date": "2026-04-15",
               "action": "sell",
               "shares": 3,
               "price": 199.41,
-              "realized_pnl": 35.13,
+              "realized_pnl": 37.23,
               "note": "按用户截图记录清仓"
             }
           ],
@@ -83,21 +68,6 @@
           "data_source": "Nasdaq API (stocks) May 28, 2026 21:36 ET",
           "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；2026-03-23 卖出3股 @$127，实现盈利 $120；剩余2股长期持有（看好稳定币+agent支付赛道）",
           "trades": [
-            {
-              "date": "2026-03-01",
-              "action": "buy",
-              "shares": 14,
-              "price": 87.0,
-              "note": "用户补录原始流水(日期约)"
-            },
-            {
-              "date": "2026-03-08",
-              "action": "sell",
-              "shares": 4,
-              "price": 103.0,
-              "realized_pnl": 64,
-              "note": "用户补录原始流水(日期约)"
-            },
             {
               "date": "2026-03-11",
               "action": "sell",
@@ -162,7 +132,7 @@
         {
           "ticker": "QQQ",
           "shares": 0,
-          "cost_basis": 622.27,
+          "cost_basis": 622,
           "current_price": 694.41,
           "today_change_pct": 0,
           "pnl_percent": 0,
@@ -176,18 +146,11 @@
           "today_change": 0.0,
           "trades": [
             {
-              "date": "2026-04-01",
-              "action": "buy",
-              "shares": 1,
-              "price": 622.27,
-              "note": "用户补录原始流水(日期约)"
-            },
-            {
               "date": "2026-04-15",
               "action": "sell",
               "shares": 1,
               "price": 631.3,
-              "realized_pnl": 9.03,
+              "realized_pnl": 9.3,
               "note": "按用户截图记录清仓"
             }
           ],
@@ -517,8 +480,8 @@
       "total_pnl": 414.31,
       "total_pnl_percent": 15.7634,
       "today_total_change": 286.66,
-      "realized_pnl": 1372.46,
-      "realized_note": "CRCL 4股@103(+64) + CRCL 5股@120(+165) + CRCL 3股@127(+120) + NVDA 3股@197.5(+29.4) + NVDA 3股@199.41(+35.13) + QQQ 1股@631.3(+9.03) + TQQQ 8股@54.45(+69.76) + HOOD 5股@88.36(+74.3) + OKLO 2股@68(+10.34) + TCOM 5股@53.86(+5.6) + SOXL 5股@112(+100.65) + RKLX 4股@75(+113.2) + RKLX 2股@91.03(+88.66) + SOXL 3股@170.8(+236.79) + SOXL 2股@217.17(+250.6)",
+      "realized_pnl": 1281.43,
+      "realized_note": "CRCL 5股@120(+165) + CRCL 3股@127(+120) + NVDA 3股@199.41(+37.23) + QQQ 1股@631.3(+9.3) + TQQQ 8股@54.45(+69.76) + HOOD 5股@88.36(+74.3) + OKLO 2股@68(+10.34) + TCOM 5股@53.86(+5.6) + SOXL 5股@112(+100.65) + RKLX 4股@75(+113.2) + RKLX 2股@91.03(+88.66) + SOXL 3股@170.8(+236.79) + SOXL 2股@217.17(+250.6)",
       "last_updated": "May 8, 2026 16:00 ET close",
       "open_fetch_status": {
         "attempted_all_holdings": [
