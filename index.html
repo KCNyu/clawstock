@@ -2673,8 +2673,15 @@ layout: null
         const r = safe(rv, key, "realized") ?? 0;
         const u = safe(rv, key, "unrealized") ?? 0;
         const cost = safe(DATA, "totals", key, ccy === "USD" ? "cost_usd" : "cost_hkd") ?? 0;
-        const profit = r + u, net = cost - r;
-        const netPct = net > 0 ? profit / net * 100 : null;
+        const profit = r + u;
+        // 本金优先用后端 true_principal（现金流账本峰值净投入＝真实自掏现金），
+        // 否则回退 净投入本金=成本−已实现。回报率同源，避免卡片本地重算出 142% 虚高。
+        const nprK = safe(DATA, "net_principal_return", key) || {};
+        const tp = nprK.true_principal;
+        const usingTrue = tp != null && tp > 0;
+        const net = usingTrue ? tp : (cost - r);
+        const netPct = (nprK.return_pct != null) ? nprK.return_pct : (net > 0 ? profit / net * 100 : null);
+        const netLabel = usingTrue ? "真实本金" : "净投入本金";
         const floPct = cost > 0 ? u / cost * 100 : null;
         const totPct = (cost + r) > 0 ? profit / (cost + r) * 100 : null;
         const ref = Math.max(Math.abs(r), Math.abs(u), 1);
@@ -2685,7 +2692,7 @@ layout: null
           + `<div class="mkt-ret-label">净本金回报率</div>`
           + `<div class="mkt-ret ${pnlClass(netPct)}">${netPct != null ? pct1(netPct) : DASH}</div>`
           + `<div class="mkt-stats">`
-            + `<div class="mkt-stat"><span class="lbl">净投入本金</span><span class="v">${ccyMoney(net, ccy, false)}</span></div>`
+            + `<div class="mkt-stat"><span class="lbl">${netLabel}</span><span class="v">${ccyMoney(net, ccy, false)}</span></div>`
             + `<div class="mkt-stat"><span class="lbl">总盈亏</span><span class="v ${pnlClass(profit)}">${ccyMoney(profit, ccy, true)}</span></div>`
           + `</div>`
           + `<div class="mkt-comp">`
