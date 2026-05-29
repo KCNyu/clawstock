@@ -963,6 +963,7 @@ layout: null
   <nav class="tabs" role="tablist">
     <button class="tab-btn active" data-tab="hero" role="tab" aria-selected="true">总览 Hero</button>
     <button class="tab-btn" data-tab="drill" role="tab">明细 Drill</button>
+    <button class="tab-btn" data-tab="market" role="tab">盘面 Market</button>
     <button class="tab-btn" data-tab="plan" role="tab">计划 Plan</button>
     <button class="tab-btn" data-tab="reflect" role="tab">复盘 Reflect</button>
   </nav>
@@ -971,12 +972,14 @@ layout: null
 <main>
 
   <!-- ============================================
-       HERO — totals, deltas, HHI, anomalies, movers, macro
+       HERO — 我的状态 + 今日异动 + 风险 (9 张速读卡)
+       外部情报已拆到『盘面 Market』tab
        ============================================ -->
   <section class="panel active" data-panel="hero">
     <h2>总览 Hero</h2>
 
     <div id="today-highlights" class="today-highlights"></div>
+
 
     <div class="card market-card">
       <h3>Market Snapshot <span class="muted" id="market-asof" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">—</span></h3>
@@ -985,6 +988,7 @@ layout: null
       </div>
       <div class="rs-row muted" id="market-rs" style="margin-top:10px;font-size:11px"></div>
     </div>
+
 
     <div class="card">
       <h3>Total Book</h3>
@@ -1014,6 +1018,7 @@ layout: null
       </div>
     </div>
 
+
     <div class="card">
       <h3>Today's P&amp;L</h3>
       <div class="today-pnl-grid">
@@ -1030,6 +1035,7 @@ layout: null
       </div>
     </div>
 
+
     <div class="card">
       <h3>Delta</h3>
       <table class="delta-table">
@@ -1041,6 +1047,23 @@ layout: null
         </tbody>
       </table>
     </div>
+
+
+    <div class="card">
+      <h3>Anomalies <span class="badge muted" id="anom-count"></span></h3>
+      <div class="anomaly-list" id="anomaly-list">
+        <div class="empty-state">No anomalies detected.</div>
+      </div>
+    </div>
+
+
+    <div class="card">
+      <h3>Today's Movers <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">(≥3%)</span></h3>
+      <div class="movers-scroll" id="movers-scroll">
+        <div class="empty-state">No movers ≥3% today.</div>
+      </div>
+    </div>
+
 
     <div class="card">
       <h3>Concentration (HHI)</h3>
@@ -1060,6 +1083,7 @@ layout: null
       </div>
     </div>
 
+
     <div class="card">
       <h3>Leveraged ETF Exposure <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(2x/3x ÷ book)</span></h3>
       <div class="lev-row">
@@ -1078,6 +1102,7 @@ layout: null
       </div>
       <div class="lev-tickers muted" id="lev-tickers">—</div>
     </div>
+
 
     <div class="card">
       <h3>Risk Metrics <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(30d)</span> <span class="badge muted" id="risk-alert-count"></span></h3>
@@ -1110,49 +1135,14 @@ layout: null
       <div class="risk-alerts" id="risk-alerts"></div>
     </div>
 
-    <div class="card">
-      <h3>Anomalies <span class="badge muted" id="anom-count"></span></h3>
-      <div class="anomaly-list" id="anomaly-list">
-        <div class="empty-state">No anomalies detected.</div>
-      </div>
-    </div>
+  </section>
 
-    <div class="card">
-      <h3>Today's Movers <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500">(≥3%)</span></h3>
-      <div class="movers-scroll" id="movers-scroll">
-        <div class="empty-state">No movers ≥3% today.</div>
-      </div>
-    </div>
+  <!-- ============================================
+       MARKET — 外部情报: 影响力雷达 / catalysts / news / macro / 板块
+       ============================================ -->
+  <section class="panel" data-panel="market">
+    <h2>盘面 Market</h2>
 
-    <div class="card">
-      <h3>板块全景 <span class="muted" id="sector-context-asof" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">—</span></h3>
-      <p class="chart-hint" id="sector-narrative" style="display:none"></p>
-      <div class="sector-context" id="sector-context">
-        <div class="empty-state">等待今日 brief 写入 sector-scan（08:00 HKT 后刷新）</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>Holdings 7d Trend <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(active 持仓 · 价格走势)</span></h3>
-      <div class="hold-trend-grid" id="hold-trend-grid">
-        <div class="empty-state">No price history.</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>8天涨跌热力 <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(近 8 日收益 · 按强弱排序)</span></h3>
-      <p class="chart-hint">把 holdings_history 8 天价格序列折算成回报率：绿色 = 在跑、红色 = 在拖。每格下方小字 = 当前仓位权重，重仓 + 大红块 = 优先审视。</p>
-      <div class="ret-heatmap" id="ret-heatmap">
-        <div class="empty-state">No price history.</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>Catalysts <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(next 14d)</span></h3>
-      <div class="catalysts-list" id="catalysts-list">
-        <div class="empty-state">No upcoming catalysts.</div>
-      </div>
-    </div>
 
     <div class="card">
       <h3>影响力雷达 <span class="muted" id="infl-asof" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">Trump · Musk · LLM筛</span></h3>
@@ -1162,12 +1152,22 @@ layout: null
       </div>
     </div>
 
+
+    <div class="card">
+      <h3>Catalysts <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(next 14d)</span></h3>
+      <div class="catalysts-list" id="catalysts-list">
+        <div class="empty-state">No upcoming catalysts.</div>
+      </div>
+    </div>
+
+
     <div class="card">
       <h3>US News Digest <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(xiaomi · 48h)</span></h3>
       <div class="news-digest" id="news-digest">
         <div class="empty-state">No digest yet.</div>
       </div>
     </div>
+
 
     <div class="card">
       <h3>Macro · Sentiment</h3>
@@ -1176,6 +1176,15 @@ layout: null
         <div class="empty-state">No macro data.</div>
       </div>
       <div id="sentiment-drill" class="sentiment-drill"></div>
+    </div>
+
+
+    <div class="card">
+      <h3>板块全景 <span class="muted" id="sector-context-asof" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">—</span></h3>
+      <p class="chart-hint" id="sector-narrative" style="display:none"></p>
+      <div class="sector-context" id="sector-context">
+        <div class="empty-state">等待今日 brief 写入 sector-scan（08:00 HKT 后刷新）</div>
+      </div>
     </div>
 
   </section>
@@ -1205,6 +1214,23 @@ layout: null
           </thead>
           <tbody id="holdings-tbody"></tbody>
         </table>
+      </div>
+    </div>
+
+
+    <div class="card">
+      <h3>Holdings 7d Trend <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(active 持仓 · 价格走势)</span></h3>
+      <div class="hold-trend-grid" id="hold-trend-grid">
+        <div class="empty-state">No price history.</div>
+      </div>
+    </div>
+
+
+    <div class="card">
+      <h3>8天涨跌热力 <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(近 8 日收益 · 按强弱排序)</span></h3>
+      <p class="chart-hint">把 holdings_history 8 天价格序列折算成回报率：绿色 = 在跑、红色 = 在拖。每格下方小字 = 当前仓位权重，重仓 + 大红块 = 优先审视。</p>
+      <div class="ret-heatmap" id="ret-heatmap">
+        <div class="empty-state">No price history.</div>
       </div>
     </div>
 
@@ -1506,7 +1532,7 @@ layout: null
   };
 
   // =========================================================
-  // Tab switching (mobile only — desktop shows all 3 columns)
+  // Tab switching (mobile only — desktop shows all panels as columns)
   // =========================================================
   document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.addEventListener("click", () => {
