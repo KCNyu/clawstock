@@ -1,14 +1,16 @@
 {
   "owner": "kcn",
-  "last_updated": "2026/05/29 12:00 HKT",
+  "last_updated": "2026/05/29 13:30 HKT",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
+      "true_principal": 2471.12,
+      "true_principal_note": "自掏现金真实本金（USD）= 全部交易流水按时间轴走一遍的峰值净投入 @2026-05-06。初始 QQQ 1@622.27 + NVDA 6@187.77 ≈ $1749，卖出回笼再投不重复计，外加后续补入。回报率用它当分母（≈72%），而非 cost−realized（=1255 会把分母做小、虚高到142%）。来源：2026-05-29 与 kcn 对账确认。改持仓/补流水后须按现金流账本重算此值。",
       "holdings": [
         {
           "ticker": "NVDA",
           "shares": 0,
-          "cost_basis": 187,
+          "cost_basis": 187.77,
           "current_price": 213.0,
           "today_change_pct": 0,
           "pnl_percent": 0,
@@ -22,11 +24,26 @@
           "today_change": -0.0,
           "trades": [
             {
+              "date": "2026-01-17",
+              "action": "buy",
+              "shares": 6,
+              "price": 187.77,
+              "note": "用户补录原始买入流水（截图 1/17 @187.77）"
+            },
+            {
+              "date": "2026-02-26",
+              "action": "sell",
+              "shares": 3,
+              "price": 197.5,
+              "realized_pnl": 29.19,
+              "note": "用户补录漏记卖出（截图 2/26 @197.5）"
+            },
+            {
               "date": "2026-04-15",
               "action": "sell",
               "shares": 3,
               "price": 199.41,
-              "realized_pnl": 37.23,
+              "realized_pnl": 34.92,
               "note": "按用户截图记录清仓"
             }
           ],
@@ -66,8 +83,30 @@
           "today_change_pct": 5.456,
           "pnl_percent": 24.4138,
           "data_source": "Nasdaq API (stocks) May 28, 2026 21:36 ET",
-          "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；2026-03-23 卖出3股 @$127，实现盈利 $120；剩余2股长期持有（看好稳定币+agent支付赛道）",
+          "note": "2026-02-26/03-02 共买入14股（@88.35+@86.45，均价≈87）；2026-03-04 卖4股@103.21(+64.84)；03-11 卖5股@120(+165)；03-23 卖3股@127(+120)；剩余2股长期持有（看好稳定币+agent支付赛道）",
           "trades": [
+            {
+              "date": "2026-02-26",
+              "action": "buy",
+              "shares": 4,
+              "price": 88.35,
+              "note": "用户补录原始买入流水（截图 2/26；股数按均价≈87 反推拆分）"
+            },
+            {
+              "date": "2026-03-02",
+              "action": "buy",
+              "shares": 10,
+              "price": 86.45,
+              "note": "用户补录原始买入流水（截图 3/2；股数按均价≈87 反推拆分）"
+            },
+            {
+              "date": "2026-03-04",
+              "action": "sell",
+              "shares": 4,
+              "price": 103.21,
+              "realized_pnl": 64.84,
+              "note": "用户补录漏记卖出（截图 3/4 @103.21）"
+            },
             {
               "date": "2026-03-11",
               "action": "sell",
@@ -132,7 +171,7 @@
         {
           "ticker": "QQQ",
           "shares": 0,
-          "cost_basis": 622,
+          "cost_basis": 622.27,
           "current_price": 694.41,
           "today_change_pct": 0,
           "pnl_percent": 0,
@@ -146,11 +185,18 @@
           "today_change": 0.0,
           "trades": [
             {
+              "date": "2025-12-24",
+              "action": "buy",
+              "shares": 1,
+              "price": 622.27,
+              "note": "用户补录原始买入流水（截图 12/24 @622.27）"
+            },
+            {
               "date": "2026-04-15",
               "action": "sell",
               "shares": 1,
               "price": 631.3,
-              "realized_pnl": 9.3,
+              "realized_pnl": 9.03,
               "note": "按用户截图记录清仓"
             }
           ],
@@ -480,8 +526,8 @@
       "total_pnl": 414.31,
       "total_pnl_percent": 15.7634,
       "today_total_change": 286.66,
-      "realized_pnl": 1281.43,
-      "realized_note": "CRCL 5股@120(+165) + CRCL 3股@127(+120) + NVDA 3股@199.41(+37.23) + QQQ 1股@631.3(+9.3) + TQQQ 8股@54.45(+69.76) + HOOD 5股@88.36(+74.3) + OKLO 2股@68(+10.34) + TCOM 5股@53.86(+5.6) + SOXL 5股@112(+100.65) + RKLX 4股@75(+113.2) + RKLX 2股@91.03(+88.66) + SOXL 3股@170.8(+236.79) + SOXL 2股@217.17(+250.6)",
+      "realized_pnl": 1372.88,
+      "realized_note": "NVDA 3股@197.5(+29.19) + CRCL 4股@103.21(+64.84) + CRCL 5股@120(+165) + CRCL 3股@127(+120) + NVDA 3股@199.41(+34.92) + QQQ 1股@631.3(+9.03) + TQQQ 8股@54.45(+69.76) + HOOD 5股@88.36(+74.3) + OKLO 2股@68(+10.34) + TCOM 5股@53.86(+5.6) + SOXL 5股@112(+100.65) + RKLX 4股@75(+113.2) + RKLX 2股@91.03(+88.66) + SOXL 3股@170.8(+236.79) + SOXL 2股@217.17(+250.6)",
       "last_updated": "May 8, 2026 16:00 ET close",
       "open_fetch_status": {
         "attempted_all_holdings": [
@@ -727,13 +773,13 @@
           "ticker_finnhub": "0100.HK",
           "shares": 60,
           "cost_basis": 822.83,
-          "current_price": 873.0,
-          "current_value": 52380.0,
-          "pnl_percent": 6.1,
-          "data_source": "Tencent May 29 12:00 HKT",
-          "today_change": 2160.0,
-          "today_change_pct": 4.3,
-          "pnl_abs": 3010.2,
+          "current_price": 878.0,
+          "current_value": 52680.0,
+          "pnl_percent": 6.7,
+          "data_source": "Tencent+Eastmoney May 29 13:30 HKT",
+          "today_change": 2460.0,
+          "today_change_pct": 4.9,
+          "pnl_abs": 3310.2,
           "day_open": 738.0,
           "day_high": 744.5,
           "day_low": 731.0,
@@ -775,13 +821,13 @@
           "ticker_finnhub": "2208.HK",
           "shares": 400,
           "cost_basis": 14.084,
-          "current_price": 13.75,
-          "current_value": 5500.0,
-          "pnl_percent": -2.37,
-          "data_source": "Tencent May 29 12:00 HKT",
-          "today_change": -120.0,
-          "today_change_pct": -2.14,
-          "pnl_abs": -133.6,
+          "current_price": 13.85,
+          "current_value": 5540.0,
+          "pnl_percent": -1.66,
+          "data_source": "Tencent+Eastmoney May 29 13:30 HKT",
+          "today_change": -80.0,
+          "today_change_pct": -1.42,
+          "pnl_abs": -93.6,
           "day_open": 16.98,
           "day_high": 17.06,
           "day_low": 16.62,
@@ -808,13 +854,13 @@
           "ticker_finnhub": "3032.HK",
           "shares": 200,
           "cost_basis": 5.405,
-          "current_price": 4.948,
-          "current_value": 989.6,
-          "pnl_percent": -8.46,
-          "data_source": "Tencent May 29 12:00 HKT",
-          "today_change": 16.4,
-          "today_change_pct": 1.69,
-          "pnl_abs": -91.4,
+          "current_price": 4.918,
+          "current_value": 983.6,
+          "pnl_percent": -9.01,
+          "data_source": "Tencent+Eastmoney May 29 13:30 HKT",
+          "today_change": 10.4,
+          "today_change_pct": 1.07,
+          "pnl_abs": -97.4,
           "day_open": 5.09,
           "day_high": 5.115,
           "day_low": 5.09,
@@ -831,10 +877,10 @@
           "ticker_finnhub": "7226.HK",
           "shares": 6200,
           "cost_basis": 4.3632,
-          "current_price": 3.898,
-          "current_value": 24167.6,
-          "pnl_percent": -10.66,
-          "data_source": "Tencent May 29 12:00 HKT",
+          "current_price": 3.848,
+          "current_value": 23857.6,
+          "pnl_percent": -11.81,
+          "data_source": "Tencent+Eastmoney May 29 13:30 HKT",
           "trades": [
             {
               "date": "2026-03-24",
@@ -844,9 +890,9 @@
               "note": "加仓补摊，摊低成本至4.3632"
             }
           ],
-          "today_change": 731.6,
-          "today_change_pct": 3.12,
-          "pnl_abs": -2884.24,
+          "today_change": 421.6,
+          "today_change_pct": 1.8,
+          "pnl_abs": -3194.24,
           "day_open": 4.176,
           "day_high": 4.192,
           "day_low": 4.158,
@@ -863,13 +909,13 @@
           "ticker_finnhub": "3033.HK",
           "shares": 1000,
           "cost_basis": 5.14,
-          "current_price": 4.862,
-          "current_value": 4862.0,
-          "pnl_percent": -5.41,
-          "data_source": "Tencent May 29 12:00 HKT",
-          "today_change": 80.0,
-          "today_change_pct": 1.67,
-          "pnl_abs": -278.0,
+          "current_price": 4.83,
+          "current_value": 4830.0,
+          "pnl_percent": -6.03,
+          "data_source": "Tencent+Eastmoney May 29 13:30 HKT",
+          "today_change": 48.0,
+          "today_change_pct": 1.0,
+          "pnl_abs": -310.0,
           "day_open": 5.04,
           "day_high": 5.04,
           "day_low": 5.005,
@@ -1030,12 +1076,12 @@
         }
       ],
       "total_cost": 88276.24,
-      "total_current_value": 87899.2,
-      "total_pnl": -377.04,
-      "total_pnl_percent": -0.43,
+      "total_current_value": 87891.2,
+      "total_pnl": -385.04,
+      "total_pnl_percent": -0.44,
       "realized_pnl": 7259.16,
       "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07747 100股@85(+315) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07747 100股@83.58(+173) + 07709 100股@31.5(+196.52) + 07709 100股@36(+646.52) + 07709 100股@36.02(+648.52) + 07709 100股@38.7(+916.52) + 07709 400股@36.98(+2978.08) + 02208 200股@16.68(+519.2)",
-      "today_total_change": 2868.0,
+      "today_total_change": 2860.0,
       "last_updated": "2026/05/12 09:30 HKT",
       "midday_fetch_status": {
         "attempted_all_holdings": [
@@ -1142,17 +1188,17 @@
       "indices_snapshot": {
         "HSI": {
           "name": "恒生指数",
-          "price": 25282.84,
+          "price": 25271.76,
           "prev_close": 25006.16,
-          "chg_pct": 1.11,
-          "source": "Tencent qt.gtimg.cn 2026/05/29 12:00 HKT"
+          "chg_pct": 1.06,
+          "source": "Tencent qt.gtimg.cn 2026/05/29 13:30 HKT"
         },
         "HSTECH": {
           "name": "恒生科技",
-          "price": 4969.94,
+          "price": 4937.04,
           "prev_close": 4888.58,
-          "chg_pct": 1.66,
-          "source": "Tencent qt.gtimg.cn 2026/05/29 12:00 HKT"
+          "chg_pct": 0.99,
+          "source": "Tencent qt.gtimg.cn 2026/05/29 13:30 HKT"
         }
       },
       "last_midday_attempted": "2026-05-07 12:00:00 HKT",
