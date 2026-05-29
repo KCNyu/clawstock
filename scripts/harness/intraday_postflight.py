@@ -35,7 +35,9 @@ from _harness_common import (  # noqa: E402
     validate_forbidden_phrases,
 )
 
-WS = Path('/root/.openclaw/workspace')
+# Workspace root, resolved from this file's location (location-independent;
+# matches the old hardcoded /root path locally, robust if run elsewhere).
+WS = Path(__file__).resolve().parents[2]
 TMP = WS / 'memory' / '.tmp'
 
 REQUIRED_SECTION = '▎我的看法'

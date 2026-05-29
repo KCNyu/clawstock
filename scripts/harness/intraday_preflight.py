@@ -25,7 +25,9 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-WS = Path('/root/.openclaw/workspace')
+# Workspace root, resolved from this file's location (location-independent;
+# matches the old hardcoded /root path locally, robust if run elsewhere).
+WS = Path(__file__).resolve().parents[2]
 DATA_DIR = WS / 'scripts' / 'data'
 TMP = WS / 'memory' / '.tmp'
 

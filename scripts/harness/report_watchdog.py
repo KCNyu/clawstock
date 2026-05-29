@@ -43,7 +43,9 @@ import sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-WS = Path('/root/.openclaw/workspace')
+# Workspace root, resolved from this file's location (location-independent;
+# matches the old hardcoded /root path locally, robust if run elsewhere).
+WS = Path(__file__).resolve().parents[2]
 OC = Path('/root/.openclaw')
 TMP = WS / 'memory' / '.tmp'
 RUNS_DIR = OC / 'cron' / 'runs'
