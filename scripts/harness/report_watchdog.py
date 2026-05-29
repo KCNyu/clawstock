@@ -173,7 +173,7 @@ def main():
         return 0
 
     title = ctx.get('title', '').strip()
-    banner = ('📨 自动补发（收盘报告模型生成失败/中断，以下为脚本数据直送，'
+    banner = ('📨 自动补发（报告模型生成失败/中断，以下为脚本数据直送，'
               '无分析段——可在 dashboard 看完整持仓）\n\n')
     message = banner + (title + '\n\n' if title else '') + raw
 
