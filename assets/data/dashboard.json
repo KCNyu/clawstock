@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-29T01:32:33.208400Z",
-  "last_updated": "2026/05/29 09:31 HKT",
+  "generated_at": "2026-05-29T01:36:58.068305Z",
+  "last_updated": "2026/05/29 09:36 HKT",
   "fx": {
     "usdhkd": 7.8346,
     "source": "Frankfurter",
@@ -1273,21 +1273,21 @@
       "price": 754.6,
       "prev_close": 754.6,
       "change_pct": 0.55,
-      "source": "Nasdaq API SPY ETF @ 2026-05-28 21:23 ET"
+      "source": "Nasdaq API SPY ETF @ 2026-05-28 21:36 ET"
     },
     "NDX": {
       "name": "Nasdaq 100",
       "price": 735.6,
       "prev_close": 735.6,
       "change_pct": 0.84,
-      "source": "Nasdaq API QQQ ETF @ 2026-05-28 21:23 ET"
+      "source": "Nasdaq API QQQ ETF @ 2026-05-28 21:36 ET"
     },
     "DJI": {
       "name": "Dow Jones",
       "price": 507.05,
       "prev_close": 507.05,
       "change_pct": 0.03,
-      "source": "Nasdaq API DIA ETF @ 2026-05-28 21:23 ET"
+      "source": "Nasdaq API DIA ETF @ 2026-05-28 21:36 ET"
     },
     "HSI": {
       "name": "恒生指数",

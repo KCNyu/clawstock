@@ -65,6 +65,39 @@ def _pct(c: float, pc: float) -> float:
     return round((c - pc) / pc * 100, 4) if pc else 0.0
 
 
+def _prev_trading_day(date_str: str) -> str:
+    """Calendar prior trading day (skips weekends; ignores holidays — close enough
+    for a date label on a reconstructed prev_close)."""
+    d = datetime.strptime(date_str, '%Y-%m-%d') - timedelta(days=1)
+    while d.weekday() >= 5:  # Sat=5, Sun=6
+        d -= timedelta(days=1)
+    return d.strftime('%Y-%m-%d')
+
+
+# ── debug instrumentation (③) ──────────────────────────────────────────────────
+# US_FETCH_DEBUG=1 dumps raw Nasdaq + Polygon payloads per ticker to
+# memory/.tmp/us_fetch_debug_{date}.jsonl. Captures the source JSON so a transient
+# provider glitch (e.g. the 2026-05-29 Nasdaq post-close stale-price swap, where
+# lastSalePrice lagged a day while PreviousClose held the real close) can be
+# reproduced and any future guard tested against the real payload.
+DEBUG_DUMP = os.environ.get('US_FETCH_DEBUG', '').strip().lower() not in ('', '0', 'false', 'no')
+
+
+def _debug_dump(stage: str, ticker: str, payload) -> None:
+    if not DEBUG_DUMP:
+        return
+    try:
+        tmp = os.path.join(WS_ROOT, 'memory', '.tmp')
+        os.makedirs(tmp, exist_ok=True)
+        now = datetime.now(timezone(timedelta(hours=-4)))
+        rec = {'ts': now.isoformat(), 'stage': stage, 'ticker': ticker, 'payload': payload}
+        path = os.path.join(tmp, f"us_fetch_debug_{now.strftime('%Y-%m-%d')}.jsonl")
+        with open(path, 'a') as f:
+            f.write(json.dumps(rec, ensure_ascii=False, default=str) + '\n')
+    except Exception:
+        pass
+
+
 def load_api_keys() -> Dict[str, str]:
     keys: Dict[str, str] = {}
     try:
@@ -95,6 +128,7 @@ def get_nasdaq_quote(ticker: str) -> Optional[Dict]:
             if r.status_code != 200:
                 continue
             body = (r.json().get('data') or {})
+            _debug_dump('nasdaq', ticker, body)
             primary = body.get('primaryData') or {}
             summary = body.get('summaryData') or {}
 
@@ -392,7 +426,9 @@ def get_prev_close_polygon(ticker: str, api_key: str) -> Optional[tuple]:
             params={'adjusted': 'true', 'apiKey': api_key},
             timeout=TIMEOUT,
         )
-        results = r.json().get('results', [])
+        raw = r.json()
+        _debug_dump('polygon_prev', ticker, raw)
+        results = raw.get('results', [])
         if not results:
             return None
         res = results[0]
@@ -592,6 +628,35 @@ def update_us_portfolio(
         # 4th: keep existing prev_close if it's fresh and we have no other source
         if t in prev_closes:
             pc, pc_date = prev_closes[t]
+            # ── Post-close authority + stale-current guard (①②) ──────────────────
+            # When Polygon's "prev close" date == today, the market has closed and
+            # Polygon's bar IS today's official close (not yesterday's). Two traps
+            # follow — see memory/openclaw-us-postclose-stale-price-swap.md (2026-05-29):
+            #   ① Nasdaq lastSalePrice can lag at a stale prior-day value while
+            #      Polygon holds the real close (MSFU 28.01 vs real 29.92) →
+            #      trust Polygon's official close as current_price.
+            #   ② With pc == today's close, today_change collapses to 0 → rebuild the
+            #      real prev_close from the prior session.
+            if pc_date == today_et_date:
+                poly_close = pc
+                if poly_close > 0 and abs(c - poly_close) / poly_close > 0.005:
+                    print(f"  ⚠ {t}: Nasdaq last ${c:.4f} deviates "
+                          f"{(c - poly_close) / poly_close * 100:+.2f}% from Polygon close "
+                          f"${poly_close:.4f} → using Polygon (stale-quote guard ①)")
+                    c = poly_close
+                # ② prior-session close: prefer the existing dated prev_close (an
+                # independent capture from a run before today's bar finalized — robust
+                # even if Nasdaq's %change is also stale), then Nasdaq dp, then no-op.
+                existing_pc      = holding.get('prev_close', 0)
+                existing_pc_date = holding.get('prev_close_date', '')
+                api_dp           = q.get('dp', 0)
+                if existing_pc > 0 and existing_pc_date and \
+                        three_days_ago <= existing_pc_date < today_et_date:
+                    pc, pc_date = existing_pc, existing_pc_date
+                elif api_dp and abs(api_dp) > 0.01:
+                    pc = round(c / (1 + api_dp / 100), 4)
+                    pc_date = _prev_trading_day(today_et_date)
+                # else: leave pc = today's close (today_change falls back to 0, safe)
         else:
             api_pc = q.get('pc', c)
             existing_pc      = holding.get('prev_close', 0)
@@ -606,6 +671,15 @@ def update_us_portfolio(
                 pc, pc_date = existing_pc, existing_pc_date
             else:
                 pc, pc_date = c, today_et_date
+
+        # ③ degenerate-range warning: a live regular-session quote with
+        # open==high==low==close has no intraday range → likely a stale/frozen
+        # quote (the tell-tale signature of the 2026-05-29 swap). Warn-only.
+        if 9 <= now_et.hour < 16:
+            o_, h_, l_ = q.get('o'), q.get('h'), q.get('l')
+            if None not in (o_, h_, l_) and o_ == h_ == l_ == q['c']:
+                print(f"  ⚠ {t}: degenerate range (o=h=l=c=${q['c']:.4f}) mid-session "
+                      f"— possible stale quote (run with US_FETCH_DEBUG=1 to capture payload)")
 
         holding['current_price']    = round(c, 4)
         holding['prev_close']       = round(pc, 4)

@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026/05/29 09:31 HKT",
+  "last_updated": "2026/05/29 09:36 HKT",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -40,9 +40,9 @@
           "shares": 5,
           "cost_basis": 71,
           "current_price": 148.03,
-          "today_change_pct": -1.46,
+          "today_change_pct": -1.4644,
           "pnl_percent": 108.493,
-          "data_source": "Nasdaq API (stocks) May 28, 2026 21:23 ET",
+          "data_source": "Nasdaq API (stocks) May 28, 2026 21:36 ET",
           "day_high": 148.03,
           "day_low": 148.03,
           "day_open": 148.03,
@@ -63,9 +63,9 @@
           "shares": 2,
           "cost_basis": 87,
           "current_price": 108.24,
-          "today_change_pct": 5.46,
+          "today_change_pct": 5.456,
           "pnl_percent": 24.4138,
-          "data_source": "Nasdaq API (stocks) May 28, 2026 21:23 ET",
+          "data_source": "Nasdaq API (stocks) May 28, 2026 21:36 ET",
           "note": "2026-03-11 卖出5股 @$120，实现盈利 $165；2026-03-23 卖出3股 @$127，实现盈利 $120；剩余2股长期持有（看好稳定币+agent支付赛道）",
           "trades": [
             {
@@ -259,9 +259,9 @@
           "shares": 14,
           "cost_basis": 40.957142857142856,
           "current_price": 40.17,
-          "today_change_pct": 16.17,
+          "today_change_pct": 16.1654,
           "pnl_percent": -1.9219,
-          "data_source": "Nasdaq API (etf) May 28, 2026 21:23 ET",
+          "data_source": "Nasdaq API (etf) May 28, 2026 21:36 ET",
           "day_high": 40.17,
           "day_low": 40.17,
           "day_open": 40.17,
@@ -402,8 +402,8 @@
           "shares": 40,
           "cost_basis": 23.582500000000003,
           "current_price": 23.13,
-          "today_change_pct": 22.51,
-          "data_source": "Nasdaq API (etf) May 28, 2026 21:23 ET",
+          "today_change_pct": 22.5106,
+          "data_source": "Nasdaq API (etf) May 28, 2026 21:36 ET",
           "day_high": 23.13,
           "day_low": 23.13,
           "day_open": 23.13,
@@ -452,7 +452,7 @@
           "pnl_abs": 15.8,
           "pnl_percent": 2.712,
           "today_change": 38.2,
-          "today_change_pct": 6.82,
+          "today_change_pct": 6.819,
           "trades": [
             {
               "date": "2026-04-24",
@@ -467,7 +467,7 @@
           "day_high": 29.92,
           "day_low": 29.92,
           "day_open": 29.92,
-          "data_source": "Nasdaq API (etf) May 28, 2026 21:23 ET",
+          "data_source": "Nasdaq API (etf) May 28, 2026 21:36 ET",
           "bid": 27.76,
           "ask": 27.77,
           "premarket_volume": "378,509.610000",
@@ -567,21 +567,21 @@
           "price": 754.6,
           "prev_close": 754.6,
           "change_pct": 0.55,
-          "source": "Nasdaq API SPY ETF @ 2026-05-28 21:23 ET"
+          "source": "Nasdaq API SPY ETF @ 2026-05-28 21:36 ET"
         },
         "NDX": {
           "name": "Nasdaq 100",
           "price": 735.6,
           "prev_close": 735.6,
           "change_pct": 0.84,
-          "source": "Nasdaq API QQQ ETF @ 2026-05-28 21:23 ET"
+          "source": "Nasdaq API QQQ ETF @ 2026-05-28 21:36 ET"
         },
         "DJI": {
           "name": "Dow Jones",
           "price": 507.05,
           "prev_close": 507.05,
           "change_pct": 0.03,
-          "source": "Nasdaq API DIA ETF @ 2026-05-28 21:23 ET"
+          "source": "Nasdaq API DIA ETF @ 2026-05-28 21:36 ET"
         }
       },
       "live_fetch_status": {
@@ -712,10 +712,10 @@
           "Nasdaq API (stocks)": 2,
           "Nasdaq API (etf)": 3
         },
-        "updated_at": "2026-05-28 21:23 UTC-04:00",
+        "updated_at": "2026-05-28 21:36 UTC-04:00",
         "note": "Multi-provider fetch. Sources: 2x Nasdaq API (stocks), 3x Nasdaq API (etf)"
       },
-      "last_closed_attempted": "2026-05-28 21:23 UTC-04:00",
+      "last_closed_attempted": "2026-05-28 21:36 UTC-04:00",
       "last_premarket_attempted": "2026-05-26 08:17 UTC-04:00"
     },
     "hk_stocks": {
