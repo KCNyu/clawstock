@@ -375,40 +375,80 @@ def get_polygon_quote(ticker: str, api_key: str) -> Optional[Dict]:
         return None
 
 
-def fetch_us_indices() -> Dict[str, Dict]:
-    """Fetch SPX / NDX / DJI live quotes.
+def get_tencent_us_index(symbol: str) -> Optional[Dict]:
+    """Fetch a REAL US index level (not an ETF proxy) from Tencent gtimg.
 
-    Tries Nasdaq API on ETF proxies (SPY/QQQ/DIA) — most reliable from a server IP.
-    Falls back to yfinance for the raw index symbol if the proxy fails.
+    symbol: 'usINX' (S&P 500), 'usNDX' (Nasdaq-100), 'usDJI' (Dow Jones).
+    Tencent returns the actual index points (e.g. SPX 7563, NDX 30223, DJI 50668),
+    unlike the SPY/QQQ/DIA ETF proxies whose prices (~754/~735/~507) are NOT index
+    points — feeding ETF prices straight into indices_snapshot as the index level
+    was the 2026-05-29 bug (DJI showed 507 instead of 50668).
 
-    Returns dict keyed by short symbol (SPX/NDX/DJI) with name/price/prev_close/
-    change_pct/proxy/source. Failures tolerated — missing keys omit that index.
+    Returns {'c': price, 'pc': prev_close, 'dp': change_pct} or None.
     """
-    # (yahoo_idx, etf_proxy, short, display_name)
+    try:
+        r = SESSION.get(f'https://qt.gtimg.cn/q={symbol}', timeout=TIMEOUT)
+        r.encoding = 'utf-8'
+        if '="' not in r.text:
+            return None
+        val = r.text.split('="', 1)[1].split('"', 1)[0]
+        f = val.split('~')
+        if len(f) < 5:
+            return None
+        c = _parse_price(f[3]); pc = _parse_price(f[4])
+        if c is None or pc is None:
+            return None
+        return {'c': c, 'pc': pc, 'dp': _pct(c, pc)}
+    except Exception:
+        return None
+
+
+def fetch_us_indices() -> Dict[str, Dict]:
+    """Fetch SPX / NDX / DJI live quotes — REAL index points, not ETF proxy prices.
+
+    Order: (1) Tencent gtimg real index symbol (usINX/usNDX/usDJI) — works from
+    server IPs and returns true index points; (2) yfinance raw index symbol
+    (often rate-limited from cloud IPs); (3) last-resort ETF proxy (SPY/QQQ/DIA)
+    — its change_pct ≈ the index, but its price is the ETF price, NOT an index
+    level, so it's tagged is_etf_proxy and must not be read as a point level.
+
+    Returns dict keyed by short symbol (SPX/NDX/DJI).
+    """
+    # (tencent_sym, yahoo_idx, etf_proxy, short, display_name)
     symbols = [
-        ('^GSPC', 'SPY', 'SPX', 'S&P 500'),
-        ('^NDX',  'QQQ', 'NDX', 'Nasdaq 100'),
-        ('^DJI',  'DIA', 'DJI', 'Dow Jones'),
+        ('usINX', '^GSPC', 'SPY', 'SPX', 'S&P 500'),
+        ('usNDX', '^NDX',  'QQQ', 'NDX', 'Nasdaq 100'),
+        ('usDJI', '^DJI',  'DIA', 'DJI', 'Dow Jones'),
     ]
     out = {}
     now_et = datetime.now(timezone(timedelta(hours=-4))).strftime('%Y-%m-%d %H:%M ET')
-    for yh_sym, etf, short, name in symbols:
-        # 1. ETF proxy via Nasdaq API (works from server IPs, no rate-limit)
-        q = get_nasdaq_quote(etf)
-        src_tag = f'Nasdaq API {etf} ETF @ {now_et}'
-        # 2. Yahoo lib for the raw index (often rate-limited from cloud IPs)
-        if not q:
+    for tx_sym, yh_sym, etf, short, name in symbols:
+        # 1. Tencent real index points (preferred)
+        q = get_tencent_us_index(tx_sym)
+        src_tag = f'Tencent {tx_sym} index @ {now_et}'
+        # 2. yfinance raw index symbol
+        if not q or q.get('c') is None:
             q = get_yfinance_quote(yh_sym)
             src_tag = f'yfinance {yh_sym} @ {now_et}'
+        # 3. last-resort ETF proxy (price is ETF price, NOT an index level)
+        is_proxy = False
+        if not q or q.get('c') is None:
+            q = get_nasdaq_quote(etf)
+            src_tag = f'Nasdaq API {etf} ETF proxy @ {now_et}'
+            is_proxy = True
         if not q or q.get('c') is None:
             continue
-        out[short] = {
+        entry = {
             'name':       name,
             'price':      round(q['c'], 2),
             'prev_close': round(q.get('pc') or q['c'], 2),
             'change_pct': round(q.get('dp') or 0, 3),
             'source':     src_tag,
         }
+        if is_proxy:
+            entry['is_etf_proxy'] = etf
+            entry['note'] = f'点位为 {etf} ETF 价（真实指数源不可用），仅涨跌%近似指数'
+        out[short] = entry
     return out
 
 

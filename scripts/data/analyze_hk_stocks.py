@@ -69,9 +69,14 @@ def _parse_gtimg(text: str) -> Optional[Dict]:
         price = float(parts[3])
         pc    = float(parts[4]) if parts[4] else price
         op    = float(parts[5]) if parts[5] else price
+        # 日内最高/最低 (Tencent HK fields 33/34) — 之前没取，导致 portfolio 的
+        # day_high/day_low/day_open 永远是旧交易日残留值（2026-05-29 审计发现）
+        hi    = float(parts[33]) if len(parts) > 34 and parts[33] else None
+        lo    = float(parts[34]) if len(parts) > 34 and parts[34] else None
         return {
             'name': parts[1],
             'c': price, 'pc': pc, 'o': op,
+            'h': hi, 'l': lo,
             'dp': _pct(price, pc),
         }
     except Exception:
@@ -390,6 +395,12 @@ def update_hk_portfolio(dry_run: bool = False) -> Dict:
         h['today_change']     = round((c - pc) * shrs, 2)
         h['stock_name']       = q.get('name', h.get('stock_name', code))
         h['data_source']      = f"{q.get('_src', 'Tencent')} {now_hkt.strftime('%b %d %H:%M HKT')}"
+
+        # 日内区间 — 仅当本次行情带 open/high/low 时覆盖，避免旧交易日残留值
+        # （Tencent 主源有；stooq/yfinance fallback 没有则保持上次真值不写脏数据）
+        if q.get('o'): h['day_open'] = round(q['o'], 3)
+        if q.get('h'): h['day_high'] = round(q['h'], 3)
+        if q.get('l'): h['day_low']  = round(q['l'], 3)
 
         updated.append(code)
         pnl_s = '+' if h['pnl_abs'] >= 0 else ''
