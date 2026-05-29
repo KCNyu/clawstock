@@ -39,6 +39,7 @@
 ### 3. 已知数据坑
 - **00100 MINIMAX 只有 Tencent 一个源**，新 IPO 其他源没数据；Tencent 失败必须明说
 - 收盘后 live-quote API 会把 `PreviousClose` 更新为当日收盘价，导致 `today_change = 0`；脚本已修（Polygon `/prev` 独立拉前收 + dp% 反推兜底），`today_change` 字段可直接信任
+- **盘后 closed fetch（20:00+ ET）撞 Nasdaq 杠杆 ETF 报价坑**：`lastSalePrice` 停在前一日旧价、`PreviousClose` 反装当日真实收盘 → 价格错位一日 + `today_change` 反号（2026-05-29 MSFU/PLTU 被记成大跌实为大涨）。识别：活跃美股全部 `open==high==low==current` 退化报价。修法见 `memory/openclaw-us-postclose-stale-price-swap.md`（重抓自愈 + Nasdaq netChange 补 today_change + refresh_today_snapshot）
 - 新浪美股接口境外 403，跳过不试
 
 ---
@@ -118,3 +119,14 @@
 - 你去github看看openclaw5.19 cron有没有人反馈 assistant: 找到了！今天刚提交的 bug： [score=0.883 recalls=0 avg=0.620 source=memory/2026-05-22-0239.md:21-22]
 <!-- openclaw-memory-promotion:memory:memory/2026-05-22-0239.md:24:24 -->
 - **#85052 — Gateway heap OOM: cron runtime contexts retain sessions.json and skillsSnapshot.prompt** [score=0.883 recalls=0 avg=0.620 source=memory/2026-05-22-0239.md:24-24]
+
+## Promoted From Short-Term Memory (2026-05-29)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-23-0218.md:9:9 -->
+- assistant: Postflight 给了 warn（长度超软上限），但内容完整。直接发。 [score=0.891 recalls=0 avg=0.620 source=memory/2026-05-23-0218.md:9-9]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-23-0218.md:11:11 -->
+- ⚠️ Validation warnings (1): 报告长度 1423 字 > 1200 软上限 (warn) [score=0.891 recalls=0 avg=0.620 source=memory/2026-05-23-0218.md:11-11]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-23-0218.md:15:15 -->
+- 📊 市值 $3,126 | 浮盈 +$314 (+11.2%) | 今日 +$59 | ✅ 已实现 +$1,031 [score=0.891 recalls=0 avg=0.620 source=memory/2026-05-23-0218.md:15-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-23-0218.md:17:20 -->
+- | 代码 | 股 | 成本 | 现价 | 今日 | 浮% | 浮$ | |:------|------:|-------:|-------:|-------:|-------:|--------:| | RKLB | 5 | 71.00 | 135.63 | +8.1% | +91.0% | +323 | | CRCL | 2 | 87.00 | 115.72 | +0.7% | +33.0% | +57 | [score=0.891 recalls=0 avg=0.620 source=memory/2026-05-23-0218.md:17-20]
