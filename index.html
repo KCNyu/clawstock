@@ -2139,7 +2139,15 @@ layout: null
     const sectors = ctx.sectors || [];
     const asof = document.getElementById("sector-context-asof");
     if (asof) {
-      asof.textContent = ctx.date ? `as of ${ctx.date}` : "";
+      if (ctx.date) {
+        const ageDays = Math.floor((Date.now() - new Date(ctx.date + "T00:00:00+08:00").getTime()) / 86400000);
+        const stale = ageDays >= 1;
+        asof.textContent = `as of ${ctx.date}` + (stale ? ` · ${ageDays}天前 · 待 brief 刷新` : "");
+        asof.style.color = stale ? "#d97706" : "";
+      } else {
+        asof.textContent = "";
+        asof.style.color = "";
+      }
     }
     const narr = document.getElementById("sector-narrative");
     if (narr) {
