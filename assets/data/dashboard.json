@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T01:36:58.068305Z",
+  "generated_at": "2026-05-29T01:55:55.329217Z",
   "last_updated": "2026/05/29 09:36 HKT",
   "fx": {
     "usdhkd": 7.8346,
@@ -13,7 +13,7 @@
       "pnl_usd": 414.31,
       "pnl_pct": 15.7634,
       "today_change_usd": 286.66,
-      "realized_usd": 1281.43
+      "realized_usd": 1372.46
     },
     "hk": {
       "value_hkd": 87118.8,
@@ -117,7 +117,7 @@
         "name": "英伟达",
         "currency": "USD",
         "shares": 0,
-        "cost_basis": 187,
+        "cost_basis": 187.7,
         "current_price": 213.0,
         "current_value": 0,
         "today_change": 0,
@@ -127,7 +127,7 @@
         "pnl_abs": 0,
         "pnl_percent": 0,
         "is_active": false,
-        "trades_count": 1
+        "trades_count": 3
       },
       {
         "ticker": "RKLB",
@@ -161,7 +161,7 @@
         "pnl_abs": 42.48,
         "pnl_percent": 24.41,
         "is_active": true,
-        "trades_count": 2
+        "trades_count": 4
       },
       {
         "ticker": "OKLO",
@@ -185,7 +185,7 @@
         "name": "纳斯达克100ETF-Invesco",
         "currency": "USD",
         "shares": 0,
-        "cost_basis": 622,
+        "cost_basis": 622.27,
         "current_price": 694.41,
         "current_value": 0,
         "today_change": 0,
@@ -195,7 +195,7 @@
         "pnl_abs": 0,
         "pnl_percent": 0,
         "is_active": false,
-        "trades_count": 1
+        "trades_count": 2
       },
       {
         "ticker": "TCOM",
@@ -640,8 +640,8 @@
       "us_total_cost": 2628.3,
       "us_total_pnl": 414.31,
       "us_today_change": 286.66,
-      "us_realized": 1281.43,
-      "us_equity": 4324.04,
+      "us_realized": 1372.46,
+      "us_equity": 4415.07,
       "hk_total_value": 87118.8,
       "hk_total_cost": 88276.24,
       "hk_total_pnl": -1157.44,
@@ -1686,8 +1686,8 @@
   },
   "delta": {
     "us": {
-      "today_pct": 3.47,
-      "7d_pct": 3.66,
+      "today_pct": 5.65,
+      "7d_pct": 5.85,
       "30d_pct": null
     },
     "hk": {
@@ -2380,7 +2380,7 @@
     "max_pct_30d_hk": -7.91,
     "max_pct_30d_us": -14.3,
     "current_pct_hk": 4.17,
-    "current_pct_us": 0.88
+    "current_pct_us": 3.0
   },
   "sector_exposure": {
     "us": [
@@ -3440,68 +3440,73 @@
     ]
   },
   "macro": {
-    "generated_at": "2026-05-28T01:24:33.635679+00:00",
+    "generated_at": "2026-05-29T01:34:07.169336+00:00",
     "vix": {
       "symbol": "^VIX",
-      "price": 16.29,
-      "prev": 16.59,
-      "change_pct": -1.81,
-      "as_of": 1779912901,
+      "price": 15.74,
+      "prev": 16.29,
+      "change_pct": -3.38,
+      "as_of": 1779999301,
       "source": "yahoo"
     },
     "treasury_10y": {
       "symbol": "^TNX",
-      "price": 4.481,
-      "prev": 4.493,
-      "change_pct": -0.27,
-      "as_of": 1779908395,
+      "price": 4.455,
+      "prev": 4.481,
+      "change_pct": -0.58,
+      "as_of": 1779994793,
       "source": "yahoo",
-      "yield_pct": 4.481
+      "yield_pct": 4.455
     },
     "dxy": {
       "symbol": "DX-Y.NYB",
-      "price": 99.291,
-      "prev": 99.206,
-      "change_pct": 0.09,
-      "as_of": 1779930872,
+      "price": 98.964,
+      "prev": 99.02,
+      "change_pct": -0.06,
+      "as_of": 1780017845,
       "source": "yahoo"
     },
     "fear_greed": {
-      "score": 60.7,
+      "score": 60.2,
       "rating": "greed",
-      "prev_close": 60.8,
-      "prev_1_week": 60.3,
-      "as_of": "2026-05-27T23:59:41+00:00"
+      "prev_close": 60.7,
+      "prev_1_week": 58.1,
+      "as_of": "2026-05-28T23:59:55+00:00"
     },
     "hsi": {
       "symbol": "^HSI",
-      "price": 25230.58,
-      "prev": 25328.23,
-      "change_pct": -0.39,
+      "price": 25169.77,
+      "prev": 25006.16,
+      "change_pct": 0.65,
       "source": "stooq"
     },
     "hstech": {
       "symbol": "^HSTECH",
-      "price": 4895.28,
-      "prev": 4907.57,
-      "change_pct": -0.25,
+      "price": 4943.74,
+      "prev": 4888.58,
+      "change_pct": 1.13,
       "source": "tencent"
     },
     "spx": {
       "symbol": "^GSPC",
-      "price": 7520.4,
-      "prev": 7526.0,
-      "change_pct": -0.07,
+      "price": 7563.6,
+      "prev": 7519.8,
+      "change_pct": 0.58,
       "source": "stooq"
     },
     "nasdaq": {
       "symbol": "^IXIC",
-      "price": 29973.57,
-      "prev": 30081.28,
-      "change_pct": -0.36,
+      "price": 30223.89,
+      "prev": 30030.63,
+      "change_pct": 0.64,
       "source": "stooq"
     },
     "fed_press": [
+      {
+        "date": "2026-05-28",
+        "title": "Federal Reserve Board issues enforcement actions with former employee of Atlantic Union Bank and former employee of Frost Bank",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260528a.htm"
+      },
       {
         "date": "2026-05-26",
         "title": "Minutes of the Board's discount rate meeting on April 20 and 29, 2026",
@@ -3516,11 +3521,6 @@
         "date": "2026-05-22",
         "title": "Agencies publish resolution plan feedback letters for certain domestic and foreign banking organizations",
         "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260522a.htm"
-      },
-      {
-        "date": "2026-05-21",
-        "title": "Federal Reserve Board issues enforcement action with former employee of Commerce Bank",
-        "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260521a.htm"
       }
     ]
   },
@@ -3622,7 +3622,7 @@
   ],
   "realized_vs_unrealized": {
     "us": {
-      "realized": 1281.43,
+      "realized": 1372.46,
       "unrealized": 414.31
     },
     "hk": {
@@ -3630,26 +3630,26 @@
       "unrealized": -1157.44
     },
     "combined_usd": {
-      "realized": 2207.98,
+      "realized": 2299.01,
       "unrealized": 266.58
     }
   },
   "capital_deployed": {
     "us": {
-      "native": 3909.73,
-      "usd": 3909.73
+      "native": 4000.76,
+      "usd": 4000.76
     },
     "hk": {
       "native": 95535.4,
       "usd": 12194.04
     },
-    "combined_usd": 16103.77
+    "combined_usd": 16194.8
   },
   "net_principal_return": {
     "us": {
-      "net_principal": 1346.87,
-      "total_profit": 1695.74,
-      "return_pct": 125.9
+      "net_principal": 1255.84,
+      "total_profit": 1786.77,
+      "return_pct": 142.28
     },
     "hk": {
       "net_principal": 81017.08,
@@ -3657,9 +3657,9 @@
       "return_pct": 7.53
     },
     "combined_usd": {
-      "net_principal": 11687.8,
-      "total_profit": 2474.56,
-      "return_pct": 21.17
+      "net_principal": 11596.77,
+      "total_profit": 2565.59,
+      "return_pct": 22.12
     },
     "formula": "净投入本金 = 累计成本 − 已实现；回报率 = (浮动 + 已实现) ÷ 净投入本金"
   }
