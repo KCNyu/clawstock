@@ -1,0 +1,393 @@
+{
+  "generated_at": "2026-05-29T16:45:34.469623+00:00",
+  "lookback_hours": 48,
+  "sources": {
+    "trump": "trumpstruth.org/feed (primary)",
+    "musk": "google-news-rss (proxy)"
+  },
+  "llm_filtered": true,
+  "counts": {
+    "total": 8,
+    "held_hits": 1,
+    "new_ideas": 5,
+    "sector_hits": 2
+  },
+  "items": [
+    {
+      "author": "Musk",
+      "text": "Elon Musk could become a top 5 corporate bitcoin holder if Tesla and SpaceX merge",
+      "url": "",
+      "published": "Wed, 27 May 2026 18:09:54 GMT",
+      "origin": "gnews-rss",
+      "source": "CoinDesk",
+      "tickers": [
+        "TSLA"
+      ],
+      "held": [],
+      "new_ideas": [
+        "TSLA"
+      ],
+      "sectors": [
+        "加密货币",
+        "电动车",
+        "航天"
+      ],
+      "sector_holdings": [
+        "CRCL"
+      ],
+      "stance": "endorse",
+      "relevance": 65,
+      "summary_cn": "报道指如果特斯拉和SpaceX合并，马斯克可能成为顶级企业比特币持有者。"
+    },
+    {
+      "author": "Musk",
+      "text": "SpaceX-Tesla merger chatter reignites as Musk pushes rocket company toward Nasdaq",
+      "url": "",
+      "published": "Tue, 26 May 2026 21:07:48 GMT",
+      "origin": "gnews-rss",
+      "source": "cnbc.com",
+      "tickers": [
+        "TSLA"
+      ],
+      "held": [],
+      "new_ideas": [
+        "TSLA"
+      ],
+      "sectors": [
+        "航天",
+        "电动车"
+      ],
+      "sector_holdings": [
+        "RKLB"
+      ],
+      "stance": "neutral",
+      "relevance": 65,
+      "summary_cn": "马斯克推动SpaceX上市，引发SpaceX与特斯拉合并的讨论。"
+    },
+    {
+      "author": "Musk",
+      "text": "Elon Musk Clarifies SpaceX, Anthropic AI Deal. It's Not As Big As Expected.",
+      "url": "",
+      "published": "Thu, 28 May 2026 20:16:00 GMT",
+      "origin": "gnews-rss",
+      "source": "Investor's Business Daily",
+      "tickers": [],
+      "held": [],
+      "new_ideas": [],
+      "sectors": [
+        "航天",
+        "AI"
+      ],
+      "sector_holdings": [
+        "MSFU",
+        "RKLB"
+      ],
+      "stance": "neutral",
+      "relevance": 55,
+      "summary_cn": "马斯克澄清SpaceX与Anthropic的AI合作规模小于预期。"
+    },
+    {
+      "author": "Musk",
+      "text": "Prediction: Elon Musk’s SpaceX Will Buy Intel for $1 Trillion",
+      "url": "",
+      "published": "Thu, 28 May 2026 16:16:32 GMT",
+      "origin": "gnews-rss",
+      "source": "24/7 Wall St.",
+      "tickers": [
+        "INTC"
+      ],
+      "held": [],
+      "new_ideas": [
+        "INTC"
+      ],
+      "sectors": [
+        "半导体",
+        "航天"
+      ],
+      "sector_holdings": [],
+      "stance": "endorse",
+      "relevance": 60,
+      "summary_cn": "预测马斯克的SpaceX将以1万亿美元收购英特尔。"
+    },
+    {
+      "author": "Musk",
+      "text": "Musk says SpaceX agreed only six-month Colossus AI lease to Anthropic",
+      "url": "",
+      "published": "Thu, 28 May 2026 06:38:00 GMT",
+      "origin": "gnews-rss",
+      "source": "Reuters",
+      "tickers": [],
+      "held": [],
+      "new_ideas": [],
+      "sectors": [
+        "航天",
+        "AI"
+      ],
+      "sector_holdings": [
+        "MSFU",
+        "RKLB"
+      ],
+      "stance": "neutral",
+      "relevance": 55,
+      "summary_cn": "马斯克表示SpaceX与Anthropic的Colossus AI租约仅为期六个月。"
+    },
+    {
+      "author": "Musk",
+      "text": "Why a merger with SpaceX could be bad for Tesla shareholders",
+      "url": "",
+      "published": "Fri, 29 May 2026 13:44:17 GMT",
+      "origin": "gnews-rss",
+      "source": "Yahoo Finance",
+      "tickers": [
+        "TSLA"
+      ],
+      "held": [],
+      "new_ideas": [
+        "TSLA"
+      ],
+      "sectors": [
+        "航天",
+        "电动车"
+      ],
+      "sector_holdings": [
+        "RKLB"
+      ],
+      "stance": "attack",
+      "relevance": 70,
+      "summary_cn": "报道分析SpaceX与特斯拉合并可能对特斯拉股东不利。"
+    },
+    {
+      "author": "Musk",
+      "text": "Where Are The Robotaxis? Musk's Texas Promised Land Is Coping With Fewer Than 50 Cars",
+      "url": "",
+      "published": "Fri, 29 May 2026 07:10:00 GMT",
+      "origin": "gnews-rss",
+      "source": "InsideEVs",
+      "tickers": [
+        "TSLA"
+      ],
+      "held": [],
+      "new_ideas": [
+        "TSLA"
+      ],
+      "sectors": [
+        "电动车",
+        "自动驾驶"
+      ],
+      "sector_holdings": [],
+      "stance": "attack",
+      "relevance": 70,
+      "summary_cn": "报道指出马斯克在德克萨斯州承诺的机器人出租车数量远低于预期。"
+    },
+    {
+      "author": "Trump",
+      "text": "Gary Gensler and the “Anti-Crypto Army” nearly DESTROYED the American Crypto Industry by driving Bitcoin, Crypto Perpetuals, and INNOVATION offshore, but “TRUMP” SAVED IT. America is now the CRYPTO CAPITAL of the WORLD, and Builders and Entrepreneurs are coming BACK to the United States where they belong. Under my Leadership, we will codify a FUTURE-PROOF Digital Asset Market Structure that cannot be undone by the Crypto Haters. The new Frontier of Finance is being Built in America, and “TRUMP” will NEVER let Crypto down! President DONALD J. TRUMP",
+      "url": "https://trumpstruth.org/statuses/38837",
+      "published": "2026-05-27T22:42:10+00:00",
+      "origin": "truthsocial",
+      "tickers": [],
+      "held": [
+        "CRCL"
+      ],
+      "new_ideas": [],
+      "sectors": [
+        "加密货币"
+      ],
+      "sector_holdings": [],
+      "stance": "endorse",
+      "relevance": 75,
+      "summary_cn": "特朗普宣称其领导力拯救了美国加密行业，将美国打造为加密货币之都，并承诺制定永久性数字资产市场结构。"
+    }
+  ],
+  "held_hits": [
+    {
+      "author": "Trump",
+      "text": "Gary Gensler and the “Anti-Crypto Army” nearly DESTROYED the American Crypto Industry by driving Bitcoin, Crypto Perpetuals, and INNOVATION offshore, but “TRUMP” SAVED IT. America is now the CRYPTO CAPITAL of the WORLD, and Builders and Entrepreneurs are coming BACK to the United States where they belong. Under my Leadership, we will codify a FUTURE-PROOF Digital Asset Market Structure that cannot be undone by the Crypto Haters. The new Frontier of Finance is being Built in America, and “TRUMP” will NEVER let Crypto down! President DONALD J. TRUMP",
+      "url": "https://trumpstruth.org/statuses/38837",
+      "published": "2026-05-27T22:42:10+00:00",
+      "origin": "truthsocial",
+      "tickers": [],
+      "held": [
+        "CRCL"
+      ],
+      "new_ideas": [],
+      "sectors": [
+        "加密货币"
+      ],
+      "sector_holdings": [],
+      "stance": "endorse",
+      "relevance": 75,
+      "summary_cn": "特朗普宣称其领导力拯救了美国加密行业，将美国打造为加密货币之都，并承诺制定永久性数字资产市场结构。"
+    }
+  ],
+  "new_ideas": [
+    {
+      "author": "Musk",
+      "text": "Elon Musk could become a top 5 corporate bitcoin holder if Tesla and SpaceX merge",
+      "url": "",
+      "published": "Wed, 27 May 2026 18:09:54 GMT",
+      "origin": "gnews-rss",
+      "source": "CoinDesk",
+      "tickers": [
+        "TSLA"
+      ],
+      "held": [],
+      "new_ideas": [
+        "TSLA"
+      ],
+      "sectors": [
+        "加密货币",
+        "电动车",
+        "航天"
+      ],
+      "sector_holdings": [
+        "CRCL"
+      ],
+      "stance": "endorse",
+      "relevance": 65,
+      "summary_cn": "报道指如果特斯拉和SpaceX合并，马斯克可能成为顶级企业比特币持有者。"
+    },
+    {
+      "author": "Musk",
+      "text": "SpaceX-Tesla merger chatter reignites as Musk pushes rocket company toward Nasdaq",
+      "url": "",
+      "published": "Tue, 26 May 2026 21:07:48 GMT",
+      "origin": "gnews-rss",
+      "source": "cnbc.com",
+      "tickers": [
+        "TSLA"
+      ],
+      "held": [],
+      "new_ideas": [
+        "TSLA"
+      ],
+      "sectors": [
+        "航天",
+        "电动车"
+      ],
+      "sector_holdings": [
+        "RKLB"
+      ],
+      "stance": "neutral",
+      "relevance": 65,
+      "summary_cn": "马斯克推动SpaceX上市，引发SpaceX与特斯拉合并的讨论。"
+    },
+    {
+      "author": "Musk",
+      "text": "Prediction: Elon Musk’s SpaceX Will Buy Intel for $1 Trillion",
+      "url": "",
+      "published": "Thu, 28 May 2026 16:16:32 GMT",
+      "origin": "gnews-rss",
+      "source": "24/7 Wall St.",
+      "tickers": [
+        "INTC"
+      ],
+      "held": [],
+      "new_ideas": [
+        "INTC"
+      ],
+      "sectors": [
+        "半导体",
+        "航天"
+      ],
+      "sector_holdings": [],
+      "stance": "endorse",
+      "relevance": 60,
+      "summary_cn": "预测马斯克的SpaceX将以1万亿美元收购英特尔。"
+    },
+    {
+      "author": "Musk",
+      "text": "Why a merger with SpaceX could be bad for Tesla shareholders",
+      "url": "",
+      "published": "Fri, 29 May 2026 13:44:17 GMT",
+      "origin": "gnews-rss",
+      "source": "Yahoo Finance",
+      "tickers": [
+        "TSLA"
+      ],
+      "held": [],
+      "new_ideas": [
+        "TSLA"
+      ],
+      "sectors": [
+        "航天",
+        "电动车"
+      ],
+      "sector_holdings": [
+        "RKLB"
+      ],
+      "stance": "attack",
+      "relevance": 70,
+      "summary_cn": "报道分析SpaceX与特斯拉合并可能对特斯拉股东不利。"
+    },
+    {
+      "author": "Musk",
+      "text": "Where Are The Robotaxis? Musk's Texas Promised Land Is Coping With Fewer Than 50 Cars",
+      "url": "",
+      "published": "Fri, 29 May 2026 07:10:00 GMT",
+      "origin": "gnews-rss",
+      "source": "InsideEVs",
+      "tickers": [
+        "TSLA"
+      ],
+      "held": [],
+      "new_ideas": [
+        "TSLA"
+      ],
+      "sectors": [
+        "电动车",
+        "自动驾驶"
+      ],
+      "sector_holdings": [],
+      "stance": "attack",
+      "relevance": 70,
+      "summary_cn": "报道指出马斯克在德克萨斯州承诺的机器人出租车数量远低于预期。"
+    }
+  ],
+  "sector_hits": [
+    {
+      "author": "Musk",
+      "text": "Elon Musk Clarifies SpaceX, Anthropic AI Deal. It's Not As Big As Expected.",
+      "url": "",
+      "published": "Thu, 28 May 2026 20:16:00 GMT",
+      "origin": "gnews-rss",
+      "source": "Investor's Business Daily",
+      "tickers": [],
+      "held": [],
+      "new_ideas": [],
+      "sectors": [
+        "航天",
+        "AI"
+      ],
+      "sector_holdings": [
+        "MSFU",
+        "RKLB"
+      ],
+      "stance": "neutral",
+      "relevance": 55,
+      "summary_cn": "马斯克澄清SpaceX与Anthropic的AI合作规模小于预期。"
+    },
+    {
+      "author": "Musk",
+      "text": "Musk says SpaceX agreed only six-month Colossus AI lease to Anthropic",
+      "url": "",
+      "published": "Thu, 28 May 2026 06:38:00 GMT",
+      "origin": "gnews-rss",
+      "source": "Reuters",
+      "tickers": [],
+      "held": [],
+      "new_ideas": [],
+      "sectors": [
+        "航天",
+        "AI"
+      ],
+      "sector_holdings": [
+        "MSFU",
+        "RKLB"
+      ],
+      "stance": "neutral",
+      "relevance": 55,
+      "summary_cn": "马斯克表示SpaceX与Anthropic的Colossus AI租约仅为期六个月。"
+    }
+  ]
+}

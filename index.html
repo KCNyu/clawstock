@@ -348,6 +348,37 @@ layout: null
   .sd-body li { margin: 1px 0; color: var(--text); }
   .sd-body .sd-empty { color: var(--text-dim); font-style: italic; font-size: 11px; }
 
+  /* Influence radar (Trump / Musk feed) */
+  .infl-feed { display: flex; flex-direction: column; gap: 7px; max-height: 420px; overflow-y: auto; }
+  .infl-summary { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; font-size: 11px; }
+  .infl-chip { padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+  .infl-chip.held { background: rgba(220,38,38,0.14); color: #dc2626; }
+  .infl-chip.idea { background: rgba(245,158,11,0.16); color: #d97706; }
+  .infl-chip.sect { background: var(--card-2); color: var(--text-dim); }
+  .infl-row {
+    background: var(--card-2); border-radius: var(--radius-sm);
+    padding: 8px 10px; border-left: 3px solid var(--text-dim);
+  }
+  .infl-row.is-held { border-left-color: #dc2626; }
+  .infl-row.is-idea { border-left-color: #f59e0b; }
+  .infl-hdr { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 11px; flex-wrap: wrap; }
+  .infl-who { font-weight: 800; padding: 1px 7px; border-radius: 4px; font-size: 11px; }
+  .infl-who.trump { background: rgba(220,38,38,0.16); color: #dc2626; }
+  .infl-who.musk  { background: rgba(59,130,246,0.16); color: #3b82f6; }
+  .infl-stance { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 1px 6px; border-radius: 3px; font-weight: 700; }
+  .infl-stance.up   { background: rgba(22,163,74,0.16); color: #16a34a; }
+  .infl-stance.down { background: rgba(220,38,38,0.16); color: #dc2626; }
+  .infl-stance.flat { background: var(--card); color: var(--text-dim); }
+  .infl-rel { margin-left: auto; color: var(--text-dim); font-size: 10px; font-variant-numeric: tabular-nums; }
+  .infl-sum { font-size: 12.5px; line-height: 1.45; color: var(--text); }
+  .infl-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; font-size: 10.5px; }
+  .infl-tag { padding: 1px 7px; border-radius: 4px; font-weight: 700; }
+  .infl-tag.held { background: rgba(220,38,38,0.14); color: #dc2626; }
+  .infl-tag.idea { background: rgba(245,158,11,0.16); color: #d97706; }
+  .infl-tag.sect { background: var(--card); color: var(--text-dim); font-weight: 500; }
+  .infl-meta { color: var(--text-dim); font-size: 10px; margin-top: 4px; }
+
   /* Risk metrics grid */
   .risk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .risk-cell {
@@ -1124,6 +1155,14 @@ layout: null
     </div>
 
     <div class="card">
+      <h3>影响力雷达 <span class="muted" id="infl-asof" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">Trump · Musk · LLM筛</span></h3>
+      <div class="infl-summary" id="infl-summary"></div>
+      <div class="infl-feed" id="infl-feed">
+        <div class="empty-state">No influence signals.</div>
+      </div>
+    </div>
+
+    <div class="card">
       <h3>US News Digest <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(xiaomi · 48h)</span></h3>
       <div class="news-digest" id="news-digest">
         <div class="empty-state">No digest yet.</div>
@@ -1746,6 +1785,7 @@ layout: null
     renderMovers();
     renderSectorContext();
     renderCatalysts();
+    renderInfluencer();
     renderNewsDigest();
     renderMacro();
     renderCalibBadge();
@@ -2150,6 +2190,57 @@ layout: null
       hint.textContent = 'No earnings / FOMC in 14d window; only macro events surfaced';
       wrap.appendChild(hint);
     }
+  }
+
+  function renderInfluencer() {
+    const wrap = document.getElementById('infl-feed');
+    const sumEl = document.getElementById('infl-summary');
+    const asOf = document.getElementById('infl-asof');
+    if (!wrap) return;
+    const d = safe(DATA, 'influencer_feed') || {};
+    const items = d.items || [];
+    if (!items.length) {
+      if (sumEl) sumEl.innerHTML = '';
+      wrap.innerHTML = '<div class="empty-state">No influence signals (48h).</div>';
+      return;
+    }
+    const c = d.counts || {};
+    if (sumEl) {
+      const chips = [];
+      if (c.held_hits)   chips.push(`<span class="infl-chip held">撞持仓 ${c.held_hits}</span>`);
+      if (c.new_ideas)   chips.push(`<span class="infl-chip idea">新机会 ${c.new_ideas}</span>`);
+      if (c.sector_hits) chips.push(`<span class="infl-chip sect">板块相关 ${c.sector_hits}</span>`);
+      sumEl.innerHTML = chips.join('');
+    }
+    if (asOf && d.generated_at) {
+      const ago = Math.round((Date.now() - new Date(d.generated_at).getTime()) / 3.6e6);
+      asOf.textContent = `Trump · Musk · ${ago}h前${d.llm_filtered ? ' · LLM筛' : ''}`;
+    }
+    const stanceCls = (s) => ({endorse:'up', buy:'up', attack:'down', sell:'down'}[s] || 'flat');
+    const stanceTxt = (s) => ({endorse:'看多', buy:'买入', attack:'看空', sell:'卖出', neutral:'中性'}[s] || s || '');
+    wrap.innerHTML = items.map(it => {
+      const held = it.held || [], ideas = it.new_ideas || [], sect = it.sector_holdings || [];
+      const rowCls = held.length ? 'is-held' : (ideas.length ? 'is-idea' : '');
+      const tags = [
+        ...held.map(t => `<span class="infl-tag held">持仓 ${escapeHtml(t)}</span>`),
+        ...ideas.map(t => `<span class="infl-tag idea">新机会 ${escapeHtml(t)}</span>`),
+        ...sect.map(t => `<span class="infl-tag sect">板块·${escapeHtml(t)}</span>`),
+        ...(it.sectors || []).map(s => `<span class="infl-tag sect">${escapeHtml(s)}</span>`),
+      ].join('');
+      const rel = (it.relevance != null) ? `rel ${it.relevance}` : '';
+      const src = it.author === 'Musk' ? '新闻代理' : '原帖';
+      const link = it.url ? `<a href="${escapeHtml(it.url)}" target="_blank" rel="noopener" style="color:var(--text-dim)">↗</a>` : '';
+      return `<div class="infl-row ${rowCls}">
+        <div class="infl-hdr">
+          <span class="infl-who ${it.author.toLowerCase()}">${escapeHtml(it.author)}</span>
+          <span class="infl-stance ${stanceCls(it.stance)}">${escapeHtml(stanceTxt(it.stance))}</span>
+          <span class="infl-rel">${rel}</span>
+        </div>
+        <div class="infl-sum">${escapeHtml(it.summary_cn || it.text || '')}</div>
+        ${tags ? `<div class="infl-tags">${tags}</div>` : ''}
+        <div class="infl-meta">${src}${link ? ' ' + link : ''}</div>
+      </div>`;
+    }).join('');
   }
 
   function renderNewsDigest() {

@@ -306,6 +306,34 @@ context.json 关键字段：
 - "异常关注"段：扫所有 ticker 的 news_top + reddit_top 文本，命中负面关键词 (`miss/SEC/probe/fraud/lawsuit/downgrade/halt/recall/short report`) 必列；无命中写"无"
 - sentiment 数据 age_hours > 36 整段写"⚠️ sentiment 数据 stale, 跳过本段"
 
+#### ▎名人异动/政策风向 (REQUIRED if `context.influencer.counts.total > 0` 且 age_hours ≤ 36)
+
+从 `context.influencer` 抓数。这是 Trump 原帖 + Musk 言论(新闻代理)，LLM 已筛市场相关性并交叉匹配过持仓。三档优先级：**撞持仓 > 新机会 > 板块相关**。
+
+格式：
+
+```
+▎名人异动/政策风向
+
+撞持仓:
+- 🔴 Trump 看多加密 → 你的 CRCL 直接受益, 关注开盘资金流 (rel 75)
+
+新机会(他们推荐/点名但你没持仓):
+- 🟡 Musk 看空 TSLA(robotaxi 兑现不及预期) → 若考虑做空/规避 EV 板块可纳入观察
+- 🟡 Trump 点名 XYZ "great company" → 政策受益标的, 评估是否进 watchlist
+
+板块相关(主题级, 非直接点名):
+- Trump 挺加密货币 → 涉及你的 CRCL 板块敞口
+```
+
+规则：
+- **撞持仓**(`held_hits`)必列且置顶，每条连到"对该持仓今天的 action 含义"
+- **新机会**(`new_ideas`)是 kcn 没持有但被点名/推荐的票——这是选股线索，点出 stance(看多/看空)和是否值得进 watchlist；kcn 明确说过"不一定有买，要看他们推荐什么"
+- **板块相关**(`sector_hits`)只在前两档为空或想补充主题背景时写，1-2 条即可，别灌水
+- stance=attack/sell 的"新机会"是**规避/做空**信号，不是买入信号，措辞要分清
+- Musk 条目标注是"新闻代理"(二手)，可信度低于 Trump 原帖，措辞留余地
+- influencer 数据 age_hours > 36 或 counts.total=0 整段写"⚠️ 名人异动数据 stale/无信号, 跳过本段"；postflight 不 fail
+
 #### ▎Confidence 自校准 (REQUIRED if `self_calibration.samples >= 5`)
 
 context.json 有 `self_calibration` 字段含 Brier 30d + 每个 bucket 实际胜率 + 信心分桶实际率。
@@ -357,6 +385,7 @@ kcn 标记方式：`python3 scripts/data/mark_followed.py YYYY-MM-DD TICKER BUCK
 - `## ▎同行扫描` peer rotation matrix (uses `peer_scan` from context)
 - `## ▎大盘速读` macro 一句话 5 行内 (uses `macro` from context; 数据 stale > 36h 时跳过)
 - `## ▎社交舆情速读` per-ticker Reddit + news (uses `sentiment` from context; 无信号票自动剔)
+- `## ▎名人异动/政策风向` Trump/Musk radar (uses `influencer` from context; 撞持仓>新机会>板块相关, total=0 或 stale>36h 跳过)
 - `## Confidence` 表
 - `## ▎Confidence 校准` self-calibration (uses `self_calibration` from context, if samples ≥ 5)
 - `## Next-Session` plan

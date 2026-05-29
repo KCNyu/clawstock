@@ -728,6 +728,48 @@ def load_macro_and_sentiment(today, issues):
     return macro_trim, sentiment_trim
 
 
+def load_influencer_feed(issues):
+    """Read GH-Action-produced influencer_feed.json (Trump/Musk radar).
+
+    Written by influencer-scan.yml before the brief. Stale (>36h)/missing → warn,
+    brief still runs without the 名人异动 section. Returns trimmed dict or {}.
+    """
+    path = WS / 'assets' / 'data' / 'influencer_feed.json'
+    try:
+        if not path.exists():
+            print('   ⚠ influencer_feed.json missing — influencer-scan never ran')
+            issues.append('influencer feed missing')
+            return {}
+        mtime = datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
+        age = (datetime.now(timezone.utc) - mtime).total_seconds() / 3600
+        d = json.loads(path.read_text())
+        # Trim each item to the fields the brief needs.
+        def _trim(it):
+            return {k: it.get(k) for k in
+                    ('author', 'stance', 'relevance', 'held', 'new_ideas',
+                     'sector_holdings', 'sectors', 'summary_cn')}
+        out = {
+            'as_of':     d.get('generated_at'),
+            'age_hours': round(age, 1),
+            'counts':    d.get('counts', {}),
+            'held_hits': [_trim(x) for x in d.get('held_hits', [])][:6],
+            'new_ideas': [_trim(x) for x in d.get('new_ideas', [])][:6],
+            'sector_hits': [_trim(x) for x in d.get('sector_hits', [])][:4],
+        }
+        if age > 36:
+            print(f'   ⚠ influencer feed stale ({age:.1f}h old)')
+            issues.append(f'influencer feed stale {age:.0f}h')
+        else:
+            c = out['counts']
+            print(f'   influencer: {c.get("held_hits",0)} held-hits, '
+                  f'{c.get("new_ideas",0)} new-ideas, {c.get("sector_hits",0)} sector')
+        return out
+    except Exception as e:
+        print(f'   ⚠ influencer feed load failed: {e}')
+        issues.append(f'influencer load exception: {type(e).__name__}')
+        return {}
+
+
 def main():
     today = datetime.now().strftime('%Y-%m-%d')
     TMP_DIR.mkdir(parents=True, exist_ok=True)
@@ -903,8 +945,9 @@ def main():
     # [13] Macro + sentiment snapshots — written by GH Action (macro-scan / sentiment-scan).
     # Read-only here; brief LLM consumes the trimmed subset so "▎大盘速读" and
     # "▎社交舆情速读" sections aren't flying blind.
-    print('[13/13] Load macro + sentiment snapshots')
+    print('[13/13] Load macro + sentiment + influencer snapshots')
     macro_trim, sentiment_trim = load_macro_and_sentiment(today, issues)
+    influencer_trim = load_influencer_feed(issues)
 
     # Write context.json
     context = {
@@ -924,6 +967,7 @@ def main():
         'catalysts':     catalysts,
         'macro':         macro_trim,
         'sentiment':     sentiment_trim,
+        'influencer':    influencer_trim,
         'issues':        issues,
     }
     ctx_path = TMP_DIR / f'brief-context-{today}.json'

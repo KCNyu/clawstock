@@ -1,0 +1,49 @@
+name: Influence Radar (Trump / Musk)
+
+# Market-moving statements from high-impact figures (Trump Truth Social原帖 +
+# Musk via news proxy), LLM-filtered for relevance + cross-matched to holdings.
+# Runs twice on weekdays:
+#   23:40 UTC = 07:40 HKT  → 20 min before the 08:00 HKT daily brief
+#   12:50 UTC = 20:50 HKT  → 10 min before US news digest / US open prep
+on:
+  schedule:
+    - cron: '40 23 * * 1-5'
+    - cron: '50 12 * * 1-5'
+  workflow_dispatch:
+
+# Serialize with other commit-pushing workflows
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install --quiet requests
+
+      - name: Fetch Trump/Musk + Xiaomi relevance filter
+        env:
+          XIAOMI_API_KEY: ${{ secrets.XIAOMI_API_KEY }}
+        run: python3 scripts/data/fetch_influencer_feed.py
+
+      - name: Commit + push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/data/influencer_feed.json
+          if ! git diff --cached --quiet; then
+            git commit -m "influence: Trump/Musk radar $(TZ=Asia/Hong_Kong date +%Y-%m-%d_%H:%M)"
+            bash scripts/data/safe_push.sh
+          fi
