@@ -5,11 +5,17 @@ Extracted to avoid duplicating _git / rebuild_dashboard / push retry logic
 across multiple postflight scripts. All functions accept the workspace root
 as path argument or default to /root/.openclaw/workspace.
 """
+import json
 import subprocess
 import sys
 from pathlib import Path
 
 WS = Path('/root/.openclaw/workspace')
+
+# Where rebuild_dashboard records its last outcome so the daily cron health
+# check can surface silent build failures / degradations (kcn doesn't want
+# per-cron alerts — see feedback_no_individual_cron_alerts).
+DASHBOARD_BUILD_STATUS = 'logs/dashboard_build_status.json'
 
 
 def pct(c, pc):
@@ -127,12 +133,54 @@ def sync_gha_data_files(ws=None):
         return False, str(e)
 
 
+def _record_dashboard_build(ok, output, ws=None):
+    """Persist the last build_dashboard outcome to logs/dashboard_build_status.json.
+
+    Why: report_postflight / brief_postflight call rebuild_dashboard() and discard
+    the return value, so a hard crash (returncode!=0) or a silent section
+    degradation (`warn:` / `⚠️` lines on stderr) would freeze the dashboard while
+    commits keep flowing — invisible until someone eyeballs the live page. This
+    file is the single observable surface; cron_health_check reads it at EOD so the
+    failure shows up in the daily review instead of as an immediate per-cron alert.
+
+    Non-fatal: never raises.
+    """
+    ws = ws or WS
+    try:
+        from datetime import datetime, timezone
+        warn_count = sum(
+            1 for ln in (output or '').splitlines()
+            if 'warn:' in ln or '⚠' in ln or 'FATAL' in ln
+        )
+        status = {
+            'checked_at': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'ok': bool(ok),
+            'warn_count': warn_count,
+            'tail': (output or '')[-500:],
+        }
+        path = ws / DASHBOARD_BUILD_STATUS
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(status, ensure_ascii=False, indent=2))
+        if not ok:
+            print(f'🔴 build_dashboard FAILED — recorded to {DASHBOARD_BUILD_STATUS}; '
+                  f'dashboard.json NOT refreshed. tail: {(output or "")[-200:]}',
+                  file=sys.stderr)
+        elif warn_count:
+            print(f'⚠️  build_dashboard ok but {warn_count} degraded section(s) — '
+                  f'see {DASHBOARD_BUILD_STATUS}', file=sys.stderr)
+    except Exception as e:
+        print(f'(could not record dashboard build status: {e})', file=sys.stderr)
+
+
 def rebuild_dashboard(ws=None):
     """Re-run build_dashboard.py to refresh assets/data/dashboard.json.
 
     Refreshes today's snapshot AND syncs GH Action-managed data files first, so
     the equity curve reflects latest portfolio state and the embedded sentiment/
     macro/news data are not 24 h stale.
+
+    Records the outcome via _record_dashboard_build so a failure is observable in
+    the daily cron health check even when callers discard the return value.
 
     Returns (ok, last_300_chars_of_output). Failure is non-fatal — caller
     should log but not abort the commit pipeline.
@@ -145,8 +193,12 @@ def rebuild_dashboard(ws=None):
             ['python3', str(ws / 'scripts' / 'data' / 'build_dashboard.py')],
             capture_output=True, text=True, timeout=30, cwd=str(ws),
         )
-        return r.returncode == 0, (r.stdout + r.stderr)[-300:]
+        ok = r.returncode == 0
+        full = r.stdout + r.stderr
+        _record_dashboard_build(ok, full, ws)
+        return ok, full[-300:]
     except Exception as e:
+        _record_dashboard_build(False, str(e), ws)
         return False, str(e)
 
 

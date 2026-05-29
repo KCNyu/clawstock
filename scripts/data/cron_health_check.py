@@ -144,6 +144,42 @@ def commit_count_today(commit_pattern):
         return 0
 
 
+def check_dashboard_build():
+    """Read logs/dashboard_build_status.json (written by _harness_common.rebuild_dashboard).
+
+    Returns a dict with keys: state ('ok'|'degraded'|'stale'|'failed'|'absent'),
+    detail, ok, warn_count, age_hours. A 'failed' build means dashboard.json is
+    frozen while commits keep flowing — the silent-freeze case this guards against.
+    """
+    path = os.path.join(WS, 'logs', 'dashboard_build_status.json')
+    if not os.path.exists(path):
+        return {'state': 'absent', 'detail': 'no build status file yet', 'ok': None,
+                'warn_count': 0, 'age_hours': None}
+    try:
+        st = json.load(open(path))
+    except Exception as e:
+        return {'state': 'failed', 'detail': f'status file unreadable: {e}', 'ok': False,
+                'warn_count': 0, 'age_hours': None}
+    age_hours = None
+    try:
+        ts = datetime.strptime(st['checked_at'], '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+        age_hours = round((datetime.now(timezone.utc) - ts).total_seconds() / 3600, 1)
+    except Exception:
+        pass
+    if not st.get('ok'):
+        return {'state': 'failed', 'detail': f"build FAILED — dashboard.json frozen. tail: {st.get('tail','')[-160:]}",
+                'ok': False, 'warn_count': st.get('warn_count', 0), 'age_hours': age_hours}
+    if st.get('warn_count'):
+        return {'state': 'degraded', 'detail': f"{st['warn_count']} degraded section(s) on last build",
+                'ok': True, 'warn_count': st['warn_count'], 'age_hours': age_hours}
+    # Build OK; flag only if very stale (weekend gaps are normal, so 24h threshold)
+    if age_hours is not None and age_hours > 24:
+        return {'state': 'stale', 'detail': f'last successful build {age_hours}h ago',
+                'ok': True, 'warn_count': 0, 'age_hours': age_hours}
+    return {'state': 'ok', 'detail': f'last build ok ({age_hours}h ago)' if age_hours is not None else 'last build ok',
+            'ok': True, 'warn_count': 0, 'age_hours': age_hours}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--json', action='store_true')
@@ -208,11 +244,19 @@ def main():
             'detail': detail,
         })
 
+    dash = check_dashboard_build()
+    if dash['state'] == 'failed':
+        has_missing = True   # critical: frozen dashboard rides exit 1
+    elif dash['state'] in ('degraded', 'stale'):
+        has_warn = True
+
     summary = {
         'generated_at': now.isoformat(),
         'now_hkt': now.astimezone().strftime('%Y-%m-%d %H:%M HKT'),
         'jobs': report,
+        'dashboard_build': dash,
         'has_missing': has_missing,
+        'has_warn': has_warn,
     }
 
     if args.json:
@@ -222,12 +266,19 @@ def main():
         for r in report:
             icon = {'ok':'✓','idle':'·','missing':'✗','ok-no-track':'~'}[r['status']]
             print(f"  {icon} {r['name']:25s}  {r['detail']}")
+        dash_icon = {'ok':'✓','degraded':'⚠','stale':'⚠','failed':'✗','absent':'·'}[dash['state']]
+        print(f"  {dash_icon} {'dashboard build':25s}  {dash['detail']}")
         if has_missing:
             print()
             print('🔴 缺漏 — 检查上面 ✗ 行')
+        elif has_warn:
+            print()
+            print('🟡 warn — 检查上面 ⚠ 行')
 
     if has_missing:
         sys.exit(1)
+    if has_warn:
+        sys.exit(2)
     sys.exit(0)
 
 
