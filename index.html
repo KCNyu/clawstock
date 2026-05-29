@@ -894,6 +894,22 @@ layout: null
   .right { text-align: right; }
   .muted { color: var(--text-dim); }
   .nowrap { white-space: nowrap; }
+
+  /* Hero top "今日要点" triage strip */
+  .today-highlights { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+  .today-highlights:empty { display: none; }
+  .hl-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 12px; border-radius: 999px;
+    font-size: 13px; line-height: 1.3; font-weight: 500;
+    background: var(--card-2); border: 1px solid var(--border); color: var(--text);
+  }
+  .hl-chip .hl-ic { font-size: 13px; }
+  .hl-chip.hl-alert { border-color: var(--red); background: color-mix(in srgb, var(--red) 14%, var(--card)); color: var(--red); font-weight: 600; }
+  .hl-chip.hl-warn  { border-color: var(--amber); color: var(--amber); }
+  .hl-chip.hl-up    { border-color: var(--green); color: var(--green); }
+  .hl-chip.hl-down  { border-color: var(--red); color: var(--red); }
+  .hl-chip.hl-info  { border-color: var(--accent); color: var(--accent); }
 </style>
 </head>
 <body>
@@ -928,6 +944,8 @@ layout: null
        ============================================ -->
   <section class="panel active" data-panel="hero">
     <h2>总览 Hero</h2>
+
+    <div id="today-highlights" class="today-highlights"></div>
 
     <div class="card market-card">
       <h3>Market Snapshot <span class="muted" id="market-asof" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">—</span></h3>
@@ -1573,21 +1591,15 @@ layout: null
   // Watch Levels: render latest plan's watch_levels vs current price, color by proximity.
   // watch_levels keys are LLM-authored & free-form, so resolution is heuristic and
   // degrades gracefully (unmappable numeric → no distance; string → shown as condition).
-  function renderWatchLevels() {
-    const card = document.getElementById("watch-levels-card");
-    const list = document.getElementById("watch-levels-list");
-    if (!card || !list) return;
+  // Resolve + sort the latest plan's watch_levels into rows ordered by proximity
+  // to firing (nearest numeric trigger first; condition-only rows last). Shared by
+  // renderWatchLevels (full card) and renderTodayHighlights (Hero top strip).
+  function computeWatchRows() {
     const plans = (safe(DATA, "recent_plans") || []).slice()
       .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
     const latest = plans[0];
     const wl = latest ? safe(latest, "plan", "watch_levels") : null;
-    if (!wl || typeof wl !== "object" || !Object.keys(wl).length) {
-      card.style.display = "none";
-      return;
-    }
-    card.style.display = "";
-    const dateEl = document.getElementById("watch-levels-date");
-    if (dateEl) dateEl.textContent = latest.date ? `${latest.date} 计划` : "Watch Levels";
+    if (!wl || typeof wl !== "object" || !Object.keys(wl).length) return { date: null, rows: [] };
 
     const hmap = {};
     flatHoldings().forEach(h => { if (h.ticker) hmap[String(h.ticker).toUpperCase()] = h; });
@@ -1614,33 +1626,113 @@ layout: null
       return toks.length ? toks.join(" ") : "触发位";
     };
 
-    list.innerHTML = Object.entries(wl).map(([key, val]) => {
+    const rows = Object.entries(wl).map(([key, val]) => {
       const r = resolve(key);
       const who = r.who || key.split(/[_\-]/)[0].toUpperCase();
       const toks = key.toLowerCase().split(/[_\-]/).filter(t => !r.strip.includes(t) && t !== "hkd" && t !== "usd");
       const label = labelOf(toks);
-      if (typeof val !== "number" || !isFinite(val)) {
-        return `<div class="wl-row wl-cond"><span class="wl-who">${escapeHtml(who)}</span>` +
-          `<span class="wl-cond-txt">${escapeHtml(String(val))}</span></div>`;
+      const numeric = (typeof val === "number" && isFinite(val));
+      const cur = (numeric && r.cur != null && isFinite(r.cur)) ? r.cur : null;
+      let dist = null, ad = null;
+      if (cur != null) { dist = (cur - val) / Math.abs(val) * 100; ad = Math.abs(dist); }
+      return { who, label, val, cur, ccy: r.ccy, numeric, dist, ad,
+               cond: numeric ? null : String(val) };
+    });
+    // nearest resolvable numeric → numeric-without-current → condition-only
+    rows.sort((a, b) => {
+      const rank = x => (x.ad != null ? 0 : (x.numeric ? 1 : 2));
+      const ra = rank(a), rb = rank(b);
+      if (ra !== rb) return ra - rb;
+      return ra === 0 ? a.ad - b.ad : 0;
+    });
+    return { date: latest.date || null, rows };
+  }
+
+  function renderWatchLevels() {
+    const card = document.getElementById("watch-levels-card");
+    const list = document.getElementById("watch-levels-list");
+    if (!card || !list) return;
+    const { date, rows } = computeWatchRows();
+    if (!rows.length) { card.style.display = "none"; return; }
+    card.style.display = "";
+    const dateEl = document.getElementById("watch-levels-date");
+    if (dateEl) dateEl.textContent = date ? `${date} 计划` : "Watch Levels";
+
+    list.innerHTML = rows.map(row => {
+      if (!row.numeric) {
+        return `<div class="wl-row wl-cond"><span class="wl-who">${escapeHtml(row.who)}</span>` +
+          `<span class="wl-cond-txt">${escapeHtml(row.cond)}</span></div>`;
       }
       let curHtml = `<span class="wl-cur"></span>`;
       let distHtml = `<span class="wl-dist far">—</span>`;
-      if (r.cur != null && isFinite(r.cur)) {
-        const dist = (r.cur - val) / Math.abs(val) * 100;
-        const ad = Math.abs(dist);
-        const cls = ad < 2 ? "near" : ad < 5 ? "mid" : "far";
-        curHtml = `<span class="wl-cur">现 ${fmtMoney(r.cur, r.ccy)}</span>`;
-        distHtml = `<span class="wl-dist ${cls}">${fmtPct(dist, 1)}${ad < 2 ? " ⚠️" : ""}</span>`;
+      if (row.cur != null) {
+        const cls = row.ad < 2 ? "near" : row.ad < 5 ? "mid" : "far";
+        curHtml = `<span class="wl-cur">现 ${fmtMoney(row.cur, row.ccy)}</span>`;
+        distHtml = `<span class="wl-dist ${cls}">${fmtPct(row.dist, 1)}${row.ad < 2 ? " ⚠️" : ""}</span>`;
       }
-      return `<div class="wl-row"><span class="wl-who">${escapeHtml(who)}</span>` +
-        `<span class="wl-label">${escapeHtml(label)}</span>` +
-        `<span class="wl-target">${fmtMoney(val, r.ccy)}</span>${curHtml}${distHtml}</div>`;
+      return `<div class="wl-row"><span class="wl-who">${escapeHtml(row.who)}</span>` +
+        `<span class="wl-label">${escapeHtml(row.label)}</span>` +
+        `<span class="wl-target">${fmtMoney(row.val, row.ccy)}</span>${curHtml}${distHtml}</div>`;
     }).join("");
+  }
+
+  // A. Hero top "今日要点" triage strip — pure synthesis of data already in
+  // dashboard.json (no new fetch). Answers "what should I look at today" in 5s.
+  function renderTodayHighlights() {
+    const el = document.getElementById("today-highlights");
+    if (!el) return;
+    const chips = [];
+
+    // 1. Nearest-to-firing trigger (from the shared watch-level resolver)
+    const near = (computeWatchRows().rows || []).find(r => r.ad != null);
+    if (near) {
+      const fire = near.ad < 2;
+      chips.push({ cls: fire ? "hl-alert" : "hl-info", icon: fire ? "⚠️" : "🎯",
+        txt: `${escapeHtml(near.who)} ${escapeHtml(near.label)} ${fmtMoney(near.val, near.ccy)}`
+           + ` · 现 ${fmtMoney(near.cur, near.ccy)} (${fmtPct(near.dist,1)})${fire ? " 即将触发" : ""}` });
+    }
+
+    // 2. Biggest mover today (today_movers is pre-sorted by |pct| desc)
+    const movers = safe(DATA, "today_movers") || [];
+    if (movers.length) {
+      const m = movers[0]; const up = (m.today_change_pct || 0) >= 0;
+      chips.push({ cls: up ? "hl-up" : "hl-down", icon: up ? "📈" : "📉",
+        txt: `今日最大波动 ${escapeHtml(m.ticker)} ${fmtPct(m.today_change_pct,1)}` });
+    }
+
+    // 3. Top anomaly (high severity first)
+    const anomalies = (safe(DATA, "anomalies") || []).slice()
+      .sort((a,b) => (b.severity==="high"?1:0) - (a.severity==="high"?1:0));
+    if (anomalies.length) {
+      const a = anomalies[0];
+      const highN = anomalies.filter(x => x.severity === "high").length;
+      chips.push({ cls: a.severity === "high" ? "hl-alert" : "hl-warn", icon: "🚩",
+        txt: (highN > 1 ? `${highN} 项高危异常 · ` : `异常 `)
+           + `${escapeHtml(a.ticker)}: ${escapeHtml(a.detail)}` });
+    }
+
+    // 4. Catalyst dated today
+    const cat = safe(DATA, "catalysts") || {};
+    // last_updated is HKT-local with slashes ("2026/05/29 12:00 HKT"); catalyst
+    // dates use dashes — normalize separators so the match doesn't silently miss.
+    const today = (String(safe(DATA, "last_updated") || "").slice(0,10).replace(/\//g, "-"))
+      || new Date().toISOString().slice(0,10);
+    const todays = [];
+    (cat.macro_events||[]).forEach(e => { if (e.date === today) todays.push(`${e.type} ${e.detail}`); });
+    (cat.earnings||[]).forEach(e => { if (String(e.date||"").slice(0,10) === today) todays.push(`财报 ${e.ticker||e.symbol||""}`); });
+    (cat.fomc||[]).forEach(e => { if (String(e.date||"").slice(0,10) === today) todays.push(`FOMC ${e.detail||""}`); });
+    if (todays.length) chips.push({ cls:"hl-info", icon:"📅", txt:`今日事件 · ${escapeHtml(todays[0])}` });
+
+    if (!chips.length) { el.style.display = "none"; return; }
+    el.style.display = "";
+    el.innerHTML = chips.map(c =>
+      `<span class="hl-chip ${c.cls}"><span class="hl-ic">${c.icon}</span>${c.txt}</span>`).join("");
   }
 
   function render() {
     if (!DATA) return;
     renderHeader();
+    renderTodayHighlights();
     renderMarketSnapshot();
     renderHoldingsTrend();
     renderTotals();
