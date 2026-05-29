@@ -48,16 +48,31 @@ UA = 'clawock-influencer-scan/1.0 (github.com/KCNyu/clawock)'
 HEADERS = {'User-Agent': UA}
 TIMEOUT = 12
 LOOKBACK_HOURS = 48          # catch weekend posts before Mon brief
-RELEVANCE_CUTOFF = 60        # LLM score below this is dropped as noise
+RELEVANCE_CUTOFF = 45        # LLM score below this dropped; low so radar stays full
 MAX_CANDIDATES = 40          # cap sent to LLM (token guard)
 
-# Cheap pre-filter: a raw post is a candidate only if it smells market-relevant.
+# Cheap pre-filter: a raw post is a candidate only if it smells market/economy/
+# policy-relevant. The LLM is the smart filter downstream — this gate is just a
+# token cost-guard, so keep it BROAD (Trump's tariff/Fed/China/energy posts move
+# markets even without finance vocab). Better to over-include here and let the
+# LLM score relevance than to silently drop a market-moving post pre-LLM.
 MARKET_KEYWORDS = [
-    'stock', 'shares', 'market', 'nasdaq', 'dow', 'invest', 'buy', 'sell',
-    'bought', 'company', 'ipo', 'earnings', 'tariff', 'fed', 'rate', 'crypto',
-    'bitcoin', 'dogecoin', 'tesla', 'gold', 'oil', 'chip', 'ai ', 'deal',
-    'acquisition', 'great company', 'recommend', 'short ', 'long ', 'ev ',
-    '$',  # cashtags / dollar figures
+    # markets / finance
+    'stock', 'shares', 'market', 'nasdaq', 'dow', 's&p', 'invest', 'buy', 'sell',
+    'bought', 'company', 'companies', 'ipo', 'earnings', 'profit', 'revenue',
+    'short ', 'long ', 'recommend', 'great company', '$',
+    # macro / policy (Trump's bread and butter — all market-moving)
+    'tariff', 'tariffs', 'trade', 'trade deal', 'fed', 'powell', 'interest',
+    'rate', 'rates', 'inflation', 'dollar', 'economy', 'economic', 'jobs',
+    'tax', 'taxes', 'sanction', 'china', 'chip', 'chips', 'semiconductor',
+    'energy', 'oil', 'gas', 'drill', 'gold', 'steel', 'manufactur', 'factory',
+    'defense', 'pharma', 'drug', 'bank', 'antitrust', 'merger', 'acquisition',
+    'deal', 'sec ', 'regulat',
+    # crypto / themes
+    'crypto', 'bitcoin', 'dogecoin', 'stablecoin', 'digital asset', 'ai ',
+    # mega-cap / common names Trump or Musk name directly
+    'tesla', 'spacex', 'xai', 'nvidia', 'apple', 'meta', 'google', 'amazon',
+    'microsoft', 'intel', 'boeing', 'ev ', 'truth social', 'djt',
 ]
 
 
@@ -117,14 +132,27 @@ def fetch_trump(cutoff):
     return out
 
 
+MUSK_MAX = 8  # second-hand source — cap so SpaceX-IPO rehash doesn't drown Trump
+
+
 def fetch_musk():
-    """Google News RSS proxy for Musk's market-relevant statements (second-hand)."""
-    out = []
+    """Google News RSS proxy for Musk's market-relevant statements (second-hand).
+
+    Google News returns the same hot story (e.g. SpaceX IPO) from a dozen outlets,
+    so we dedup on a coarse headline signature and cap the count.
+    """
+    out, seen = [], set()
     query = 'Elon Musk (Tesla OR DOGE OR crypto OR stock OR buy OR SpaceX OR xAI)'
-    for it in fetch_google_news(query, hl='en-US', gl='US', limit=15):
+    for it in fetch_google_news(query, hl='en-US', gl='US', limit=20):
         title = it.get('title', '')
         if not _is_candidate(title) and 'musk' not in title.lower():
             continue
+        # Coarse dedup: signature = sorted significant words (>4 chars, lowercased).
+        sig = frozenset(w for w in re.findall(r'[a-z]{5,}', title.lower())
+                        if w not in ('musk', 'could', 'about', 'after', 'their'))
+        if any(len(sig & s) >= 3 for s in seen):  # ≥3 shared keywords → same story
+            continue
+        seen.add(sig)
         out.append({
             'author':    'Musk',
             'text':      title[:400],
@@ -133,6 +161,8 @@ def fetch_musk():
             'origin':    'gnews-rss',
             'source':    it.get('source', ''),
         })
+        if len(out) >= MUSK_MAX:
+            break
     return out
 
 
@@ -153,10 +183,13 @@ def load_holdings():
 
 LLM_SYSTEM = (
     "你是 kcn 的市场情报分析师。给你一批 Trump / Musk 的言论(或对其言论的新闻报道)，"
-    "以及 kcn 当前的持仓清单。任务：只挑出**真正有市场含义**的条目，提取结构化信息。\n"
+    "以及 kcn 当前的持仓清单。任务：挑出有市场含义的条目，提取结构化信息。\n"
     "判定要点：\n"
-    "- 提到具体公司/股票/资产，或表达买入/卖出/看多/看空/背书/抨击，才算 relevant。\n"
-    "- 纯政治口水、无标的的空泛表态 → relevance 给低分(<55)，会被丢弃。\n"
+    "- **倾向多列、宁滥勿缺**：这是一个'雷达'，凡涉及具体公司/股票/资产，或买卖/看多看空/"
+    "背书/抨击，或宏观政策(关税/Fed/利率/中国/能源/税/监管/加密等会动板块的)，都列出来，"
+    "用 relevance 分数反映强度(强信号 75-95，宏观/间接 50-70)，让前端按分排序。\n"
+    "- **只有纯人身攻击/纯选举口水/与任何经济或市场都无关**的，才不返回(或给 <45)。\n"
+    "- 同一事件被多条新闻重复报道时，只保留信息量最高的一条，别灌水。\n"
     "- tickers 只填言论**直接点名或直接讲的**上市标的。严禁'同板块/可能利好行业/"
     "竞争对手'这类联想式硬塞——SpaceX 的新闻不要因为 Rocket Lab 也是航天股就填 RKLB。\n"
     "- SpaceX / xAI / OpenAI 等**未上市**公司不计入 tickers(没有可交易代码)。\n"
@@ -273,7 +306,14 @@ def main():
                       file=sys.stderr)
                 items.extend(retained)
 
-    items.sort(key=lambda x: (x.get('published') or ''), reverse=True)
+    # Rank by signal value, not recency: held-hit > new-idea > sector > general,
+    # then by relevance, then recency. Keeps the valuable stuff on top instead of
+    # letting repetitive second-hand Musk headlines (recent) dominate the feed.
+    def _rank(x):
+        tier = 3 if x.get('held') else (2 if x.get('new_ideas')
+               else (1 if x.get('sector_holdings') else 0))
+        return (tier, x.get('relevance') or 0, x.get('published') or '')
+    items.sort(key=_rank, reverse=True)
 
     held_hits = [it for it in items if it.get('held')]
     new_ideas = [it for it in items if it.get('new_ideas') and not it.get('held')]

@@ -36,6 +36,7 @@ jobs:
       - name: Fetch Trump/Musk + Xiaomi relevance filter
         env:
           XIAOMI_API_KEY: ${{ secrets.XIAOMI_API_KEY }}
+          MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
         run: python3 scripts/data/fetch_influencer_feed.py
 
       - name: Commit + push

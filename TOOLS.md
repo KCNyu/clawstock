@@ -34,7 +34,7 @@
 | `influencer-scan.yml` | 工作日 23:40 + 12:50 UTC | `assets/data/influencer_feed.json` | **Xiaomi LLM** Trump 原帖(trumpstruth RSS)+Musk(新闻代理) 市场相关性筛 + 撞持仓/新机会/板块交叉匹配 |
 | `cron-health.yml` | 工作日 09:00 UTC (17:00 HKT) | (issue auto-open on miss) | 巡检今日 openclaw cron 漏跑 |
 
-**Xiaomi GH Action 路径**: 需在 repo secrets 配 `XIAOMI_API_KEY` (token-plan-cn endpoint) + 已有 `FINNHUB_API_KEY`。本地 cron 跑 MiniMax primary，远端 GH Action 跑 Xiaomi（fallback 测试 + 兜底）。
+**Xiaomi GH Action 路径**: 需在 repo secrets 配 `XIAOMI_API_KEY` (token-plan-cn endpoint) + `MINIMAX_API_KEY` (兜底) + 已有 `FINNHUB_API_KEY`。本地 cron 跑 MiniMax primary，远端 GH Action 跑 Xiaomi primary。**所有走 `xiaomi_llm.chat()` 的 GH Action（news-digest / weekly-review / brief-fallback / influencer-scan）现已内置 Xiaomi→MiniMax M2.7 自动 fallback**：Xiaomi 三次重试全挂(401/429/timeout/空)即透明切 MiniMax，两家都挂才 raise。4 个 workflow env 均已带 `MINIMAX_API_KEY`。
 
 **没有 GH Action 写 `assets/data/dashboard.json`** — 那是 openclaw cron 的 postflight 独占。
 其他 GH Action 只写各自专属文件，零冲突面。本地 cron 和 远端 Action 不会撞车。
@@ -197,7 +197,7 @@ python3 scripts/data/analyze_hk_stocks.py --dry-run   # 不写文件
 - **`scripts/data/mark_followed.py`**：calibration ground-truth 工具。手动 `mark_followed.py YYYY-MM-DD TICKER BUCKET [--no]` 或 `--auto` 跑 git history shares diff 推断（每日 brief preflight 自动跑同一逻辑）。Brier score 现在**只统计 followed=true** 的 plan actions。
 - **`scripts/data/fetch_catalysts.py`**：未来 14d catalysts → `assets/data/catalysts.json`（7 US holding 财报 Finnhub + 2026 FOMC 硬编码 + 经济日历 NFP/CPI 规则）。brief_preflight `[11/11]` 自动跑。`catalysts.alerts` 触发时 LLM brief 必须 ▎事件日历 段提及。
 - **`scripts/data/fetch_influencer_feed.py`**：高影响力人物市场异动 → `assets/data/influencer_feed.json`。Trump 原帖(trumpstruth.org/feed RSS, 全文)+ Musk(Google News RSS 代理, X 无可靠免费 RSS)。关键词预筛 → 单次 Xiaomi LLM(`thinking_disabled` 结构化抽取, ~2.5K token)提相关性/stance/ticker/板块 → 代码交叉匹配持仓分三档：`held_hits`(撞持仓告警) / `new_ideas`(他们点名但 kcn 没持有的选股线索) / `sector_hits`(板块软关联, 非直接点名)。merge-not-overwrite: 源**抓取失败**才保留旧条目（被 LLM 筛掉≠失败）。env `XIAOMI_API_KEY`(缺则降级关键词-only)。dashboard「影响力雷达」卡 + brief `▎名人异动/政策风向` 段消费。
-- **`scripts/data/xiaomi_llm.py`**：minimal OpenAI-compat client for Xiaomi MiMo v2.5-pro，供 GH Action workflow 直调（绕过 openclaw gateway）。**单轮调用默认 thinking enabled + max_tokens 32K**（mimo-v2.5-pro 上限）；多轮场景需显式传 `thinking_disabled=True` 避 reasoning_content 400。retry 3 次 + 429 rate-limit handling。env `XIAOMI_API_KEY`。
+- **`scripts/data/xiaomi_llm.py`**：OpenAI-compat LLM client，供 GH Action 直调（绕过 openclaw gateway）。**Primary Xiaomi MiMo v2.5-pro → fallback MiniMax M2.7**（Xiaomi 三次重试全挂即透明切 MiniMax，两家全挂才 raise）。**单轮默认 thinking enabled + max_tokens 32K**；多轮传 `thinking_disabled=True` 避 reasoning_content 400。`thinking`/`response_format` 仅发 Xiaomi（MiniMax 不发，靠 prompt"只返回JSON"）。`_clean()` 统一剥 MiniMax 内联 `<think>…</think>` + markdown fence，json.loads 两家通用。retry 3 + 429 handling。env `XIAOMI_API_KEY` + `MINIMAX_API_KEY`(缺则跳过 fallback)。`chat(fallback=False)` 可关兜底。
 - **`scripts/data/gh_action_*.py`**：3 个 GH Action 入口脚本（brief_fallback / weekly_review / news_digest），都用 xiaomi_llm.chat() 直调小米。
 - **`scripts/data/safe_push.sh`**：共享 git push 防 conflict 死循环工具。3 次 retry + 每次 rebase 失败 → `git rebase --abort` + exit 2（不死循环 push）。所有写文件的 GH Action workflow 用 `bash scripts/data/safe_push.sh` 替代原本的 push loop；harness 端 `scripts/harness/_harness_common.push_with_rebase_retry` 也同款逻辑升级。
 - **`scripts/data/update_portfolio.py`** / **`update_us_portfolio.js`**：手动调仓后写 portfolio.json 的辅助

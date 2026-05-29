@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T17:03:31.415457Z",
+  "generated_at": "2026-05-29T17:18:05.947028Z",
   "last_updated": "2026/05/30 01:00 HKT",
   "fx": {
     "usdhkd": 7.8356,
@@ -3668,7 +3668,7 @@
     ]
   },
   "influencer_feed": {
-    "generated_at": "2026-05-29T16:52:40.386498+00:00",
+    "generated_at": "2026-05-29T17:15:38.853618+00:00",
     "lookback_hours": 48,
     "sources": {
       "trump": "trumpstruth.org/feed (primary)",
@@ -3676,10 +3676,10 @@
     },
     "llm_filtered": true,
     "counts": {
-      "total": 1,
-      "held_hits": 0,
-      "new_ideas": 0,
-      "sector_hits": 1
+      "total": 9,
+      "held_hits": 1,
+      "new_ideas": 2,
+      "sector_hits": 3
     },
     "items": [
       {
@@ -3689,22 +3689,184 @@
         "published": "2026-05-27T22:42:10+00:00",
         "origin": "truthsocial",
         "tickers": [],
-        "held": [],
+        "held": [
+          "CRCL"
+        ],
         "new_ideas": [],
         "sectors": [
           "加密货币"
         ],
-        "sector_holdings": [
-          "CRCL"
-        ],
+        "sector_holdings": [],
         "stance": "endorse",
-        "relevance": 75,
-        "summary_cn": "特朗普宣称其领导将使美国成为加密货币之都，并承诺制定数字资产市场结构，利好加密货币行业。"
+        "relevance": 85,
+        "summary_cn": "特朗普宣称自己拯救了美国加密行业，承诺将美国打造为加密货币之都，并建立永久性数字资产市场结构。"
+      },
+      {
+        "author": "Musk",
+        "text": "Where Are The Robotaxis? Musk's Texas Promised Land Is Coping With Fewer Than 50 Cars",
+        "url": "",
+        "published": "Fri, 29 May 2026 07:10:00 GMT",
+        "origin": "gnews-rss",
+        "source": "InsideEVs",
+        "tickers": [
+          "TSLA"
+        ],
+        "held": [],
+        "new_ideas": [
+          "TSLA"
+        ],
+        "sectors": [
+          "自动驾驶",
+          "电动车"
+        ],
+        "sector_holdings": [],
+        "stance": "attack",
+        "relevance": 70,
+        "summary_cn": "马斯克在德克萨斯州承诺的机器人出租车数量远低于预期，实际运营车辆不足50辆。"
+      },
+      {
+        "author": "Musk",
+        "text": "Why a merger with SpaceX could be bad for Tesla shareholders",
+        "url": "",
+        "published": "Fri, 29 May 2026 13:44:17 GMT",
+        "origin": "gnews-rss",
+        "source": "Yahoo Finance",
+        "tickers": [
+          "TSLA"
+        ],
+        "held": [],
+        "new_ideas": [
+          "TSLA"
+        ],
+        "sectors": [
+          "电动车",
+          "航天"
+        ],
+        "sector_holdings": [],
+        "stance": "attack",
+        "relevance": 65,
+        "summary_cn": "分析指出SpaceX与特斯拉合并可能对特斯拉股东不利。"
+      },
+      {
+        "author": "Musk",
+        "text": "As Elon Musk’s xAI supercomputer rankles Memphis, Nashville looks to regulate data centers",
+        "url": "",
+        "published": "Thu, 28 May 2026 20:20:42 GMT",
+        "origin": "gnews-rss",
+        "source": "WPLN News",
+        "tickers": [],
+        "held": [],
+        "new_ideas": [],
+        "sectors": [
+          "AI",
+          "数据中心",
+          "监管"
+        ],
+        "sector_holdings": [
+          "MSFU"
+        ],
+        "stance": "neutral",
+        "relevance": 55,
+        "summary_cn": "马斯克的xAI超级计算机引发争议，纳什维尔市考虑监管数据中心。"
+      },
+      {
+        "author": "Musk",
+        "text": "How SpaceX Is Structured to Favor Elon Musk",
+        "url": "",
+        "published": "Tue, 26 May 2026 14:47:56 GMT",
+        "origin": "gnews-rss",
+        "source": "The New York Times",
+        "tickers": [],
+        "held": [],
+        "new_ideas": [],
+        "sectors": [
+          "航天"
+        ],
+        "sector_holdings": [
+          "RKLB"
+        ],
+        "stance": "neutral",
+        "relevance": 50,
+        "summary_cn": "报道分析SpaceX的公司结构如何有利于马斯克。"
+      },
+      {
+        "author": "Musk",
+        "text": "SpaceX skeptics have added reason for concern after Musk comments diverge from IPO filing",
+        "url": "",
+        "published": "Fri, 29 May 2026 12:00:01 GMT",
+        "origin": "gnews-rss",
+        "source": "CNBC",
+        "tickers": [],
+        "held": [],
+        "new_ideas": [],
+        "sectors": [
+          "航天"
+        ],
+        "sector_holdings": [
+          "RKLB"
+        ],
+        "stance": "neutral",
+        "relevance": 50,
+        "summary_cn": "马斯克关于SpaceX的言论与IPO文件存在分歧，引发市场关注。"
+      },
+      {
+        "author": "Trump",
+        "text": "Iran must agree that they will never have a Nuclear Weapon or Bomb. The Hormuz Strait must be immediately open, no tolls, for unrestricted shipping traffic, in both directions. All water mines (bombs), if any, will be terminated (we have removed, through detonation, numerous such mines with our great underwater mine sweepers. Iran will complete the immediate removal and/or detonation of any mines that are left, which will not be many!). Ships caught in the Strait due to our amazing and unprecedented Naval Blockade, which will now be lifted, may start the process of “heading home!” Say HELLO to",
+        "url": "https://trumpstruth.org/statuses/38852",
+        "published": "2026-05-29T14:51:24+00:00",
+        "origin": "truthsocial",
+        "tickers": [],
+        "held": [],
+        "new_ideas": [],
+        "sectors": [
+          "能源",
+          "航运",
+          "地缘政治"
+        ],
+        "sector_holdings": [],
+        "stance": "neutral",
+        "relevance": 55,
+        "summary_cn": "特朗普要求伊朗开放霍尔木兹海峡并清除水雷，涉及航运与能源通道安全。"
+      },
+      {
+        "author": "Trump",
+        "text": "Prime Minister Nikol Pashinyan, of Armenia, a great friend and Leader, is making his Country strong, wealthy, and very secure! Nikol completely shares my vision of PEACE and PROSPERITY for Armenia and the entire South Caucasus region. Our Secretary of State, Marco Rubio, just traveled to Armenia, where he advanced several important Deals for both our Countries. Soon, the United States and Armenia will break ground together on the Trump Route for International Peace and Prosperity, which will transform the South Caucasus, and help our wonderful American Energy Companies gain access from Central",
+        "url": "https://trumpstruth.org/statuses/38838",
+        "published": "2026-05-27T22:54:22+00:00",
+        "origin": "truthsocial",
+        "tickers": [],
+        "held": [],
+        "new_ideas": [],
+        "sectors": [
+          "能源",
+          "地缘政治"
+        ],
+        "sector_holdings": [],
+        "stance": "endorse",
+        "relevance": 55,
+        "summary_cn": "特朗普推动美国与亚美尼亚合作，提及美国能源公司将获得中亚能源通道。"
+      },
+      {
+        "author": "Musk",
+        "text": "Elon Musk Clarifies SpaceX, Anthropic AI Deal. It's Not As Big As Expected.",
+        "url": "",
+        "published": "Thu, 28 May 2026 20:16:00 GMT",
+        "origin": "gnews-rss",
+        "source": "Investor's Business Daily",
+        "tickers": [],
+        "held": [],
+        "new_ideas": [],
+        "sectors": [
+          "AI",
+          "航天"
+        ],
+        "sector_holdings": [],
+        "stance": "neutral",
+        "relevance": 50,
+        "summary_cn": "马斯克澄清SpaceX与Anthropic的AI合作规模小于预期。"
       }
     ],
-    "held_hits": [],
-    "new_ideas": [],
-    "sector_hits": [
+    "held_hits": [
       {
         "author": "Trump",
         "text": "Gary Gensler and the “Anti-Crypto Army” nearly DESTROYED the American Crypto Industry by driving Bitcoin, Crypto Perpetuals, and INNOVATION offshore, but “TRUMP” SAVED IT. America is now the CRYPTO CAPITAL of the WORLD, and Builders and Entrepreneurs are coming BACK to the United States where they belong. Under my Leadership, we will codify a FUTURE-PROOF Digital Asset Market Structure that cannot be undone by the Crypto Haters. The new Frontier of Finance is being Built in America, and “TRUMP” will NEVER let Crypto down! President DONALD J. TRUMP",
@@ -3712,17 +3874,129 @@
         "published": "2026-05-27T22:42:10+00:00",
         "origin": "truthsocial",
         "tickers": [],
-        "held": [],
+        "held": [
+          "CRCL"
+        ],
         "new_ideas": [],
         "sectors": [
           "加密货币"
         ],
-        "sector_holdings": [
-          "CRCL"
-        ],
+        "sector_holdings": [],
         "stance": "endorse",
-        "relevance": 75,
-        "summary_cn": "特朗普宣称其领导将使美国成为加密货币之都，并承诺制定数字资产市场结构，利好加密货币行业。"
+        "relevance": 85,
+        "summary_cn": "特朗普宣称自己拯救了美国加密行业，承诺将美国打造为加密货币之都，并建立永久性数字资产市场结构。"
+      }
+    ],
+    "new_ideas": [
+      {
+        "author": "Musk",
+        "text": "Where Are The Robotaxis? Musk's Texas Promised Land Is Coping With Fewer Than 50 Cars",
+        "url": "",
+        "published": "Fri, 29 May 2026 07:10:00 GMT",
+        "origin": "gnews-rss",
+        "source": "InsideEVs",
+        "tickers": [
+          "TSLA"
+        ],
+        "held": [],
+        "new_ideas": [
+          "TSLA"
+        ],
+        "sectors": [
+          "自动驾驶",
+          "电动车"
+        ],
+        "sector_holdings": [],
+        "stance": "attack",
+        "relevance": 70,
+        "summary_cn": "马斯克在德克萨斯州承诺的机器人出租车数量远低于预期，实际运营车辆不足50辆。"
+      },
+      {
+        "author": "Musk",
+        "text": "Why a merger with SpaceX could be bad for Tesla shareholders",
+        "url": "",
+        "published": "Fri, 29 May 2026 13:44:17 GMT",
+        "origin": "gnews-rss",
+        "source": "Yahoo Finance",
+        "tickers": [
+          "TSLA"
+        ],
+        "held": [],
+        "new_ideas": [
+          "TSLA"
+        ],
+        "sectors": [
+          "电动车",
+          "航天"
+        ],
+        "sector_holdings": [],
+        "stance": "attack",
+        "relevance": 65,
+        "summary_cn": "分析指出SpaceX与特斯拉合并可能对特斯拉股东不利。"
+      }
+    ],
+    "sector_hits": [
+      {
+        "author": "Musk",
+        "text": "As Elon Musk’s xAI supercomputer rankles Memphis, Nashville looks to regulate data centers",
+        "url": "",
+        "published": "Thu, 28 May 2026 20:20:42 GMT",
+        "origin": "gnews-rss",
+        "source": "WPLN News",
+        "tickers": [],
+        "held": [],
+        "new_ideas": [],
+        "sectors": [
+          "AI",
+          "数据中心",
+          "监管"
+        ],
+        "sector_holdings": [
+          "MSFU"
+        ],
+        "stance": "neutral",
+        "relevance": 55,
+        "summary_cn": "马斯克的xAI超级计算机引发争议，纳什维尔市考虑监管数据中心。"
+      },
+      {
+        "author": "Musk",
+        "text": "How SpaceX Is Structured to Favor Elon Musk",
+        "url": "",
+        "published": "Tue, 26 May 2026 14:47:56 GMT",
+        "origin": "gnews-rss",
+        "source": "The New York Times",
+        "tickers": [],
+        "held": [],
+        "new_ideas": [],
+        "sectors": [
+          "航天"
+        ],
+        "sector_holdings": [
+          "RKLB"
+        ],
+        "stance": "neutral",
+        "relevance": 50,
+        "summary_cn": "报道分析SpaceX的公司结构如何有利于马斯克。"
+      },
+      {
+        "author": "Musk",
+        "text": "SpaceX skeptics have added reason for concern after Musk comments diverge from IPO filing",
+        "url": "",
+        "published": "Fri, 29 May 2026 12:00:01 GMT",
+        "origin": "gnews-rss",
+        "source": "CNBC",
+        "tickers": [],
+        "held": [],
+        "new_ideas": [],
+        "sectors": [
+          "航天"
+        ],
+        "sector_holdings": [
+          "RKLB"
+        ],
+        "stance": "neutral",
+        "relevance": 50,
+        "summary_cn": "马斯克关于SpaceX的言论与IPO文件存在分歧，引发市场关注。"
       }
     ]
   },
