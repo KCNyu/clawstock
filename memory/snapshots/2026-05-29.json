@@ -1,6 +1,6 @@
 {
   "owner": "kcn",
-  "last_updated": "2026/05/29 16:00 HKT",
+  "last_updated": "2026/05/29 21:30 HKT",
   "portfolios": {
     "us_stocks": {
       "currency": "USD",
@@ -48,41 +48,36 @@
             }
           ],
           "name": "英伟达",
-          "volume": 13413078.0,
-          "bid": 207.4,
-          "ask": 207.43
+          "volume": 13413078.0
         },
         {
           "ticker": "RKLB",
           "shares": 5,
           "cost_basis": 71,
-          "current_price": 148.03,
-          "today_change_pct": -1.4644,
-          "pnl_percent": 108.493,
-          "data_source": "Nasdaq API (stocks) May 28, 2026 21:36 ET",
-          "day_high": 148.03,
-          "day_low": 148.03,
-          "day_open": 148.03,
-          "prev_close": 150.23,
-          "current_value": 740.15,
-          "pnl_abs": 385.15,
-          "today_change": -11.0,
+          "current_price": 138.88,
+          "today_change_pct": -6.1812,
+          "pnl_percent": 95.6056,
+          "data_source": "Nasdaq API (stocks) May 29, 2026 09:30 ET",
+          "day_high": 138.88,
+          "day_low": 138.88,
+          "day_open": 138.88,
+          "prev_close": 148.03,
+          "current_value": 694.4,
+          "pnl_abs": 339.4,
+          "today_change": -45.75,
           "name": "Rocket Lab Corp",
-          "bid": 110.47,
-          "ask": 110.58,
-          "premarket_volume": "298,740.235202",
           "volume": 5773156,
           "trades": [],
-          "prev_close_date": "2026-05-27"
+          "prev_close_date": "2026-05-28"
         },
         {
           "ticker": "CRCL",
           "shares": 2,
           "cost_basis": 87,
-          "current_price": 108.24,
-          "today_change_pct": 5.456,
-          "pnl_percent": 24.4138,
-          "data_source": "Nasdaq API (stocks) May 28, 2026 21:36 ET",
+          "current_price": 107.4,
+          "today_change_pct": -0.7761,
+          "pnl_percent": 23.4483,
+          "data_source": "Nasdaq API (stocks) May 29, 2026 09:30 ET",
           "note": "2026-02-26/03-02 共买入14股（@88.35+@86.45，均价≈87）；2026-03-04 卖4股@103.21(+64.84)；03-11 卖5股@120(+165)；03-23 卖3股@127(+120)；剩余2股长期持有（看好稳定币+agent支付赛道）",
           "trades": [
             {
@@ -124,19 +119,16 @@
               "note": "按用户记录卖出"
             }
           ],
-          "day_high": 108.24,
-          "day_low": 108.24,
-          "day_open": 108.24,
-          "prev_close": 102.64,
-          "current_value": 216.48,
-          "pnl_abs": 42.48,
-          "today_change": 11.2,
+          "day_high": 107.4,
+          "day_low": 107.4,
+          "day_open": 107.4,
+          "prev_close": 108.24,
+          "current_value": 214.8,
+          "pnl_abs": 40.8,
+          "today_change": -1.68,
           "name": "Circle Internet Group Inc-A",
-          "bid": 108.71,
-          "ask": 109.12,
-          "premarket_volume": "257,338.219173",
           "volume": 8165939,
-          "prev_close_date": "2026-05-27"
+          "prev_close_date": "2026-05-28"
         },
         {
           "ticker": "OKLO",
@@ -164,9 +156,7 @@
               "note": "按用户今晚成交记录清仓"
             }
           ],
-          "volume": 1242827.0,
-          "bid": 79.0,
-          "ask": 79.32
+          "volume": 1242827.0
         },
         {
           "ticker": "QQQ",
@@ -201,9 +191,7 @@
             }
           ],
           "name": "纳斯达克100ETF-Invesco",
-          "volume": 2458212.0,
-          "bid": 696.51,
-          "ask": 696.54
+          "volume": 2458212.0
         },
         {
           "ticker": "TCOM",
@@ -232,9 +220,7 @@
               "note": "按用户今晚成交记录清仓"
             }
           ],
-          "volume": 170074.0,
-          "bid": 54.27,
-          "ask": 54.37
+          "volume": 170074.0
         },
         {
           "ticker": "TQQQ",
@@ -263,9 +249,7 @@
             }
           ],
           "name": "三倍做多纳斯达克100ETF-ProShare",
-          "volume": 6698866.0,
-          "bid": 71.91,
-          "ask": 71.92
+          "volume": 6698866.0
         },
         {
           "ticker": "HOOD",
@@ -294,9 +278,6 @@
               "note": "按用户今晚成交记录清仓"
             }
           ],
-          "bid": 79.02,
-          "ask": 79.04,
-          "premarket_volume": "3,545,264.199405",
           "volume": 1056321.0,
           "prev_close_date": "2026-05-19"
         },
@@ -304,17 +285,17 @@
           "ticker": "PLTU",
           "shares": 14,
           "cost_basis": 40.957142857142856,
-          "current_price": 40.17,
-          "today_change_pct": 16.1654,
-          "pnl_percent": -1.9219,
-          "data_source": "Nasdaq API (etf) May 28, 2026 21:36 ET",
-          "day_high": 40.17,
-          "day_low": 40.17,
-          "day_open": 40.17,
-          "prev_close": 34.58,
-          "current_value": 562.38,
-          "pnl_abs": -11.02,
-          "today_change": 78.26,
+          "current_price": 42.77,
+          "today_change_pct": 6.4725,
+          "pnl_percent": 4.4262,
+          "data_source": "Nasdaq API (etf) May 29, 2026 09:30 ET",
+          "day_high": 42.77,
+          "day_low": 42.77,
+          "day_open": 42.77,
+          "prev_close": 40.17,
+          "current_value": 598.78,
+          "pnl_abs": 25.38,
+          "today_change": 36.4,
           "note": "2026-04-16 按用户截图记录买入，做 PLTR 2x 杠杆短线仓",
           "trades": [
             {
@@ -333,11 +314,8 @@
             }
           ],
           "name": "二倍做多PLTR ETF-Direxion",
-          "bid": 35.15,
-          "ask": 35.17,
-          "premarket_volume": "108,608.249988",
           "volume": 786207,
-          "prev_close_date": "2026-05-27"
+          "prev_close_date": "2026-05-28"
         },
         {
           "ticker": "SOXL",
@@ -389,9 +367,6 @@
             }
           ],
           "name": "三倍做多半导体ETF-Direxion",
-          "bid": 185.25,
-          "ask": 185.38,
-          "premarket_volume": "5,221,572.506142",
           "volume": 10791457,
           "prev_close_date": "2026-05-26"
         },
@@ -437,9 +412,6 @@
             }
           ],
           "name": "Defiance Daily Target 2X Long R",
-          "bid": 64.85,
-          "ask": 64.97,
-          "premarket_volume": "113,820",
           "volume": 1280305,
           "prev_close_date": "2026-05-19"
         },
@@ -448,15 +420,15 @@
           "shares": 40,
           "cost_basis": 23.582500000000003,
           "current_price": 23.13,
-          "today_change_pct": 22.5106,
-          "data_source": "Nasdaq API (etf) May 28, 2026 21:36 ET",
+          "today_change_pct": 0.0,
+          "data_source": "Nasdaq API (etf) May 29, 2026 09:30 ET",
           "day_high": 23.13,
           "day_low": 23.13,
           "day_open": 23.13,
-          "prev_close": 18.88,
+          "prev_close": 23.13,
           "current_value": 925.2,
           "pnl_abs": -18.1,
-          "today_change": 170.0,
+          "today_change": 0.0,
           "name": "二倍做多HOOD ETF-T-Rex",
           "trades": [
             {
@@ -482,23 +454,20 @@
             }
           ],
           "pnl_percent": -1.9188,
-          "bid": 18.75,
-          "ask": 18.82,
-          "premarket_volume": "680,373",
           "volume": 239400,
-          "prev_close_date": "2026-05-27"
+          "prev_close_date": "2026-05-28"
         },
         {
           "ticker": "MSFU",
           "name": "二倍做多微软ETF-Direxion",
           "shares": 20,
           "cost_basis": 29.130000000000003,
-          "current_price": 29.92,
-          "current_value": 598.4,
-          "pnl_abs": 15.8,
-          "pnl_percent": 2.712,
-          "today_change": 38.2,
-          "today_change_pct": 6.819,
+          "current_price": 30.85,
+          "current_value": 617.0,
+          "pnl_abs": 34.4,
+          "pnl_percent": 5.9046,
+          "today_change": 18.6,
+          "today_change_pct": 3.1083,
           "trades": [
             {
               "date": "2026-04-24",
@@ -509,26 +478,82 @@
             }
           ],
           "note": "2026-04-24 按用户截图记录买入，微软 2x 杠杆 ETF，财报前修复短线仓",
-          "prev_close": 28.01,
-          "day_high": 29.92,
-          "day_low": 29.92,
-          "day_open": 29.92,
-          "data_source": "Nasdaq API (etf) May 28, 2026 21:36 ET",
-          "bid": 27.76,
-          "ask": 27.77,
-          "premarket_volume": "378,509.610000",
+          "prev_close": 29.92,
+          "day_high": 30.85,
+          "day_low": 30.85,
+          "day_open": 30.85,
+          "data_source": "Nasdaq API (etf) May 29, 2026 09:30 ET",
           "volume": 1331449,
-          "prev_close_date": "2026-05-27"
+          "prev_close_date": "2026-05-28"
         }
       ],
       "total_cost": 2628.3,
-      "total_current_value": 3042.61,
-      "total_pnl": 414.31,
-      "total_pnl_percent": 15.7634,
-      "today_total_change": 286.66,
+      "total_current_value": 3050.18,
+      "total_pnl": 421.88,
+      "total_pnl_percent": 16.0514,
+      "today_total_change": 7.57,
       "realized_pnl": 1372.88,
       "realized_note": "NVDA 3股@197.5(+29.19) + CRCL 4股@103.21(+64.84) + CRCL 5股@120(+165) + CRCL 3股@127(+120) + NVDA 3股@199.41(+34.92) + QQQ 1股@631.3(+9.03) + TQQQ 8股@54.45(+69.76) + HOOD 5股@88.36(+74.3) + OKLO 2股@68(+10.34) + TCOM 5股@53.86(+5.6) + SOXL 5股@112(+100.65) + RKLX 4股@75(+113.2) + RKLX 2股@91.03(+88.66) + SOXL 3股@170.8(+236.79) + SOXL 2股@217.17(+250.6)",
       "last_updated": "May 8, 2026 16:00 ET close",
+      "last_close_attempted": "May 7, 2026 16:00 ET close",
+      "last_open_attempted": "2026-05-29 09:30 UTC-04:00",
+      "indices_snapshot": {
+        "SPX": {
+          "name": "S&P 500",
+          "price": 7563.63,
+          "prev_close": 7563.63,
+          "change_pct": 0,
+          "source": "Tencent usINX index @ 2026-05-29 09:30 ET"
+        },
+        "NDX": {
+          "name": "Nasdaq 100",
+          "price": 30223.89,
+          "prev_close": 30223.89,
+          "change_pct": 0,
+          "source": "Tencent usNDX index @ 2026-05-29 09:30 ET"
+        },
+        "DJI": {
+          "name": "Dow Jones",
+          "price": 50668.97,
+          "prev_close": 50668.97,
+          "change_pct": 0,
+          "source": "Tencent usDJI index @ 2026-05-29 09:30 ET"
+        }
+      },
+      "last_trade_update": "2026-05-06 22:57 HKT",
+      "last_afterhours_attempted": "2026-05-28 16:03 UTC-04:00",
+      "last_closed_attempted": "2026-05-28 21:36 UTC-04:00",
+      "last_premarket_attempted": "2026-05-29 07:11 UTC-04:00",
+      "premarket_fetch_status": {
+        "attempted_all_holdings": [
+          "RKLB",
+          "CRCL",
+          "PLTU",
+          "ROBN",
+          "MSFU"
+        ],
+        "active_holdings": [
+          "RKLB",
+          "CRCL",
+          "PLTU",
+          "ROBN",
+          "MSFU"
+        ],
+        "updated": [
+          "RKLB",
+          "CRCL",
+          "PLTU",
+          "ROBN",
+          "MSFU"
+        ],
+        "missing_after_fallback": [],
+        "source_counts": {
+          "Nasdaq API (stocks)": 2,
+          "Nasdaq API (etf)": 3
+        },
+        "updated_at": "2026-05-29 07:11 UTC-04:00",
+        "note": "Multi-provider fetch. Sources: 2x Nasdaq API (stocks), 3x Nasdaq API (etf)"
+      },
       "open_fetch_status": {
         "attempted_all_holdings": [
           "RKLB",
@@ -556,213 +581,9 @@
           "Nasdaq API (stocks)": 2,
           "Nasdaq API (etf)": 3
         },
-        "updated_at": "2026-05-28 14:31 UTC-04:00",
+        "updated_at": "2026-05-29 09:30 UTC-04:00",
         "note": "Multi-provider fetch. Sources: 2x Nasdaq API (stocks), 3x Nasdaq API (etf)"
-      },
-      "close_fetch_status": {
-        "attempted_all_holdings": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "SOXL",
-          "RKLX",
-          "ROBN",
-          "MSFU"
-        ],
-        "active_holdings": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "SOXL",
-          "RKLX",
-          "ROBN",
-          "MSFU"
-        ],
-        "source_counts": {
-          "finnhub": 7
-        },
-        "updated": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "SOXL",
-          "RKLX",
-          "ROBN",
-          "MSFU"
-        ],
-        "missing_after_fallback": [],
-        "updated_at": "May 8, 2026 16:00 ET",
-        "indices_snapshot": {
-          "NDX": {
-            "name": "Nasdaq 100",
-            "price": 25806.2,
-            "change_pct": -0.1
-          },
-          "SPX": {
-            "name": "S&P 500",
-            "price": 7337.11,
-            "change_pct": -0.4
-          }
-        }
-      },
-      "last_close_attempted": "May 7, 2026 16:00 ET close",
-      "last_open_attempted": "2026-05-28 14:31 UTC-04:00",
-      "indices_snapshot": {
-        "SPX": {
-          "name": "S&P 500",
-          "price": 754.6,
-          "prev_close": 754.6,
-          "change_pct": 0.55,
-          "source": "Nasdaq API SPY ETF @ 2026-05-28 21:36 ET"
-        },
-        "NDX": {
-          "name": "Nasdaq 100",
-          "price": 735.6,
-          "prev_close": 735.6,
-          "change_pct": 0.84,
-          "source": "Nasdaq API QQQ ETF @ 2026-05-28 21:36 ET"
-        },
-        "DJI": {
-          "name": "Dow Jones",
-          "price": 507.05,
-          "prev_close": 507.05,
-          "change_pct": 0.03,
-          "source": "Nasdaq API DIA ETF @ 2026-05-28 21:36 ET"
-        }
-      },
-      "live_fetch_status": {
-        "attempted_all_holdings": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "SOXL",
-          "RKLX",
-          "ROBN",
-          "MSFU"
-        ],
-        "active_holdings": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "SOXL",
-          "RKLX",
-          "ROBN",
-          "MSFU"
-        ],
-        "updated": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "SOXL",
-          "RKLX",
-          "ROBN",
-          "MSFU"
-        ],
-        "missing_after_fallback": [],
-        "source_counts": {
-          "nasdaq": 7,
-          "failed": 0
-        },
-        "updated_at": "May 7, 2026 9:51 AM ET",
-        "note": "用户盘中询问美股；按 portfolio.json active holdings 用 Nasdaq API 实时行情更新。"
-      },
-      "premarket_fetch_status": {
-        "attempted_all_holdings": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "SOXL",
-          "ROBN",
-          "MSFU"
-        ],
-        "active_holdings": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "SOXL",
-          "ROBN",
-          "MSFU"
-        ],
-        "updated": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "SOXL",
-          "ROBN",
-          "MSFU"
-        ],
-        "missing_after_fallback": [],
-        "source_counts": {
-          "Nasdaq API (stocks)": 2,
-          "Nasdaq API (etf)": 4
-        },
-        "updated_at": "2026-05-26 08:17 UTC-04:00",
-        "note": "Multi-provider fetch. Sources: 2x Nasdaq API (stocks), 4x Nasdaq API (etf)"
-      },
-      "last_trade_update": "2026-05-06 22:57 HKT",
-      "afterhours_fetch_status": {
-        "attempted_all_holdings": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "ROBN",
-          "MSFU"
-        ],
-        "active_holdings": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "ROBN",
-          "MSFU"
-        ],
-        "updated": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "ROBN",
-          "MSFU"
-        ],
-        "missing_after_fallback": [],
-        "source_counts": {
-          "Nasdaq API (stocks)": 2,
-          "Nasdaq API (etf)": 3
-        },
-        "updated_at": "2026-05-28 16:03 UTC-04:00",
-        "note": "Multi-provider fetch. Sources: 2x Nasdaq API (stocks), 3x Nasdaq API (etf)"
-      },
-      "last_afterhours_attempted": "2026-05-28 16:03 UTC-04:00",
-      "closed_fetch_status": {
-        "attempted_all_holdings": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "ROBN",
-          "MSFU"
-        ],
-        "active_holdings": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "ROBN",
-          "MSFU"
-        ],
-        "updated": [
-          "RKLB",
-          "CRCL",
-          "PLTU",
-          "ROBN",
-          "MSFU"
-        ],
-        "missing_after_fallback": [],
-        "source_counts": {
-          "Nasdaq API (stocks)": 2,
-          "Nasdaq API (etf)": 3
-        },
-        "updated_at": "2026-05-28 21:36 UTC-04:00",
-        "note": "Multi-provider fetch. Sources: 2x Nasdaq API (stocks), 3x Nasdaq API (etf)"
-      },
-      "last_closed_attempted": "2026-05-28 21:36 UTC-04:00",
-      "last_premarket_attempted": "2026-05-26 08:17 UTC-04:00"
+      }
     },
     "hk_stocks": {
       "currency": "HKD",
@@ -773,16 +594,16 @@
           "ticker_finnhub": "0100.HK",
           "shares": 60,
           "cost_basis": 822.83,
-          "current_price": 828.0,
-          "current_value": 49680.0,
-          "pnl_percent": 0.63,
-          "data_source": "Tencent+Eastmoney May 29 16:00 HKT",
-          "today_change": -540.0,
-          "today_change_pct": -1.08,
-          "pnl_abs": 310.2,
-          "day_open": 738.0,
-          "day_high": 744.5,
-          "day_low": 731.0,
+          "current_price": 840.0,
+          "current_value": 50400.0,
+          "pnl_percent": 2.09,
+          "data_source": "Tencent+Eastmoney May 29 19:26 HKT",
+          "today_change": 180.0,
+          "today_change_pct": 0.36,
+          "pnl_abs": 1030.2,
+          "day_open": 859.5,
+          "day_high": 918.0,
+          "day_low": 805.0,
           "prev_close": 837.0,
           "volume": 38060,
           "lot_size": 20,
@@ -824,13 +645,13 @@
           "current_price": 13.71,
           "current_value": 5484.0,
           "pnl_percent": -2.66,
-          "data_source": "Tencent+Eastmoney May 29 16:00 HKT",
+          "data_source": "Tencent+Eastmoney May 29 19:26 HKT",
           "today_change": -136.0,
           "today_change_pct": -2.42,
           "pnl_abs": -149.6,
-          "day_open": 16.98,
-          "day_high": 17.06,
-          "day_low": 16.62,
+          "day_open": 14.19,
+          "day_high": 14.19,
+          "day_low": 13.54,
           "prev_close": 14.05,
           "volume": 889000,
           "trades": [
@@ -854,16 +675,16 @@
           "ticker_finnhub": "3032.HK",
           "shares": 200,
           "cost_basis": 5.405,
-          "current_price": 4.878,
-          "current_value": 975.6,
-          "pnl_percent": -9.75,
-          "data_source": "Tencent+Eastmoney May 29 16:00 HKT",
-          "today_change": 2.4,
-          "today_change_pct": 0.25,
-          "pnl_abs": -105.4,
-          "day_open": 5.09,
-          "day_high": 5.115,
-          "day_low": 5.09,
+          "current_price": 4.874,
+          "current_value": 974.8,
+          "pnl_percent": -9.82,
+          "data_source": "Tencent+Eastmoney May 29 19:26 HKT",
+          "today_change": 1.6,
+          "today_change_pct": 0.16,
+          "pnl_abs": -106.2,
+          "day_open": 4.868,
+          "day_high": 4.96,
+          "day_low": 4.848,
           "prev_close": 4.866,
           "volume": 2690000,
           "turnover": 13722674.0,
@@ -877,10 +698,10 @@
           "ticker_finnhub": "7226.HK",
           "shares": 6200,
           "cost_basis": 4.3632,
-          "current_price": 3.784,
-          "current_value": 23460.8,
-          "pnl_percent": -13.27,
-          "data_source": "Tencent+Eastmoney May 29 16:00 HKT",
+          "current_price": 3.76,
+          "current_value": 23312.0,
+          "pnl_percent": -13.82,
+          "data_source": "Tencent+Eastmoney May 29 19:26 HKT",
           "trades": [
             {
               "date": "2026-03-24",
@@ -890,12 +711,12 @@
               "note": "加仓补摊，摊低成本至4.3632"
             }
           ],
-          "today_change": 24.8,
-          "today_change_pct": 0.11,
-          "pnl_abs": -3591.04,
-          "day_open": 4.176,
-          "day_high": 4.192,
-          "day_low": 4.158,
+          "today_change": -124.0,
+          "today_change_pct": -0.53,
+          "pnl_abs": -3739.84,
+          "day_open": 3.838,
+          "day_high": 3.914,
+          "day_low": 3.742,
           "prev_close": 3.78,
           "volume": 10798200,
           "turnover": 45110333.4,
@@ -909,16 +730,16 @@
           "ticker_finnhub": "3033.HK",
           "shares": 1000,
           "cost_basis": 5.14,
-          "current_price": 4.79,
-          "current_value": 4790.0,
-          "pnl_percent": -6.81,
-          "data_source": "Tencent+Eastmoney May 29 16:00 HKT",
-          "today_change": 8.0,
-          "today_change_pct": 0.17,
-          "pnl_abs": -350.0,
-          "day_open": 5.04,
-          "day_high": 5.04,
-          "day_low": 5.005,
+          "current_price": 4.784,
+          "current_value": 4784.0,
+          "pnl_percent": -6.93,
+          "data_source": "Tencent+Eastmoney May 29 19:26 HKT",
+          "today_change": 2.0,
+          "today_change_pct": 0.04,
+          "pnl_abs": -356.0,
+          "day_open": 4.824,
+          "day_high": 4.872,
+          "day_low": 4.762,
           "prev_close": 4.782,
           "volume": 25157240,
           "turnover": 126176969.0,
@@ -1076,193 +897,35 @@
         }
       ],
       "total_cost": 88276.24,
-      "total_current_value": 84390.4,
-      "total_pnl": -3885.84,
-      "total_pnl_percent": -4.4,
+      "total_current_value": 84954.8,
+      "total_pnl": -3321.44,
+      "total_pnl_percent": -3.76,
       "realized_pnl": 7259.16,
       "realized_note": "07709 100股@33.14(+144.86) + 07709 100股@34.2(+250.86) + 07747 100股@85(+315) + 07709 100股@33.5(+243.38) + 07709 100股@31.76(+226.7) + 07747 100股@83.58(+173) + 07709 100股@31.5(+196.52) + 07709 100股@36(+646.52) + 07709 100股@36.02(+648.52) + 07709 100股@38.7(+916.52) + 07709 400股@36.98(+2978.08) + 02208 200股@16.68(+519.2)",
-      "today_total_change": -640.8,
+      "today_total_change": -76.4,
       "last_updated": "2026/05/12 09:30 HKT",
-      "midday_fetch_status": {
-        "attempted_all_holdings": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "active_holdings": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "updated": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "missing_after_fallback": [],
-        "source": "Tencent qt.gtimg.cn realtime quote",
-        "index_source": "Tencent r_hkHSI + r_hkHSTECH",
-        "errors": [],
-        "note": "按 portfolio.json 动态生成全部港股 holdings；腾讯实时行情午盘快照。",
-        "updated_at": "2026-05-11 11:59 HKT"
-      },
-      "close_fetch_status": {
-        "attempted_all_holdings": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "active_holdings": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "updated": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "missing_after_fallback": [],
-        "source": "Tencent qt.gtimg.cn close quote",
-        "note": "Tencent qt.gtimg.cn close 2026/05/11 16:02 HKT",
-        "updated_at": "2026-05-11 16:02 HKT",
-        "errors": [],
-        "indices_snapshot": {
-          "HSI": {
-            "name": "恒生指数",
-            "price": 26399.64,
-            "prev_close": 26393.71,
-            "chg_pct": 0.02,
-            "source": "Tencent qt.gtimg.cn close 2026/05/11 16:02 HKT"
-          },
-          "HSTECH": {
-            "name": "恒生科技指数",
-            "price": 5109.89,
-            "prev_close": 5102.79,
-            "chg_pct": 0.14,
-            "source": "Tencent qt.gtimg.cn close 2026/05/11 16:02 HKT"
-          }
-        }
-      },
       "last_close_attempted": "2026/05/11 16:00 HKT",
-      "open_fetch_status": {
-        "attempted_all_holdings": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "active_holdings": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "updated": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "missing_after_fallback": [],
-        "source": "Tencent qt.gtimg.cn realtime quote",
-        "index_source": "Tencent r_hkHSI + r_hkHSTECH",
-        "errors": [],
-        "updated_at": "2026-05-12 09:30 HKT"
-      },
       "indices_snapshot": {
         "HSI": {
           "name": "恒生指数",
-          "price": 25199.99,
+          "price": 25182.39,
           "prev_close": 25006.16,
-          "chg_pct": 0.78,
-          "source": "Tencent qt.gtimg.cn 2026/05/29 16:00 HKT"
+          "chg_pct": 0.7,
+          "source": "Tencent qt.gtimg.cn 2026/05/29 19:26 HKT"
         },
         "HSTECH": {
           "name": "恒生科技",
-          "price": 4890.64,
+          "price": 4884.23,
           "prev_close": 4888.58,
-          "chg_pct": 0.04,
-          "source": "Tencent qt.gtimg.cn 2026/05/29 16:00 HKT"
+          "chg_pct": -0.09,
+          "source": "Tencent qt.gtimg.cn 2026/05/29 19:26 HKT"
         }
       },
       "last_midday_attempted": "2026-05-07 12:00:00 HKT",
       "last_open_attempted": "2026-05-11 09:30 HKT",
       "close_report_generated_at": "2026-05-07 16:00 HKT",
       "open_report_generated_at": "2026-05-11 09:30 HKT",
-      "live_fetch_status": {
-        "attempted_all_holdings": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "active_holdings": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "updated": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "missing_after_fallback": [],
-        "errors": [],
-        "source": "Tencent qt.gtimg.cn realtime quote",
-        "updated_at": "2026/05/07 11:38:33 HKT",
-        "note": "用户盘中询问，按 portfolio.json 动态生成全部港股 holdings；腾讯实时行情。"
-      },
-      "midday_report_generated_at": "2026-05-07 12:00 HKT",
-      "afternoon_fetch_status": {
-        "attempted_all_holdings": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "active_holdings": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "updated": [
-          "00100",
-          "02208",
-          "03032",
-          "07226",
-          "03033"
-        ],
-        "missing_after_fallback": [],
-        "source": "Tencent qt.gtimg.cn realtime quote",
-        "index_source": "Tencent r_hkHSI + r_hkHSTECH",
-        "errors": [],
-        "note": "Afternoon snapshot 2026/05/11 13:30 HKT.",
-        "updated_at": "2026-05-11 13:30 HKT"
-      }
+      "midday_report_generated_at": "2026-05-07 12:00 HKT"
     }
   },
   "market_context": {}
