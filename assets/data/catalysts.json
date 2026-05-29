@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-05-19T23:15:51.811115+08:00",
+  "generated_at": "2026-05-30T01:32:39.692845+08:00",
   "lookback_window_days": 14,
-  "window_start": "2026-05-19",
-  "window_end": "2026-06-02",
+  "window_start": "2026-05-30",
+  "window_end": "2026-06-13",
   "earnings_queried": [
     "RKLB",
     "CRCL"
@@ -11,20 +11,20 @@
   "fomc": [],
   "macro_events": [
     {
-      "date": "2026-05-28",
-      "type": "GDP",
-      "detail": "Q1 2026 GDP 2nd estimate"
+      "date": "2026-06-05",
+      "type": "NFP",
+      "detail": "May jobs report (Non-Farm Payrolls); BLS 8:30 ET"
     },
     {
-      "date": "2026-05-29",
-      "type": "PCE",
-      "detail": "Apr PCE price index (BEA, Fed preferred inflation gauge)"
+      "date": "2026-06-11",
+      "type": "CPI",
+      "detail": "May CPI release (BLS 8:30 ET)"
     }
   ],
   "summary": {
     "earnings_count": 0,
     "fomc_in_window": 0,
     "macro_count": 2,
-    "highest_impact_within_7d": null
+    "highest_impact_within_7d": "NFP 2026-06-05"
   }
 }

@@ -360,16 +360,21 @@ def main():
             'error': {'fatal': f'{type(e).__name__}: {e}'},
         }
 
-    if args.json:
-        print(json.dumps(out, ensure_ascii=False, indent=2))
-        return 0
-
+    # Always persist the file — even in --json mode. brief_preflight [11/11] calls
+    # this with --json to capture the data into context, and that call MUST also
+    # refresh assets/data/catalysts.json (build_dashboard embeds it). The old early
+    # return on --json meant nothing in the daily pipeline ever rewrote the file →
+    # the dashboard Catalysts card froze at whenever someone last ran it bare.
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     from safe_io import safe_write_json
     os.makedirs(os.path.dirname(OUT_FILE), exist_ok=True)
     safe_write_json(OUT_FILE, out)
-    print_summary(out)
-    print(f'\nwrote {OUT_FILE} ({os.path.getsize(OUT_FILE):,} bytes)')
+
+    if args.json:
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+    else:
+        print_summary(out)
+        print(f'\nwrote {OUT_FILE} ({os.path.getsize(OUT_FILE):,} bytes)')
     return 0
 
 
