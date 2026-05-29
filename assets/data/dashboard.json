@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T06:03:13.592292Z",
+  "generated_at": "2026-05-29T06:05:00.307646Z",
   "last_updated": "2026/05/29 14:00 HKT",
   "fx": {
     "usdhkd": 7.8346,
@@ -1741,24 +1741,7 @@
       "severity": "medium"
     }
   ],
-  "peer_divergence": [
-    {
-      "ticker": "MSFU",
-      "self_pct_1d": -6.38,
-      "best_peer": "MSFT",
-      "best_peer_name": "微软 (underlying)",
-      "peer_pct_1d": 0.0,
-      "divergence_pp": 6.38
-    },
-    {
-      "ticker": "PLTU",
-      "self_pct_1d": -13.92,
-      "best_peer": "PLTR",
-      "best_peer_name": "Palantir (underlying)",
-      "peer_pct_1d": 0.0,
-      "divergence_pp": 13.92
-    }
-  ],
+  "peer_divergence": [],
   "calibration": {
     "brier_30d": 0.2344,
     "samples": 30,

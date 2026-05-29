@@ -1291,7 +1291,7 @@ layout: null
 
     <div class="card">
       <h3>Track Record <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:500;font-size:11px">(USD-eq · 全期)</span></h3>
-      <p class="chart-hint">三个回报率并排看：<b>当前浮动率</b>只看现持仓账面（贴近"我现在亏多少"直觉）；<b>总回报率</b>用累计投入本金(成本+已实现)做分母 —— 看"盈利垫"还剩多少，是保守口径；<b>净本金回报率</b>用净投入本金(成本−已实现)做分母 —— 把赚到又滚回去的钱从分母剔除，反映你自有现金的真实复利回报（赢家立刻再投会把它顶高，正是复利效应）。</p>
+      <p class="chart-hint">三个回报率并排看：<b>当前浮动率</b>只看现持仓账面（贴近"我现在亏多少"直觉）；<b>总回报率</b>用累计投入本金(成本+已实现)做分母 —— 看"盈利垫"还剩多少，是保守口径；<b>净本金回报率</b>分母优先用<b>真实本金</b>(true_principal＝交易现金流账本反推的峰值净投入，即实际自掏现金；缺时回退 成本−已实现) —— 反映你自有现金的真实复利回报，比"成本−已实现"更诚实（后者会被卖出回笼把分母做小而虚高）。</p>
       <div class="kpi-grid">
         <div class="kpi-cell">
           <div class="lbl">当前浮动率</div>

@@ -532,11 +532,21 @@ def extract_anomalies(brief_ctx, us_h, hk_h):
         return []
 
 
-def extract_peer_divergence(brief_ctx):
-    """List of divergence_signal=true peer scan rows from brief context."""
+def extract_peer_divergence(brief_ctx, us_h=None, hk_h=None):
+    """List of divergence_signal=true peer scan rows from brief context.
+
+    与 extract_anomalies 同源（都读 brief peer_scan 快照），故套同样的实时守卫：
+    peer 报价缺失(0.0) 或快照 self 与 portfolio 实时 today_change 符号相反 → 跳过，
+    避免 5/28 错位价残留泄漏到 dashboard 的背离卡。
+    """
     try:
         if not brief_ctx:
             return []
+        holdings_by_ticker = {}
+        for h in (us_h or []):
+            holdings_by_ticker[str(h.get('ticker') or '').upper()] = h
+        for h in (hk_h or []):
+            holdings_by_ticker[str(h.get('ticker') or '')] = h
         peer_scan = brief_ctx.get('peer_scan') or {}
         if isinstance(peer_scan, dict):
             items = peer_scan.items()
@@ -577,6 +587,14 @@ def extract_peer_divergence(brief_ctx):
                 div_pp = round(float(best_gap), 2) if best_gap is not None else None
             except Exception:
                 div_pp = None
+            # 实时守卫（同 extract_anomalies）：peer 报价缺失(0.0) 或快照陈旧(与实时今日反号) → 跳过
+            if peer_pct_v == 0.0:
+                continue
+            h_live = holdings_by_ticker.get(str(ticker).upper()) or holdings_by_ticker.get(str(ticker))
+            live_today = h_live.get('today_change_pct') if isinstance(h_live, dict) else None
+            if (isinstance(live_today, (int, float)) and isinstance(self_pct_v, (int, float))
+                    and live_today * self_pct_v < 0 and abs(live_today - self_pct_v) >= 4):
+                continue
             out.append({
                 'ticker': str(ticker),
                 'self_pct_1d': self_pct_v,
@@ -1375,7 +1393,7 @@ def main():
     out['delta'] = compute_delta(snapshots)
     out['today_movers'] = compute_today_movers(us_h, hk_h)
     out['anomalies'] = extract_anomalies(brief_ctx, us_h, hk_h)
-    out['peer_divergence'] = extract_peer_divergence(brief_ctx)
+    out['peer_divergence'] = extract_peer_divergence(brief_ctx, us_h, hk_h)
     out['calibration'] = compute_calibration()
     out['calibration_by_trigger'] = compute_calibration_by_trigger()
     out['recent_plan_actions'] = recent_actions_from_csv(limit=20)
