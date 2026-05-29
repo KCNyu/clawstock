@@ -418,6 +418,24 @@ def extract_anomalies(brief_ctx, us_h, hk_h):
                         gap_pp = abs(float(m.group(1)))
             except Exception:
                 gap_pp = None
+            # 数据缺口守卫：underlying 解析为 +0.0% 多半是标的报价没取到，
+            # gap≈|self| 是缺口不是真背离 → 跳过（5/28 错位价残留触发的假背离即此类）。
+            und_missing = False
+            try:
+                if isinstance(sig, str):
+                    import re
+                    mu = re.search(r'underlying\)\s*([+-]?\d+(?:\.\d+)?)\s*%', sig)
+                    if mu and float(mu.group(1)) == 0.0:
+                        und_missing = True
+            except Exception:
+                und_missing = False
+            # 实时守卫：若 portfolio 当前 today_change 与快照 self 符号相反，说明快照陈旧 → 跳过
+            h_live = holdings_by_ticker.get(str(ticker).upper()) or holdings_by_ticker.get(str(ticker))
+            live_today = h_live.get('today_change_pct') if isinstance(h_live, dict) else None
+            stale = (isinstance(live_today, (int, float)) and isinstance(self_pct, (int, float))
+                     and live_today * self_pct < 0 and abs(live_today - self_pct) >= 4)
+            if und_missing or stale:
+                continue
             severity = 'low'
             if gap_pp is not None:
                 if gap_pp >= 8: severity = 'high'
@@ -459,8 +477,14 @@ def extract_anomalies(brief_ctx, us_h, hk_h):
                 continue
             if not isinstance(v, dict):
                 continue
-            self_pnl = v.get('self_pnl_pct')
-            self_today = v.get('self_pct_1d')
+            # 优先用 portfolio 实时 pnl/today，brief peer_scan 快照可能陈旧（5/28 错位价残留会触发假止损）。
+            h_live = holdings_by_ticker.get(tk_str) or holdings_by_ticker.get(str(ticker))
+            if isinstance(h_live, dict) and h_live.get('pnl_percent') is not None:
+                self_pnl = h_live.get('pnl_percent')
+                self_today = h_live.get('today_change_pct')
+            else:
+                self_pnl = v.get('self_pnl_pct')
+                self_today = v.get('self_pct_1d')
             triggered = False
             detail_bits = []
             if isinstance(self_pnl, (int, float)) and self_pnl <= -15:
