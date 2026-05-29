@@ -777,7 +777,12 @@ def load_influencer_feed(issues):
 
 
 def main():
-    today = datetime.now().strftime('%Y-%m-%d')
+    # Date in HKT (the system's canonical TZ), or honor the TODAY env that the
+    # brief-fallback workflow exports — so the context filename here always matches
+    # the date the fallback script reads. Naive now() = runner UTC, which mismatched
+    # HKT in the 16:00–23:59 UTC window and broke off-schedule fallback runs.
+    today = (os.environ.get('TODAY')
+             or datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m-%d'))
     TMP_DIR.mkdir(parents=True, exist_ok=True)
     SNAPSHOT_DIR.mkdir(parents=True, exist_ok=True)
     issues = []
