@@ -33,7 +33,13 @@ import sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-WS = Path('/root/.openclaw/workspace')
+# Resolve workspace root from this file's location, NOT a hardcoded path: this
+# script runs both under openclaw cron (local /root/.openclaw/workspace) AND on
+# GH Action runners (brief-fallback.yml, checkout dir). A hardcoded /root path
+# made preflight write context to a nonexistent path on the runner → the fallback
+# brief then FATAL'd with "no preflight context" (2026-05-30 fix). parents[2] =
+# scripts/harness/<this> → workspace root, correct in both environments.
+WS = Path(__file__).resolve().parents[2]
 TMP_DIR = WS / 'memory' / '.tmp'
 SNAPSHOT_DIR = WS / 'memory' / 'snapshots'
 

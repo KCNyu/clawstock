@@ -25,7 +25,10 @@ import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
 
-WS = Path('/root/.openclaw/workspace')
+# Location-independent root: runs under openclaw cron (local) AND on GH Action
+# brief-fallback.yml (checkout dir). parents[2] = workspace root in both. See
+# brief_preflight.py for the bug this avoids (hardcoded /root broke the runner).
+WS = Path(__file__).resolve().parents[2]
 
 VALID_BUCKETS = {
     'cut', 'trim_on_rebound', 'hold_and_watch', 't_only', 'add_only_on_trigger',

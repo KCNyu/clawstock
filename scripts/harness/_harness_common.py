@@ -3,14 +3,18 @@ _harness_common.py — shared helpers for brief/report/intraday harness scripts.
 
 Extracted to avoid duplicating _git / rebuild_dashboard / push retry logic
 across multiple postflight scripts. All functions accept the workspace root
-as path argument or default to /root/.openclaw/workspace.
+as path argument or default to the resolved workspace root.
 """
 import json
 import subprocess
 import sys
 from pathlib import Path
 
-WS = Path('/root/.openclaw/workspace')
+# Resolve from this file's location so harness helpers work both under openclaw
+# cron (local /root/.openclaw/workspace) and on GH Action runners (checkout dir).
+# parents[2] = scripts/harness/<this> → workspace root. Identical to the old
+# hardcoded /root path locally, but correct on a runner too. (2026-05-30)
+WS = Path(__file__).resolve().parents[2]
 
 # Where rebuild_dashboard records its last outcome so the daily cron health
 # check can surface silent build failures / degradations (kcn doesn't want
