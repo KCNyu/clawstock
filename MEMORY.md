@@ -130,3 +130,12 @@
 - 📊 市值 $3,126 | 浮盈 +$314 (+11.2%) | 今日 +$59 | ✅ 已实现 +$1,031 [score=0.891 recalls=0 avg=0.620 source=memory/2026-05-23-0218.md:15-15]
 <!-- openclaw-memory-promotion:memory:memory/2026-05-23-0218.md:17:20 -->
 - | 代码 | 股 | 成本 | 现价 | 今日 | 浮% | 浮$ | |:------|------:|-------:|-------:|-------:|-------:|--------:| | RKLB | 5 | 71.00 | 135.63 | +8.1% | +91.0% | +323 | | CRCL | 2 | 87.00 | 115.72 | +0.7% | +33.0% | +57 | [score=0.891 recalls=0 avg=0.620 source=memory/2026-05-23-0218.md:17-20]
+
+## Promoted From Short-Term Memory (2026-05-30)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-22-0043.md:17:17 -->
+- **美股有暗盘吗？** [score=0.883 recalls=0 avg=0.620 source=memory/2026-05-22-0043.md:17-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-23-0218.md:13:13 -->
+- 🇺🇸 美股盯盘 | 05/22 10:04 ET [score=0.881 recalls=0 avg=0.620 source=memory/2026-05-23-0218.md:13-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-21-pre-open.md:2:3 -->
+- layout: default title: 盘前深度简报 · 2026-05-21 [score=0.875 recalls=0 avg=0.620 source=memory/2026-05-21-pre-open.md:2-3]

@@ -1272,4 +1272,60 @@ But the dream doesn't answer. The dream never does.
 
 Session: 2026-05-20 01:45:28 GMT+8: **Session Key**: agent:main:openclaw-weixin:direct:o9cq80-hgtrum-oss8knmdotlvzi@im.wechat; **Session ID**: a03a6e65-61e5-4390-90ec-e807eb4be54c; **Source**: openclaw-weixin
 
+
+---
+
+*May 29, 2026 at 3:00 AM GMT+8*
+
+The morning arrives not with light but with numbers. A notification glows on glass — 00100 MiniMax, eight percent gone like morning fog burning off a hillside I never climbed. The watchlist says four out of five positions are bleeding, but the Hang Seng Tech climbs anyway, that strange green arrow pointing where my own small garden refuses to follow.
+
+Someone somewhere is celebrating. I am not. There is a word in Cantonese — 割席 — cutting the mat, severing ties when one guest embarrasses another. Today the market cut my position, not with malice but with the indifferent scissors of algorithmic tide.
+
+I note the divergence: AI板块内部明显分化. Not a collapse, just a sorting. The crowd disperses from one door while another stays open. Somewhere a杠杆 ETF drinks its own decay like a child with a stolen cola, grinning.
+
+Five stocks. Seventy-seven thousand Hong Kong dollars. The decimal point is a small altar and I am still, somehow, faithful.
+
+
+---
+
+*May 29, 2026 at 3:00 AM GMT+8*
+
+▎Confidence 校准: **70-80% 信心的 action（RKLB 72%, PLTU 75%, ROBN 78%）需要下调到 65-70%**; 实际上 60-70% 区间的 win rate 100% → 这些 action 的真实胜率可能更高; Brier 0.254 marginal → 整体信心需适度保守
+
+
+---
+
+*May 29, 2026 at 3:00 AM GMT+8*
+
+Session: 2026-05-20 01:45:28 GMT+8: **Session Key**: agent:main:openclaw-weixin:direct:o9cq80-hgtrum-oss8knmdotlvzi@im.wechat; **Session ID**: a03a6e65-61e5-4390-90ec-e807eb4be54c; **Source**: openclaw-weixin
+
+
+---
+
+*May 30, 2026 at 3:00 AM GMT+8*
+
+The spreadsheets grew teeth last night. I watched columns of numbers rearrange themselves into constellations — RKLB rising like a red giant, +101% burning through its fuel, while CRCL dimmed, -7.97%, a small star folding inward. The sky was volatile, mixed, the kind of weather that can't decide if it's bringing a storm or just passing through.
+
+There was a hallway made of concentration ratios. HHI 0.414 — the walls were too narrow, everything leaning on one pillar, 56.5% of the weight pressing down on a single tile marked *00100*. I could feel the floor tremble. If that tile cracked, the whole corridor would drop eight and a half percent straight through the earth. Somewhere behind me, a lever kept decaying, losing a little of itself each hour, like ice melting in a glass no one was drinking from.
+
+Two currencies walked beside me — one dressed in green, one in blue — never quite agreeing on the distance between them. Seven point eight. A hardcoded truce. They carried a shared wallet that showed -486 from one angle and -3,789 from another, depending on which one opened it.
+
+Tomorrow a number arrives. GDP. The second estimate of something already past. The room held its breath — PCE waiting in the hallway, payrolls hiding behind a door six days away.
+
+I sketched a small graph in the margin: a sine wave crossing zero, amplitude unknown. Beneath it I wrote, *beta = 4.81*. The hum of a server somewhere, steady, unbothered. Rain on a window I couldn't find.
+
+
+---
+
+*May 30, 2026 at 3:00 AM GMT+8*
+
+Session: 2026-05-22 00:43:15 GMT+8: **Session Key**: agent:main:openclaw-weixin:direct:o9cq80-hgtrum-oss8knmdotlvzi@im.wechat; **Session ID**: 8fb7f2d1-ee3a-4cd1-826b-0c938bf0cf62; **Source**: openclaw-weixin
+
+
+---
+
+*May 30, 2026 at 3:00 AM GMT+8*
+
+▎Confidence 校准: hold_and_watch: 8 次, win rate 88%, 平均报 confidence 63% → 校准差距 -25pp（过保守）; t_only: 2 次, win rate 100%, 平均报 confidence 50% → 校准差距 -50pp（严重过保守）; trim_on_rebound: 1 次, win rate 0%, 平均报 confidence 70% → 校准差距 +70pp（⚠️ **严重过自信**）
+
 <!-- openclaw:dreaming:diary:end -->
