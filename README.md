@@ -7,6 +7,7 @@
 [![Pages](https://img.shields.io/github/deployments/KCNyu/clawock/github-pages?label=pages&logo=github&color=4fa8ff)](https://kcnyu.github.io/clawock/)
 [![Harness Regression](https://img.shields.io/github/actions/workflow/status/KCNyu/clawock/harness-regression.yml?label=harness&logo=githubactions&color=26a69a)](https://github.com/KCNyu/clawock/actions/workflows/harness-regression.yml)
 [![Health Check](https://img.shields.io/github/actions/workflow/status/KCNyu/clawock/weekly-health.yml?label=weekly%20health&logo=githubactions&color=26a69a)](https://github.com/KCNyu/clawock/actions/workflows/weekly-health.yml)
+[![Cron Health](https://img.shields.io/github/actions/workflow/status/KCNyu/clawock/cron-health.yml?label=cron%20health&logo=githubactions&color=26a69a)](https://github.com/KCNyu/clawock/actions/workflows/cron-health.yml)
 [![Sentiment](https://img.shields.io/github/actions/workflow/status/KCNyu/clawock/sentiment-scan.yml?label=sentiment&logo=reddit&color=f59e0b)](https://github.com/KCNyu/clawock/actions/workflows/sentiment-scan.yml)
 [![License: Personal](https://img.shields.io/badge/license-personal--use-orange?color=ef5350)](#license)
 
@@ -29,11 +30,10 @@
 A real personal investment workspace.
 
 Every weekday, a cron daemon ([openclaw](https://openclaw.com)) wakes up, picks the best available LLM from
-a fallback chain (MiniMax → Xiaomi MiMo → GLM → DeepSeek → Claude → GPT), and lets that model — playing the
-persona `Rick` — analyse the HK + US legs of a real portfolio. The model ships briefings to WeChat and
-refreshes a public dashboard.
+a fallback chain, and lets that model — playing the persona `Rick` — analyse the HK + US legs of a real
+portfolio. The model ships briefings to WeChat and refreshes a public dashboard.
 
-Two things make it different from a generic "AI trader" demo:
+Three things make it different from a generic "AI trader" demo:
 
 1. **Harness pattern** — every cron job is split `preflight (Python) → LLM (synthesis) → postflight (validate + commit)`.
    Deterministic work like price refresh, FX conversion, HHI computation, signal counting runs 100% in Python.
@@ -41,6 +41,8 @@ Two things make it different from a generic "AI trader" demo:
    omitting a >3% mover — all caught and the report is flagged.
 2. **Self-learning loop** — every brief commits a structured `plan.json`. Next day's preflight reads it back,
    computes which triggers fired, simulates the P&L, and feeds confidence calibration to the LLM.
+3. **Defence in depth** — four independent layers (cron → GH Action backstop → system-crontab watchdogs →
+   health sentinels) mean a single LLM stall, a missed cron, or a flaky data source never silently drops a report.
 
 ---
 
@@ -53,38 +55,90 @@ Two things make it different from a generic "AI trader" demo:
 **Deterministic work** (prices · FX · HHI · signals) runs 100 % in Python so the LLM can't skip it.
 The LLM owns only the **synthesis**. Postflight catches missing snapshots, omitted movers, banned phrases.
 
-**LLM fallback** uses the OpenAI completions protocol across all providers. Xiaomi MiMo runs with
-`thinking: disabled` to avoid the `reasoning_content` multi-turn quirk; everyone else is vanilla.
+### LLM fallback chain
 
-**No conflict surface** between cron and CI: openclaw writes `dashboard.json` and `memory/`;
-GitHub Actions write `sentiment.json` and `eod-history.csv` — disjoint sets.
+```
+primary    xiaomi/mimo-v2.5-pro          (Anthropic-messages protocol · thinking: high · 1M ctx)
+fallbacks  → minimax/MiniMax-M2.7        (openai-completions · 200k ctx · thinking: medium)
+           → glm/glm-5.1
+           → deepseek/deepseek-v4-pro
+           → openai/gpt-5.5
+           → anthropic/claude-sonnet-4-6
+           → anthropic/claude-haiku-4-5
+           → openai-proxy/gpt-5.5
+```
+
+Protocols are **mixed**: Xiaomi MiMo and the Claude models speak `anthropic-messages` (thinking is an
+independent block); MiniMax / GLM / DeepSeek / OpenAI speak `openai-completions`. A third-party reasoning
+model **must** be registered with `"reasoning": true` or its thinking silently locks off. GH Actions that
+call an LLM directly (brief fallback, news digest, influence radar, weekly review) bypass the gateway and
+hit Xiaomi → MiniMax through `scripts/data/xiaomi_llm.py`.
+
+### Write reconciliation (the one hard part)
+
+Four independent writers push to `master`: the openclaw cron daemon, 11 GitHub Actions, system-crontab
+backstops, and ad-hoc sessions. They overlap on `assets/data/` — `dashboard.json` especially. Keeping that
+consistent without a central lock is the only genuinely tricky bit:
+
+- **GH Actions serialize among themselves** via `concurrency: group: data-write`.
+- **Each data-producing GH Action rebuilds `dashboard.json`** when its sub-file actually changes, so the
+  *published* dashboard never lags its own `macro` / `sentiment` / `influencer_feed` blocks (matters most on
+  weekends, when there is no intraday rebuild).
+- **The local harness pulls the other direction**: `sync_gha_data_files()` does `fetch + checkout origin/master -- <file>`
+  for the GH-written files *before* `build_dashboard.py`, so a local rebuild embeds the freshest remote data
+  without touching the rest of the working tree.
+- **Every committer pushes through `safe_push.sh`** — rebase-retry, abort (don't loop) on a real conflict.
+  System-crontab jobs use `rebase.autoStash` so a dirty host working tree doesn't block the rebase.
+
+The residual risk is two writers racing on `dashboard.json` between rebuild and push; it self-heals on the
+next rebuild and is never authoritative for portfolio numbers (those live in `portfolio.json`).
 
 ---
 
-## ⚙ Cron map (10 jobs · openclaw scheduler)
+## ⚙ Cron map
 
-| Time | Job | Mode | Harness |
+### openclaw scheduler — 11 jobs (`Asia/Shanghai` tz, = HKT)
+
+| Time (HKT) | Job | Mode | Harness |
 |---|---|---|---|
-| **03:00** daily | Memory dreaming promotion | _system_ | — |
-| **08:00 HKT** weekday | 📊 Daily deep brief | `daily-deep-brief` (Tier 1/2/3 + Judge) | `brief_preflight` / `brief_postflight` |
-| **09:30 HKT** weekday | HK open report | Mode 6 | `report_preflight --market hk --phase open` |
-| **10:00–11:30 + 14:00–15:30 HKT** every 30 min | HK intraday monitor | Mode 7 | `intraday_preflight --market hk` |
-| **12:00 HKT** weekday | HK mid-day | Mode 6 | `--market hk --phase mid` |
-| **13:30 HKT** weekday | HK afternoon | Mode 6 | `--market hk --phase pm` |
-| **16:00 HKT** weekday | HK close | Mode 6 | `--market hk --phase close` |
-| **09:30 ET** weekday | US open | Mode 6 | `--market us --phase open` |
-| **10:00–15:30 ET** every 30 min | US intraday monitor | Mode 7 | `intraday_preflight --market us` |
-| **16:00 ET** weekday | US close | Mode 6 | `--market us --phase close` |
+| **03:00** daily | Memory dreaming promotion | _core, no LLM_ | committed by `commit_dreaming.sh` at 03:20 |
+| **08:00** weekday | 📊 Daily deep brief | `daily-deep-brief` (Tier 1/2/3 + Judge) | `brief_preflight` / `brief_postflight` |
+| **09:30** weekday | HK open report | Mode 6 | `report_* --market hk --phase open` |
+| **10:00–11:30 + 14:00–15:30** /30 min | HK intraday monitor | Mode 7 | `intraday_* --market hk` |
+| **12:00** weekday | HK mid-day | Mode 6 | `--market hk --phase mid` |
+| **13:30** weekday | HK afternoon | Mode 6 | `--market hk --phase pm` |
+| **16:00** weekday | HK close | Mode 6 | `--market hk --phase close` |
+| **21:30** weekday | US open (≈09:30 ET) | Mode 6 | `--market us --phase open` |
+| **22:00–23:30** /30 min | US intraday (early session) | Mode 7 | `intraday_* --market us` |
+| **00:00–02:30** Tue–Sat | US intraday (overnight) | Mode 7 | `intraday_* --market us` |
+| **04:00** Tue–Sat | US close (≈16:00 ET) | Mode 6 | `--market us --phase close` |
 
-Plus 4 GitHub Actions for backstop / extras:
+### Resilience layer — system crontab (LLM-free backstops on the host)
 
-| Workflow | When | Writes |
+| Time (HKT) | Backstop | What it guards |
 |---|---|---|
-| `harness-regression.yml` | push | (read-only schema check) |
-| `weekly-health.yml` | Sundays 23:00 UTC | (read-only deeper check) |
-| `eod-archive.yml` | Fridays 22:00 UTC | `memory/archive/eod-history.csv` |
-| `sentiment-scan.yml` | weekdays 23:30 UTC | `assets/data/sentiment.json` |
-| `screenshot-refresh.yml` | Sundays 22:00 UTC | `docs/dashboard-{preview,mobile}.png` |
+| 09:45 / 12:12 / 16:15 / 13:42 weekday · 04:20 / 21:45 | `report_watchdog.py` ×6 | If a report cron's LLM stalls/fails, push the deterministic `raw_wechat_block` straight to WeChat |
+| **03:20** daily | `commit_dreaming.sh` | Commit + push the dreaming promotion the core appends to `MEMORY.md` / `DREAMS.md` but never commits |
+| **03:30** daily | `gc_sessions.py` | Prune stale trajectory / bak / expired handoff (~9 GB/yr otherwise) |
+
+### GitHub Actions — 11 workflows
+
+| Workflow | When (HKT) | Writes / does |
+|---|---|---|
+| `brief-fallback.yml` | 08:25 weekday | Regenerate the daily brief via Xiaomi **if** openclaw didn't produce one |
+| `sentiment-scan.yml` | 07:30 weekday | `sentiment.json` (Reddit + Google News) → rebuilds `dashboard.json` |
+| `macro-scan.yml` | 07:45 weekday | `macro.json` (VIX / 10Y / DXY / Fear&Greed) → rebuilds `dashboard.json` |
+| `influencer-scan.yml` | 07:40 + 20:50 weekday | `influencer_feed.json` (Trump Truth Social + Musk proxy, LLM-filtered) → rebuilds `dashboard.json` |
+| `news-digest.yml` | 21:00 weekday | `us_news_digest.json` (Xiaomi-distilled, GNews fallback) |
+| `eod-archive.yml` | Sat 06:00 | `memory/archive/eod-history.csv` — append-only audit trail |
+| `cron-health.yml` | 17:00 weekday | Read-only: expected cron count vs actual commits → red badge + email on drift |
+| `weekly-health.yml` | Mon 07:00 | Read-only deep check: scripts compile, schemas, dead cron paths, dead data sources |
+| `weekly-review.yml` | Sun 22:00 | Weekly portfolio review via Xiaomi → WeChat |
+| `screenshot-refresh.yml` | Mon 06:00 | `docs/dashboard-{preview,mobile}.png` so the README preview never drifts >7 days |
+| `harness-regression.yml` | on push / PR | Read-only schema + compile gate |
+
+> GH Actions scheduled crons routinely fire **1–2 h late** — no job relies on tight inter-job ordering;
+> the brief fallback, for instance, waits 25 min past the openclaw brief before assuming it's missing.
 
 ---
 
@@ -98,26 +152,30 @@ clawock/
 │     ├─ dashboard.json        v2.x schema (CSS/JS inlined in index.html since v2)
 │     ├─ risk.json             β/Vol/DD/Sharpe (portfolio_risk_metrics.py)
 │     ├─ catalysts.json        14d earnings + FOMC + macro (fetch_catalysts.py)
-│     ├─ us_news_digest.json   xiaomi LLM 提炼 (GH Action news-digest.yml)
+│     ├─ us_news_digest.json   xiaomi LLM 提炼 (news-digest.yml)
 │     ├─ macro.json            VIX / DXY / Fed RSS (macro-scan.yml)
-│     ├─ sentiment.json        Reddit mention (sentiment-scan.yml)
+│     ├─ sentiment.json        Reddit + Google News (sentiment-scan.yml)
+│     ├─ influencer_feed.json  Trump / Musk market-movers, LLM-filtered (influencer-scan.yml)
 │     └─ fx.json               USDHKD (fetch_fx.py, 4h cache)
 │
 ├─ portfolio.json                            ← single source of truth (atomic writes)
+├─ MEMORY.md  DREAMS.md                       ← iron rules + dreaming promotion (auto-committed 03:20)
 ├─ memory/
-│  ├─ {YYYY-MM-DD}.md           handwritten notes
+│  ├─ {YYYY-MM-DD}.md           session / handwritten notes
 │  ├─ {YYYY-MM-DD}-pre-open.md  daily deep brief output
 │  ├─ {YYYY-MM-DD}-plan.json    structured plan (next-day retrospective input)
 │  ├─ snapshots/{date}.json     daily portfolio snapshot
 │  └─ archive/eod-history.csv   weekly EOD archive (GH Action)
 │
 ├─ scripts/
-│  ├─ data/                     fetchers + dashboard builder (v2.x schema: delta · today_movers · anomalies · calibration · drawdown · sector_exposure · leveraged_etf · all_time_extremes · today_ranges · realized_vs_unrealized · risk · catalysts + peer_divergence) + portfolio_risk_metrics.py + mark_followed.py + fetch_catalysts.py + xiaomi_llm.py + gh_action_* (GH Action Xiaomi-direct entry points) + safe_io (atomic writes)
-│  ├─ harness/                  preflight + postflight pairs (6 files, 4 pairs)
+│  ├─ data/                     fetchers + build_dashboard.py + portfolio_risk_metrics.py +
+│  │                            fetch_{macro,sentiment,catalysts,fx,influencer_feed}.py +
+│  │                            xiaomi_llm.py + gh_action_* (GH Action LLM entry points) +
+│  │                            safe_push.sh + commit_dreaming.sh + gc_sessions.py + safe_io (atomic)
+│  ├─ harness/                  preflight + postflight pairs (4 pairs) + report_watchdog.py + _harness_common
 │  └─ legacy/                   superseded scripts kept as reference
 │
 ├─ skills/{name}/SKILL.md       Claude Code skill bodies
-│
 └─ _layouts/default.html        Jekyll layout · all md pages render in dashboard's dark theme
 ```
 
@@ -181,6 +239,11 @@ For each leg separately:
 Preflight skips SEC EDGAR for tickers whose name contains `倍 / Direxion / T-Rex / Defiance / ProShares / 2X Long / 3X Long / Daily Target`.
 For leveraged ETFs, fundamentals are noise — look at the underlying instead.
 
+### 💵 Return basis — peak net principal
+
+Return % uses `true_principal` = the **peak net deposit** from the cash-flow ledger, not `cost − realized`.
+A realized win shrinks `cost − realized` and inflates the apparent return; the ledger basis doesn't move.
+
 ---
 
 ## 🤖 Self-learning loop
@@ -223,7 +286,8 @@ Design heavily inspired by [TauricResearch/TradingAgents v0.2.4](https://github.
 [Claude Code](https://claude.com/claude-code) · [openclaw](https://openclaw.com) ·
 [ECharts 5.5](https://echarts.apache.org/) · Jekyll + GitHub Pages · Python 3.11 · pure static frontend
 
-**Public data sources** Tencent · stooq · yfinance · Frankfurter · SEC EDGAR · Finnhub · Nasdaq API · Eastmoney · Polygon · Alpha Vantage · Reddit JSON
+**Public data sources** Tencent · stooq · yfinance · Frankfurter · SEC EDGAR · Finnhub · Nasdaq API ·
+Eastmoney · Polygon · Alpha Vantage · Reddit JSON · Google News RSS · Trump Truth Social feed
 
 ---
 
