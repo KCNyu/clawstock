@@ -332,17 +332,18 @@ context.json 关键字段：
 ```
 ▎社交舆情速读
 
-| 票 | Reddit 7d | 新闻关键词 | 信号判断 |
-|---|---|---|---|
-| RKLB | 0 mentions | "$90M Space Force deal" "52-week high" | 利好催化已在价 — 观望或减一档 |
-| CRCL | 0 mentions | "crypto cool" "Q1 miss" "insider sell" | ⚠️ 多个利空叠加 — 严守止损 |
-| SOXL | 12 mentions ↑ | "TSMC capex beat" | 散户温度上升 — 杠杆顺势可持 |
+| 票 | Reddit 7d | 新闻关键词 | 近5日 | 信号判断 |
+|---|---|---|---|---|
+| RKLB | 0 mentions | "$90M Space Force deal" "52-week high" | +12% | 利好已在价(已涨12%)— 追高无 edge,观望 [confirming] |
+| CRCL | 0 mentions | "crypto cool" "Q1 miss" "insider sell" | -3% | ⚠️ 利空硬催化(Q1 miss)+ 尚未反应 — 严守止损 [disconfirming] |
+| SOXL | 12 mentions ↑ | "TSMC capex beat" | +4% | 散户温度上升(软情绪)— 维持 hold,不据此加仓 [confirming] |
 
 异常关注（必带）:
 - {ticker}: Reddit mention 突然飙升或新闻里出现 "miss / SEC / probe / fraud / lawsuit / downgrade" 关键词
 ```
 
 规则：
+- **近5日列**取自 `context.sentiment.tickers[].recent_move`(`px_pct` over `n_sessions`,可能为 null=无快照)。**price-in 判断必做**:利好 + 该票近5日已大涨 → 多半"已在价",追/不减都行但别当新理由出手;利好 + 近5日没动 → 才有"未反应"的可操作空间;利空 + 已大跌 = 部分消化,利空 + 没跌 = 风险未释放要警惕
 - 新闻关键词只抽 2-3 个动词/名词短语，不要复制全标题
 - 信号判断必须连到**你今天对这个票的 action bucket**（一致 / 矛盾要点出来）
 - **每条信号判断结尾标 `[confirming]` 或 `[disconfirming]`**（见"消息面证伪不证实"铁律）：confirming 利好**不得**驱动 cut/trim/add；只有 disconfirming 的硬催化能驱动减仓

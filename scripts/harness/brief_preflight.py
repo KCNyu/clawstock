@@ -838,6 +838,41 @@ def compute_self_calibration():
     }
 
 
+def _recent_price_moves(tickers, lookback_sessions=5):
+    """Per-ticker price move over the last N snapshot sessions — fuels the
+    'is this news already priced in?' judgement (2026-05-30). A bull market
+    prices good news fast: if the stock already ran on a catalyst, acting on
+    that headline is chasing. Returns {ticker: {'px_pct': float, 'n_sessions': int}}.
+    Derived from memory/snapshots/{date}.json (current_price per holding); no fetch."""
+    import glob
+    want = set(tickers)
+    if not want:
+        return {}
+    files = sorted(f for f in glob.glob(str(SNAPSHOT_DIR / '*.json')))
+    # keep the most recent (lookback+1) snapshots so a 5-session move has both ends
+    files = files[-(lookback_sessions + 1):]
+    if len(files) < 2:
+        return {}
+    series = {t: [] for t in want}  # ticker -> [px oldest..newest]
+    for fp in files:
+        try:
+            snap = json.loads(Path(fp).read_text())
+        except Exception:
+            continue
+        for leg in ('us_stocks', 'hk_stocks'):
+            for h in (snap.get('portfolios', {}).get(leg, {}) or {}).get('holdings', []) or []:
+                tk = h.get('ticker')
+                px = h.get('current_price')
+                if tk in want and px not in (None, 0):
+                    series[tk].append(px)
+    out = {}
+    for tk, pxs in series.items():
+        if len(pxs) >= 2 and pxs[0]:
+            out[tk] = {'px_pct': round((pxs[-1] / pxs[0] - 1) * 100, 1),
+                       'n_sessions': len(pxs) - 1}
+    return out
+
+
 def load_macro_and_sentiment(today, issues):
     """Read GH-Action-produced macro.json + sentiment.json; trim to LLM-friendly subset.
 
@@ -904,6 +939,11 @@ def load_macro_and_sentiment(today, issues):
         else:
             age = _age_hours(sent_path)
             s = json.loads(sent_path.read_text())
+            # price-in lens: recent 5-session move per signalled ticker (priced-in check)
+            signalled = [t.get('ticker') for t in s.get('tickers', [])
+                         if t.get('reddit_mentions_7d', 0) or t.get('google_news_en')
+                         or t.get('google_news_zh')]
+            moves = _recent_price_moves(signalled)
             tickers_out = []
             for t in s.get('tickers', []):
                 reddit_n  = t.get('reddit_mentions_7d', 0)
@@ -921,6 +961,7 @@ def load_macro_and_sentiment(today, issues):
                                     'comments': p.get('num_comments')}
                                    for p in (t.get('reddit_posts') or [])[:3]],
                     'news_top':   [n.get('title') for n in (gn_en + gn_zh)[:3] if n.get('title')],
+                    'recent_move': moves.get(t.get('ticker')),  # {px_pct, n_sessions} or None — priced-in check
                 })
             sentiment_trim = {
                 'as_of':       s.get('generated_at'),
