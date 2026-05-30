@@ -1,63 +1,63 @@
 {
-  "generated_at": "2026-05-29T01:34:07.169336+00:00",
+  "generated_at": "2026-05-30T01:30:17.641911+00:00",
   "vix": {
     "symbol": "^VIX",
-    "price": 15.74,
-    "prev": 16.29,
-    "change_pct": -3.38,
-    "as_of": 1779999301,
+    "price": 15.32,
+    "prev": 15.74,
+    "change_pct": -2.67,
+    "as_of": 1780085701,
     "source": "yahoo"
   },
   "treasury_10y": {
     "symbol": "^TNX",
-    "price": 4.455,
-    "prev": 4.481,
-    "change_pct": -0.58,
-    "as_of": 1779994793,
+    "price": 4.453,
+    "prev": 4.455,
+    "change_pct": -0.04,
+    "as_of": 1780081195,
     "source": "yahoo",
-    "yield_pct": 4.455
+    "yield_pct": 4.453
   },
   "dxy": {
     "symbol": "DX-Y.NYB",
-    "price": 98.964,
+    "price": 98.942,
     "prev": 99.02,
-    "change_pct": -0.06,
-    "as_of": 1780017845,
+    "change_pct": -0.08,
+    "as_of": 1780088399,
     "source": "yahoo"
   },
   "fear_greed": {
     "score": 60.2,
     "rating": "greed",
-    "prev_close": 60.7,
-    "prev_1_week": 58.1,
-    "as_of": "2026-05-28T23:59:55+00:00"
+    "prev_close": 60.2,
+    "prev_1_week": 59.0,
+    "as_of": "2026-05-29T23:59:54+00:00"
   },
   "hsi": {
     "symbol": "^HSI",
-    "price": 25169.77,
+    "price": 25182.39,
     "prev": 25006.16,
-    "change_pct": 0.65,
+    "change_pct": 0.7,
     "source": "stooq"
   },
   "hstech": {
     "symbol": "^HSTECH",
-    "price": 4943.74,
+    "price": 4884.23,
     "prev": 4888.58,
-    "change_pct": 1.13,
+    "change_pct": -0.09,
     "source": "tencent"
   },
   "spx": {
     "symbol": "^GSPC",
-    "price": 7563.6,
-    "prev": 7519.8,
-    "change_pct": 0.58,
+    "price": 7580.1,
+    "prev": 7579.3,
+    "change_pct": 0.01,
     "source": "stooq"
   },
   "nasdaq": {
     "symbol": "^IXIC",
-    "price": 30223.89,
-    "prev": 30030.63,
-    "change_pct": 0.64,
+    "price": 30333.18,
+    "prev": 30333.86,
+    "change_pct": -0.0,
     "source": "stooq"
   },
   "fed_press": [
@@ -70,16 +70,6 @@
       "date": "2026-05-26",
       "title": "Minutes of the Board's discount rate meeting on April 20 and 29, 2026",
       "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260526a.htm"
-    },
-    {
-      "date": "2026-05-22",
-      "title": "Kevin Warsh takes oath of office as chairman and a member of the Board of Governors of the Federal Reserve System, and the Federal Open Market Committee unanimously selects Warsh as its chairman",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20260522a.htm"
-    },
-    {
-      "date": "2026-05-22",
-      "title": "Agencies publish resolution plan feedback letters for certain domestic and foreign banking organizations",
-      "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260522a.htm"
     }
   ]
 }
