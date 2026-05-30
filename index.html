@@ -950,6 +950,12 @@ layout: null
   }
   .bucket-row .bar-fill.win { background: var(--green); }
   .bucket-row .bar-fill.followed { background: var(--accent); }
+  /* Win-rate fill — same 45/60 threshold color language as the action badges */
+  .bucket-row .bar-fill.wr-bad { background: var(--red); }
+  .bucket-row .bar-fill.wr-mid { background: var(--amber); }
+  .bucket-row .bar-fill.wr-ok  { background: var(--green); }
+  .bucket-row .bar-fill.lown   { opacity: .5; }
+  .bucket-row .stat .muted { color: var(--text-faint); font-weight: 400; }
   .bucket-row .stat {
     text-align: right;
     font-variant-numeric: tabular-nums;
@@ -1380,6 +1386,7 @@ layout: null
           <div class="sub muted">0 = perfect</div>
         </div>
       </div>
+      <div class="trig-title" style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin:4px 0 10px;font-weight:600">By Bucket — 各类动作 30d 胜率（与建议徽章同源）</div>
       <div id="plan-bucket-bars"></div>
       <div class="trig-block">
         <div class="trig-title">By Trigger Type — 哪类计划最该信 / 最该改</div>
@@ -3482,6 +3489,7 @@ layout: null
     const container = document.getElementById("plan-bucket-bars");
     if (!container) return;
     const buckets = ["cut", "trim_on_rebound", "add_only_on_trigger", "add_on_breakout", "hold_and_watch", "watch", "t_only"];
+    const perBucket = calib.per_bucket || {};
     const byBucket = {};
     buckets.forEach(b => byBucket[b] = { total: 0, followed: 0, win: 0, loss: 0 });
     actions.forEach(a => {
@@ -3494,18 +3502,27 @@ layout: null
     });
 
     const rows = buckets
-      .map(b => ({ name: b, ...byBucket[b] }))
-      .filter(r => r.total > 0)
+      .map(b => ({ name: b, ...byBucket[b], cal: perBucket[b] }))
+      // show a bucket if it had a recent action OR has a 30d calibration sample
+      .filter(r => r.total > 0 || (r.cal && r.cal.n))
       .map(r => {
-        const fPct = r.total ? Math.round((r.followed / r.total) * 100) : 0;
-        const wPct = (r.win + r.loss) ? Math.round((r.win / (r.win + r.loss)) * 100) : null;
+        // Bar width + color = 30d win rate (same source/thresholds as the action badges),
+        // so a long green bar = a bucket that historically pays off. followed stays as text.
+        const wr = r.cal && r.cal.win_rate != null ? Math.round(r.cal.win_rate * 100) : null;
+        const wn = r.cal && r.cal.n ? r.cal.n : 0;
+        const wCls = wr == null ? "" : wr < 45 ? "wr-bad" : wr < 60 ? "wr-mid" : "wr-ok";
+        const lowN = wn && wn < 8 ? " lown" : "";
+        const winTxt = wr == null
+          ? `<span class="muted">无 30d 样本</span>`
+          : `<span class="n">win ${wr}%</span> <span class="muted">n${wn}</span>`;
+        const followTxt = r.total ? ` · ${r.followed}/${r.total} 遵循` : "";
         return `
           <div class="bucket-row">
             <div class="name">${r.name}</div>
             <div class="bar-wrap">
-              <div class="bar-fill followed" style="width:${fPct}%"></div>
+              <div class="bar-fill ${wCls}${lowN}" style="width:${wr == null ? 0 : wr}%"></div>
             </div>
-            <div class="stat"><span class="n">${r.followed}/${r.total}</span> followed${wPct != null ? ` · win ${wPct}%` : ""}</div>
+            <div class="stat">${winTxt}${followTxt}</div>
           </div>`;
       })
       .join("");
