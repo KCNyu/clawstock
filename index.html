@@ -1342,9 +1342,9 @@ layout: null
           <div class="sub" id="plan-followed-sub">—</div>
         </div>
         <div class="kpi-cell">
-          <div class="lbl">Win rate</div>
+          <div class="lbl">Alpha vs hold</div>
           <div class="val" id="plan-winrate">—</div>
-          <div class="sub muted">followed only</div>
+          <div class="sub muted" id="plan-winrate-sub">vs 全持有</div>
         </div>
         <div class="kpi-cell">
           <div class="lbl">Brier score</div>
@@ -3082,7 +3082,18 @@ layout: null
       .filter(s => s.us_today_change != null || s.hk_today_change != null);
     const byDate = new Map();
     snaps.forEach(s => byDate.set(s.date, s));
-    const series = Array.from(byDate.values()).sort((a, b) => a.date.localeCompare(b.date));
+    let series = Array.from(byDate.values()).sort((a, b) => a.date.localeCompare(b.date));
+    // Dedup consecutive snapshots carrying the SAME today_change — weekend/holiday
+    // snapshots copy the prior trading day's value (e.g. Sat+Sun+Mon all = Fri's move),
+    // which would triple-count one day and drag the cumulative spuriously negative.
+    // Drop an entry if it's identical to the NEXT one → keep the last date of each run.
+    series = series.filter((s, i) => {
+      const next = series[i + 1];
+      const sameAsNext = next
+        && s.us_today_change === next.us_today_change
+        && s.hk_today_change === next.hk_today_change;
+      return !sameAsNext;
+    });
 
     const fx = safe(DATA, "fx", "usdhkd") || 7.83;
     const dates = series.map(s => s.date);
@@ -3314,11 +3325,9 @@ layout: null
     const followedKnown = followedTrue + followedFalse;
     const followedPct = followedKnown ? Math.round((followedTrue / followedKnown) * 100) : null;
 
-    // Win rate: among followed-true with resolved outcome (win|loss)
-    const followedActions = actions.filter(a => (a.followed || "").toLowerCase() === "true");
-    const wins = followedActions.filter(a => a.outcome === "win").length;
-    const losses = followedActions.filter(a => a.outcome === "loss").length;
-    const winRate = (wins + losses) ? Math.round((wins / (wins + losses)) * 100) : null;
+    // Alpha vs passive "hold everything" baseline — regime-robust edge, replaces the old
+    // followed-only win rate (which was ≈ passive holds and read inflated).
+    const vb = calib.vs_baseline;
 
     const brier = calib.brier_30d;
 
@@ -3341,12 +3350,15 @@ layout: null
       setClass("plan-followed", followedPct >= 60 ? "pos" : followedPct >= 30 ? "neutral" : "neg");
     }
 
-    if (winRate == null) {
+    if (!vb || vb.alpha_pp == null) {
       setVal("plan-winrate", DASH);
+      setSub("plan-winrate-sub", "vs 全持有 · 数据不足");
       setClass("plan-winrate", "neutral");
     } else {
-      setVal("plan-winrate", winRate + "%");
-      setClass("plan-winrate", winRate >= 60 ? "pos" : winRate >= 40 ? "neutral" : "neg");
+      const a = vb.alpha_pp;
+      setVal("plan-winrate", (a > 0 ? "+" : "") + a + "pp");
+      setSub("plan-winrate-sub", `LLM ${Math.round(vb.llm_win_rate*100)}% vs hold ${Math.round(vb.hold_baseline_win_rate*100)}% · n=${vb.n}`);
+      setClass("plan-winrate", a > 0 ? "pos" : (a < 0 ? "neg" : "neutral"));
     }
 
     if (brier == null) {
