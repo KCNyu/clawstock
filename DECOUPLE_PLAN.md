@@ -249,4 +249,28 @@ pkill -9 -f openclaw.gateway   # systemd 自动重启读老 jobs
 
 ---
 
+## 附:dashboard.json 单一 committer(2026-05-30 评估,终局并入本计划)
+
+**背景**:dashboard.json 是 100% 派生产物,却被 ~16 次/天、多个互不感知的写者(host harness ×4 +
+5 个 GHA + 手动)抢提交到 master。2026-05-30 给 `safe_push.sh` 加了 `rebase.autoStash` 后,争用从
+"高频致命"降到"偶发自愈、用户无感"(冲突时留本地、≤30min 被下次 intraday 重发)。
+
+**当下决定**:**不单独做**。概率低 + 后果轻 + 处于 burn-in("等数据 > 重构")→ ROI 不足。
+
+**终局正解(Option 2,与本 decouple 合流)**:dashboard.json 只装 portfolio 派生数据;
+macro / sentiment / influencer_feed / news / catalysts 这些子文件**由前端 `index.html` 各自
+fetch 渲染**,GHA 永不碰 dashboard.json → 真正 disjoint 写集。这是个前端解耦工程,正好等启动
+decouple、前端本来就要动时一起做。
+
+**若需提前止血(Option 1,留作配方)**:GHA 撤销"rebuild+commit dashboard"、只提交子文件;
+dashboard 只由 host 提交,任何 build+commit+push dashboard 抢同一把 `/tmp/dashboard_publish.lock`;
+新增系统 crontab `publish_dashboard.sh`(flock 守卫,周末也跑)补周末刷新。
+
+**复活触发条件**:
+- [ ] cron-health / safe_push 日志反复出现 dashboard `exit 2`(留本地)事件 → 上 Option 1
+- [ ] 启动本 decouple 计划 / 前端重构 → 顺带做 Option 2
+- [ ] dashboard 出现用户可见的陈旧 > 30min(自愈失效)
+
+---
+
 _本 plan 由 Claude Code 在 2026-05-19 起草。clawock burn-in 完毕后回来按此 execute。_
