@@ -1797,6 +1797,26 @@ layout: null
     if (!el) return;
     const chips = [];
 
+    // 0. Regime — the day's default stance (same risk_on/neutral/risk_off the brief acts on)
+    const rg = safe(DATA, "regime");
+    if (rg && rg.label) {
+      const map = { risk_on:  { cls:"hl-up",    ic:"🟢", stance:"默认持有, 别瞎动" },
+                    neutral:  { cls:"hl-info",  ic:"⚪", stance:"按 frame 常规" },
+                    risk_off: { cls:"hl-alert", ic:"🔴", stance:"防御, 优先减杠杆" } };
+      const r = map[rg.label] || map.neutral;
+      chips.push({ cls: r.cls, icon: r.ic,
+        txt: `Regime ${escapeHtml(rg.label.replace("_"," "))} · ${escapeHtml(r.stance)}` });
+    }
+
+    // 0b. Alpha vs 无脑全持有 — is the model adding value (regime-robust edge check)
+    const vb = safe(DATA, "calibration", "vs_baseline");
+    if (vb && vb.alpha_pp != null) {
+      const good = vb.alpha_pp >= 0;
+      chips.push({ cls: good ? "hl-up" : "hl-warn", icon: good ? "✅" : "⚠️",
+        txt: `近30d vs 持有 ${vb.alpha_pp >= 0 ? "+" : ""}${vb.alpha_pp}pp`
+           + (good ? "" : " · 主动信号慎听") });
+    }
+
     // 1. Nearest-to-firing trigger (from the shared watch-level resolver)
     const near = (computeWatchRows().rows || []).find(r => r.ad != null);
     if (near) {
