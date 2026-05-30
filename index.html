@@ -761,6 +761,7 @@ layout: null
   .trig-block .trig-title {
     font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
     color: var(--text-dim); margin-bottom: 10px; font-weight: 600;
+    overflow-wrap: anywhere; word-break: break-word;
   }
   /* Mobile: 2-row stacked (name + stat above bar). Desktop: 3-col single row. */
   .trig-row {
@@ -770,7 +771,9 @@ layout: null
     column-gap: 10px; row-gap: 4px;
     align-items: center; margin-bottom: 10px; font-size: 12px;
   }
-  .trig-row .trig-name { grid-area: name; font-family: var(--mono); color: var(--text); }
+  .trig-row > * { min-width: 0; }  /* let grid children shrink instead of overflowing */
+  .trig-row .trig-name { grid-area: name; font-family: var(--mono); color: var(--text);
+    overflow-wrap: anywhere; }
   .trig-row .trig-bar {
     grid-area: bar;
     height: 12px; background: var(--card-2); border-radius: 4px; overflow: hidden;
@@ -1374,7 +1377,7 @@ layout: null
         </div>
       </div>
       <div class="trig-block">
-        <div class="trig-title">By Driver — 哪个消息源有 edge (technical/catalyst/sentiment/influencer/macro/peer)</div>
+        <div class="trig-title">By Driver — 哪个数据源有 edge / 最该降权</div>
         <div id="plan-driver-bars">
           <div class="empty-state" style="font-size:11px">No driver data yet.</div>
         </div>
