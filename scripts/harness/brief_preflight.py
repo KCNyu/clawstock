@@ -570,11 +570,58 @@ def _resolve_pending_outcomes():
     return updated
 
 
+def _advice_track_record(rows, cutoff):
+    """Score the model's ADVICE over ALL settled rows (regardless of followed) — the
+    unfiltered view that compute_self_calibration's followed-only block hides. Lets the
+    brief see whether its active cut/trim/add signals actually beat a coin flip and
+    whether its high-confidence calls are overconfident (2026-05-30)."""
+    ACTIVE = {'cut', 'trim_on_rebound', 'add_only_on_trigger', 'add_on_breakout'}
+    scored = []
+    for r in rows:
+        if r.get('plan_date', '') < cutoff or r.get('outcome') not in ('win', 'loss'):
+            continue
+        try:
+            conf = float(r.get('confidence', 0))
+        except Exception:
+            conf = None
+        scored.append({'bucket': r.get('bucket', ''), 'confidence': conf,
+                       'win': 1 if r.get('outcome') == 'win' else 0})
+
+    def _agg(seg):
+        if not seg:
+            return None
+        n = len(seg)
+        wr = sum(s['win'] for s in seg) / n
+        confs = [s['confidence'] for s in seg if s['confidence'] is not None]
+        out = {'n': n, 'win_rate': round(wr, 2)}
+        if confs:
+            avg_c = sum(confs) / len(confs)
+            out['avg_confidence'] = round(avg_c, 2)
+            out['overconfidence_gap'] = round(avg_c - wr, 2)  # >0 = overconfident
+        return out
+
+    return {
+        'horizon': 'T+1 (next session)',
+        'n_settled': len(scored),
+        'active_signals': _agg([s for s in scored if s['bucket'] in ACTIVE]),
+        'passive_holds':  _agg([s for s in scored if s['bucket'] not in ACTIVE]),
+        'per_bucket': {b: _agg([s for s in scored if s['bucket'] == b])
+                       for b in sorted(set(s['bucket'] for s in scored))},
+        'per_confidence_band': {k: _agg([s for s in scored
+                                         if s['confidence'] is not None and lo <= s['confidence'] < hi])
+                                for k, lo, hi in [('0.50-0.65', 0.50, 0.65),
+                                                  ('0.65-0.75', 0.65, 0.75),
+                                                  ('>=0.75', 0.75, 1.01)]},
+        'note': 'win_rate over ALL settled calls (not just followed). active <0.50 = '
+                'signals add no edge; overconfidence_gap >0 on high bands = trim confidence.',
+    }
+
+
 def compute_self_calibration():
     """Read memory/calibration.csv accumulated by past brief postflights;
     compute Brier score + per-bucket win rate over rolling 30 days."""
     _resolve_pending_followed()  # T+1/T+2 followed detection (cheap, every run)
-    _resolve_pending_outcomes()  # T+5 outcome resolution (statistical window)
+    _resolve_pending_outcomes()  # T+1 next-session outcome resolution (2026-05-30)
 
     calib_path = WS / 'memory' / 'calibration.csv'
     if not calib_path.exists():
@@ -616,7 +663,9 @@ def compute_self_calibration():
         })
 
     if not scored:
-        return {'samples': len(rows), 'note': f'{len(rows)} plans logged but no outcomes resolved yet'}
+        return {'samples': len(rows),
+                'note': f'{len(rows)} plans logged but no followed-outcomes resolved yet',
+                'advice_track_record': _advice_track_record(rows, cutoff)}
 
     # Brier score
     brier_30d = sum(r['brier'] for r in scored) / len(scored)
@@ -651,7 +700,9 @@ def compute_self_calibration():
         'brier_quality': 'good' if brier_30d < 0.20 else ('marginal' if brier_30d < 0.30 else 'poor — confidence is unreliable'),
         'per_bucket': per_bucket,
         'per_confidence_band': conf_table,
-        'note': 'lower Brier = better calibrated. < 0.20 good, > 0.30 means model is overconfident',
+        'advice_track_record': _advice_track_record(rows, cutoff),
+        'note': 'lower Brier = better calibrated. < 0.20 good, > 0.30 means model is overconfident. '
+                'See advice_track_record for the unfiltered (all-settled) view of advice quality.',
     }
 
 
@@ -910,6 +961,17 @@ def main():
             print(f'   {bucket:24s} n={stats["n"]} win_rate={stats["win_rate"]:.0%}')
     else:
         print(f'   not enough data yet (need ≥5 plans, have {self_calib.get("samples", 0)})')
+    atr = self_calib.get('advice_track_record') or {}
+    if atr.get('n_settled'):
+        act, pas = atr.get('active_signals'), atr.get('passive_holds')
+        if act:
+            print(f'   advice (T+1, all settled n={atr["n_settled"]}): '
+                  f'active {act["win_rate"]:.0%} (conf {act.get("avg_confidence",0):.2f}, '
+                  f'overconf +{act.get("overconfidence_gap",0):.2f}) | '
+                  f'passive {pas["win_rate"]:.0%}' if pas else '')
+        hi = (atr.get('per_confidence_band') or {}).get('>=0.75')
+        if hi:
+            print(f'   ⚠ high-conf (≥0.75) win_rate {hi["win_rate"]:.0%} — overconfidence_gap +{hi.get("overconfidence_gap",0):.2f}')
 
     # [10] Risk metrics — Tier 2: β / vol / DD / Sharpe / margin sim
     print('[10/11] Risk metrics')
