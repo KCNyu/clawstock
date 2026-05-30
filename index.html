@@ -1728,7 +1728,16 @@ layout: null
       if (k.includes("hsi") || k.includes("hang") || k.includes("seng")) return { cur: safe(idx,"HSI","price"), ccy:"", who:"恒指", strip:["hsi","hang","hangseng","seng"] };
       if (k.includes("spx") || k.includes("sp500")) return { cur: safe(idx,"SPX","price"), ccy:"", who:"SPX", strip:["spx","sp500"] };
       if (k.includes("ndx") || k.includes("nasdaq")) return { cur: safe(idx,"NDX","price"), ccy:"", who:"NDX", strip:["ndx","nasdaq"] };
-      if (k.includes("book") || k.includes("derisk")) return { cur: hkTot.pnl_hkd, ccy:"HKD", who:"账面", strip:["book"] };
+      if (k.includes("book") || k.includes("derisk")) {
+        // book_force_derisk_{hk,us}_pct = 账面回撤到 X% 强制减仓。是百分比阈值，
+        // 不是价格 → 拿对应区域的账面回报率% 比较（旧代码误用绝对 HKD 金额→显示 -22042%）。
+        const usTot = safe(DATA, "totals", "us") || {};
+        const isUs = k.includes("us");
+        const cur = isUs ? usTot.pnl_pct : hkTot.pnl_pct;
+        // keep force/derisk tokens so labelOf → "强制减仓"; strip only who/unit tokens.
+        return { cur, ccy:"%", who: isUs ? "账面 US" : "账面 HK",
+                 strip:["book","hk","us","pct"], isPct:true };
+      }
       const tok = key.split(/[_\-]/)[0];
       const h = hmap[tok.toUpperCase()];
       if (h) return { cur: h.current_price, ccy: h.region === "hk" ? "HKD" : "USD", who: tok.toUpperCase(), strip:[tok.toLowerCase()] };
@@ -1748,8 +1757,13 @@ layout: null
       const numeric = (typeof val === "number" && isFinite(val));
       const cur = (numeric && r.cur != null && isFinite(r.cur)) ? r.cur : null;
       let dist = null, ad = null;
-      if (cur != null) { dist = (cur - val) / Math.abs(val) * 100; ad = Math.abs(dist); }
-      return { who, label, val, cur, ccy: r.ccy, numeric, dist, ad,
+      // % thresholds (book derisk guards): distance is percentage POINTS (cur - val);
+      // price levels: relative distance to the level.
+      if (cur != null) {
+        dist = r.isPct ? (cur - val) : (cur - val) / Math.abs(val) * 100;
+        ad = Math.abs(dist);
+      }
+      return { who, label, val, cur, ccy: r.ccy, numeric, dist, ad, isPct: !!r.isPct,
                cond: numeric ? null : String(val) };
     });
     // nearest resolvable numeric → numeric-without-current → condition-only
@@ -1777,16 +1791,19 @@ layout: null
         return `<div class="wl-row wl-cond"><span class="wl-who">${escapeHtml(row.who)}</span>` +
           `<span class="wl-cond-txt">${escapeHtml(row.cond)}</span></div>`;
       }
+      // % thresholds render as percentages + 百分点距离; price levels as money + relative %.
+      const fmtVal = (v) => row.isPct ? fmtPct(v, 1) : fmtMoney(v, row.ccy);
       let curHtml = `<span class="wl-cur"></span>`;
       let distHtml = `<span class="wl-dist far">—</span>`;
       if (row.cur != null) {
         const cls = row.ad < 2 ? "near" : row.ad < 5 ? "mid" : "far";
-        curHtml = `<span class="wl-cur">现 ${fmtMoney(row.cur, row.ccy)}</span>`;
-        distHtml = `<span class="wl-dist ${cls}">${fmtPct(row.dist, 1)}${row.ad < 2 ? " ⚠️" : ""}</span>`;
+        curHtml = `<span class="wl-cur">现 ${fmtVal(row.cur)}</span>`;
+        const distTxt = row.isPct ? `${row.dist >= 0 ? "+" : ""}${row.dist.toFixed(1)}pp` : fmtPct(row.dist, 1);
+        distHtml = `<span class="wl-dist ${cls}">${distTxt}${row.ad < 2 ? " ⚠️" : ""}</span>`;
       }
       return `<div class="wl-row"><span class="wl-who">${escapeHtml(row.who)}</span>` +
         `<span class="wl-label">${escapeHtml(row.label)}</span>` +
-        `<span class="wl-target">${fmtMoney(row.val, row.ccy)}</span>${curHtml}${distHtml}</div>`;
+        `<span class="wl-target">${fmtVal(row.val)}</span>${curHtml}${distHtml}</div>`;
     }).join("");
   }
 
