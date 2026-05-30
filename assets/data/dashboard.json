@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T13:49:28.410915Z",
+  "generated_at": "2026-05-30T13:58:38.735872Z",
   "last_updated": "2026/05/30 04:00 HKT",
   "fx": {
     "usdhkd": 7.8356,
@@ -3952,6 +3952,14 @@
         "relevance": 50,
         "summary_cn": "报道指出SpaceX的言论与IPO文件存在分歧，引发市场疑虑，但SpaceX未上市。"
       }
+    ]
+  },
+  "regime": {
+    "label": "risk_on",
+    "score": 2,
+    "reasons": [
+      "F&G 60 greed",
+      "VIX 15 calm"
     ]
   },
   "all_time_extremes": {

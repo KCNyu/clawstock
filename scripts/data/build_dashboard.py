@@ -1479,6 +1479,21 @@ def main():
     _embed('sentiment', 'sentiment.json')              # GH Action sentiment-scan.yml
     _embed('macro', 'macro.json')                      # GH Action macro-scan.yml
     _embed('influencer_feed', 'influencer_feed.json')  # GH Action influencer-scan.yml (Trump/Musk)
+
+    # Regime badge: reuse the brief's classifier on the embedded macro so the dashboard
+    # shows the same risk_on/neutral/risk_off the brief acts on (2026-05-30). Defensive
+    # import — never break the build if the harness module is unavailable.
+    out['regime'] = None
+    try:
+        if out.get('macro'):
+            _harness = WS_ROOT / 'scripts' / 'harness'
+            if str(_harness) not in sys.path:
+                sys.path.insert(0, str(_harness))
+            from brief_preflight import _classify_regime
+            out['regime'] = _classify_regime(out['macro'])
+    except Exception as e:
+        print(f'  warn: regime classify failed: {e}', file=sys.stderr)
+
     out['all_time_extremes'] = compute_all_time_extremes(portfolio, top_n=3)
     out['today_ranges'] = compute_today_ranges(portfolio, top_n=8)
     out['realized_vs_unrealized'] = compute_realized_vs_unrealized(portfolio, fx_rate)

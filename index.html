@@ -313,6 +313,19 @@ layout: null
   .macro-cell.up   .sub { color: #16a34a; }
   .macro-cell.down .sub { color: #dc2626; }
 
+  /* Regime badge (top of macro card) — risk_on / neutral / risk_off */
+  .regime-badge { display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:8px;
+    margin-bottom:10px; font-size:12px; border:1px solid var(--border); }
+  .regime-badge .rg-dot { width:9px; height:9px; border-radius:50%; flex:0 0 auto; }
+  .regime-badge .rg-label { font-weight:800; text-transform:uppercase; letter-spacing:0.04em; }
+  .regime-badge .rg-reasons { color: var(--text-dim); font-size:11px; }
+  .regime-badge.risk_on  { background: rgba(22,163,74,0.10);  border-color: rgba(22,163,74,0.35); }
+  .regime-badge.risk_on  .rg-dot { background:#16a34a; } .regime-badge.risk_on  .rg-label { color:#16a34a; }
+  .regime-badge.neutral  { background: rgba(148,163,184,0.10); border-color: rgba(148,163,184,0.35); }
+  .regime-badge.neutral  .rg-dot { background:#94a3b8; } .regime-badge.neutral  .rg-label { color:#94a3b8; }
+  .regime-badge.risk_off { background: rgba(220,38,38,0.10);  border-color: rgba(220,38,38,0.35); }
+  .regime-badge.risk_off .rg-dot { background:#dc2626; } .regime-badge.risk_off .rg-label { color:#dc2626; }
+
   /* Risk keyword banner (top of macro card; hidden when no hits) */
   .risk-banner {
     margin-bottom: 10px; padding: 8px 10px;
@@ -1189,6 +1202,7 @@ layout: null
 
     <div class="card">
       <h3>Macro · Sentiment</h3>
+      <div id="regime-badge" class="regime-badge" style="display:none"></div>
       <div id="risk-banner" class="risk-banner" style="display:none"></div>
       <div class="macro-row" id="macro-row">
         <div class="empty-state">No macro data.</div>
@@ -2369,6 +2383,24 @@ layout: null
     if (!wrap) return;
     const m = safe(DATA, 'macro') || {};
     const s = safe(DATA, 'sentiment') || {};
+
+    // Regime badge — same risk_on/neutral/risk_off the brief acts on.
+    const rgEl = document.getElementById('regime-badge');
+    if (rgEl) {
+      const rg = safe(DATA, 'regime');
+      if (rg && rg.label) {
+        const guard = rg.label === 'risk_on'  ? '默认 HOLD · 主动 call 封顶 ≤0.55'
+                    : rg.label === 'risk_off' ? '防御优先 · 优先减杠杆'
+                    : '按 frame 常规判断';
+        rgEl.className = 'regime-badge ' + rg.label;
+        rgEl.style.display = 'flex';
+        rgEl.innerHTML = `<span class="rg-dot"></span>`
+          + `<span class="rg-label">${escapeHtml(rg.label.replace('_',' '))}</span>`
+          + `<span class="rg-reasons">${escapeHtml((rg.reasons || []).join(' · '))} → ${escapeHtml(guard)}</span>`;
+      } else {
+        rgEl.style.display = 'none';
+      }
+    }
     const cells = [];
     const fmt = (v, suffix='') => v == null || isNaN(v) ? DASH : (Number(v).toFixed(2) + suffix);
     // Trend tag: 'up'/'down'/'' so .sub can be color-coded
