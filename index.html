@@ -713,6 +713,17 @@ layout: null
   .outcome.loss { background: rgba(248,113,113,.15); color: var(--red); }
   .outcome.pending { background: rgba(107,118,145,.15); color: var(--gray); }
   .outcome.flat { background: rgba(251,191,36,.15); color: var(--amber); }
+  /* Bucket historical win-rate badge (from calibration.per_bucket) */
+  .bucket-wr {
+    display: inline-block; margin-left: 6px; padding: 1px 6px;
+    border-radius: 6px; font-size: 10px; font-family: var(--mono);
+    font-weight: 600; vertical-align: middle; white-space: nowrap;
+  }
+  .bucket-wr .wr-n { font-weight: 400; opacity: .55; font-size: 9px; margin-left: 2px; }
+  .bucket-wr.wr-bad { background: rgba(248,113,113,.15); color: var(--red); }
+  .bucket-wr.wr-mid { background: rgba(251,191,36,.15); color: var(--amber); }
+  .bucket-wr.wr-ok  { background: rgba(52,211,153,.15); color: var(--green); }
+  .bucket-wr.wr-lown { opacity: .6; }
 
   /* Plan timeline (Reflect) — fuller decision cards: plan + rationale + outcome */
   .plan-timeline { display: flex; flex-direction: column; gap: 10px; }
@@ -2786,6 +2797,21 @@ layout: null
     render(ext.losers, "extremes-losers");
   }
 
+  // Historical win-rate badge for a plan bucket, sourced from calibration.per_bucket.
+  // Lets you discount each LLM action at a glance: ⚠ <45% (worse than coin flip),
+  // ~ 45–60% (weak), ✓ ≥60% (holds up). n = sample size; faint when small.
+  function bucketWinBadge(bucket) {
+    const pb = safe(DATA, "calibration", "per_bucket", bucket);
+    if (!pb || pb.win_rate == null || !pb.n) return "";
+    const wr = pb.win_rate * 100;
+    let cls = "wr-ok", icon = "✓";
+    if (wr < 45)      { cls = "wr-bad"; icon = "⚠"; }
+    else if (wr < 60) { cls = "wr-mid"; icon = "~"; }
+    const lowN = pb.n < 8 ? " wr-lown" : "";
+    const tip = pb.n < 8 ? "样本少，参考性弱" : `该 bucket 近 30d 历史胜率 ${wr.toFixed(0)}%`;
+    return `<span class="bucket-wr ${cls}${lowN}" title="${tip}">${icon}${wr.toFixed(0)}%<span class="wr-n">n${pb.n}</span></span>`;
+  }
+
   function renderPlanActions() {
     const list = (safe(DATA, "recent_plan_actions") || []).slice(0, 8);
     const wrap = document.getElementById("plan-actions");
@@ -2804,7 +2830,7 @@ layout: null
             <div class="date">${a.date || ""}</div>
           </div>
           <div>
-            <div>${a.bucket || DASH}</div>
+            <div>${a.bucket || DASH}${bucketWinBadge(a.bucket)}</div>
             <div class="meta">conf ${conf} · ${a.trigger_type || DASH} · 次日遵循 ${pnl}</div>
           </div>
           <div class="outcome ${oc}">${oc}</div>
