@@ -44,7 +44,11 @@ jobs:
             echo "no change"
             exit 0
           fi
-          git commit -m "sentiment: daily Reddit + Google News scan $(date -u +%Y-%m-%d)"
+          # sentiment.json changed → rebuild dashboard so its embedded sentiment block
+          # doesn't go stale until the next host rebuild (no intraday rebuild on weekends).
+          python3 scripts/data/build_dashboard.py
+          git add assets/data/dashboard.json
+          git commit -m "sentiment: daily Reddit + Google News scan $(date -u +%Y-%m-%d) + dashboard rebuild"
           for i in 1 2 3 4 5; do
             if git push; then exit 0; fi
             echo "push attempt $i lost race, rebasing…"

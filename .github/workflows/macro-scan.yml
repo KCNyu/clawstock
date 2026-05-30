@@ -42,7 +42,11 @@ jobs:
             echo "no change"
             exit 0
           fi
-          git commit -m "macro: daily snapshot $(date -u +%Y-%m-%d)"
+          # macro.json changed → rebuild dashboard so its embedded macro block doesn't
+          # go stale until the next host rebuild (no intraday rebuild on weekends).
+          python3 scripts/data/build_dashboard.py
+          git add assets/data/dashboard.json
+          git commit -m "macro: daily snapshot $(date -u +%Y-%m-%d) + dashboard rebuild"
           for i in 1 2 3 4 5; do
             if git push; then exit 0; fi
             echo "push attempt $i lost race, rebasing…"

@@ -45,6 +45,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add assets/data/influencer_feed.json
           if ! git diff --cached --quiet; then
-            git commit -m "influence: Trump/Musk radar $(TZ=Asia/Hong_Kong date +%Y-%m-%d_%H:%M)"
+            # feed changed → rebuild dashboard so its embedded influencer block doesn't
+            # go stale until the next host rebuild (no intraday rebuild on weekends).
+            python3 scripts/data/build_dashboard.py
+            git add assets/data/dashboard.json
+            git commit -m "influence: Trump/Musk radar $(TZ=Asia/Hong_Kong date +%Y-%m-%d_%H:%M) + dashboard rebuild"
             bash scripts/data/safe_push.sh
           fi
