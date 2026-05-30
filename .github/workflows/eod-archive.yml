@@ -55,10 +55,12 @@ jobs:
                           'current_value': h.get('current_value', 0),
                       })
 
+          if not rows:
+              print('no active holdings — nothing to archive'); raise SystemExit(0)
           fpath = 'memory/archive/eod-history.csv'
           new = not os.path.exists(fpath)
           with open(fpath, 'a', newline='', encoding='utf-8') as f:
-              w = csv.DictWriter(f, fieldnames=rows[0].keys())
+              w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
               if new: w.writeheader()
               w.writerows(rows)
           print(f'appended {len(rows)} rows to {fpath}')
@@ -74,11 +76,4 @@ jobs:
             exit 0
           fi
           git commit -m "archive: EOD snapshot $(date -u +%Y-W%W)"
-          for i in 1 2 3 4 5; do
-            if git push; then exit 0; fi
-            echo "push attempt $i lost race, rebasing…"
-            git pull --rebase origin master
-            sleep $((i*2))
-          done
-          echo "push failed after retries"
-          exit 1
+          bash scripts/data/safe_push.sh
