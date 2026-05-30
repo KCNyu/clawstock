@@ -195,6 +195,20 @@ context.json 关键字段：
 - influencer(Trump/Musk)默认归 **软情绪**;仅当其言论对应**已落地的政策/行政令/具体合同**才升级为硬催化。
 - 自检:若某 action 的 `driven_by` 是 `sentiment` 或 `influencer` 且 bucket ∈ {cut,trim_on_rebound,add_only_on_trigger} → **这违反铁律,改回 hold_and_watch 或换硬证据**。
 
+#### 🛡️ 消息面证伪不证实(牛市最关键 — REQUIRED)
+
+牛市里你已经满仓在涨。**利好新闻 ≠ 该动作**——你已经持有,继续骑就行;利好不需要你"为了兑现它"去减仓。**唯一该让你主动出手的是利空的个股级硬催化。**
+
+每条进入决策的新闻先打一个标签(在 ▎社交舆情速读 / ▎名人异动 段标注):
+- **confirming**(印证你已有持仓方向的利好)→ **不触发任何 cut/trim/add**。最多维持 hold,别拿它当减仓"锁利"或加仓"追高"的理由。
+- **disconfirming**(动摇持仓 thesis 的利空)→ 只有当它是**硬催化**(见上节)时,才允许驱动 cut/trim。
+
+硬性规则:
+- **不准用利好新闻 justify 主动减仓/加仓**(牛市 churn 的头号来源)。"催化已兑现/已在价"是观望理由,不是出手理由——若真要动,driven_by 必须是 `technical`(估值/技术过热),不能挂成 catalyst。
+- 想加仓(add)同样要硬触发:明确回踩支撑价 + 量价确认,不是"利好所以追"。
+- 一条新闻若你判为 confirming 又想据此出手 → 停,这是矛盾,改 hold_and_watch。
+- 例外:止盈/再平衡这类**纪律性**减仓与新闻无关,正常走(driven_by=`technical`),但要在 rationale 标明是纪律不是消息。
+
 #### Strategy frame menu — Judge 段必须显式选 1-3 个 per action
 
 让 Judge 明示哪个 strategy frame 在驱动每个 action（traceability，错了能反推），从下面 8 个里选：
@@ -331,6 +345,7 @@ context.json 关键字段：
 规则：
 - 新闻关键词只抽 2-3 个动词/名词短语，不要复制全标题
 - 信号判断必须连到**你今天对这个票的 action bucket**（一致 / 矛盾要点出来）
+- **每条信号判断结尾标 `[confirming]` 或 `[disconfirming]`**（见"消息面证伪不证实"铁律）：confirming 利好**不得**驱动 cut/trim/add；只有 disconfirming 的硬催化能驱动减仓
 - "异常关注"段：扫所有 ticker 的 news_top + reddit_top 文本，命中负面关键词 (`miss/SEC/probe/fraud/lawsuit/downgrade/halt/recall/short report`) 必列；无命中写"无"
 - sentiment 数据 age_hours > 36 整段写"⚠️ sentiment 数据 stale, 跳过本段"
 
