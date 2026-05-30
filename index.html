@@ -3563,7 +3563,7 @@ layout: null
             <div class="pt-region">${region}</div>
           </div>
           <div class="pt-body">
-            <div class="pt-action">${escapeHtml(a.bucket || DASH)}</div>
+            <div class="pt-action">${escapeHtml(a.bucket || DASH)}${bucketWinBadge(a.bucket)}</div>
             <div class="pt-trigger">${escapeHtml(trig)}</div>
             ${cond}
             ${rationale}
