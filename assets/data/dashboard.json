@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T05:15:15.672105Z",
+  "generated_at": "2026-05-30T07:13:55.488272Z",
   "last_updated": "2026/05/30 04:00 HKT",
   "fx": {
     "usdhkd": 7.8356,
@@ -1739,8 +1739,8 @@
     "items": []
   },
   "calibration": {
-    "brier_30d": 0.2344,
-    "samples": 30,
+    "brier_30d": 0.2688,
+    "samples": 67,
     "bands": [
       {
         "band": "0-50%",
@@ -1749,18 +1749,18 @@
       },
       {
         "band": "50-60%",
-        "n": 3,
-        "actual_win_rate": 1.0
+        "n": 13,
+        "actual_win_rate": 0.3846
       },
       {
         "band": "60-70%",
-        "n": 14,
-        "actual_win_rate": 0.7143
+        "n": 33,
+        "actual_win_rate": 0.5758
       },
       {
         "band": "70-80%",
-        "n": 11,
-        "actual_win_rate": 0.6364
+        "n": 19,
+        "actual_win_rate": 0.5263
       },
       {
         "band": "80-100%",
@@ -1770,66 +1770,66 @@
     ],
     "per_bucket": {
       "cut": {
-        "n": 7,
-        "win_rate": 0.8571
+        "n": 13,
+        "win_rate": 0.3846
       },
       "trim_on_rebound": {
-        "n": 9,
-        "win_rate": 0.3333
+        "n": 15,
+        "win_rate": 0.4
       },
       "hold_and_watch": {
-        "n": 9,
-        "win_rate": 0.8889
+        "n": 25,
+        "win_rate": 0.76
       },
       "t_only": {
-        "n": 2,
-        "win_rate": 1.0
+        "n": 4,
+        "win_rate": 0.0
       },
       "add_only_on_trigger": {
-        "n": 3,
-        "win_rate": 0.6667
+        "n": 7,
+        "win_rate": 0.4286
       }
     }
   },
   "calibration_by_trigger": {
     "price_above": {
-      "n_resolved": 15,
-      "n_pending": 10,
-      "wins": 8,
-      "losses": 7,
-      "win_rate": 0.5333,
+      "n_resolved": 27,
+      "n_pending": 1,
+      "wins": 13,
+      "losses": 14,
+      "win_rate": 0.4815,
       "avg_confidence": 0.643
     },
     "price_below": {
-      "n_resolved": 5,
-      "n_pending": 18,
-      "wins": 5,
-      "losses": 0,
-      "win_rate": 1.0,
+      "n_resolved": 18,
+      "n_pending": 5,
+      "wins": 15,
+      "losses": 3,
+      "win_rate": 0.8333,
       "avg_confidence": 0.653
     },
     "open": {
-      "n_resolved": 5,
-      "n_pending": 9,
+      "n_resolved": 12,
+      "n_pending": 2,
       "wins": 3,
-      "losses": 2,
-      "win_rate": 0.6,
+      "losses": 9,
+      "win_rate": 0.25,
       "avg_confidence": 0.699
     },
     "manual": {
-      "n_resolved": 3,
-      "n_pending": 4,
-      "wins": 3,
-      "losses": 0,
-      "win_rate": 1.0,
+      "n_resolved": 7,
+      "n_pending": 0,
+      "wins": 4,
+      "losses": 3,
+      "win_rate": 0.5714,
       "avg_confidence": 0.596
     },
     "index_breakdown": {
-      "n_resolved": 2,
-      "n_pending": 1,
-      "wins": 2,
-      "losses": 0,
-      "win_rate": 1.0,
+      "n_resolved": 3,
+      "n_pending": 0,
+      "wins": 0,
+      "losses": 3,
+      "win_rate": 0.0,
       "avg_confidence": 0.56
     }
   },
@@ -1920,9 +1920,9 @@
       "bucket": "cut",
       "confidence": 0.55,
       "trigger_type": "open",
-      "outcome": "pending",
-      "pnl_5d": null,
-      "followed": "unknown"
+      "outcome": "loss",
+      "pnl_5d": -49.63,
+      "followed": "false"
     },
     {
       "date": "2026-05-28",
@@ -1930,9 +1930,9 @@
       "bucket": "cut",
       "confidence": 0.55,
       "trigger_type": "open",
-      "outcome": "pending",
-      "pnl_5d": null,
-      "followed": "unknown"
+      "outcome": "loss",
+      "pnl_5d": -37.2,
+      "followed": "false"
     },
     {
       "date": "2026-05-28",
@@ -1940,9 +1940,9 @@
       "bucket": "trim_on_rebound",
       "confidence": 0.6,
       "trigger_type": "price_above",
-      "outcome": "pending",
-      "pnl_5d": null,
-      "followed": "unknown"
+      "outcome": "win",
+      "pnl_5d": 6.0,
+      "followed": "false"
     },
     {
       "date": "2026-05-28",
@@ -1950,8 +1950,8 @@
       "bucket": "hold_and_watch",
       "confidence": 0.7,
       "trigger_type": "price_below",
-      "outcome": "pending",
-      "pnl_5d": null,
+      "outcome": "win",
+      "pnl_5d": 12.0,
       "followed": "true"
     },
     {
@@ -1960,8 +1960,8 @@
       "bucket": "hold_and_watch",
       "confidence": 0.75,
       "trigger_type": "price_below",
-      "outcome": "pending",
-      "pnl_5d": null,
+      "outcome": "win",
+      "pnl_5d": 10.37,
       "followed": "true"
     },
     {
@@ -1970,9 +1970,9 @@
       "bucket": "add_only_on_trigger",
       "confidence": 0.5,
       "trigger_type": "price_below",
-      "outcome": "pending",
-      "pnl_5d": null,
-      "followed": "unknown"
+      "outcome": "win",
+      "pnl_5d": 18.95,
+      "followed": "false"
     },
     {
       "date": "2026-05-28",
@@ -1980,8 +1980,8 @@
       "bucket": "hold_and_watch",
       "confidence": 0.65,
       "trigger_type": "price_below",
-      "outcome": "pending",
-      "pnl_5d": null,
+      "outcome": "win",
+      "pnl_5d": 27.61,
       "followed": "true"
     },
     {
@@ -1990,8 +1990,8 @@
       "bucket": "cut",
       "confidence": 0.75,
       "trigger_type": "open",
-      "outcome": "pending",
-      "pnl_5d": null,
+      "outcome": "loss",
+      "pnl_5d": -15.84,
       "followed": "false"
     },
     {
@@ -2000,8 +2000,8 @@
       "bucket": "cut",
       "confidence": 0.72,
       "trigger_type": "open",
-      "outcome": "pending",
-      "pnl_5d": null,
+      "outcome": "loss",
+      "pnl_5d": -3.43,
       "followed": "false"
     },
     {
@@ -2010,8 +2010,8 @@
       "bucket": "trim_on_rebound",
       "confidence": 0.62,
       "trigger_type": "price_above",
-      "outcome": "pending",
-      "pnl_5d": null,
+      "outcome": "win",
+      "pnl_5d": 7.8,
       "followed": "false"
     },
     {
@@ -2020,8 +2020,8 @@
       "bucket": "trim_on_rebound",
       "confidence": 0.65,
       "trigger_type": "price_above",
-      "outcome": "pending",
-      "pnl_5d": null,
+      "outcome": "win",
+      "pnl_5d": 13.13,
       "followed": "true"
     },
     {
@@ -2030,8 +2030,8 @@
       "bucket": "hold_and_watch",
       "confidence": 0.55,
       "trigger_type": "price_below",
-      "outcome": "pending",
-      "pnl_5d": null,
+      "outcome": "win",
+      "pnl_5d": 19.57,
       "followed": "true"
     }
   ],
@@ -2167,9 +2167,9 @@
       "size_shares": 20,
       "confidence": 0.55,
       "rationale": "连续三期 cut 计划未执行 — 执行断层必须解决；-19.9% 浮亏 + HOOD thesis 证伪 + 杠杆 decay",
-      "outcome": "pending",
-      "pnl_5d": null,
-      "followed": "unknown"
+      "outcome": "loss",
+      "pnl_5d": -49.63,
+      "followed": "false"
     },
     {
       "date": "2026-05-28",
@@ -2182,9 +2182,9 @@
       "size_shares": 7,
       "confidence": 0.55,
       "rationale": "PLTR insider selling $43M + 92x fwd PE + 2x decay 持续侵蚀；但 PLTR Q1 beat 基本面仍在，留 7 股看底",
-      "outcome": "pending",
-      "pnl_5d": null,
-      "followed": "unknown"
+      "outcome": "loss",
+      "pnl_5d": -37.2,
+      "followed": "false"
     },
     {
       "date": "2026-05-28",
@@ -2197,9 +2197,9 @@
       "size_shares": 1000,
       "confidence": 0.6,
       "rationale": "HHI 0.435 🔴 危险集中必须降；杠杆 decay 不可逆；HSTECH 4900 支撑位考验",
-      "outcome": "pending",
-      "pnl_5d": null,
-      "followed": "unknown"
+      "outcome": "win",
+      "pnl_5d": 6.0,
+      "followed": "false"
     },
     {
       "date": "2026-05-28",
@@ -2212,8 +2212,8 @@
       "size_shares": 0,
       "confidence": 0.7,
       "rationale": "恒科纳入 6/8 催化在即 + rev +159% + UBS 目标 1000；但 +10.34% 已反映部分预期，不追高",
-      "outcome": "pending",
-      "pnl_5d": null,
+      "outcome": "win",
+      "pnl_5d": 12.0,
       "followed": "true"
     },
     {
@@ -2227,8 +2227,8 @@
       "size_shares": 0,
       "confidence": 0.75,
       "rationale": "+111.6% 浮盈 + $2.2B backlog + Neutron 首飞在即；30d +74% 过热但 momentum 强",
-      "outcome": "pending",
-      "pnl_5d": null,
+      "outcome": "win",
+      "pnl_5d": 10.37,
       "followed": "true"
     },
     {
@@ -2242,9 +2242,9 @@
       "size_shares": 1,
       "confidence": 0.5,
       "rationale": "USDC $77B +28% 首超 Tether 基本面强；但 Q1 miss + insider sell + 利率敏感 — signal 分裂",
-      "outcome": "pending",
-      "pnl_5d": null,
-      "followed": "unknown"
+      "outcome": "win",
+      "pnl_5d": 18.95,
+      "followed": "false"
     },
     {
       "date": "2026-05-28",
@@ -2257,8 +2257,8 @@
       "size_shares": 0,
       "confidence": 0.65,
       "rationale": "MSFT Q3 beat rev $82.9B +18% Azure +29%；2x 杠杆 + 大盘风险需设防",
-      "outcome": "pending",
-      "pnl_5d": null,
+      "outcome": "win",
+      "pnl_5d": 27.61,
       "followed": "true"
     }
   ],

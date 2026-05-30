@@ -459,9 +459,53 @@ def _resolve_pending_followed():
     return updated
 
 
+def _snapshot_price(date_iso, ticker):
+    """current_price of `ticker` in the daily snapshot for date_iso, or None."""
+    p = WS / 'memory' / 'snapshots' / f'{date_iso}.json'
+    if not p.exists():
+        return None
+    try:
+        d = json.loads(p.read_text())
+    except Exception:
+        return None
+    for region in ('hk_stocks', 'us_stocks'):
+        for h in d.get('portfolios', {}).get(region, {}).get('holdings', []):
+            if h.get('ticker') == ticker:
+                cp = h.get('current_price')
+                try:
+                    return float(cp) if cp else None
+                except Exception:
+                    return None
+    return None
+
+
+def _next_session_date(plan_date):
+    """First snapshot date strictly after plan_date (snapshots exist one-per-trading-
+    session, so this IS the next session — weekends/holidays skipped for free).
+    None if no later snapshot exists yet (next session hasn't happened)."""
+    import glob, os
+    dates = sorted(os.path.basename(p)[:-5]
+                   for p in glob.glob(str(WS / 'memory' / 'snapshots' / '20*.json')))
+    for d in dates:
+        if d > plan_date:
+            return d
+    return None
+
+
 def _resolve_pending_outcomes():
-    """Walk calibration.csv; for rows ≥5 days old with outcome=pending, compute
-    actual outcome from snapshot history. Returns updated row count."""
+    """Settle each pending calibration row at T+1 (the NEXT trading session) by
+    backtesting "if the call had been followed".
+
+    The brief predicts the next session, so the evaluation horizon is one session —
+    NOT 5 days (corrected 2026-05-30; the old 5-day window + today_change_pct proxy
+    measured noise and could never score an executed cut). Outcome = did following the
+    call pay off over D→D+1, priced from the daily snapshots:
+      cut / trim          → sold at D; win if the asset FELL by D+1 (dodged the drop)
+      add_only_on_trigger → bought at D; win if it ROSE by D+1
+      hold_and_watch/t_only/watch → kept exposure; win if it ROSE (≥0) by D+1
+    The `pnl_5d` column (legacy name; kept to avoid a cross-file/​frontend rename) now
+    stores the signed *benefit of following* %, so positive always = the call helped.
+    Returns updated row count."""
     calib_path = WS / 'memory' / 'calibration.csv'
     if not calib_path.exists():
         return 0
@@ -473,61 +517,42 @@ def _resolve_pending_outcomes():
     except Exception:
         return 0
 
-    today_iso = datetime.now().strftime('%Y-%m-%d')
     updated = 0
     for r in rows:
         if r.get('outcome') != 'pending':
             continue
-        try:
-            plan_dt = datetime.strptime(r['plan_date'], '%Y-%m-%d')
-        except Exception:
+        plan_date = r.get('plan_date')
+        ticker = r.get('ticker')
+        if not (plan_date and ticker):
             continue
-        days_since = (datetime.now() - plan_dt).days
-        if days_since < 5:
-            continue  # too soon to evaluate
+        d1 = _next_session_date(plan_date)
+        if not d1:
+            continue  # next session hasn't happened yet → leave pending
 
-        # Look at portfolio.json's holding for this ticker
+        # D price: the plan's recorded sim_entry (≈ D close); fall back to D's snapshot.
         try:
-            pf = json.loads((WS / 'portfolio.json').read_text())
+            price_d = float(r.get('sim_entry_price') or 0) or None
         except Exception:
-            continue
-        all_holdings = (pf['portfolios']['hk_stocks']['holdings'] +
-                        pf['portfolios']['us_stocks']['holdings'])
-        h = next((x for x in all_holdings if x['ticker'] == r['ticker']), None)
-        if not h:
+            price_d = None
+        if not price_d:
+            price_d = _snapshot_price(plan_date, ticker)
+        price_d1 = _snapshot_price(d1, ticker)
+
+        if not price_d or not price_d1:
             r['outcome'] = 'unknown'
+            r['pnl_5d'] = ''
             r['updated_at'] = datetime.now().isoformat()
             updated += 1
             continue
 
-        # Simulate outcome: did the action "win" 5 days later?
-        # cut / trim: win if current_price < sim_entry_price (sold high)
-        # add_only_on_trigger: win if current_price > sim_entry_price
-        # hold_and_watch / t_only: win if pnl_pct > 0 (price went up after we decided to hold)
-        bucket = r.get('bucket', '')
-        cur = h.get('current_price', 0)
-        try:
-            entry = float(r.get('sim_entry_price') or 0)
-        except Exception:
-            entry = 0
-
-        outcome = 'unknown'
-        pnl_5d = ''
-        if bucket in ('cut', 'trim_on_rebound', 't_only') and entry:
-            pnl_5d_val = (entry - cur) / entry * 100  # positive = sold high, good
-            outcome = 'win' if pnl_5d_val > 0 else 'loss'
-            pnl_5d = round(pnl_5d_val, 2)
-        elif bucket == 'add_only_on_trigger' and entry:
-            pnl_5d_val = (cur - entry) / entry * 100
-            outcome = 'win' if pnl_5d_val > 0 else 'loss'
-            pnl_5d = round(pnl_5d_val, 2)
-        elif bucket == 'hold_and_watch':
-            pnl_5d_val = h.get('today_change_pct', 0)  # rough proxy
-            outcome = 'win' if pnl_5d_val >= 0 else 'loss'
-            pnl_5d = round(pnl_5d_val, 2)
-
-        r['outcome'] = outcome
-        r['pnl_5d'] = pnl_5d
+        ret = (price_d1 - price_d) / price_d * 100.0   # next-session asset return
+        bucket = (r.get('bucket') or '').lower()
+        if bucket in ('cut', 'trim_on_rebound'):
+            benefit = -ret                              # selling helped if it fell
+        else:                                           # add / hold / t_only / watch
+            benefit = ret
+        r['outcome'] = 'win' if benefit > 0 else 'loss'
+        r['pnl_5d'] = round(benefit, 2)
         # Auto-detect followed by comparing portfolio.json shares (git history)
         if (r.get('followed') or 'unknown').lower() == 'unknown':
             r['followed'] = _detect_followed(r)
