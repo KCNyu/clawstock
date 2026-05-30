@@ -1,12 +1,15 @@
 name: Macro Scan
 
-# Daily 23:45 UTC (= 07:45 HKT, 15 min before brief).
+# 23:45 UTC Sun–Thu = 07:45 HKT Mon–Fri, 15 min before the 08:00 HKT brief.
+# dow is 0-4 (NOT 1-5): GH Action cron is UTC, and 23:45 UTC + 8h wraps to the NEXT
+# HKT day — so 1-5 (Mon–Fri UTC) would fire Tue–Sat HKT and MISS Monday's brief.
+# Verify any schedule change with: ./check_crons.sh --timeline
 # VIX / 10Y yield / DXY / Fear & Greed / major indices snapshot.
 # Free public APIs, no key. Writes assets/data/macro.json — consumed by
 # brief preflight as macro context.
 on:
   schedule:
-    - cron: '45 23 * * 1-5'
+    - cron: '45 23 * * 0-4'
   workflow_dispatch:
 
 # Serialize with other commit-pushing workflows
@@ -47,10 +50,4 @@ jobs:
           python3 scripts/data/build_dashboard.py
           git add assets/data/dashboard.json
           git commit -m "macro: daily snapshot $(date -u +%Y-%m-%d) + dashboard rebuild"
-          for i in 1 2 3 4 5; do
-            if git push; then exit 0; fi
-            echo "push attempt $i lost race, rebasing…"
-            git pull --rebase origin master
-            sleep $((i*2))
-          done
-          exit 1
+          bash scripts/data/safe_push.sh

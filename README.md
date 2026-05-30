@@ -140,6 +140,10 @@ next rebuild and is never authoritative for portfolio numbers (those live in `po
 > GH Actions scheduled crons routinely fire **1–2 h late** — no job relies on tight inter-job ordering;
 > the brief fallback, for instance, waits 25 min past the openclaw brief before assuming it's missing.
 
+> **One view of all three schedulers:** `./check_crons.sh --timeline` merges openclaw + GH Actions +
+> system crontab into a single HKT-normalized timeline — applying the UTC→HKT day-of-week shift, so a
+> GH Action written `* * 1-5` (UTC) is shown on its *real* HKT firing days. (Run history: `./check_crons.sh`.)
+
 ---
 
 ## 📂 Repository layout

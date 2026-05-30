@@ -26,19 +26,5 @@ fi
 git commit -q -m "memory: dreaming 促进自动提交 $(TZ=Asia/Hong_Kong date +%Y-%m-%d)" || { echo "$(date -Is) commit 失败"; exit 1; }
 echo "$(date -Is) dreaming-commit: 已提交 $(git rev-parse --short HEAD)"
 
-for i in 1 2 3; do
-  if git push origin master 2>/dev/null; then
-    echo "$(date -Is) dreaming-commit: pushed (attempt $i)"
-    exit 0
-  fi
-  echo "$(date -Is) push 第 $i 次被拒,autostash rebase 重试…"
-  # rebase.autoStash 自动 stash 宿主未暂存改动、rebase、再恢复 — 绕开脏工作区拒跑
-  if ! git -c rebase.autoStash=true pull --rebase origin master 2>&1 | tail -2; then
-    echo "$(date -Is) dreaming-commit: rebase 冲突,留本地提交不推送 (下次或手动处理)"
-    git rebase --abort 2>/dev/null || true
-    exit 2
-  fi
-  sleep $((i * 3))
-done
-echo "$(date -Is) dreaming-commit: 3 次仍失败,留本地"
-exit 1
+# 走统一的 safe_push.sh(已带 rebase.autoStash,自己绕开宿主脏工作区);真冲突它 exit 2 留本地。
+exec bash "$WS/scripts/data/safe_push.sh"

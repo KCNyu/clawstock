@@ -8,7 +8,10 @@ name: Sentiment Scan
 # Tavily / scrapling reserved for ad-hoc deeper queries.
 on:
   schedule:
-    - cron: '30 23 * * 1-5'  # weekdays only — sentiment moves on trading days
+    # 23:30 UTC Sun–Thu = 07:30 HKT Mon–Fri (30 min before brief). dow 0-4 not 1-5:
+    # 23:30 UTC + 8h wraps to next HKT day → 1-5 would fire Tue–Sat, missing Monday.
+    # Check with: ./check_crons.sh --timeline
+    - cron: '30 23 * * 0-4'
   workflow_dispatch:
 
 # Serialize with other commit-pushing workflows
@@ -49,11 +52,4 @@ jobs:
           python3 scripts/data/build_dashboard.py
           git add assets/data/dashboard.json
           git commit -m "sentiment: daily Reddit + Google News scan $(date -u +%Y-%m-%d) + dashboard rebuild"
-          for i in 1 2 3 4 5; do
-            if git push; then exit 0; fi
-            echo "push attempt $i lost race, rebasing…"
-            git pull --rebase origin master
-            sleep $((i*2))
-          done
-          echo "push failed after retries"
-          exit 1
+          bash scripts/data/safe_push.sh
