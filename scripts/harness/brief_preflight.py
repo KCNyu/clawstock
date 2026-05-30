@@ -479,17 +479,27 @@ def _snapshot_price(date_iso, ticker):
     return None
 
 
-def _next_session_date(plan_date):
-    """First snapshot date strictly after plan_date (snapshots exist one-per-trading-
-    session, so this IS the next session — weekends/holidays skipped for free).
-    None if no later snapshot exists yet (next session hasn't happened)."""
+def _session_dates_after(plan_date):
+    """Sorted snapshot dates strictly after plan_date. Snapshots are one-per-trading-
+    session, so [0] is the next session (T+1), [4] is T+5 — weekends/holidays skipped."""
     import glob, os
-    dates = sorted(os.path.basename(p)[:-5]
-                   for p in glob.glob(str(WS / 'memory' / 'snapshots' / '20*.json')))
-    for d in dates:
-        if d > plan_date:
-            return d
-    return None
+    return [os.path.basename(p)[:-5]
+            for p in sorted(glob.glob(str(WS / 'memory' / 'snapshots' / '20*.json')))
+            if os.path.basename(p)[:-5] > plan_date]
+
+
+def _next_session_date(plan_date):
+    s = _session_dates_after(plan_date)
+    return s[0] if s else None
+
+
+def _benefit_pct(bucket, price_d, price_dn):
+    """Signed 'benefit of following the call' % at some later session.
+    cut/trim: sold at D → benefit if it fell. add/hold/t_only/watch: benefit if it rose."""
+    if not price_d or not price_dn:
+        return None
+    ret = (price_dn - price_d) / price_d * 100.0
+    return -ret if bucket in ('cut', 'trim_on_rebound') else ret
 
 
 def _resolve_pending_outcomes():
@@ -503,8 +513,11 @@ def _resolve_pending_outcomes():
       cut / trim          → sold at D; win if the asset FELL by D+1 (dodged the drop)
       add_only_on_trigger → bought at D; win if it ROSE by D+1
       hold_and_watch/t_only/watch → kept exposure; win if it ROSE (≥0) by D+1
-    The `pnl_5d` column (legacy name; kept to avoid a cross-file/​frontend rename) now
-    stores the signed *benefit of following* %, so positive always = the call helped.
+    Two legacy-named columns now hold "benefit of following %" (positive = the call
+    helped), at two horizons (kept the old names to avoid a cross-file/frontend rename):
+      pnl_5d  → T+1 (next session) — the PRIMARY outcome, drives win/loss
+      pnl_30d → T+5 (5th session)  — SECONDARY thesis-durability lens, backfilled as
+                soon as 5 sessions exist (even for rows already settled at T+1)
     Returns updated row count."""
     calib_path = WS / 'memory' / 'calibration.csv'
     if not calib_path.exists():
@@ -519,15 +532,12 @@ def _resolve_pending_outcomes():
 
     updated = 0
     for r in rows:
-        if r.get('outcome') != 'pending':
-            continue
         plan_date = r.get('plan_date')
         ticker = r.get('ticker')
         if not (plan_date and ticker):
             continue
-        d1 = _next_session_date(plan_date)
-        if not d1:
-            continue  # next session hasn't happened yet → leave pending
+        bucket = (r.get('bucket') or '').lower()
+        sessions = _session_dates_after(plan_date)
 
         # D price: the plan's recorded sim_entry (≈ D close); fall back to D's snapshot.
         try:
@@ -536,30 +546,34 @@ def _resolve_pending_outcomes():
             price_d = None
         if not price_d:
             price_d = _snapshot_price(plan_date, ticker)
-        price_d1 = _snapshot_price(d1, ticker)
 
-        if not price_d or not price_d1:
-            r['outcome'] = 'unknown'
-            r['pnl_5d'] = ''
+        row_changed = False
+
+        # --- PRIMARY: settle pending rows at T+1 (next session) ---
+        if r.get('outcome') == 'pending' and sessions:
+            price_d1 = _snapshot_price(sessions[0], ticker)
+            ben1 = _benefit_pct(bucket, price_d, price_d1)
+            if ben1 is None:
+                r['outcome'] = 'unknown'; r['pnl_5d'] = ''
+            else:
+                r['outcome'] = 'win' if ben1 > 0 else 'loss'
+                r['pnl_5d'] = round(ben1, 2)
+            if (r.get('followed') or 'unknown').lower() == 'unknown':
+                r['followed'] = _detect_followed(r)
+                if r['followed'] in ('true', 'false'):
+                    r['followed_at'] = datetime.now().isoformat() + ' (auto)'
+            row_changed = True
+
+        # --- SECONDARY: backfill T+5 into pnl_30d once 5 sessions exist (any row) ---
+        if not (r.get('pnl_30d') or '').strip() and len(sessions) >= 5:
+            ben5 = _benefit_pct(bucket, price_d, _snapshot_price(sessions[4], ticker))
+            if ben5 is not None:
+                r['pnl_30d'] = round(ben5, 2)
+                row_changed = True
+
+        if row_changed:
             r['updated_at'] = datetime.now().isoformat()
             updated += 1
-            continue
-
-        ret = (price_d1 - price_d) / price_d * 100.0   # next-session asset return
-        bucket = (r.get('bucket') or '').lower()
-        if bucket in ('cut', 'trim_on_rebound'):
-            benefit = -ret                              # selling helped if it fell
-        else:                                           # add / hold / t_only / watch
-            benefit = ret
-        r['outcome'] = 'win' if benefit > 0 else 'loss'
-        r['pnl_5d'] = round(benefit, 2)
-        # Auto-detect followed by comparing portfolio.json shares (git history)
-        if (r.get('followed') or 'unknown').lower() == 'unknown':
-            r['followed'] = _detect_followed(r)
-            if r['followed'] in ('true', 'false'):
-                r['followed_at'] = datetime.now().isoformat() + ' (auto)'
-        r['updated_at'] = datetime.now().isoformat()
-        updated += 1
 
     if updated:
         with open(calib_path, 'w', encoding='utf-8', newline='') as f:
@@ -600,6 +614,18 @@ def _advice_track_record(rows, cutoff):
             out['overconfidence_gap'] = round(avg_c - wr, 2)  # >0 = overconfident
         return out
 
+    # Secondary lens: T+5 (5-session) win, from the pnl_30d column (sign = win/loss).
+    # A call that wins T+1 but loses T+5 = right for a day, wrong on thesis.
+    def _t5num(r):
+        try:
+            return float(r.get('pnl_30d'))
+        except (TypeError, ValueError):
+            return None
+    t5 = [{'bucket': r.get('bucket', ''), 'win': 1 if _t5num(r) > 0 else 0}
+          for r in rows if r.get('plan_date', '') >= cutoff and _t5num(r) is not None]
+    def _wr(seg):
+        return {'n': len(seg), 'win_rate': round(sum(s['win'] for s in seg) / len(seg), 2)} if seg else None
+
     return {
         'horizon': 'T+1 (next session)',
         'n_settled': len(scored),
@@ -612,6 +638,13 @@ def _advice_track_record(rows, cutoff):
                                 for k, lo, hi in [('0.50-0.65', 0.50, 0.65),
                                                   ('0.65-0.75', 0.65, 0.75),
                                                   ('>=0.75', 0.75, 1.01)]},
+        'secondary_T5': {
+            'n': len(t5),
+            'active_signals': _wr([s for s in t5 if s['bucket'] in ACTIVE]),
+            'passive_holds':  _wr([s for s in t5 if s['bucket'] not in ACTIVE]),
+            'note': 'thesis-durability lens at 5 sessions; compare to T+1 — a call that '
+                    'wins T+1 but loses T+5 was right for a day, wrong on thesis.',
+        },
         'note': 'win_rate over ALL settled calls (not just followed). active <0.50 = '
                 'signals add no edge; overconfidence_gap >0 on high bands = trim confidence.',
     }

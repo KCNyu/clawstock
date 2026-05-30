@@ -359,6 +359,7 @@ kcn 标记方式：`python3 scripts/data/mark_followed.py YYYY-MM-DD TICKER BUCK
 - `active_signals.win_rate < 0.50` → 你的 cut/trim/add 信号历史上没 edge，这次主动信号的 confidence 上限压到 ≤0.60、并在理由里直说"主动信号近 N 次仅 X% 胜率"。
 - 某 `per_confidence_band` 的 `overconfidence_gap > 0.15`(尤其 `>=0.75` 档)→ 你在那个信心档系统性过度自信,本次同档 confidence 下调该 gap 的量。
 - 诚实呈现给 kcn：主动 vs 被动胜率对比 + 一句"模型主动信号目前是否值得听"。样本 < ~20 时注明"样本小,方向性参考"。
+- 同时看 `advice_track_record.secondary_T5`(T+5 副镜):若主动信号 **T+1 和 T+5 都 <0.50**，说明不是单日噪声、是真没 edge,措辞更硬;若 T+1 高但 T+5 低 = "对了一天、看错 thesis"，提醒 next-session 触发可设更紧/更快了结。
 
 #### Next-Session Plan（可交易，不是观察清单）
 
