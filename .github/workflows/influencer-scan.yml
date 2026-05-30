@@ -3,13 +3,14 @@ name: Influence Radar (Trump / Musk)
 # Market-moving statements from high-impact figures (Trump Truth Social原帖 +
 # Musk via news proxy), LLM-filtered for relevance + cross-matched to holdings.
 # Runs twice on (HKT) weekdays:
-#   23:40 UTC Sun–Thu = 07:40 HKT Mon–Fri  → 20 min before the 08:00 HKT daily brief
+#   21:40 UTC Sun–Thu = 05:40 HKT Mon–Fri  → ~2.3h before the 08:00 HKT brief (buffer for
+#                                            GH Actions' 1–2h scheduled-cron delay)
 #   12:50 UTC Mon–Fri = 20:50 HKT Mon–Fri  → 10 min before US news digest / US open prep
-# First cron is dow 0-4 (wraps to next HKT day; 1-5 would miss Monday's brief). Second
-# cron does NOT wrap (12:50+8=20:50 same day) so it stays 1-5. ./check_crons.sh --timeline
+# First cron is dow 0-4 (21:40+8h wraps to next HKT day; 1-5 would miss Monday's brief).
+# Second cron does NOT wrap (12:50+8=20:50 same day) so it stays 1-5. ./check_crons.sh --timeline
 on:
   schedule:
-    - cron: '40 23 * * 0-4'
+    - cron: '40 21 * * 0-4'
     - cron: '50 12 * * 1-5'
   workflow_dispatch:
 

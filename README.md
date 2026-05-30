@@ -13,6 +13,8 @@
 
 [**🎯 Live Dashboard**](https://kcnyu.github.io/clawock/) · [**📅 Daily Briefs**](https://kcnyu.github.io/clawock/briefs.html) · [**🧠 Architecture**](#-architecture)
 
+**English** · [**简体中文**](README.zh.md)
+
 <br>
 
 <a href="https://kcnyu.github.io/clawock/">
@@ -126,9 +128,9 @@ next rebuild and is never authoritative for portfolio numbers (those live in `po
 | Workflow | When (HKT) | Writes / does |
 |---|---|---|
 | `brief-fallback.yml` | 08:25 weekday | Regenerate the daily brief via Xiaomi **if** openclaw didn't produce one |
-| `sentiment-scan.yml` | 07:30 weekday | `sentiment.json` (Reddit + Google News) → rebuilds `dashboard.json` |
-| `macro-scan.yml` | 07:45 weekday | `macro.json` (VIX / 10Y / DXY / Fear&Greed) → rebuilds `dashboard.json` |
-| `influencer-scan.yml` | 07:40 + 20:50 weekday | `influencer_feed.json` (Trump Truth Social + Musk proxy, LLM-filtered) → rebuilds `dashboard.json` |
+| `sentiment-scan.yml` | 05:30 weekday | `sentiment.json` (Reddit + Google News) → rebuilds `dashboard.json` |
+| `macro-scan.yml` | 05:45 weekday | `macro.json` (VIX / 10Y / DXY / Fear&Greed) → rebuilds `dashboard.json` |
+| `influencer-scan.yml` | 05:40 + 20:50 weekday | `influencer_feed.json` (Trump Truth Social + Musk proxy, LLM-filtered) → rebuilds `dashboard.json` |
 | `news-digest.yml` | 21:00 weekday | `us_news_digest.json` (Xiaomi-distilled, GNews fallback) |
 | `eod-archive.yml` | Sat 06:00 | `memory/archive/eod-history.csv` — append-only audit trail |
 | `cron-health.yml` | 17:00 weekday | Read-only: expected cron count vs actual commits → red badge + email on drift |
@@ -137,8 +139,10 @@ next rebuild and is never authoritative for portfolio numbers (those live in `po
 | `screenshot-refresh.yml` | Mon 06:00 | `docs/dashboard-{preview,mobile}.png` so the README preview never drifts >7 days |
 | `harness-regression.yml` | on push / PR | Read-only schema + compile gate |
 
-> GH Actions scheduled crons routinely fire **1–2 h late** — no job relies on tight inter-job ordering;
-> the brief fallback, for instance, waits 25 min past the openclaw brief before assuming it's missing.
+> GH Actions scheduled crons routinely fire **1–2 h late** — no job relies on tight inter-job ordering.
+> The pre-brief data jobs (sentiment/macro/influencer) are scheduled ~2 h *before* the 08:00 brief, not
+> 30 min, precisely to absorb that delay; the brief fallback waits 25 min *after* the openclaw brief before
+> assuming it's missing.
 
 > **One view of all three schedulers:** `./check_crons.sh --timeline` merges openclaw + GH Actions +
 > system crontab into a single HKT-normalized timeline — applying the UTC→HKT day-of-week shift, so a
@@ -175,7 +179,8 @@ clawock/
 │  ├─ data/                     fetchers + build_dashboard.py + portfolio_risk_metrics.py +
 │  │                            fetch_{macro,sentiment,catalysts,fx,influencer_feed}.py +
 │  │                            xiaomi_llm.py + gh_action_* (GH Action LLM entry points) +
-│  │                            safe_push.sh + commit_dreaming.sh + gc_sessions.py + safe_io (atomic)
+│  │                            safe_push.sh + commit_dreaming.sh + gc_sessions.py + safe_io (atomic) +
+│  │                            cron_timeline.py (merged schedule view) + shoot_dashboard.js (screenshot)
 │  ├─ harness/                  preflight + postflight pairs (4 pairs) + report_watchdog.py + _harness_common
 │  └─ legacy/                   superseded scripts kept as reference
 │

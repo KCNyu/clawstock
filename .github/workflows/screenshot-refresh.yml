@@ -36,30 +36,7 @@ jobs:
       - name: Capture desktop + mobile
         run: |
           mkdir -p docs
-          cat > /tmp/shoot.js << 'JS'
-          const { chromium, devices } = require('playwright');
-          (async () => {
-            const browser = await chromium.launch();
-            // Desktop 1440x900
-            const desk = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-            const dp = await desk.newPage();
-            await dp.goto('https://kcnyu.github.io/clawock/', { waitUntil: 'networkidle', timeout: 45000 });
-            await dp.waitForTimeout(3500);  // let ECharts finish all animations
-            await dp.screenshot({ path: 'docs/dashboard-preview.png', fullPage: false });
-            await desk.close();
-
-            // Mobile iPhone 12
-            const iphone = devices['iPhone 12'];
-            const mob = await browser.newContext({ ...iphone });
-            const mp = await mob.newPage();
-            await mp.goto('https://kcnyu.github.io/clawock/', { waitUntil: 'networkidle', timeout: 45000 });
-            await mp.waitForTimeout(3500);
-            await mp.screenshot({ path: 'docs/dashboard-mobile.png', fullPage: true });
-            await browser.close();
-            console.log('done');
-          })().catch(e => { console.error(e); process.exit(1); });
-          JS
-          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node /tmp/shoot.js
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node scripts/data/shoot_dashboard.js
 
       - name: Commit if changed
         run: |
@@ -71,11 +48,4 @@ jobs:
             exit 0
           fi
           git commit -m "docs: weekly dashboard screenshot refresh $(date -u +%Y-%m-%d)"
-          for i in 1 2 3 4 5; do
-            if git push; then exit 0; fi
-            echo "push attempt $i lost race, rebasing…"
-            git pull --rebase origin master
-            sleep $((i*2))
-          done
-          echo "push failed after retries"
-          exit 1
+          bash scripts/data/safe_push.sh

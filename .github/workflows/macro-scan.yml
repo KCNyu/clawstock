@@ -1,15 +1,18 @@
 name: Macro Scan
 
-# 23:45 UTC Sun–Thu = 07:45 HKT Mon–Fri, 15 min before the 08:00 HKT brief.
-# dow is 0-4 (NOT 1-5): GH Action cron is UTC, and 23:45 UTC + 8h wraps to the NEXT
-# HKT day — so 1-5 (Mon–Fri UTC) would fire Tue–Sat HKT and MISS Monday's brief.
-# Verify any schedule change with: ./check_crons.sh --timeline
+# 21:45 UTC Sun–Thu = 05:45 HKT Mon–Fri, ~2.25h before the 08:00 HKT (00:00 UTC) brief.
+# WHY this early (not 15 min before): GH Action scheduled crons routinely fire 1–2h
+# LATE, so a job nominally "just before the brief" used to actually run AFTER it
+# (2026-05-30: macro nominally 07:45 HKT ran 09:30 HKT → brief got yesterday's macro).
+# 21:xx UTC gives a delay-absorbing buffer while still being after the US close even in
+# winter EST (16:00 EST = 21:00 UTC; summer EDT close = 20:00 UTC).
+# dow is 0-4 (NOT 1-5): cron is UTC and 21:45+8h wraps to the NEXT HKT day, so 1-5 would
+# fire Tue–Sat HKT and miss Monday. Verify any change with: ./check_crons.sh --timeline
 # VIX / 10Y yield / DXY / Fear & Greed / major indices snapshot.
-# Free public APIs, no key. Writes assets/data/macro.json — consumed by
-# brief preflight as macro context.
+# Free public APIs, no key. Writes assets/data/macro.json — consumed by brief preflight.
 on:
   schedule:
-    - cron: '45 23 * * 0-4'
+    - cron: '45 21 * * 0-4'
   workflow_dispatch:
 
 # Serialize with other commit-pushing workflows

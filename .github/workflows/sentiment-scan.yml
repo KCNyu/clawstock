@@ -1,17 +1,17 @@
 name: Sentiment Scan
 
-# Daily 23:30 UTC (= 07:30 HKT, ~30 min before brief).
+# 21:30 UTC Sun–Thu = 05:30 HKT Mon–Fri, ~2.5h before the 08:00 HKT (00:00 UTC) brief.
+# Scheduled this early to absorb GH Actions' typical 1–2h scheduled-cron delay — a job
+# nominally 30 min before the brief used to land AFTER the punctual openclaw brief.
 # Per-ticker sentiment from FREE public sources:
 #   • Reddit JSON   (US: wsb / stocks / investing)
 #   • Google News RSS (US: English; HK: 中文 by Chinese name + EN by ticker)
 # Writes assets/data/sentiment.json (consumed by agent Mode 5 + dashboard).
-# Tavily / scrapling reserved for ad-hoc deeper queries.
 on:
   schedule:
-    # 23:30 UTC Sun–Thu = 07:30 HKT Mon–Fri (30 min before brief). dow 0-4 not 1-5:
-    # 23:30 UTC + 8h wraps to next HKT day → 1-5 would fire Tue–Sat, missing Monday.
-    # Check with: ./check_crons.sh --timeline
-    - cron: '30 23 * * 0-4'
+    # dow 0-4 not 1-5: 21:30 UTC + 8h wraps to the next HKT day → 1-5 would fire Tue–Sat,
+    # missing Monday. Verify with: ./check_crons.sh --timeline
+    - cron: '30 21 * * 0-4'
   workflow_dispatch:
 
 # Serialize with other commit-pushing workflows
