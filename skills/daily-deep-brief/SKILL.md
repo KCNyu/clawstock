@@ -323,6 +323,16 @@ context.json 关键字段：
 - 每行末尾 → 后必须是**对当前持仓**的具体含义（不是教科书定义）
 - Fed press 段，如果今日无新发布或与利率无关（如人事任命）可省略最后一行
 
+**🧭 Regime guard(REQUIRED — 本段第一行)**：`context.macro.regime` 给出 `label`(risk_on/neutral/risk_off)+ `reasons`。本段开头必须写一行：
+```
+🧭 Regime: {label}({reasons 拼接}) → {该 regime 下的决策默认}
+```
+据 regime 收敛主动操作(calibration 实测 hold 在 risk_on 下 76%、主动信号仅 40%):
+- **risk_on** → **默认动作 = HOLD,别跟趋势对着干**。cut/trim 必须有 disconfirming 硬催化才允许(见证伪铁律);所有主动 call(cut/trim/add)confidence **上限 ≤0.55**,并在 rationale 写"risk_on regime,主动信号历史 ~40%,倾向不动"。牛市砍仓结构性吃亏。
+- **neutral** → 正常按 frame 判断,无额外封顶。
+- **risk_off** → 防御优先,cut/trim 门槛放宽(可信度提高),add 需更强触发;杠杆仓位优先减。
+- regime 缺失(null,数据 stale)→ 写"regime 未知,主动操作按常规谨慎"并跳过封顶。
+
 #### ▎社交舆情速读 (REQUIRED if `context.sentiment.tickers` 非空)
 
 从 `context.sentiment.tickers` 抓数，**只列有信号的票**（context 已剔掉 0 mention + 0 news 的）。
