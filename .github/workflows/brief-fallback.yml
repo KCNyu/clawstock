@@ -1,11 +1,13 @@
 name: Brief Fallback (Xiaomi)
 
-# 08:05 HKT = 00:05 UTC 工作日, 晚 openclaw 5 分钟兜底
+# 08:25 HKT = 00:25 UTC 工作日, 晚 openclaw 25 分钟兜底
+# 窗口从 5min 拉宽到 25min (2026-05-30): 主 cron 08:00 启动但 LLM 生成常要几分钟,
+# 5min 太窄会在主 brief 落地前误判"没出"→重复生成→push 撞主 cron commit 的 rebase 冲突
 # 如果今天 git log 已有 'daily deep brief YYYY-MM-DD' commit → skip
 # 否则用 Xiaomi 直跑 brief
 on:
   schedule:
-    - cron: '5 0 * * 1-5'
+    - cron: '25 0 * * 1-5'
   workflow_dispatch:
 
 concurrency:
