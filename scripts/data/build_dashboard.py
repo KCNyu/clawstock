@@ -1346,8 +1346,12 @@ def main():
             'hk': hk_conc,
         },
         'holdings': {
-            'us': us_h,
-            'hk': hk_h,
+            # Only ship live positions to the client — shares=0 (fully-exited) names keep
+            # their trades[] in portfolio.json for realized-P&L, but the frontend never
+            # renders them (every consumer filters is_active), so excluding them here just
+            # trims dashboard.json. Intermediate us_h/hk_h above stay full for compute_hhi.
+            'us': [h for h in us_h if (h.get('shares') or 0) > 0],
+            'hk': [h for h in hk_h if (h.get('shares') or 0) > 0],
         },
         'snapshots': snapshots,
         'snapshots_total': total_snapshots_count(),

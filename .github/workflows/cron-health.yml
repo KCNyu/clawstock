@@ -47,18 +47,6 @@ jobs:
           sed -i "s|JOBS_PATH = '/root/.openclaw/cron/jobs.json'|JOBS_PATH = '/tmp/openclaw-mock/cron/jobs.json'|" scripts/data/cron_health_check.py
           sed -i "s|WS = '/root/.openclaw/workspace'|WS = '.'|" scripts/data/cron_health_check.py
           python3 scripts/data/cron_health_check.py
-
-      - name: Comment on failure (open issue if not exist)
-        if: failure()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          DATE=$(date -u +%Y-%m-%d)
-          # 检查今天是否已经有 issue
-          existing=$(gh issue list --label cron-miss --state open --search "$DATE" --json number --jq '.[0].number' || echo "")
-          if [ -z "$existing" ]; then
-            gh issue create \
-              --title "Cron miss detected $DATE" \
-              --body "EOD 巡检发现今日 cron 有缺漏。看 [Actions run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) 详情。" \
-              --label "cron-miss,P2" || true
-          fi
+          # On a miss this exits non-zero → workflow red (README badge). We deliberately
+          # do NOT open an issue: per kcn's "no per-cron alerts" preference the daily review
+          # covers it, and the mock jobs.json above is an approximation prone to false reds.
