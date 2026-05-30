@@ -110,6 +110,7 @@ def check_plan_json_schema(r):
     bad = []
     VALID_BUCKETS = {'cut','trim_on_rebound','hold_and_watch','t_only','add_only_on_trigger'}
     VALID_TRIGGERS = {'open','price_above','price_below','index_breakdown','event','manual'}
+    VALID_DRIVERS = {'technical','catalyst','sentiment','influencer','macro','peer'}
     for p in plans:
         try:
             d = json.loads(open(p).read())
@@ -122,6 +123,8 @@ def check_plan_json_schema(r):
                 bad.append(f'{Path(p).name}: bad bucket "{a["bucket"]}"')
             if a.get('trigger_type') and a['trigger_type'] not in VALID_TRIGGERS:
                 bad.append(f'{Path(p).name}: bad trigger_type "{a["trigger_type"]}"')
+            if a.get('driven_by') and a['driven_by'] not in VALID_DRIVERS:
+                bad.append(f'{Path(p).name}: bad driven_by "{a["driven_by"]}"')
             c = a.get('confidence')
             if c is not None:
                 try:

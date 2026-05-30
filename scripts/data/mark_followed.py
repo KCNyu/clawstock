@@ -30,7 +30,7 @@ from datetime import datetime
 
 WS = '/root/.openclaw/workspace'
 CSV = os.path.join(WS, 'memory', 'calibration.csv')
-FIELDS = ['plan_date','ticker','bucket','trigger_type','trigger_price',
+FIELDS = ['plan_date','ticker','bucket','trigger_type','driven_by','trigger_price',
           'confidence','sim_entry_price','outcome','pnl_5d','pnl_30d',
           'followed','followed_at','updated_at']
 

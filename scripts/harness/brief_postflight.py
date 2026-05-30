@@ -36,6 +36,12 @@ VALID_BUCKETS = {
 VALID_TRIGGER_TYPES = {
     'open', 'price_above', 'price_below', 'index_breakdown', 'event', 'manual',
 }
+# driven_by = which data source actually drove the call (vs trigger_type = the price
+# mechanism). Lets calibration answer "does the news feed add edge per source".
+# '' allowed (legacy/backfill); 'technical' is the default for chart/MA/RSI-driven calls.
+VALID_DRIVERS = {
+    '', 'technical', 'catalyst', 'sentiment', 'influencer', 'macro', 'peer',
+}
 REQUIRED_MARKDOWN_TOKENS = [
     'Header', 'Tier 1', 'Tier 2', 'Tier 3', 'Judge', 'Confidence', 'Next-Session',
     '同行扫描',  # NEW: peer rotation section
@@ -71,6 +77,9 @@ def validate_plan_json(path):
             issues.append(f'{tag}: bucket "{a.get("bucket")}" 不合法')
         if a.get('trigger_type') not in VALID_TRIGGER_TYPES:
             issues.append(f'{tag}: trigger_type "{a.get("trigger_type")}" 不合法')
+        if a.get('driven_by', '') not in VALID_DRIVERS:
+            issues.append(f'{tag}: driven_by "{a.get("driven_by")}" 不合法 '
+                          f'(允许 {sorted(VALID_DRIVERS - {""})})')
         conf = a.get('confidence')
         if conf is not None and not (0.0 <= float(conf) <= 1.0):
             issues.append(f'{tag}: confidence {conf} 不在 [0, 1]')
@@ -188,7 +197,7 @@ def log_calibration(today):
 
     calib_path = WS / 'memory' / 'calibration.csv'
     new_file = not calib_path.exists()
-    fieldnames = ['plan_date','ticker','bucket','trigger_type','trigger_price',
+    fieldnames = ['plan_date','ticker','bucket','trigger_type','driven_by','trigger_price',
                   'confidence','sim_entry_price','outcome','pnl_5d','pnl_30d',
                   'followed','followed_at','updated_at']
     rows = []
@@ -213,6 +222,7 @@ def log_calibration(today):
             'ticker':          a.get('ticker'),
             'bucket':          a.get('bucket', ''),
             'trigger_type':    a.get('trigger_type', ''),
+            'driven_by':       a.get('driven_by', ''),  # which data source drove the call
             'trigger_price':   a.get('trigger_price', ''),
             'confidence':      a.get('confidence', ''),
             'sim_entry_price': sim_entry,

@@ -167,6 +167,19 @@ context.json 关键字段：
 
 每个 bucket 内：ticker + 1 行具体理由 + 1 行触发价/条件。
 
+**每个 action 还必须带 `driven_by` 字段(plan.json)——这个 call 主要被哪个数据源驱动**(写进 calibration,日后能算出"哪个消息源真有 edge"):
+
+| driven_by | 含义 |
+|---|---|
+| `technical` | 价格/MA/RSI/缺口/量价(默认值；纯图表驱动归这里) |
+| `catalyst` | 硬事件：财报/指引/SEC/EDGAR/M&A/产品发布(catalysts + 新闻里的硬催化) |
+| `sentiment` | 软情绪：Reddit 热度 / Google News 情绪 / 散户温度 |
+| `influencer` | Trump 原帖 / Musk 言论 |
+| `macro` | VIX/利率/DXY/指数 regime |
+| `peer` | 相对强弱 / 板块轮动(同行扫描驱动) |
+
+规则：**只填主导那一个**(不是把所有沾边的都列上)。若是技术面为主、消息面只是佐证 → 填 `technical`。这个字段决定我们能不能回答"消息面值不值得听",所以要诚实归因,别把图表驱动的 call 贴成 catalyst 来给自己加分。
+
 #### Strategy frame menu — Judge 段必须显式选 1-3 个 per action
 
 让 Judge 明示哪个 strategy frame 在驱动每个 action（traceability，错了能反推），从下面 8 个里选：

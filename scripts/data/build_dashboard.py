@@ -794,6 +794,66 @@ def compute_calibration_by_trigger(window_days=30):
         return empty
 
 
+_CALIB_DRIVERS = ['technical', 'catalyst', 'sentiment', 'influencer', 'macro', 'peer']
+
+
+def compute_calibration_by_driver(window_days=30):
+    """Per-driven_by win/loss/pending breakdown — answers 'which DATA SOURCE has edge'.
+    driven_by attributes each call to technical/catalyst/sentiment/influencer/macro/peer.
+    This is the number that tells us whether the news feed (sentiment/influencer/catalyst)
+    actually beats coin-flip vs plain technical calls (2026-05-30). Mirrors
+    compute_calibration_by_trigger; rows with blank driven_by (legacy) are skipped."""
+    empty = {t: {'n_resolved': 0, 'n_pending': 0, 'wins': 0, 'losses': 0,
+                 'win_rate': None, 'avg_confidence': None} for t in _CALIB_DRIVERS}
+    try:
+        rows = _read_calibration_rows()
+        if not rows:
+            return empty
+        today = datetime.now(timezone.utc).date()
+        out = {t: {'n_resolved': 0, 'n_pending': 0, 'wins': 0, 'losses': 0,
+                   'conf_sum': 0.0, 'conf_n': 0} for t in _CALIB_DRIVERS}
+        for r in rows:
+            try:
+                pd = datetime.strptime(r.get('plan_date', '')[:10], '%Y-%m-%d').date()
+            except Exception:
+                continue
+            if (today - pd).days > window_days:
+                continue
+            drv = (r.get('driven_by') or '').strip()
+            if drv not in out:
+                continue
+            outcome = (r.get('outcome') or '').strip().lower()
+            conf = _to_float(r.get('confidence'))
+            if conf is not None:
+                out[drv]['conf_sum'] += conf
+                out[drv]['conf_n'] += 1
+            if outcome in ('win', 'loss', 'flat'):
+                out[drv]['n_resolved'] += 1
+                if outcome == 'win':
+                    out[drv]['wins'] += 1
+                elif outcome == 'loss':
+                    out[drv]['losses'] += 1
+            elif outcome == 'pending':
+                out[drv]['n_pending'] += 1
+        result = {}
+        for t, agg in out.items():
+            decided = agg['wins'] + agg['losses']
+            wr = round(agg['wins'] / decided, 4) if decided else None
+            avg_c = round(agg['conf_sum'] / agg['conf_n'], 3) if agg['conf_n'] else None
+            result[t] = {
+                'n_resolved': agg['n_resolved'],
+                'n_pending': agg['n_pending'],
+                'wins': agg['wins'],
+                'losses': agg['losses'],
+                'win_rate': wr,
+                'avg_confidence': avg_c,
+            }
+        return result
+    except Exception as e:
+        print(f'  warn: compute_calibration_by_driver failed: {e}', file=sys.stderr)
+        return empty
+
+
 def compute_weight_confidence(portfolio, window_days=30):
     """Per-ticker current_weight × avg_confidence (last N days), to spot
     'high weight + low confidence' red flags at a glance.
@@ -1382,6 +1442,7 @@ def main():
     }
     out['calibration'] = compute_calibration()
     out['calibration_by_trigger'] = compute_calibration_by_trigger()
+    out['calibration_by_driver'] = compute_calibration_by_driver()
     out['recent_plan_actions'] = recent_actions_from_csv(limit=20)
     out['plan_timeline'] = compute_plan_timeline(plans, limit=15)
     out['weight_confidence'] = compute_weight_confidence(portfolio)

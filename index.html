@@ -1359,6 +1359,12 @@ layout: null
           <div class="empty-state" style="font-size:11px">No trigger data yet.</div>
         </div>
       </div>
+      <div class="trig-block">
+        <div class="trig-title">By Driver — 哪个消息源有 edge (technical/catalyst/sentiment/influencer/macro/peer)</div>
+        <div id="plan-driver-bars">
+          <div class="empty-state" style="font-size:11px">No driver data yet.</div>
+        </div>
+      </div>
     </div>
 
     <div class="card">
@@ -1858,6 +1864,7 @@ layout: null
     renderPlanReview();
     renderPlanTimeline();
     renderCalibByTrigger();
+    renderCalibByDriver();
   }
 
   function renderHeader() {
@@ -3485,6 +3492,52 @@ layout: null
       return;
     }
     // Sort: lowest win rate first (most actionable: "改/砍这类")
+    entries.sort((a, b) => {
+      const aw = a.win_rate == null ? 99 : a.win_rate;
+      const bw = b.win_rate == null ? 99 : b.win_rate;
+      return aw - bw;
+    });
+    const maxTotal = Math.max(...entries.map(e => (e.wins || 0) + (e.losses || 0) + (e.n_pending || 0)));
+    el.innerHTML = entries.map(e => {
+      const total = (e.wins || 0) + (e.losses || 0) + (e.n_pending || 0);
+      const scale = maxTotal > 0 ? total / maxTotal : 0;
+      const winFrac = total ? (e.wins || 0) / total : 0;
+      const lossFrac = total ? (e.losses || 0) / total : 0;
+      const pendFrac = total ? (e.n_pending || 0) / total : 0;
+      const wrTxt = e.win_rate == null
+        ? `pending (${e.n_pending || 0})`
+        : `win ${(e.win_rate * 100).toFixed(0)}% · n=${e.n_resolved}`;
+      const alertCls = (e.win_rate != null && e.win_rate < 0.4 && e.n_resolved >= 2) ? " alert" : "";
+      const confTxt = e.avg_confidence != null ? ` · conf ${(e.avg_confidence * 100).toFixed(0)}%` : "";
+      return `
+        <div class="trig-row">
+          <div class="trig-name">${escapeHtml(e.name)}</div>
+          <div class="trig-bar" style="width:${(scale * 100).toFixed(1)}%; min-width:24px">
+            <div class="seg-win" style="width:${(winFrac * 100).toFixed(1)}%"></div>
+            <div class="seg-loss" style="width:${(lossFrac * 100).toFixed(1)}%"></div>
+            <div class="seg-pending" style="width:${(pendFrac * 100).toFixed(1)}%"></div>
+          </div>
+          <div class="trig-stat${alertCls}">${wrTxt}${confTxt}</div>
+        </div>`;
+    }).join("");
+  }
+
+  // =========================================================
+  // Calibration by Driver (data source) — does the news feed add edge?
+  // =========================================================
+  function renderCalibByDriver() {
+    const el = document.getElementById("plan-driver-bars");
+    if (!el) return;
+    const data = safe(DATA, "calibration_by_driver") || {};
+    const entries = Object.entries(data)
+      .map(([k, v]) => ({ name: k, ...v }))
+      .filter(e => (e.n_resolved || 0) + (e.n_pending || 0) > 0);
+    if (!entries.length) {
+      el.innerHTML = '<div class="empty-state" style="font-size:11px">No driver data yet — '
+        + 'plan actions need a driven_by tag (backfilling from next brief).</div>';
+      return;
+    }
+    // Sort: lowest win rate first (most actionable: 哪个消息源最该降权)
     entries.sort((a, b) => {
       const aw = a.win_rate == null ? 99 : a.win_rate;
       const bw = b.win_rate == null ? 99 : b.win_rate;

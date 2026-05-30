@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T11:18:25.917157Z",
+  "generated_at": "2026-05-30T13:49:28.410915Z",
   "last_updated": "2026/05/30 04:00 HKT",
   "fx": {
     "usdhkd": 7.8356,
@@ -1667,6 +1667,56 @@
       "losses": 3,
       "win_rate": 0.0,
       "avg_confidence": 0.56
+    }
+  },
+  "calibration_by_driver": {
+    "technical": {
+      "n_resolved": 0,
+      "n_pending": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": null,
+      "avg_confidence": null
+    },
+    "catalyst": {
+      "n_resolved": 0,
+      "n_pending": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": null,
+      "avg_confidence": null
+    },
+    "sentiment": {
+      "n_resolved": 0,
+      "n_pending": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": null,
+      "avg_confidence": null
+    },
+    "influencer": {
+      "n_resolved": 0,
+      "n_pending": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": null,
+      "avg_confidence": null
+    },
+    "macro": {
+      "n_resolved": 0,
+      "n_pending": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": null,
+      "avg_confidence": null
+    },
+    "peer": {
+      "n_resolved": 0,
+      "n_pending": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": null,
+      "avg_confidence": null
     }
   },
   "recent_plan_actions": [
