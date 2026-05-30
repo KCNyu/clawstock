@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T07:13:55.488272Z",
+  "generated_at": "2026-05-30T10:51:27.729172Z",
   "last_updated": "2026/05/30 04:00 HKT",
   "fx": {
     "usdhkd": 7.8356,
@@ -1789,6 +1789,12 @@
         "n": 7,
         "win_rate": 0.4286
       }
+    },
+    "vs_baseline": {
+      "n": 67,
+      "llm_win_rate": 0.5224,
+      "hold_baseline_win_rate": 0.5821,
+      "alpha_pp": -6.0
     }
   },
   "calibration_by_trigger": {
@@ -1842,7 +1848,7 @@
       "trigger_type": "price_below",
       "outcome": "pending",
       "pnl_5d": null,
-      "followed": "unknown"
+      "followed": "true"
     },
     {
       "date": "2026-05-29",
@@ -1882,7 +1888,7 @@
       "trigger_type": "price_below",
       "outcome": "pending",
       "pnl_5d": null,
-      "followed": "unknown"
+      "followed": "true"
     },
     {
       "date": "2026-05-29",
@@ -1902,7 +1908,7 @@
       "trigger_type": "price_below",
       "outcome": "pending",
       "pnl_5d": null,
-      "followed": "unknown"
+      "followed": "true"
     },
     {
       "date": "2026-05-29",
@@ -1912,7 +1918,7 @@
       "trigger_type": "price_below",
       "outcome": "pending",
       "pnl_5d": null,
-      "followed": "unknown"
+      "followed": "true"
     },
     {
       "date": "2026-05-28",
@@ -2049,7 +2055,7 @@
       "rationale": "恒科纳入 6/8 催化在即 + rev +159% + UBS 目标1000；但 HHI 集中 + 板块回调，不加仓只上调 stop",
       "outcome": "pending",
       "pnl_5d": null,
-      "followed": "unknown"
+      "followed": "true"
     },
     {
       "date": "2026-05-29",
@@ -2109,7 +2115,7 @@
       "rationale": "+106.9% 浮盈 + Q1 rev $200M +63% + $2.2B backlog + Neutron 首飞在即；52wk high 附近整理",
       "outcome": "pending",
       "pnl_5d": null,
-      "followed": "unknown"
+      "followed": "true"
     },
     {
       "date": "2026-05-29",
@@ -2139,7 +2145,7 @@
       "rationale": "MSFT Q3 beat rev $82.9B +18% Azure +29%；但 2x 杠杆在弱市放大 + MSFT +0% vs self -6.4% divergence",
       "outcome": "pending",
       "pnl_5d": null,
-      "followed": "unknown"
+      "followed": "true"
     },
     {
       "date": "2026-05-29",
@@ -2154,7 +2160,7 @@
       "rationale": "Q1 利润 +40% YoY + JPM Overweight；风电板块温和，400 股小仓 hold",
       "outcome": "pending",
       "pnl_5d": null,
-      "followed": "unknown"
+      "followed": "true"
     },
     {
       "date": "2026-05-28",

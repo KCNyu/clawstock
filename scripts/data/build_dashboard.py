@@ -602,6 +602,7 @@ def compute_calibration():
         'samples': 0,
         'bands': bands_empty,
         'per_bucket': per_bucket_empty,
+        'vs_baseline': None,
     }
     try:
         rows = _read_calibration_rows()
@@ -668,11 +669,37 @@ def compute_calibration():
             win_rate = round(wins / total, 4) if total else 0.0
             per_bucket[b] = {'n': total, 'win_rate': win_rate}
 
+        # vs_baseline: LLM decision win-rate vs passive "hold everything" baseline
+        # (wins whenever the asset rose). Regime-robust edge check. Recover the asset's
+        # return from the stored benefit% (pnl_5d): benefit = ret for hold/add, -ret for
+        # cut/trim. alpha_pp < 0 = active calls did worse than doing nothing.
+        _SELL = {'cut', 'trim_on_rebound'}
+        llm_w = base_w = base_n = 0
+        for r, outcome in resolved:
+            ben = _to_float(r.get('pnl_5d'))
+            if ben is None:
+                continue
+            ret = -ben if (r.get('bucket') or '').strip() in _SELL else ben
+            base_n += 1
+            llm_w += 1 if outcome == 'win' else 0
+            base_w += 1 if ret > 0 else 0
+        vs_baseline = None
+        if base_n:
+            llm_wr = llm_w / base_n
+            base_wr = base_w / base_n
+            vs_baseline = {
+                'n': base_n,
+                'llm_win_rate': round(llm_wr, 4),
+                'hold_baseline_win_rate': round(base_wr, 4),
+                'alpha_pp': round((llm_wr - base_wr) * 100, 1),
+            }
+
         return {
             'brier_30d': brier_30d,
             'samples': n,
             'bands': bands_out,
             'per_bucket': per_bucket,
+            'vs_baseline': vs_baseline,
         }
     except Exception as e:
         print(f'  warn: compute_calibration failed: {e}', file=sys.stderr)

@@ -1370,6 +1370,7 @@ layout: null
         </div>
         <div class="tier" id="brier-tier">—</div>
       </div>
+      <div class="meta" id="alpha-line" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">—</div>
     </div>
   </section>
 
@@ -2496,6 +2497,20 @@ layout: null
     const brierEl = document.getElementById("brier-val");
     const metaEl = document.getElementById("brier-meta");
     const tierEl = document.getElementById("brier-tier");
+    // Alpha vs passive "hold everything" baseline — the regime-robust edge check.
+    const alphaEl = document.getElementById("alpha-line");
+    if (alphaEl) {
+      const vb = cal && cal.vs_baseline;
+      if (vb && vb.alpha_pp != null) {
+        const a = vb.alpha_pp;
+        const col = a > 0 ? "var(--green)" : (a < 0 ? "var(--red)" : "var(--gray)");
+        alphaEl.innerHTML = `🎯 LLM vs 全持有基线 · `
+          + `<b style="color:${col}">alpha ${a > 0 ? "+" : ""}${a}pp</b> `
+          + `<span style="color:var(--text-faint)">(LLM ${Math.round(vb.llm_win_rate*100)}% vs hold ${Math.round(vb.hold_baseline_win_rate*100)}%, n=${vb.n})</span>`;
+      } else {
+        alphaEl.textContent = "🎯 LLM vs 全持有基线 · 数据不足";
+      }
+    }
     if (!cal || cal.brier_30d == null) {
       brierEl.textContent = DASH;
       metaEl.textContent = cal && cal.samples != null

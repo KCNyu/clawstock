@@ -608,6 +608,7 @@ def _advice_track_record(rows, cutoff):
     brief see whether its active cut/trim/add signals actually beat a coin flip and
     whether its high-confidence calls are overconfident (2026-05-30)."""
     ACTIVE = {'cut', 'trim_on_rebound', 'add_only_on_trigger', 'add_on_breakout'}
+    SELL = {'cut', 'trim_on_rebound'}
     scored = []
     for r in rows:
         if r.get('plan_date', '') < cutoff or r.get('outcome') not in ('win', 'loss'):
@@ -616,8 +617,18 @@ def _advice_track_record(rows, cutoff):
             conf = float(r.get('confidence', 0))
         except Exception:
             conf = None
+        # Recover the asset's next-session return from the stored benefit% (pnl_5d):
+        # benefit = ret for hold/add, -ret for cut/trim → ret = ±benefit. The passive
+        # "hold everything" baseline wins whenever the asset rose (ret > 0).
+        try:
+            ben = float(r.get('pnl_5d'))
+            ret = -ben if r.get('bucket', '') in SELL else ben
+            base_win = 1 if ret > 0 else 0
+        except (TypeError, ValueError):
+            base_win = None
         scored.append({'bucket': r.get('bucket', ''), 'confidence': conf,
-                       'win': 1 if r.get('outcome') == 'win' else 0})
+                       'win': 1 if r.get('outcome') == 'win' else 0,
+                       'base_win': base_win})
 
     def _agg(seg):
         if not seg:
@@ -644,9 +655,30 @@ def _advice_track_record(rows, cutoff):
     def _wr(seg):
         return {'n': len(seg), 'win_rate': round(sum(s['win'] for s in seg) / len(seg), 2)} if seg else None
 
+    # vs_baseline: the regime-robust "is the LLM useful?" number. Compare the LLM's
+    # actual decision win-rate to a passive "hold everything" baseline (wins whenever
+    # the asset rose) over the SAME calls. alpha_pp < 0 = the LLM's interventions did
+    # worse than doing nothing. (Absolute win-rate alone is confounded by bull/bear.)
+    base = [s for s in scored if s['base_win'] is not None]
+    vs_baseline = None
+    if base:
+        llm_wr = sum(s['win'] for s in base) / len(base)
+        base_wr = sum(s['base_win'] for s in base) / len(base)
+        vs_baseline = {
+            'n': len(base),
+            'llm_win_rate': round(llm_wr, 2),
+            'hold_baseline_win_rate': round(base_wr, 2),
+            'alpha_pp': round((llm_wr - base_wr) * 100, 1),
+            'verdict': ('LLM beat hold' if llm_wr > base_wr else
+                        'LLM == hold' if llm_wr == base_wr else 'LLM worse than just holding'),
+            'note': 'regime-robust edge check; alpha_pp<0 = active calls subtracted value '
+                    'vs doing nothing. one-regime sample — needs bear/chop to confirm.',
+        }
+
     return {
         'horizon': 'T+1 (next session)',
         'n_settled': len(scored),
+        'vs_baseline': vs_baseline,
         'active_signals': _agg([s for s in scored if s['bucket'] in ACTIVE]),
         'passive_holds':  _agg([s for s in scored if s['bucket'] not in ACTIVE]),
         'per_bucket': {b: _agg([s for s in scored if s['bucket'] == b])
@@ -666,6 +698,55 @@ def _advice_track_record(rows, cutoff):
         'note': 'win_rate over ALL settled calls (not just followed). active <0.50 = '
                 'signals add no edge; overconfidence_gap >0 on high bands = trim confidence.',
     }
+
+
+def compute_reflections(portfolio):
+    """TradingAgents-style reflection memory (deterministic, derived from calibration.csv,
+    no LLM): for each CURRENTLY HELD ticker, surface its prior settled calls + a one-line
+    lesson, so the brief retrieves "what happened last time I made this kind of call on
+    this name" instead of deciding from scratch. Keyed on holdings (known at preflight;
+    today's plan isn't written yet). (2026-05-30)"""
+    calib_path = WS / 'memory' / 'calibration.csv'
+    if not calib_path.exists():
+        return {}
+    import csv
+    try:
+        rows = list(csv.DictReader(open(calib_path, encoding='utf-8')))
+    except Exception:
+        return {}
+
+    held = {h['ticker'] for leg in ('hk_stocks', 'us_stocks')
+            for h in portfolio['portfolios'][leg]['holdings'] if h.get('shares', 0) > 0}
+    SELL = {'cut', 'trim_on_rebound'}
+    out = {}
+    for tk in sorted(held):
+        settled = [r for r in rows if r['ticker'] == tk and r.get('outcome') in ('win', 'loss')]
+        if not settled:
+            continue
+        settled.sort(key=lambda r: r['plan_date'])
+        wins = sum(1 for r in settled if r['outcome'] == 'win')
+        # dominant bucket history + a plain lesson
+        by_b = {}
+        for r in settled:
+            by_b.setdefault(r['bucket'], []).append(r)
+        lessons = []
+        for b, rs in by_b.items():
+            w = sum(1 for r in rs if r['outcome'] == 'win')
+            verb = {'cut': '清', 'trim_on_rebound': '减', 'add_only_on_trigger': '加',
+                    'hold_and_watch': '持', 't_only': 'T'}.get(b, b)
+            lessons.append(f'{verb}×{len(rs)} 胜{w}')
+        recent = settled[-3:]
+        out[tk] = {
+            'n': len(settled),
+            'win_rate': round(wins / len(settled), 2),
+            'bucket_history': '; '.join(lessons),
+            'recent': [{'date': r['plan_date'], 'bucket': r['bucket'],
+                        'conf': r.get('confidence'), 'outcome': r['outcome'],
+                        'benefit_pct': r.get('pnl_5d')} for r in recent],
+            'lesson': (f'{tk}: 过去 {len(settled)} 次主动判断胜率 {wins/len(settled):.0%}'
+                       + ('（主动 call 多半没跑赢持有，本次谨慎）' if wins / len(settled) < 0.5 else '')),
+        }
+    return out
 
 
 def compute_self_calibration():
@@ -1023,6 +1104,15 @@ def main():
         hi = (atr.get('per_confidence_band') or {}).get('>=0.75')
         if hi:
             print(f'   ⚠ high-conf (≥0.75) win_rate {hi["win_rate"]:.0%} — overconfidence_gap +{hi.get("overconfidence_gap",0):.2f}')
+        vb = atr.get('vs_baseline')
+        if vb:
+            print(f'   🎯 vs hold-baseline: LLM {vb["llm_win_rate"]:.0%} vs hold {vb["hold_baseline_win_rate"]:.0%} '
+                  f'→ alpha {vb["alpha_pp"]:+.0f}pp ({vb["verdict"]})')
+
+    # [9b] Reflection memory — per held ticker, prior call outcomes (TradingAgents-style)
+    reflections = compute_reflections(portfolio)
+    if reflections:
+        print(f'[9b/11] Reflections: {len(reflections)} held tickers with prior-call history')
 
     # [10] Risk metrics — Tier 2: β / vol / DD / Sharpe / margin sim
     print('[10/11] Risk metrics')
@@ -1112,6 +1202,7 @@ def main():
         'retrospective': retro,
         'peer_scan':     peer_scan,
         'self_calibration': self_calib,
+        'reflections':   reflections,
         'risk_metrics':  risk,
         'catalysts':     catalysts,
         'macro':         macro_trim,

@@ -361,7 +361,21 @@ kcn 标记方式：`python3 scripts/data/mark_followed.py YYYY-MM-DD TICKER BUCK
 - 诚实呈现给 kcn：主动 vs 被动胜率对比 + 一句"模型主动信号目前是否值得听"。样本 < ~20 时注明"样本小,方向性参考"。
 - 同时看 `advice_track_record.secondary_T5`(T+5 副镜):若主动信号 **T+1 和 T+5 都 <0.50**，说明不是单日噪声、是真没 edge,措辞更硬;若 T+1 高但 T+5 低 = "对了一天、看错 thesis"，提醒 next-session 触发可设更紧/更快了结。
 
+**🎯 vs-baseline(最重要,REQUIRED 摆头条)**：`advice_track_record.vs_baseline` 给出 **LLM 决策胜率 vs "无脑全持有"基线**的 `alpha_pp`。这是抗 regime 的"模型到底有没有用"判据。**brief 的 ▎Confidence 校准段第一行必须是**：
+```
+🎯 近 30 天 LLM 决策 vs 无脑全持有：alpha {alpha_pp:+}pp（{verdict}）
+```
+若 `alpha_pp < 0`（LLM 跑输持有）→ 当期所有主动 call 的 confidence 上限压到 ≤0.55,并明说"模型主动决策当前跑输持有,本次倾向不动/小动"。注:单一 regime,标注"待熊市/震荡确认"。
+
+#### ▎决策记忆 (reflections — REQUIRED if `context.reflections` 非空)
+
+`context.reflections[ticker]` 是每个持仓的历史同类决策战绩(`bucket_history` 如 "清×9 胜3" / `recent` / `lesson`)。**给某标的下主动 call 前必须先看它的 reflection**:
+- 若该票 `bucket_history` 显示你**反复做某动作且多半错**(如 ROBN "清×9 胜3")→ 这次别再机械重复,要么换论据要么降级为 hold,并在 rationale 里引"过去 N 次清 ROBN 错 M 次"。
+- `win_rate < 0.5` 的票 → 主动 call 需要比平时更强的新증据才出手。
+
 #### Next-Session Plan（可交易，不是观察清单）
+
+**决策优先(decision-first)**:先用 `reflections` + `advice_track_record` 为每个持仓定 bucket(hold/cut/trim/add)+ confidence,**再**写上面的叙事去论证这个决策——不要先写一大篇分析再顺出动作。决策是主角,叙事是它的理由。宁可 1-3 个高确信动作,其余 hold,也不要 8 个摊薄的逐票评级。
 
 格式：
 ```
