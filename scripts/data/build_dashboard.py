@@ -421,7 +421,12 @@ def extract_anomalies(brief_ctx, us_h, hk_h):
                         'severity': sev,
                     })
 
-        # leveraged_etf_stop anomalies
+        # leveraged_etf_stop anomalies — read from the same brief peer_scan snapshot as
+        # extract_peer_divergence(). The peer_divergence refactor (3f507d3) dropped this
+        # definition but left the loop, so the whole function raised NameError and silently
+        # produced no anomalies. (2026-05-30 fix)
+        peer_scan = brief_ctx.get('peer_scan') or {}
+        peer_items = peer_scan.items() if isinstance(peer_scan, dict) else []
         for ticker, v in peer_items:
             tk_str = str(ticker or '').upper()
             if tk_str not in _LEVERAGED_TICKERS:

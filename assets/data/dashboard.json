@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T13:58:38.735872Z",
+  "generated_at": "2026-05-30T14:06:30.691070Z",
   "last_updated": "2026/05/30 04:00 HKT",
   "fx": {
     "usdhkd": 7.8356,
@@ -1563,7 +1563,14 @@
       "current_price": 143.48
     }
   ],
-  "anomalies": [],
+  "anomalies": [
+    {
+      "type": "high_weight_loss",
+      "ticker": "07226",
+      "detail": "weight 27.6% + pnl -13.8%",
+      "severity": "medium"
+    }
+  ],
   "peer_divergence": {
     "as_of": "2026-05-29",
     "items": []
