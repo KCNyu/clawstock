@@ -2726,7 +2726,7 @@ layout: null
           </div>
           <div>
             <div>${a.bucket || DASH}</div>
-            <div class="meta">conf ${conf} · ${a.trigger_type || DASH} · 5d ${pnl}</div>
+            <div class="meta">conf ${conf} · ${a.trigger_type || DASH} · 次日遵循 ${pnl}</div>
           </div>
           <div class="outcome ${oc}">${oc}</div>
         </div>
@@ -3300,70 +3300,8 @@ layout: null
     watch: "观望",
   };
 
-  function renderPlanTimeline() {
-    const wrap = document.getElementById("plan-timeline");
-    if (!wrap) return;
-    const rows = safe(DATA, "plan_timeline") || [];
-    if (!rows.length) {
-      wrap.innerHTML = '<div class="empty-state">No plan timeline yet.</div>';
-      return;
-    }
-
-    // Quick lookup: ticker → region (us/hk) from the holdings list
-    const regionOf = new Map();
-    (safe(DATA, "holdings", "us") || []).forEach(h => regionOf.set(h.ticker, "us"));
-    (safe(DATA, "holdings", "hk") || []).forEach(h => regionOf.set(h.ticker, "hk"));
-
-    wrap.innerHTML = rows.map(r => {
-      const outcome = r.outcome || "pending";
-      const conf = r.confidence != null ? Math.round(r.confidence * 100) + "%" : "—";
-      const region = regionOf.get(r.ticker) || "";
-      const bucketTxt = BUCKET_LABEL[r.bucket] || r.bucket || "—";
-      const trigParts = [];
-      if (r.trigger_type) trigParts.push(r.trigger_type);
-      if (r.trigger_condition) trigParts.push(r.trigger_condition);
-      else if (r.trigger_price != null) trigParts.push("@ " + r.trigger_price);
-      const sizeParts = [];
-      if (r.size_pct != null) sizeParts.push(r.size_pct + "%");
-      if (r.size_shares != null) sizeParts.push(r.size_shares + " 股");
-      const sizeTxt = sizeParts.join(" · ");
-
-      const followed = (r.followed || "unknown").toLowerCase();
-      const followedTag = followed === "true"
-        ? `<span class="pt-followed-true" title="git history detected execution">✓ followed</span>`
-        : followed === "false"
-        ? `<span class="pt-followed-false" title="git history shows no follow-through">○ not followed</span>`
-        : `<span class="pt-followed-false">— unknown</span>`;
-
-      const pnlTxt = r.pnl_5d != null
-        ? `<span class="pt-pnl ${pnlClass(r.pnl_5d)}">${fmtPct(r.pnl_5d, 1)}</span>`
-        : "";
-
-      const rationale = (r.rationale || "").trim();
-      const rationaleHtml = rationale
-        ? `<div class="pt-rationale">${escapeHtml(rationale)}</div>`
-        : "";
-
-      return `
-        <div class="pt-row outcome-${outcome}">
-          <div class="pt-head">
-            <span class="pt-date">${escapeHtml(r.date || "")}</span>
-            <span class="pt-ticker">${escapeHtml(r.ticker || "—")}</span>
-            ${region ? `<span class="pt-region">${region.toUpperCase()}</span>` : ""}
-          </div>
-          <div class="pt-body">
-            <div class="pt-action">${escapeHtml(bucketTxt)}${sizeTxt ? ` · <span class="muted" style="font-weight:500">${escapeHtml(sizeTxt)}</span>` : ""}</div>
-            ${trigParts.length ? `<div class="pt-trigger">trigger: ${escapeHtml(trigParts.join(" · "))}</div>` : ""}
-            ${rationaleHtml}
-          </div>
-          <div class="pt-side">
-            <span class="pt-conf">${conf}</span>
-            ${followedTag}
-            ${pnlTxt}
-          </div>
-        </div>`;
-    }).join("");
-  }
+  // (dead duplicate renderPlanTimeline removed 2026-05-30 — the live definition below
+  //  overrode it; it still rendered the legacy "5d" pnl label and a stale pnlClass path.)
 
   function renderPlanReview() {
     // KPI strip on top of the Plan Review card
@@ -3481,7 +3419,9 @@ layout: null
       if (p == null) return "";
       const cls = p >= 0 ? "pos" : "neg";
       const s = p >= 0 ? "+" : "";
-      return `<div class="pt-pnl ${cls}">5d ${s}${p.toFixed(2)}%</div>`;
+      // pnl_5d (legacy column name) now = benefit-of-following over the NEXT session:
+      // positive always = the call paid off (for cut/trim that means the price fell).
+      return `<div class="pt-pnl ${cls}" title="遵循该 call 的次日收益;正=该决策有利(cut/trim 价跌记为正)">遵循 ${s}${p.toFixed(2)}%</div>`;
     };
     wrap.innerHTML = list.map(a => {
       const oc = a.outcome || "pending";
