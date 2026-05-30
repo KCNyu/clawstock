@@ -69,22 +69,26 @@ def parse_cron(expr):
 
 
 def shift_to_hkt(mins, hours, dow, utc_offset):
-    """Shift hours by utc_offset; carry day-of-week when the hour wraps past 24."""
+    """Shift hours by utc_offset, carrying day-of-week when an hour wraps past 24.
+
+    Returns a LIST of (mins, hours, dow) groups. A cron whose hours have MIXED wrap
+    behaviour (e.g. `0 9,23 * * 1-5`: 09:00 stays same HKT day, 23:00 wraps to next)
+    can't be one row — the two hour-groups fire on different HKT weekdays — so it's
+    split into one group per wrap class. Uniform crons (the common case) return one
+    group, identical to the old behaviour."""
     if utc_offset == 0 or hours is None:
-        return mins, hours, dow
-    new_hours, daywrap = [], False
+        return [(mins, hours, dow)]
+    same, wrapped = [], []
     for h in hours:
         nh = h + utc_offset
-        if nh >= 24:
-            nh -= 24
-            daywrap = True
-        new_hours.append(nh)
-    new_hours = sorted(new_hours)
-    if daywrap and dow is not None:
-        # only safe when the wrap is uniform; for the schedules here all hours in a
-        # given expr share the same wrap behaviour, so shift the whole dow set +1.
-        dow = sorted({(d + 1) % 7 for d in dow})
-    return mins, new_hours, dow
+        (wrapped if nh >= 24 else same).append(nh % 24)
+    groups = []
+    if same:
+        groups.append((mins, sorted(same), dow))
+    if wrapped:
+        wdow = sorted({(d + 1) % 7 for d in dow}) if dow is not None else dow
+        groups.append((mins, sorted(wrapped), wdow))
+    return groups
 
 
 # ── label rendering ─────────────────────────────────────────────────────────
@@ -174,8 +178,8 @@ def load_gha():
             parsed = parse_cron(expr)
             if not parsed:
                 continue
-            mins, hours, dow = shift_to_hkt(*parsed, utc_offset=8)
-            rows.append(('gha', name, expr + ' UTC', 'UTC→HKT', mins, hours, dow))
+            for mins, hours, dow in shift_to_hkt(*parsed, utc_offset=8):
+                rows.append(('gha', name, expr + ' UTC', 'UTC→HKT', mins, hours, dow))
     return rows
 
 

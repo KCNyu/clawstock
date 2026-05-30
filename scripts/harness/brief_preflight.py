@@ -459,14 +459,35 @@ def _resolve_pending_followed():
     return updated
 
 
+# Per-process caches: the snapshots dir doesn't change mid-run, and the resolver
+# touches the same dates/files across all 75 rows — glob once, parse each file once.
+_SNAP_DATES = None        # sorted list[str] of all snapshot dates
+_SNAP_JSON = {}           # date_iso -> parsed snapshot dict (or None on miss/parse-fail)
+
+
+def _all_snapshot_dates():
+    global _SNAP_DATES
+    if _SNAP_DATES is None:
+        import glob, os
+        _SNAP_DATES = sorted(os.path.basename(p)[:-5]
+                             for p in glob.glob(str(WS / 'memory' / 'snapshots' / '20*.json')))
+    return _SNAP_DATES
+
+
+def _load_snapshot(date_iso):
+    if date_iso not in _SNAP_JSON:
+        p = WS / 'memory' / 'snapshots' / f'{date_iso}.json'
+        try:
+            _SNAP_JSON[date_iso] = json.loads(p.read_text()) if p.exists() else None
+        except Exception:
+            _SNAP_JSON[date_iso] = None
+    return _SNAP_JSON[date_iso]
+
+
 def _snapshot_price(date_iso, ticker):
     """current_price of `ticker` in the daily snapshot for date_iso, or None."""
-    p = WS / 'memory' / 'snapshots' / f'{date_iso}.json'
-    if not p.exists():
-        return None
-    try:
-        d = json.loads(p.read_text())
-    except Exception:
+    d = _load_snapshot(date_iso)
+    if not d:
         return None
     for region in ('hk_stocks', 'us_stocks'):
         for h in d.get('portfolios', {}).get(region, {}).get('holdings', []):
@@ -482,10 +503,7 @@ def _snapshot_price(date_iso, ticker):
 def _session_dates_after(plan_date):
     """Sorted snapshot dates strictly after plan_date. Snapshots are one-per-trading-
     session, so [0] is the next session (T+1), [4] is T+5 — weekends/holidays skipped."""
-    import glob, os
-    return [os.path.basename(p)[:-5]
-            for p in sorted(glob.glob(str(WS / 'memory' / 'snapshots' / '20*.json')))
-            if os.path.basename(p)[:-5] > plan_date]
+    return [d for d in _all_snapshot_dates() if d > plan_date]
 
 
 def _next_session_date(plan_date):
