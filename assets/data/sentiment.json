@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T01:29:58.014465+00:00",
+  "generated_at": "2026-05-30T01:24:51.175028+00:00",
   "sources": [
     "reddit-json-public",
     "google-news-rss"
@@ -13,34 +13,34 @@
       "reddit_posts": [],
       "google_news_en": [
         {
-          "title": "Insider Sale: Chief Operations Officer of $RKLB Sells 3,490 Shares",
-          "source": "Quiver Quantitative",
-          "published": "Fri, 29 May 2026 00:31:00 GMT"
+          "title": "Why Is Rocket Lab Stock (RKLB) Rising in Pre-Market Today, 5/27/26?",
+          "source": "TipRanks",
+          "published": "Wed, 27 May 2026 12:10:12 GMT"
         },
         {
-          "title": "Rocket Lab Corp (NASDAQ: RKLB) president sells 15,549 shares in tax sell-to-cover",
-          "source": "Stock Titan",
-          "published": "Fri, 29 May 2026 00:31:56 GMT"
-        },
-        {
-          "title": "Rocket Lab (RKLB) GC sells 98,668 shares in Rule 10b5-1 tax trade",
-          "source": "Stock Titan",
-          "published": "Fri, 29 May 2026 00:31:56 GMT"
-        },
-        {
-          "title": "Is Rocket Lab Corporation (RKLB) Among the Best Space Stocks to Buy According to Reddit and Social Media?",
+          "title": "ASTS, RKLB, RDW, LUNR Slip Overnight: SpaceX IPO Hype Loses Orbit After Valuation Target Reportedly Falls Below $2 Trillion",
           "source": "Yahoo Finance",
-          "published": "Thu, 28 May 2026 11:51:28 GMT"
-        },
-        {
-          "title": "Rocket Lab: This Flight Is Just Beginning (NASDAQ:RKLB)",
-          "source": "Seeking Alpha",
-          "published": "Tue, 26 May 2026 12:48:37 GMT"
+          "published": "Fri, 29 May 2026 07:38:23 GMT"
         },
         {
           "title": "Intuitive Machines Rallies 9%, Rocket Lab and Planet Labs Decline in Space Stock Divergence",
           "source": "24/7 Wall St.",
           "published": "Thu, 28 May 2026 15:00:11 GMT"
+        },
+        {
+          "title": "RKLB, ASTS Are Crushing Retail Space Trade On SpaceX IPO Buzz — But One Tiny Underdog Could Be The Real Moonshot",
+          "source": "Stocktwits",
+          "published": "Thu, 28 May 2026 20:14:15 GMT"
+        },
+        {
+          "title": "Rocket Lab CFO Adam Spice sells $8.9m in RKLB common stock",
+          "source": "Investing.com",
+          "published": "Fri, 29 May 2026 01:14:14 GMT"
+        },
+        {
+          "title": "Forget Rocket Lab: This Aerospace Defense Titan Is a Far Smarter Valuation Play",
+          "source": "24/7 Wall St.",
+          "published": "Fri, 29 May 2026 16:26:32 GMT"
         }
       ],
       "google_news_zh": []
@@ -53,14 +53,24 @@
       "reddit_posts": [],
       "google_news_en": [
         {
+          "title": "Why Circle Could Fall 51% (NYSE:CRCL)",
+          "source": "Seeking Alpha",
+          "published": "Fri, 29 May 2026 15:03:24 GMT"
+        },
+        {
           "title": "Circle Internet Group (CRCL) slides as crypto-linked stocks cool and investors weigh insider-sale signals",
           "source": "Quiver Quantitative",
           "published": "Tue, 26 May 2026 14:50:00 GMT"
         },
         {
-          "title": "HC Wainwright Issues Pessimistic Outlook for CRCL Earnings",
-          "source": "MarketBeat",
-          "published": "Thu, 28 May 2026 11:10:08 GMT"
+          "title": "Circle Internet Group Inc (CRCL) Experiences Positive Trading Mo",
+          "source": "GuruFocus",
+          "published": "Fri, 29 May 2026 20:55:13 GMT"
+        },
+        {
+          "title": "Circle Internet Group: The Crystallization of the Institutional Pivot and the Trillion-Dollar Stablecoin Horizon",
+          "source": "TradingKey",
+          "published": "Fri, 29 May 2026 01:12:32 GMT"
         },
         {
           "title": "How Will Circle Internet Stock React To Its Upcoming Earnings?",
@@ -68,19 +78,9 @@
           "published": "Fri, 08 May 2026 07:00:00 GMT"
         },
         {
-          "title": "Is Circle Internet Group (CRCL) A Good Stock To Buy Now?",
-          "source": "Yahoo Finance",
-          "published": "Sun, 26 Apr 2026 07:00:00 GMT"
-        },
-        {
-          "title": "CRCL Stock Is Down 67% From Its 52-Week High. Here’s What USDC Expansion Means for Investors",
-          "source": "TIKR.com",
-          "published": "Sat, 02 May 2026 07:00:00 GMT"
-        },
-        {
-          "title": "Dear Circle Stock Fans, Mark Your Calendars for May 11",
-          "source": "Barchart.com",
-          "published": "Fri, 08 May 2026 07:00:00 GMT"
+          "title": "What is KeyCorp's Estimate for CRCL Q2 Earnings?",
+          "source": "MarketBeat",
+          "published": "Fri, 29 May 2026 12:19:07 GMT"
         }
       ],
       "google_news_zh": []
@@ -98,9 +98,9 @@
           "published": "Sat, 23 May 2026 17:21:13 GMT"
         },
         {
-          "title": "LongPoint Adds to Its Family of Double Leveraged Single Stock ETFs",
+          "title": "Exchange rate effect of Les Placements de Tunisie-SICAF SA – BVMT:PLTU",
           "source": "TradingView",
-          "published": "Thu, 28 May 2026 12:00:00 GMT"
+          "published": "Thu, 28 May 2026 23:59:53 GMT"
         },
         {
           "title": "Direxion Daily PLTR Bull 2X Shares (NASDAQ:PLTU) Shares Gap Up - Here's Why",
@@ -113,14 +113,14 @@
           "published": "Wed, 04 Feb 2026 08:00:00 GMT"
         },
         {
-          "title": "Cash from investing activities of Les Placements de Tunisie-SICAF SA – BVMT:PLTU",
-          "source": "TradingView",
-          "published": "Sun, 24 May 2026 08:43:49 GMT"
-        },
-        {
           "title": "Palantir’s on Fire. Will Earnings Hit with Water or Gasoline?",
           "source": "Direxion",
           "published": "Thu, 20 Nov 2025 08:00:00 GMT"
+        },
+        {
+          "title": "Palantir Earnings Put These ETFs in the Spotlight",
+          "source": "ETF Trends",
+          "published": "Fri, 07 Nov 2025 08:00:00 GMT"
         }
       ],
       "google_news_zh": []
@@ -143,14 +143,14 @@
           "published": "Tue, 28 Apr 2026 07:00:00 GMT"
         },
         {
-          "title": "Pick-a-Ticker: See Who Leads in This Stock Picking Contest for Charity",
-          "source": "Bloomberg.com",
-          "published": "Thu, 30 Apr 2026 07:00:00 GMT"
-        },
-        {
           "title": "Benchmark cuts Red Robin stock price target on weaker traffic data",
           "source": "Investing.com",
           "published": "Mon, 20 Apr 2026 07:00:00 GMT"
+        },
+        {
+          "title": "Pick-a-Ticker: See Who Leads in This Stock Picking Contest for Charity",
+          "source": "Bloomberg.com",
+          "published": "Thu, 30 Apr 2026 07:00:00 GMT"
         },
         {
           "title": "Robin Energy shareholders can vote Sept. 10; record date is July 17",
@@ -158,9 +158,9 @@
           "published": "Wed, 06 May 2026 07:00:00 GMT"
         },
         {
-          "title": "Robin Energy Ltd. Announces One-for-Five Reverse Stock Split Effective December 23, 2025 | RBNE Stock News",
-          "source": "Quiver Quantitative",
-          "published": "Mon, 22 Dec 2025 08:00:00 GMT"
+          "title": "Billionaire fund manager Ron Baron praises beaten-up financial stock whose new CEO he compares to Jamie Dimon",
+          "source": "CNBC",
+          "published": "Wed, 17 Dec 2025 08:00:00 GMT"
         }
       ],
       "google_news_zh": []
@@ -183,6 +183,11 @@
           "published": "Tue, 18 Nov 2025 08:00:00 GMT"
         },
         {
+          "title": "$Direxion Daily MSFT Bull 2X Shares (MSFU.US)$",
+          "source": "Moomoo",
+          "published": "Wed, 13 May 2026 07:00:00 GMT"
+        },
+        {
           "title": "Direxion Daily MSFT Bull 2X Shares Target of Unusually Large Options Trading (NASDAQ:MSFU)",
           "source": "MarketBeat",
           "published": "Thu, 30 Apr 2026 07:00:00 GMT"
@@ -191,11 +196,6 @@
           "title": "MSFU: Get Ready To Pull The Trigger",
           "source": "Seeking Alpha",
           "published": "Tue, 10 Feb 2026 08:00:00 GMT"
-        },
-        {
-          "title": "Trading (MSFU) With Integrated Risk Controls (MSFU:CA)",
-          "source": "Stock Traders Daily",
-          "published": "Sat, 23 May 2026 05:40:51 GMT"
         },
         {
           "title": "If Microsoft Is Ready to Rebound, Consider Trading This ETF",
@@ -235,14 +235,14 @@
       ],
       "google_news_zh": [
         {
-          "title": "MINIMAX-W(00100)出現大手買入6640股，成交價$848.0，涉資563.072萬",
+          "title": "MINIMAX-W(00100)出現大手賣出7580股，成交價$830.0，涉資629.14萬",
           "source": "AASTOCKS.com",
-          "published": "Thu, 28 May 2026 09:50:12 GMT"
+          "published": "Fri, 29 May 2026 07:19:04 GMT"
         },
         {
-          "title": "稀宇科技年化收入倍增企業開發者客戶逾百萬| 即時財訊",
-          "source": "EJFQ 信號",
-          "published": "Thu, 28 May 2026 11:33:10 GMT"
+          "title": "MINIMAX-W(00100)出現大手買入9740股，成交價$883.5，涉資860.529萬",
+          "source": "AASTOCKS.com",
+          "published": "Fri, 29 May 2026 06:03:51 GMT"
         },
         {
           "title": "MINIMAX-W(00100.HK)收盘上涨10.53%，恒生软件服务板块走势分化",
@@ -255,14 +255,14 @@
           "published": "Tue, 26 May 2026 06:18:53 GMT"
         },
         {
-          "title": "MINIMAX-W(00100)出現大手買入8000股，成交價$850.0，涉資680萬",
+          "title": "MINIMAX-W(00100)出現大手賣出1.39萬股，成交價$810.0，涉資1.126千萬",
           "source": "AASTOCKS.com",
-          "published": "Thu, 28 May 2026 05:20:00 GMT"
+          "published": "Fri, 29 May 2026 07:45:00 GMT"
         },
         {
-          "title": "《AI》MINIMAX-W(00100.HK)出現「黃金交叉」技術圖表形態",
+          "title": "MINIMAX-W(00100)出現大手買入6620股，成交價$885.0，涉資585.87萬",
           "source": "AASTOCKS.com",
-          "published": "Tue, 26 May 2026 07:00:00 GMT"
+          "published": "Fri, 29 May 2026 04:08:17 GMT"
         }
       ]
     },
@@ -296,9 +296,24 @@
       ],
       "google_news_zh": [
         {
+          "title": "財律指揮｜中美科技處處角力 金風科技不只做風電 火箭概念有排炒｜曲鳴",
+          "source": "Yahoo 財經",
+          "published": "Sun, 11 Jan 2026 08:00:00 GMT"
+        },
+        {
+          "title": "金風科技(02208) 海外監管公告-其他",
+          "source": "信報網站",
+          "published": "Fri, 29 May 2026 18:00:52 GMT"
+        },
+        {
           "title": "港股異動丨風電股走低 東方電氣跌超6% 金風科技跌3.7%",
           "source": "AASTOCKS.com",
           "published": "Thu, 07 May 2026 07:00:00 GMT"
+        },
+        {
+          "title": "【投資觀察】金風科技業務受惠全球能源轉型- 投資 - 香港文匯網",
+          "source": "香港文匯網",
+          "published": "Mon, 26 Jan 2026 08:00:00 GMT"
         },
         {
           "title": "中國機械聯專家委赴金風科技調研",
@@ -306,24 +321,9 @@
           "published": "Sun, 24 May 2026 21:41:26 GMT"
         },
         {
-          "title": "金風科技(02208) 海外監管公告-其他",
-          "source": "信報網站",
-          "published": "Tue, 26 May 2026 23:05:12 GMT"
-        },
-        {
-          "title": "金风科技：华福证券、兴业证券等多家机构于5月26日调研我司",
-          "source": "FX168",
-          "published": "Tue, 26 May 2026 13:09:35 GMT"
-        },
-        {
-          "title": "金風科技（02208）擬斥不超過5億人幣回購A股，回購最多753萬股",
-          "source": "香港經濟日報HKET",
-          "published": "Wed, 27 May 2026 00:44:00 GMT"
-        },
-        {
-          "title": "財律指揮｜中美科技處處角力 金風科技不只做風電 火箭概念有排炒｜曲鳴",
-          "source": "Yahoo 財經",
-          "published": "Sun, 11 Jan 2026 08:00:00 GMT"
+          "title": "歐盟宣佈對中國清潔能源巨頭金風科技展開反補貼深入調查",
+          "source": "DW.com",
+          "published": "Tue, 03 Feb 2026 08:00:00 GMT"
         }
       ]
     },
@@ -340,11 +340,6 @@
           "published": "Mon, 23 Feb 2026 08:00:00 GMT"
         },
         {
-          "title": "MINIMAX-W Stock Quote, Share Price, News and Analysis",
-          "source": "Longbridge",
-          "published": "Tue, 27 Jan 2026 08:22:58 GMT"
-        },
-        {
           "title": "Has the Hang Seng Tech Index fallen 25% to become 'Old Tech'? Southbound capital is increasing its purchases, which should not be underestimated.",
           "source": "富途牛牛",
           "published": "Mon, 02 Mar 2026 08:00:00 GMT"
@@ -353,23 +348,33 @@
           "title": "CMB Securities: The Hang Seng Tech Index currently holds significant allocation value. It is recommended to buy on dips and hold shares over the holiday.",
           "source": "富途牛牛",
           "published": "Wed, 11 Feb 2026 08:00:00 GMT"
+        },
+        {
+          "title": "ETF - ETF Comparison",
+          "source": "AASTOCKS.com",
+          "published": "Fri, 09 Nov 2012 10:00:03 GMT"
         }
       ],
       "google_news_zh": [
         {
-          "title": "ETF主力盘点|恒生科技ETF华泰柏瑞(513130)5月28日主力资金净流入2.35亿元，居可比基金首位",
-          "source": "FX168",
-          "published": "Thu, 28 May 2026 09:01:06 GMT"
+          "title": "低費率的恒生科技ETF易方達(513010)年內流入87億，機構：港股反彈，緊盯四大信號！",
+          "source": "SL886 財經網",
+          "published": "Fri, 29 May 2026 07:30:38 GMT"
         },
         {
-          "title": "反彈收益可期，南方基金旗下恒生科技ETF南方(520570)低位佈局窗口備受關注",
+          "title": "ETF主力盘点|恒生科技ETF易方达(513010)5月29日主力资金净流入1.07亿元，近2天合计流入2.06亿元",
+          "source": "FX168",
+          "published": "Fri, 29 May 2026 09:33:06 GMT"
+        },
+        {
+          "title": "南方基金旗下恒生科技ETF南方(520570)震蕩盤整，靜候利空出盡後估值修復",
           "source": "財華網",
-          "published": "Wed, 27 May 2026 10:18:00 GMT"
+          "published": "Thu, 28 May 2026 10:29:00 GMT"
         },
         {
           "title": "恒生科技ＥＴＦ(03032) 交易所買賣基金的交易資料",
           "source": "信報網站",
-          "published": "Wed, 27 May 2026 14:46:33 GMT"
+          "published": "Wed, 27 May 2026 07:00:00 GMT"
         },
         {
           "title": "Global X 恒生科技備兌認購期權主動型ETF-3417.HK-ETF基本資料",
@@ -377,14 +382,9 @@
           "published": "Sun, 24 May 2026 07:34:27 GMT"
         },
         {
-          "title": "熱門科投股投資工具｜比較6款恒生科技指數ETF邊隻好！",
-          "source": "Syfe",
-          "published": "Wed, 10 Sep 2025 07:00:00 GMT"
-        },
-        {
-          "title": "恒生科技ETF(03032.HK)下跌0.49%，最新價4.862港元",
+          "title": "ETF主力盘点|恒生科技ETF华泰柏瑞(513130)5月29日主力资金净流出1.74亿元，居可比基金前2",
           "source": "FX168",
-          "published": "Thu, 28 May 2026 06:11:51 GMT"
+          "published": "Fri, 29 May 2026 09:32:04 GMT"
         }
       ]
     },
@@ -401,6 +401,11 @@
           "published": "Tue, 25 Jul 2023 23:16:11 GMT"
         },
         {
+          "title": "CITIC Securities: The fundamental expectations for Hang Seng Tech may have been fully adjusted; focus on investment opportunities in the Hong Kong technology sector.",
+          "source": "Moomoo",
+          "published": "Sun, 26 Apr 2026 07:00:00 GMT"
+        },
+        {
           "title": "7226 Stock Fund Price and Chart — HKEX:7226",
           "source": "TradingView",
           "published": "Thu, 10 Dec 2020 06:16:09 GMT"
@@ -409,11 +414,6 @@
           "title": "What signal? Significant inflows of capital are aggressively buying into Hang Seng Tech, with institutions stating that valuations already fully reflect pessimism, and the market outlook is expected to improve.",
           "source": "富途牛牛",
           "published": "Wed, 04 Mar 2026 23:43:37 GMT"
-        },
-        {
-          "title": "Free Real Time Stock Quote - Financial Information",
-          "source": "etnet 經濟通",
-          "published": "Fri, 25 Feb 2011 12:44:28 GMT"
         }
       ],
       "google_news_zh": [
@@ -423,19 +423,19 @@
           "published": "Fri, 22 May 2026 10:00:00 GMT"
         },
         {
+          "title": "槓桿及反向產品的交易資料",
+          "source": "信報網站",
+          "published": "Fri, 29 May 2026 04:05:07 GMT"
+        },
+        {
+          "title": "ＸＬ二南方恆科(07226)出現大手賣出230萬股，成交價$3.934，涉資904.82萬",
+          "source": "AASTOCKS.com",
+          "published": "Wed, 27 May 2026 01:20:00 GMT"
+        },
+        {
           "title": "ＸＬ二南方恆科(07226)出現大手賣出240萬股，成交價$3.78，涉資907.2萬",
           "source": "AASTOCKS.com",
           "published": "Thu, 28 May 2026 08:08:00 GMT"
-        },
-        {
-          "title": "槓桿及反向產品的交易資料",
-          "source": "信報網站",
-          "published": "Thu, 28 May 2026 16:01:23 GMT"
-        },
-        {
-          "title": "上市文件 - [認可集體投資計劃]",
-          "source": "信報網站",
-          "published": "Thu, 28 May 2026 15:32:06 GMT"
         },
         {
           "title": "周度港股ETF规模变化排行榜（2026年5月第三周）",
@@ -443,9 +443,9 @@
           "published": "Mon, 25 May 2026 08:50:24 GMT"
         },
         {
-          "title": "ＸＬ二南方恆科(07226)出現大手賣出91.49萬股，成交價$3.832，涉資350.59萬",
-          "source": "AASTOCKS.com",
-          "published": "Thu, 21 May 2026 01:20:00 GMT"
+          "title": "上市文件 - [認可集體投資計劃]",
+          "source": "信報網站",
+          "published": "Fri, 29 May 2026 08:23:05 GMT"
         }
       ]
     },
@@ -472,16 +472,16 @@
           "published": "Wed, 04 Feb 2026 08:00:00 GMT"
         },
         {
-          "title": "Southbound Capital Flows | Southbound capital recorded a net selling of HK$7.717 billion, continuing to reduce holdings in tech stocks and Hong Kong-listed ETFs, while buying into SMIC (00981) by nearly HK$2 billion",
-          "source": "富途牛牛",
-          "published": "Wed, 27 May 2026 09:51:05 GMT"
+          "title": "HKD3.2B Southbound Trading Net Inflow to SMIC",
+          "source": "AASTOCKS.com",
+          "published": "Fri, 22 May 2026 10:25:00 GMT"
         }
       ],
       "google_news_zh": [
         {
-          "title": "南方恒生科技(03033.HK)下跌0.50%，最新價4.778港元",
+          "title": "南方恒生科技(03033.HK)上涨0.29%，最新价4.796港元",
           "source": "FX168",
-          "published": "Thu, 28 May 2026 06:11:38 GMT"
+          "published": "Fri, 29 May 2026 03:41:24 GMT"
         },
         {
           "title": "反彈收益可期，南方基金旗下恒生科技ETF南方(520570)低位佈局窗口備受關注",
@@ -494,19 +494,19 @@
           "published": "Wed, 10 Sep 2025 07:00:00 GMT"
         },
         {
-          "title": "北水增持先健科技 減持南方恆生科技 (07:56) - 20260529 - 即時財經新聞",
-          "source": "明報財經網",
-          "published": "Thu, 28 May 2026 23:58:20 GMT"
-        },
-        {
           "title": "三大科技指數全線走高，南方基金旗下恆生科技ETF南方(520570)標的指數收漲超2%",
           "source": "hstong.com",
           "published": "Fri, 22 May 2026 07:00:00 GMT"
         },
         {
-          "title": "恒生科技ETF(03032.HK)下跌0.49%，最新價4.862港元",
+          "title": "南方恒生科技(03033.HK)下跌0.50%，最新價4.778港元",
           "source": "FX168",
-          "published": "Thu, 28 May 2026 06:11:51 GMT"
+          "published": "Thu, 28 May 2026 06:11:38 GMT"
+        },
+        {
+          "title": "南方恒生科技(03033.HK)上涨0.95%，最新价4.886港元",
+          "source": "FX168",
+          "published": "Wed, 27 May 2026 02:22:05 GMT"
         }
       ]
     }
