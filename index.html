@@ -3030,8 +3030,11 @@ layout: null
     const zoomStart = manyPts ? Math.max(0, (1 - 30 / dates.length) * 100) : 0;
     const opt = {
       ...baseChartOpts(),
-      grid: { left: isMobile ? 56 : 72, right: isMobile ? 48 : 68, top: 34, bottom: manyPts ? 58 : 36 },
-      legend: { data: ["总资产", "成本基础", "SPY 等值", "回撤"], textStyle: { color: chartTextColor(), fontSize: 10 }, top: 4, itemGap: 10 },
+      grid: { left: isMobile ? 48 : 72, right: isMobile ? 40 : 68, top: isMobile ? 56 : 38, bottom: manyPts ? 58 : 36 },
+      legend: { data: ["总资产", "成本基础", "SPY 等值", "回撤"],
+        textStyle: { color: chartTextColor(), fontSize: isMobile ? 9 : 10 },
+        top: 4, itemGap: isMobile ? 8 : 10, itemWidth: isMobile ? 16 : 25, itemHeight: isMobile ? 8 : 14,
+        padding: [0, 4] },
       tooltip: {
         trigger: "axis", axisPointer: { type: "cross" },
         formatter: (params) => {
@@ -3073,7 +3076,7 @@ layout: null
       ] : undefined,
       yAxis: [
         {
-          type: "value", name: "USD",
+          type: "value", name: isMobile ? "" : "USD",
           nameTextStyle: { color: chartTextColor(), fontSize: 9 },
           scale: true,
           axisLine: { lineStyle: { color: chartGridColor() } },
@@ -3082,7 +3085,7 @@ layout: null
             formatter: (v) => "$" + (Math.abs(v) >= 1000 ? (v / 1000).toFixed(1) + "k" : v) },
         },
         {
-          type: "value", name: "DD %", max: 0, position: "right",
+          type: "value", name: isMobile ? "" : "DD %", max: 0, position: "right",
           nameTextStyle: { color: chartTextColor(), fontSize: 9 },
           axisLine: { lineStyle: { color: chartGridColor() } },
           splitLine: { show: false },
