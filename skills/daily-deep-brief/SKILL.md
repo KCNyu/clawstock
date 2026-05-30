@@ -180,6 +180,21 @@ context.json 关键字段：
 
 规则：**只填主导那一个**(不是把所有沾边的都列上)。若是技术面为主、消息面只是佐证 → 填 `technical`。这个字段决定我们能不能回答"消息面值不值得听",所以要诚实归因,别把图表驱动的 call 贴成 catalyst 来给自己加分。
 
+#### ⚖️ 消息面权重铁律(硬催化 vs 软情绪 — REQUIRED 遵守)
+
+不是所有消息面都等价。**硬催化是真信号,软情绪是高噪声、均值回归。** 两者对决策的权限不同:
+
+| 类别 | 包含 | 对决策的权限 |
+|---|---|---|
+| **硬催化** (hard) | 财报/指引 surprise、SEC/调查、EDGAR 文件、M&A、产品发布/召回、评级机构正式上下调、明确的政策落地 | **可以翻 bucket**(hold→cut 等),可作为主导 `driven_by` |
+| **软情绪** (soft) | Reddit 提及数/热度、Google News 标题情绪、散户温度、Trump/Musk 喊话(无落地)、"看好/看空"类口风 | **只能动 confidence ±10pp,不能单独翻 bucket** |
+
+硬性规则:
+- **软情绪单独存在时,bucket 必须维持技术面/基本面给出的那个**;软情绪只允许把该 action 的 confidence 上下微调最多 ±10pp,且要在 rationale 写明"软情绪佐证/背离,confidence ±X"。
+- **只有硬催化能驱动一次 bucket 翻转**(尤其翻成 cut/trim/add)。若你想下主动 call 但手里只有软情绪 → 降级为 `hold_and_watch` + 设触发价观察,别直接动手。
+- influencer(Trump/Musk)默认归 **软情绪**;仅当其言论对应**已落地的政策/行政令/具体合同**才升级为硬催化。
+- 自检:若某 action 的 `driven_by` 是 `sentiment` 或 `influencer` 且 bucket ∈ {cut,trim_on_rebound,add_only_on_trigger} → **这违反铁律,改回 hold_and_watch 或换硬证据**。
+
 #### Strategy frame menu — Judge 段必须显式选 1-3 个 per action
 
 让 Judge 明示哪个 strategy frame 在驱动每个 action（traceability，错了能反推），从下面 8 个里选：

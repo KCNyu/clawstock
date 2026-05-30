@@ -80,6 +80,12 @@ def validate_plan_json(path):
         if a.get('driven_by', '') not in VALID_DRIVERS:
             issues.append(f'{tag}: driven_by "{a.get("driven_by")}" 不合法 '
                           f'(允许 {sorted(VALID_DRIVERS - {""})})')
+        # 消息面权重铁律 (warn): 软情绪 (sentiment/influencer) 不得单独驱动主动 call。
+        # 硬催化才能翻 bucket;软情绪只能动 confidence。见 SKILL "消息面权重铁律"。
+        if (a.get('driven_by') in ('sentiment', 'influencer')
+                and a.get('bucket') in ('cut', 'trim_on_rebound', 'add_only_on_trigger')):
+            issues.append(f'{tag}: 软情绪铁律 — driven_by={a.get("driven_by")} 不应单独驱动 '
+                          f'{a.get("bucket")}(软情绪只能动 confidence,翻 bucket 需硬催化)')
         conf = a.get('confidence')
         if conf is not None and not (0.0 <= float(conf) <= 1.0):
             issues.append(f'{tag}: confidence {conf} 不在 [0, 1]')
