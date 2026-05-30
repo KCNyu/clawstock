@@ -139,3 +139,14 @@
 - 🇺🇸 美股盯盘 | 05/22 10:04 ET [score=0.881 recalls=0 avg=0.620 source=memory/2026-05-23-0218.md:13-13]
 <!-- openclaw-memory-promotion:memory:memory/2026-05-21-pre-open.md:2:3 -->
 - layout: default title: 盘前深度简报 · 2026-05-21 [score=0.875 recalls=0 avg=0.620 source=memory/2026-05-21-pre-open.md:2-3]
+
+## Promoted From Short-Term Memory (2026-05-31)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-25-pre-open.md:2:3 -->
+- layout: default title: 盘前深度简报 · 2026-05-25 [score=0.877 recalls=0 avg=0.620 source=memory/2026-05-25-pre-open.md:2-3]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-25-pre-open.md:10:10 -->
+- > ⚠️ **数据状态**：US/HK refresh failed（价格为 5/22-23 收盘），FX hardcoded 7.8（stale）。SEC EDGAR RKLB/CRCL failed。所有数字仅从 `brief-context-2026-05-25.json` 取。 [score=0.877 recalls=0 avg=0.620 source=memory/2026-05-25-pre-open.md:10-10]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-25-pre-open.md:12:15 -->
+- | 市场 | Regime | 关键信号 | |---|---|---| | US | **Volatile / Mixed** | SOXL +6.74% 🔥 / RKLB +8.22% 🔥 / ROBN -6.32% 🔴；β=4.77 🔴 / Vol 72% 🔴 / Sharpe +4.96（SOXL/RKLB 拉高）；SPX +0.41% / NDX +0.41% | [score=0.877 recalls=0 avg=0.620 source=memory/2026-05-25-pre-open.md:12-14]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-25-pre-open.md:17:17 -->
+- **FX**: USDHKD = 7.8（HARDCODED_FALLBACK，无实时源，stale） [score=0.877 recalls=0 avg=0.620 source=memory/2026-05-25-pre-open.md:17-17]
